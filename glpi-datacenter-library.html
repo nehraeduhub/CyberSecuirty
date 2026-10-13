@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Centre Library with GLPI | NehraEduHub</title>
+  <meta name="description" content="Tabbed learning library: managing a data centre (sites, server rooms, racks, PDUs, cabling and inventory) with GLPI.">
+  <style>
+    :root {
+      --accent: #00ffea;
+      --text: #d8fffb;
+      --muted: #9fb8b5;
+      --panel: rgba(0, 0, 0, 0.6);
+      --line: rgba(0, 255, 234, 0.35);
+      --code-bg: rgba(0, 255, 234, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #05080a url('https://wallpaperaccess.com/full/317501.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.8);
+      min-height: 100vh;
+      padding: 20px 16px;
+    }
+
+    a { color: var(--accent); }
+
+    header {
+      text-align: center;
+      padding: 30px 0 10px;
+      color: var(--accent);
+    }
+
+    header h1 {
+      font-size: clamp(1.8em, 5vw, 2.8em);
+      margin: 0 0 6px;
+    }
+
+    header p { margin: 0; color: var(--muted); }
+
+    .back { display: inline-block; margin-bottom: 10px; }
+
+    .library {
+      max-width: 1000px;
+      margin: 20px auto;
+    }
+
+    /* Tabs */
+    .tablist {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      border-bottom: 2px solid var(--accent);
+      scrollbar-width: thin;
+    }
+
+    .tablist button {
+      flex: 0 0 auto;
+      background: rgba(0, 0, 0, 0.6);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 0.95em;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tablist button:hover { color: var(--accent); }
+
+    .tablist button[aria-selected="true"] {
+      background: var(--accent);
+      color: #001614;
+      font-weight: 600;
+    }
+
+    .tablist button:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    .tabpanel {
+      background: var(--panel);
+      border-radius: 0 0 10px 10px;
+      padding: 20px 24px 28px;
+    }
+
+    .tabpanel[hidden] { display: none; }
+
+    .tabpanel h2 {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 5px;
+      margin-top: 0;
+    }
+
+    .tabpanel h3 { color: var(--accent); margin-bottom: 4px; }
+
+    code, pre {
+      font-family: Consolas, 'Courier New', monospace;
+      background: var(--code-bg);
+      border-radius: 4px;
+    }
+
+    code { padding: 1px 5px; }
+
+    pre {
+      padding: 12px 14px;
+      overflow-x: auto;
+      border-left: 3px solid var(--accent);
+    }
+
+    .path {
+      font-family: Consolas, 'Courier New', monospace;
+      color: var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 0.95em;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { background: var(--code-bg); color: var(--accent); }
+
+    .table-wrap { overflow-x: auto; }
+
+    .note {
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      padding: 10px 14px;
+      border-radius: 6px;
+      background: var(--code-bg);
+      margin: 14px 0;
+    }
+
+    .hierarchy {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .hierarchy span.node {
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: var(--accent);
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .hierarchy span.arrow { color: var(--muted); }
+
+    /* Rack elevation illustration */
+    .rack-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .rack {
+      width: 240px;
+      border: 3px solid #607d7a;
+      border-radius: 4px;
+      background: #0b1112;
+      padding: 4px;
+      font-size: 0.8em;
+    }
+
+    .rack .u {
+      display: flex;
+      align-items: center;
+      height: 18px;
+      border-bottom: 1px dashed #1e2b2c;
+      color: #4d6563;
+    }
+
+    .rack .u .num { width: 26px; text-align: right; padding-right: 6px; }
+
+    .rack .item {
+      display: flex;
+      align-items: center;
+      padding-left: 32px;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      margin: 1px 0;
+      color: #001614;
+      font-weight: 600;
+    }
+
+    .rack .item.net { background: #5ce1ff; }
+    .rack .item.srv { background: #00ffea; }
+    .rack .item.stor { background: #9cffb0; }
+    .rack .item.pdu { background: #ffd36e; }
+
+    .rack-legend { flex: 1 1 260px; }
+
+    /* Lab checklist */
+    .checklist { list-style: none; padding-left: 0; }
+
+    .checklist li {
+      margin: 8px 0;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .checklist input { margin-top: 6px; accent-color: var(--accent); }
+
+    .progress {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 8px 0 4px;
+    }
+
+    .progress div {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width 0.2s;
+    }
+
+    /* Quiz */
+    .quiz fieldset {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin: 0 0 14px;
+      padding: 10px 14px;
+    }
+
+    .quiz legend { color: var(--accent); padding: 0 6px; }
+
+    .quiz label { display: block; margin: 4px 0; cursor: pointer; }
+
+    .quiz .feedback { margin: 6px 0 0; font-weight: 600; }
+    .quiz .ok { color: #9cffb0; }
+    .quiz .bad { color: #ff8a8a; }
+
+    .btn {
+      background: var(--accent);
+      color: #001614;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+
+    @media (max-width: 600px) {
+      .tabpanel { padding: 16px; }
+      .rack { width: 100%; max-width: 260px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <header>
+      <a class="back" href="index.html">&larr; Back to NehraEduHub</a>
+      <h1>Data Centre Library with GLPI</h1>
+      <p>Learn to document and manage server rooms, racks, power and cabling using the open-source GLPI ITSM / asset management tool.</p>
+    </header>
+
+    <main class="library">
+      <div class="tablist" role="tablist" aria-label="GLPI data centre library">
+        <button role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true">1. Overview</button>
+        <button role="tab" id="tab-install" aria-controls="panel-install" aria-selected="false" tabindex="-1">2. Install GLPI</button>
+        <button role="tab" id="tab-structure" aria-controls="panel-structure" aria-selected="false" tabindex="-1">3. Data Centres &amp; Rooms</button>
+        <button role="tab" id="tab-racks" aria-controls="panel-racks" aria-selected="false" tabindex="-1">4. Racks</button>
+        <button role="tab" id="tab-devices" aria-controls="panel-devices" aria-selected="false" tabindex="-1">5. Devices &amp; Power</button>
+        <button role="tab" id="tab-cabling" aria-controls="panel-cabling" aria-selected="false" tabindex="-1">6. Cabling &amp; Network</button>
+        <button role="tab" id="tab-inventory" aria-controls="panel-inventory" aria-selected="false" tabindex="-1">7. Auto Inventory</button>
+        <button role="tab" id="tab-security" aria-controls="panel-security" aria-selected="false" tabindex="-1">8. Security &amp; Best Practice</button>
+        <button role="tab" id="tab-lab" aria-controls="panel-lab" aria-selected="false" tabindex="-1">9. Hands-on Lab</button>
+        <button role="tab" id="tab-quiz" aria-controls="panel-quiz" aria-selected="false" tabindex="-1">10. Quiz</button>
+      </div>
+
+      <!-- 1. Overview -->
+      <section class="tabpanel" role="tabpanel" id="panel-overview" aria-labelledby="tab-overview" tabindex="0">
+        <h2>What is GLPI and why use it for a data centre?</h2>
+        <p><strong>GLPI</strong> (Gestionnaire Libre de Parc Informatique) is a free, open-source IT Service Management (ITSM) and IT Asset Management (ITAM) web application. Alongside helpdesk tickets, contracts and licences, it includes a dedicated <strong>data centre module</strong> for documenting physical infrastructure.</p>
+
+        <h3>What you can manage</h3>
+        <ul>
+          <li><strong>Data centres</strong> and the <strong>server rooms</strong> inside them, drawn as a grid floor plan</li>
+          <li><strong>Racks</strong> with a visual front/rear elevation (U-by-U)</li>
+          <li><strong>Servers, network equipment, enclosures (blade chassis), PDUs and passive devices</strong> (patch panels, cable managers)</li>
+          <li><strong>Cables</strong> and network ports between devices</li>
+          <li>Power and weight capacity per rack, plus financial, warranty and contract information per asset</li>
+        </ul>
+
+        <h3>The GLPI data centre hierarchy</h3>
+        <div class="hierarchy" aria-label="Hierarchy: Data centre, Server room, Rack, Device">
+          <span class="node">Data centre</span><span class="arrow">&rarr;</span>
+          <span class="node">Server room</span><span class="arrow">&rarr;</span>
+          <span class="node">Rack</span><span class="arrow">&rarr;</span>
+          <span class="node">Device (server, switch, PDU&hellip;)</span>
+        </div>
+
+        <h3>Learning outcomes</h3>
+        <ol>
+          <li>Install and secure a GLPI server</li>
+          <li>Model a data centre, its rooms and rack layout</li>
+          <li>Place devices in racks using models with correct U height</li>
+          <li>Track power capacity, cabling and network connections</li>
+          <li>Feed GLPI automatically with the GLPI Agent</li>
+        </ol>
+
+        <div class="note">Tip: use the tabs above (or the <kbd>&larr;</kbd>/<kbd>&rarr;</kbd> arrow keys) to move through the library in order. Your lab checklist progress is saved in this browser.</div>
+      </section>
+
+      <!-- 2. Install -->
+      <section class="tabpanel" role="tabpanel" id="panel-install" aria-labelledby="tab-install" tabindex="0" hidden>
+        <h2>Installing GLPI (lab server)</h2>
+        <p>GLPI is a PHP application backed by MySQL/MariaDB. For a lab, a single Linux VM (e.g. Ubuntu Server or Debian) is enough.</p>
+
+        <div class="note">Always check the <a href="https://glpi-install.readthedocs.io/" target="_blank" rel="noopener">official installation guide</a> for the exact PHP and database versions required by the GLPI release you download.</div>
+
+        <h3>Step 1 &ndash; Install the web stack</h3>
+<pre><code>sudo apt update
+sudo apt install -y apache2 mariadb-server php php-{mysql,curl,gd,intl,mbstring,xml,zip,bz2,ldap,bcmath} libapache2-mod-php</code></pre>
+
+        <h3>Step 2 &ndash; Create the database</h3>
+<pre><code>sudo mysql
+CREATE DATABASE glpi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'glpi'@'localhost' IDENTIFIED BY 'ChangeMe-Strong!';
+GRANT ALL PRIVILEGES ON glpi.* TO 'glpi'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;</code></pre>
+
+        <h3>Step 3 &ndash; Download GLPI</h3>
+        <p>Download the latest release archive from <a href="https://github.com/glpi-project/glpi/releases" target="_blank" rel="noopener">github.com/glpi-project/glpi/releases</a> and extract it:</p>
+<pre><code>cd /var/www
+sudo tar -xzf ~/glpi-&lt;version&gt;.tgz
+sudo chown -R www-data:www-data /var/www/glpi</code></pre>
+
+        <h3>Step 4 &ndash; Run the installer</h3>
+        <p>Either open <code>http://&lt;server-ip&gt;/glpi</code> in a browser and follow the wizard, or use the command line:</p>
+<pre><code>cd /var/www/glpi
+sudo -u www-data php bin/console db:install -H localhost -d glpi -u glpi -p 'ChangeMe-Strong!'</code></pre>
+
+        <h3>Step 5 &ndash; First login and hardening</h3>
+        <ul>
+          <li>Default accounts: <code>glpi/glpi</code> (super-admin), <code>tech/tech</code>, <code>normal/normal</code>, <code>post-only/postonly</code>. <strong>Change all passwords or disable unused accounts immediately.</strong></li>
+          <li>Delete the <code>install/install.php</code> file once installation is finished.</li>
+          <li>Point the web server's document root at GLPI's <code>public/</code> directory (GLPI 10.0.7+) and serve it over HTTPS.</li>
+        </ul>
+      </section>
+
+      <!-- 3. Data centres & rooms -->
+      <section class="tabpanel" role="tabpanel" id="panel-structure" aria-labelledby="tab-structure" tabindex="0" hidden>
+        <h2>Data centres and server rooms</h2>
+
+        <h3>Create a data centre</h3>
+        <p>Menu: <span class="path">Management &gt; Data centers &gt; +Add</span></p>
+        <ul>
+          <li><strong>Name</strong> &ndash; e.g. <code>DC-DELHI-01</code></li>
+          <li><strong>Location</strong> &ndash; link to a GLPI location (Setup &gt; Dropdowns &gt; Locations) for the building/address</li>
+          <li><strong>Picture</strong> &ndash; optional photo or site map</li>
+        </ul>
+
+        <h3>Add server rooms</h3>
+        <p>Open the data centre and use the <strong>Server rooms</strong> tab, or go to <span class="path">Management &gt; Data centers &gt; Server rooms</span>.</p>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Field</th><th>Purpose</th><th>Example</th></tr>
+            <tr><td>Name</td><td>Room identifier</td><td>Hall-A</td></tr>
+            <tr><td>Data center</td><td>Parent data centre</td><td>DC-DELHI-01</td></tr>
+            <tr><td>Number of columns / rows</td><td>Size of the floor-plan grid used to place racks</td><td>10 &times; 6</td></tr>
+            <tr><td>Location</td><td>Floor / room location</td><td>Ground floor</td></tr>
+            <tr><td>Background picture</td><td>Optional floor plan image behind the grid</td><td>hall-a.png</td></tr>
+          </table>
+        </div>
+
+        <h3>Naming convention (recommended)</h3>
+<pre><code>&lt;SITE&gt;-&lt;ROOM&gt;-&lt;ROW&gt;&lt;RACK&gt;      e.g. DEL1-HALLA-R03
+&lt;ROLE&gt;-&lt;SITE&gt;-&lt;NN&gt;             e.g. SW-CORE-DEL1-01, SRV-WEB-DEL1-07</code></pre>
+        <div class="note">A consistent naming scheme makes searching, reporting and physical labelling far easier. Decide it <em>before</em> you start entering data.</div>
+      </section>
+
+      <!-- 4. Racks -->
+      <section class="tabpanel" role="tabpanel" id="panel-racks" aria-labelledby="tab-racks" tabindex="0" hidden>
+        <h2>Racks</h2>
+        <p>Menu: <span class="path">Assets &gt; Racks &gt; +Add</span></p>
+
+        <div class="table-wrap">
+          <table>
+            <tr><th>Field</th><th>Description</th></tr>
+            <tr><td>Server room &amp; position</td><td>Which room and which grid cell (column/row) the rack stands on. The rack then appears on the room floor plan.</td></tr>
+            <tr><td>Door orientation</td><td>North / East / South / West &ndash; which way the front faces on the plan.</td></tr>
+            <tr><td>Number of units</td><td>Rack height in U (commonly 42U or 47U).</td></tr>
+            <tr><td>Width / Height / Depth</td><td>Physical dimensions (mm).</td></tr>
+            <tr><td>Max. power / Measured power</td><td>Power budget (W) &ndash; GLPI shows usage vs capacity.</td></tr>
+            <tr><td>Max. weight</td><td>Load capacity, compared to the weight of mounted equipment.</td></tr>
+            <tr><td>Model / Type</td><td>Defined under <span class="path">Setup &gt; Dropdowns</span> (Rack models, Rack types).</td></tr>
+          </table>
+        </div>
+
+        <h3>Rack elevation example</h3>
+        <p>On the rack's <strong>Racks</strong> tab GLPI draws the front and rear view. Each item occupies as many U as its <em>model</em> requires:</p>
+
+        <div class="rack-demo">
+          <div class="rack" aria-label="Example 12U rack elevation">
+            <div class="u"><span class="num">12</span></div>
+            <div class="item net" style="height:18px">U11 Patch panel</div>
+            <div class="item net" style="height:18px">U10 SW-TOR-01</div>
+            <div class="u"><span class="num">9</span></div>
+            <div class="item srv" style="height:36px">U7&ndash;8 SRV-WEB-01 (2U)</div>
+            <div class="item srv" style="height:18px">U6 SRV-APP-01 (1U)</div>
+            <div class="item stor" style="height:54px">U3&ndash;5 SAN-01 (3U)</div>
+            <div class="u"><span class="num">2</span></div>
+            <div class="item pdu" style="height:18px">U1 UPS / PDU</div>
+          </div>
+          <div class="rack-legend">
+            <h3>Things to note</h3>
+            <ul>
+              <li>U1 is at the <strong>bottom</strong>; heavy kit (UPS, storage) goes low.</li>
+              <li>Leave blank U for airflow and future growth &ndash; use blanking panels physically.</li>
+              <li>Items can be marked <strong>front</strong> or <strong>rear</strong> and <strong>full</strong> or <strong>half depth</strong>.</li>
+              <li>Vertical (0U) PDUs can be attached to the rack's left/right side.</li>
+              <li>GLPI prevents placing two items in the same U space.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Devices & power -->
+      <section class="tabpanel" role="tabpanel" id="panel-devices" aria-labelledby="tab-devices" tabindex="0" hidden>
+        <h2>Devices, models and power</h2>
+
+        <h3>1. Create models first</h3>
+        <p>Rack placement depends on the <strong>model</strong>. Under <span class="path">Setup &gt; Dropdowns &gt; Models</span> set, for each model:</p>
+        <ul>
+          <li><strong>Required units</strong> (U height) and whether it is <strong>half rack</strong> width</li>
+          <li><strong>Depth</strong> (full, &frac34;, &frac12;, &frac14;)</li>
+          <li><strong>Power connections</strong> and <strong>power consumption</strong> (W)</li>
+          <li><strong>Weight</strong> and optional <strong>front/rear pictures</strong> for a realistic rack view</li>
+        </ul>
+
+        <h3>2. Asset types that can live in a rack</h3>
+        <div class="table-wrap">
+          <table>
+            <tr><th>GLPI asset</th><th>Menu</th><th>Typical use</th></tr>
+            <tr><td>Computers</td><td>Assets &gt; Computers</td><td>Rack servers, appliances</td></tr>
+            <tr><td>Network devices</td><td>Assets &gt; Network devices</td><td>Switches, routers, firewalls</td></tr>
+            <tr><td>Enclosures</td><td>Assets &gt; Enclosures</td><td>Blade chassis holding blade servers</td></tr>
+            <tr><td>PDUs</td><td>Assets &gt; PDUs</td><td>Power distribution units (rack or side mounted)</td></tr>
+            <tr><td>Passive devices</td><td>Assets &gt; Passive devices</td><td>Patch panels, cable managers, blanking panels</td></tr>
+            <tr><td>Monitors / Peripherals</td><td>Assets &gt; Monitors / Devices</td><td>KVM consoles, tape libraries</td></tr>
+          </table>
+        </div>
+
+        <h3>3. Place a device</h3>
+        <ol>
+          <li>Open the rack and switch to the <strong>Racks</strong> (elevation) tab.</li>
+          <li>Click a free U slot (or the <em>+</em> icon) and pick the item type and item.</li>
+          <li>Choose <strong>position</strong>, <strong>orientation</strong> (front/rear) and confirm.</li>
+          <li>Drag-and-drop in the elevation to move items later.</li>
+        </ol>
+
+        <h3>4. Power planning</h3>
+        <p>Link PDUs to the rack and record the power plugs. Compare the sum of model power consumption against the rack's <em>Max. power</em> to avoid overloading a circuit. A common rule of thumb is to plan for no more than ~80% of a circuit's rated capacity.</p>
+      </section>
+
+      <!-- 6. Cabling -->
+      <section class="tabpanel" role="tabpanel" id="panel-cabling" aria-labelledby="tab-cabling" tabindex="0" hidden>
+        <h2>Cabling and network ports</h2>
+
+        <h3>Network ports</h3>
+        <p>Each computer and network device has a <strong>Network ports</strong> tab. Ports can be created manually or by inventory, with MAC address, IP, VLAN and speed.</p>
+
+        <h3>Cables (GLPI 10+)</h3>
+        <p>Menu: <span class="path">Assets &gt; Cables</span>. A cable records:</p>
+        <ul>
+          <li><strong>Endpoint A</strong> and <strong>Endpoint B</strong> &ndash; asset + socket/port on each side</li>
+          <li><strong>Cable type</strong> (Cat6, OM4 fibre, power&hellip;) and <strong>cable strand</strong></li>
+          <li><strong>Colour</strong>, <strong>Inventory number</strong> and <strong>state</strong></li>
+        </ul>
+        <p>Sockets for patch panels and wall outlets are managed under <span class="path">Setup &gt; Dropdowns &gt; Management &gt; Sockets</span>.</p>
+
+        <h3>Example connection path</h3>
+        <div class="hierarchy">
+          <span class="node">SRV-WEB-01 eth0</span><span class="arrow">&harr;</span>
+          <span class="node">Patch panel PP-R03 port 7</span><span class="arrow">&harr;</span>
+          <span class="node">SW-TOR-01 Gi1/0/7</span>
+        </div>
+
+        <h3>Colour code suggestion</h3>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Colour</th><th>Use</th></tr>
+            <tr><td>Blue</td><td>Production data</td></tr>
+            <tr><td>Yellow</td><td>Management / iLO / iDRAC</td></tr>
+            <tr><td>Green</td><td>Storage / iSCSI</td></tr>
+            <tr><td>Red</td><td>Uplinks / cross-connects</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- 7. Inventory -->
+      <section class="tabpanel" role="tabpanel" id="panel-inventory" aria-labelledby="tab-inventory" tabindex="0" hidden>
+        <h2>Automatic inventory with the GLPI Agent</h2>
+        <p>Since GLPI 10, inventory is <strong>native</strong>: the <a href="https://glpi-agent.readthedocs.io/" target="_blank" rel="noopener">GLPI Agent</a> sends hardware and software data straight to GLPI, so you don't have to type serial numbers, CPUs, RAM, disks or NICs by hand.</p>
+
+        <h3>Enable inventory on the server</h3>
+        <p><span class="path">Administration &gt; Inventory</span> &rarr; tick <strong>Enable inventory</strong> and save.</p>
+
+        <h3>Install the agent on a Linux server</h3>
+<pre><code># Debian/Ubuntu (download the installer from the GLPI Agent releases page)
+sudo perl glpi-agent-&lt;version&gt;-linux-installer.pl --server=https://glpi.example.com/ --install
+
+# Force an inventory immediately
+sudo glpi-agent --server https://glpi.example.com/ --force</code></pre>
+
+        <h3>Windows</h3>
+        <p>Run the MSI installer and enter the server URL, or deploy silently:</p>
+<pre><code>msiexec /i GLPI-Agent-&lt;version&gt;-x64.msi /quiet SERVER="https://glpi.example.com/" RUNNOW=1</code></pre>
+
+        <h3>Network discovery and SNMP</h3>
+        <p>Switches, PDUs and UPS units usually can't run an agent. Use the agent's <strong>netdiscovery</strong> and <strong>netinventory</strong> tasks with SNMP credentials to inventory them remotely.</p>
+
+        <div class="note">After the device appears in GLPI, you only need to assign it a <strong>model</strong> and place it in the correct rack U position.</div>
+      </section>
+
+      <!-- 8. Security -->
+      <section class="tabpanel" role="tabpanel" id="panel-security" aria-labelledby="tab-security" tabindex="0" hidden>
+        <h2>Security and best practice</h2>
+        <p>A data centre inventory is a map of your most critical systems &ndash; protect it like one.</p>
+
+        <h3>Secure the GLPI server</h3>
+        <ul>
+          <li>Serve GLPI only over <strong>HTTPS</strong>; restrict access to admin networks or VPN.</li>
+          <li>Change or disable all default accounts; enforce strong passwords and enable <strong>two-factor authentication (TOTP)</strong> where your version supports it.</li>
+          <li>Integrate with <strong>LDAP/Active Directory</strong> and use GLPI <strong>profiles</strong> and <strong>entities</strong> for least-privilege access.</li>
+          <li>Keep GLPI, PHP and plugins <strong>up to date</strong> &ndash; follow GLPI security advisories.</li>
+          <li>Ensure the <code>config/</code>, <code>files/</code> and <code>marketplace/</code> directories are not reachable from the web.</li>
+          <li>Back up the database and <code>files/</code> directory regularly and test restores.</li>
+        </ul>
+
+        <h3>Data quality habits</h3>
+        <ul>
+          <li>Update GLPI as part of every change ticket (install, move, decommission).</li>
+          <li>Use the <strong>Status</strong> field (In production, Stock, Retired) consistently.</li>
+          <li>Run periodic physical audits: compare rack photos with GLPI elevations.</li>
+          <li>Use the <strong>History</strong> tab to see who changed what and when.</li>
+        </ul>
+      </section>
+
+      <!-- 9. Lab -->
+      <section class="tabpanel" role="tabpanel" id="panel-lab" aria-labelledby="tab-lab" tabindex="0" hidden>
+        <h2>Hands-on lab: build a mini data centre</h2>
+        <p>Complete each task in your own GLPI lab. Ticks are saved in this browser only.</p>
+
+        <div class="progress" aria-hidden="true"><div id="lab-bar"></div></div>
+        <p id="lab-count" aria-live="polite">0 of 0 tasks complete</p>
+
+        <ul class="checklist" id="lab-list">
+          <li><input type="checkbox" id="lab1"><label for="lab1">Install GLPI on a Linux VM and log in as <code>glpi</code>; change all default passwords.</label></li>
+          <li><input type="checkbox" id="lab2"><label for="lab2">Create location <code>Delhi Campus</code> and data centre <code>DC-DELHI-01</code>.</label></li>
+          <li><input type="checkbox" id="lab3"><label for="lab3">Add server room <code>Hall-A</code> with a 10 &times; 6 grid.</label></li>
+          <li><input type="checkbox" id="lab4"><label for="lab4">Create a 42U rack model, then racks <code>DEL1-HALLA-R01</code> and <code>R02</code> placed side by side, facing North.</label></li>
+          <li><input type="checkbox" id="lab5"><label for="lab5">Create models: 1U switch, 1U server, 2U server, 3U storage, with power consumption values.</label></li>
+          <li><input type="checkbox" id="lab6"><label for="lab6">Add a switch, two servers and a storage array, and mount them in R01 as in the rack example.</label></li>
+          <li><input type="checkbox" id="lab7"><label for="lab7">Add two side PDUs to R01 and set the rack's max power to 5000 W. Check the power usage view.</label></li>
+          <li><input type="checkbox" id="lab8"><label for="lab8">Create a patch panel (passive device) and record cables from each server to the switch.</label></li>
+          <li><input type="checkbox" id="lab9"><label for="lab9">Install the GLPI Agent on one server and confirm the inventory updates the asset.</label></li>
+          <li><input type="checkbox" id="lab10"><label for="lab10">Export a list of all assets in Hall-A (search + export to CSV/PDF).</label></li>
+        </ul>
+        <button class="btn secondary" id="lab-reset" type="button">Reset checklist</button>
+      </section>
+
+      <!-- 10. Quiz -->
+      <section class="tabpanel" role="tabpanel" id="panel-quiz" aria-labelledby="tab-quiz" tabindex="0" hidden>
+        <h2>Knowledge check</h2>
+        <form class="quiz" id="quiz">
+          <fieldset data-answer="b">
+            <legend>1. What is the correct GLPI data centre hierarchy?</legend>
+            <label><input type="radio" name="q1" value="a"> Rack &rarr; Server room &rarr; Data centre</label>
+            <label><input type="radio" name="q1" value="b"> Data centre &rarr; Server room &rarr; Rack &rarr; Device</label>
+            <label><input type="radio" name="q1" value="c"> Location &rarr; Device &rarr; Rack</label>
+            <p class="feedback"></p>
+          </fieldset>
+
+          <fieldset data-answer="c">
+            <legend>2. Where is a device's height in rack units (U) defined?</legend>
+            <label><input type="radio" name="q2" value="a"> On the rack</label>
+            <label><input type="radio" name="q2" value="b"> In the server room</label>
+            <label><input type="radio" name="q2" value="c"> On the device's model</label>
+            <p class="feedback"></p>
+          </fieldset>
+
+          <fieldset data-answer="a">
+            <legend>3. Which GLPI asset type represents a patch panel?</legend>
+            <label><input type="radio" name="q3" value="a"> Passive device</label>
+            <label><input type="radio" name="q3" value="b"> Enclosure</label>
+            <label><input type="radio" name="q3" value="c"> PDU</label>
+            <p class="feedback"></p>
+          </fieldset>
+
+          <fieldset data-answer="b">
+            <legend>4. How can switches and PDUs that cannot run an agent be inventoried?</legend>
+            <label><input type="radio" name="q4" value="a"> They can't be inventoried</label>
+            <label><input type="radio" name="q4" value="b"> GLPI Agent network discovery / inventory over SNMP</label>
+            <label><input type="radio" name="q4" value="c"> Only by e-mail import</label>
+            <p class="feedback"></p>
+          </fieldset>
+
+          <fieldset data-answer="c">
+            <legend>5. What should you do first after installing GLPI?</legend>
+            <label><input type="radio" name="q5" value="a"> Create racks</label>
+            <label><input type="radio" name="q5" value="b"> Install plugins</label>
+            <label><input type="radio" name="q5" value="c"> Change default passwords and remove install/install.php</label>
+            <p class="feedback"></p>
+          </fieldset>
+
+          <button class="btn" type="submit">Check answers</button>
+          <p id="quiz-score" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      &copy; 2025 NehraEduHub | All Rights Reserved<br>
+      GLPI is free software published by Teclib' under the GPLv3 licence. This page is independent training material.
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+
+      function select(tab, focus) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+          document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+        });
+        if (focus) tab.focus();
+        tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        var hash = '#' + tab.id.replace('tab-', '');
+        if (location.hash !== hash) history.replaceState(null, '', hash);
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { select(tab, false); });
+        tab.addEventListener('keydown', function (e) {
+          var next = null;
+          if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+          else if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+          else if (e.key === 'Home') next = tabs[0];
+          else if (e.key === 'End') next = tabs[tabs.length - 1];
+          if (next) { e.preventDefault(); select(next, true); }
+        });
+      });
+
+      var initial = document.getElementById('tab-' + location.hash.slice(1));
+      if (initial) select(initial, false);
+
+      // Lab checklist with per-browser persistence
+      var boxes = Array.prototype.slice.call(document.querySelectorAll('#lab-list input'));
+      var KEY = 'nehra-glpi-lab';
+      var saved = {};
+      try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { saved = {}; }
+
+      function updateLab() {
+        var done = boxes.filter(function (b) { return b.checked; }).length;
+        document.getElementById('lab-bar').style.width = (done / boxes.length * 100) + '%';
+        document.getElementById('lab-count').textContent = done + ' of ' + boxes.length + ' tasks complete';
+        var state = {};
+        boxes.forEach(function (b) { state[b.id] = b.checked; });
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+      }
+
+      boxes.forEach(function (b) {
+        b.checked = !!saved[b.id];
+        b.addEventListener('change', updateLab);
+      });
+      document.getElementById('lab-reset').addEventListener('click', function () {
+        boxes.forEach(function (b) { b.checked = false; });
+        updateLab();
+      });
+      updateLab();
+
+      // Quiz
+      document.getElementById('quiz').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var sets = Array.prototype.slice.call(this.querySelectorAll('fieldset'));
+        var score = 0;
+        sets.forEach(function (fs) {
+          var picked = fs.querySelector('input:checked');
+          var fb = fs.querySelector('.feedback');
+          if (picked && picked.value === fs.dataset.answer) {
+            score++;
+            fb.textContent = 'Correct';
+            fb.className = 'feedback ok';
+          } else {
+            fb.textContent = picked ? 'Not quite - review the library tabs.' : 'Please choose an answer.';
+            fb.className = 'feedback bad';
+          }
+        });
+        document.getElementById('quiz-score').textContent = 'Score: ' + score + ' / ' + sets.length;
+      });
+    })();
+  </script>
+</body>
+</html>
