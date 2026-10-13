@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Centre Kit – Deployment Guide</title>
+<style>
+:root { --bg:#ffffff; --text:#14201f; --muted:#4f6664; --accent:#007f75; --line:#d5e0df; --code:#f2f6f6; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0b1113; --text:#dff7f4; --muted:#8aa6a2; --accent:#00ffea; --line:#23363a; --code:#121c1f; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { color:var(--accent); font-size:2em; line-height:1.2; }
+h2 { color:var(--accent); border-bottom:2px solid var(--accent); padding-bottom:4px; margin-top:2.2em; }
+h3 { margin-top:1.6em; }
+a { color:var(--accent); }
+code { font-family: Consolas, 'Courier New', monospace; background:var(--code); padding:1px 5px; border-radius:4px; font-size:.92em; }
+pre { background:var(--code); border-left:3px solid var(--accent); padding:12px 14px; overflow-x:auto; border-radius:4px; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; width:100%; margin:12px 0; font-size:.95em; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; vertical-align:top; }
+th { background:var(--code); }
+li { margin:3px 0; }
+hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
+@media print {
+  body { font-size:11pt; } main { max-width:none; padding:0; }
+  h2 { page-break-before: always; } pre, table { page-break-inside: avoid; }
+  a { color: inherit; }
+}
+</style>
+</head>
+<body><main>
+<h1 id="nehraeduhub-data-centre-kit-production-deployment-guide-offline">NehraEduHub Data Centre Kit: Production Deployment Guide (Offline)</h1>
+<p>This guide takes you from the zip file to a running, verified, backed-up system in your data centre, on a server with <strong>no internet access</strong>. Follow the steps in order. Each step ends with a check.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>You get</strong></td>
+<td>GLPI 11 (assets, racks, rooms, tickets), automatic network collection, the DC Viewer (racks, inventory dashboard), Grafana device status and network/hardware health, and the learning library</td>
+</tr>
+<tr>
+<td><strong>Time</strong></td>
+<td>About 1 hour to build the bundle, 30 minutes to install, then 1–2 hours to connect your equipment</td>
+</tr>
+<tr>
+<td><strong>People</strong></td>
+<td>A Linux administrator (server and install), plus a network engineer to enable SNMP on devices</td>
+</tr>
+</tbody>
+</table>
+<pre><code> Internet PC (Linux + Docker)              USB / internal share               Offline production server
+ ┌────────────────────────────┐      ┌───────────────────────────┐       ┌──────────────────────────────┐
+ │ Step 2: build the bundle   │ ───► │ dc-offline-bundle-*.tar.gz│ ───►  │ Steps 3–10: preflight,       │
+ │ (images, Docker packages,  │      │ (~1.3 GB, with SHA256SUMS)│       │ install, verify, configure,  │
+ │  agents, kit)              │      └───────────────────────────┘       │ back up, go live             │
+ └────────────────────────────┘                                          └──────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="step-1-plan">Step 1: Plan</h2>
+<h3 id="11-server">1.1 Server</h3>
+<table>
+<thead>
+<tr>
+<th>Size</th>
+<th>Devices</th>
+<th>vCPU</th>
+<th>RAM</th>
+<th>Disk (<code>/var/lib/docker</code> + kit)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small</td>
+<td>up to 500</td>
+<td>4</td>
+<td>8 GB</td>
+<td>100 GB</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>up to 3,000</td>
+<td>8</td>
+<td>16 GB</td>
+<td>250 GB</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>more than 3,000</td>
+<td>16</td>
+<td>32 GB</td>
+<td>500 GB, SSD</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Operating system</strong> (tested): <strong>Ubuntu Server 24.04 LTS</strong> (recommended), Ubuntu 22.04, Debian 12, RHEL / Rocky / AlmaLinux 9. A minimal install is enough; x86_64 only.</li>
+<li>A VM is fine. Give it a <strong>static IP</strong>, a <strong>DNS name</strong> (e.g. <code>dc.nehraeduhub.lan</code>) and <strong>NTP</strong> from your internal time server.</li>
+</ul>
+<h3 id="12-network-access">1.2 Network access</h3>
+<p><strong>Inbound to the server</strong> (from admin and NOC networks only):</p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP 443</td>
+<td>GLPI (HTTPS)</td>
+</tr>
+<tr>
+<td>TCP 8443</td>
+<td>DC Viewer, learning library, Grafana (HTTPS)</td>
+</tr>
+<tr>
+<td>TCP 80</td>
+<td>Redirect to HTTPS, and GLPI Agents if you use HTTP</td>
+</tr>
+<tr>
+<td>TCP 22</td>
+<td>Your SSH administration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Outbound from the server</strong> to your management networks:</p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>To</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ICMP</td>
+<td>all devices</td>
+<td>up/down monitoring</td>
+</tr>
+<tr>
+<td>UDP 161</td>
+<td>switches, routers, Sophos, Alteon, iLO, iDRAC, PDUs</td>
+<td>SNMP collection and monitoring</td>
+</tr>
+<tr>
+<td>TCP 22</td>
+<td>Linux / VME hosts</td>
+<td>agentless inventory</td>
+</tr>
+<tr>
+<td>TCP 5985/5986</td>
+<td>Windows servers</td>
+<td>agentless inventory (WinRM)</td>
+</tr>
+<tr>
+<td>TCP 443</td>
+<td>vCenter, portals</td>
+<td>VMware inventory, HTTPS checks</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-gather-beforehand">1.3 Gather beforehand</h3>
+<ul>
+<li>[ ] <strong>Read-only SNMPv3 user</strong> (SHA + AES) for network gear, iLO and iDRAC, or an SNMP v2c read community</li>
+<li>[ ] <strong>vCenter read-only user</strong> (for SimpliVity)</li>
+<li>[ ] An <strong><code>inventory</code> account</strong> on Linux/VME hosts (SSH key login; the kit generates the key)</li>
+<li>[ ] A <strong>WinRM account</strong> for Windows servers (if any)</li>
+<li>[ ] An <strong>HTTPS certificate</strong> for the server name from your internal CA: <code>server.crt</code> (with the chain) and <code>server.key</code>. Without one, the kit makes a self-signed certificate, which works but browsers will warn</li>
+<li>[ ] A <strong>password vault</strong> entry for the GLPI admin, the Grafana admin and the database (step 6)</li>
+</ul>
+<p>See <strong><code>datacenter-offline/EQUIPMENT.md</code></strong> for what to enable on each kind of device (Sophos, Radware Alteon, HPE SimpliVity, HPE VME, HP/Dell servers, Cisco/Dell/HP switches and routers).</p>
+<hr />
+<h2 id="step-2-build-the-offline-bundle-internet-pc">Step 2: Build the offline bundle (internet PC)</h2>
+<p>You need a Linux PC or VM with internet access, <strong>Docker</strong> and about 10 GB of free disk. On Windows, use WSL2 with Docker Desktop.</p>
+<pre><code class="language-bash">unzip nehraeduhub-dc-kit-*.zip
+cd nehraeduhub-dc-kit
+
+# Set the OS of the PRODUCTION server (Docker packages are downloaded for it):
+#   ubuntu:24.04 (default) | ubuntu:22.04 | debian:12 | rockylinux:9 | almalinux:9 (use for RHEL 9)
+SERVER_OS=ubuntu:24.04 ./datacenter-offline/scripts/prepare-offline-bundle.sh
+</code></pre>
+<p>This takes about 15–30 minutes and produces <strong><code>dc-offline-bundle-YYYYMMDD.tar.gz</code></strong> (about 1.3 GB), containing:</p>
+<table>
+<thead>
+<tr>
+<th>Folder</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>images/</code></td>
+<td>8 container images: GLPI, MariaDB, nginx, collector, Grafana, Prometheus, Blackbox exporter, SNMP exporter</td>
+</tr>
+<tr>
+<td><code>docker/</code></td>
+<td>Docker Engine + Compose packages for your server's OS, with dependencies</td>
+</tr>
+<tr>
+<td><code>agents/</code></td>
+<td>GLPI Agent for Linux and Windows, plus install scripts</td>
+</tr>
+<tr>
+<td><code>site/</code></td>
+<td>The kit, viewer, dashboards and learning library</td>
+</tr>
+<tr>
+<td><code>SHA256SUMS</code></td>
+<td>Checksums, verified on the server</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Check:</strong> the script ends with <code>Bundle ready: …/dc-offline-bundle-YYYYMMDD.tar.gz (1.3G)</code>.</p>
+<p>Copy the file to the server over USB, your internal file share, or <code>scp</code> through your jump host. Follow your site's rules for bringing in removable media. To check the copy, run <code>sha256sum dc-offline-bundle-*.tar.gz</code> on both machines.</p>
+<hr />
+<h2 id="step-3-prepare-the-server">Step 3: Prepare the server</h2>
+<ol>
+<li>Install the OS (minimal), set the static IP, hostname and DNS, and point NTP at your time server:
+   <code>bash
+   sudo hostnamectl set-hostname dc.nehraeduhub.lan
+   timedatectl          # "System clock synchronized: yes"</code></li>
+<li>Extract the bundle to a <strong>permanent</strong> location. The extracted folder <em>is</em> the installation, so don't use <code>/tmp</code>:
+   <code>bash
+   sudo mkdir -p /opt/dc
+   sudo tar -xzf dc-offline-bundle-YYYYMMDD.tar.gz -C /opt/dc
+   cd /opt/dc/dc-offline-bundle-YYYYMMDD</code></li>
+<li>If you have certificates from your internal CA, put them in place <strong>now</strong>:
+   <code>bash
+   sudo mkdir -p site/datacenter-offline/tls
+   sudo cp server.crt site/datacenter-offline/tls/server.crt   # certificate + chain
+   sudo cp server.key site/datacenter-offline/tls/server.key
+   sudo chmod 600 site/datacenter-offline/tls/server.key</code></li>
+</ol>
+<p><strong>Check:</strong> <code>ls /opt/dc/dc-offline-bundle-*/</code> shows <code>images docker agents site install-offline.sh SHA256SUMS</code>.</p>
+<hr />
+<h2 id="step-4-pre-flight-check">Step 4: Pre-flight check</h2>
+<pre><code class="language-bash">cd /opt/dc/dc-offline-bundle-YYYYMMDD
+sudo ./site/datacenter-offline/scripts/preflight.sh
+</code></pre>
+<p>It checks the OS, CPU, RAM, disk, Docker (or the bundled packages), free ports and NTP, and verifies every bundle file against its checksum. It changes nothing.</p>
+<p><strong>Check:</strong> <code>Result: ready to install</code>. Fix every <strong>[FAIL]</strong> first, and read the <strong>[WARN]</strong> items.</p>
+<hr />
+<h2 id="step-5-install">Step 5: Install</h2>
+<pre><code class="language-bash">cd /opt/dc/dc-offline-bundle-YYYYMMDD
+sudo SERVER_NAME=dc.nehraeduhub.lan ./install-offline.sh
+</code></pre>
+<p><code>SERVER_NAME</code> is the name users type in the browser. It goes into links and the certificate. Leave it out to use the IP address.</p>
+<p>The installer asks for a <strong>new GLPI super-admin password</strong>, and whether to <strong>disable the demo accounts</strong> (answer <strong>Y</strong>). It then:</p>
+<ol>
+<li>installs Docker from the bundle if it is missing (nothing is downloaded)</li>
+<li>checks the bundle and loads the 8 images</li>
+<li>creates <code>.env</code> with random passwords (database, Grafana admin, read-only monitoring account)</li>
+<li>creates an HTTPS certificate if you didn't supply one, plus <code>collector/collector.conf</code> and the collector's SSH key</li>
+<li>starts the 9 containers and waits for GLPI to install its database (1–3 minutes)</li>
+<li>configures GLPI: inventory and API on, <code>url_base</code> set, API reachable only through this server (login always required), manufacturer rules (Compaq → HPE, Alteon → Radware), read-only <code>dc-monitor</code> account</li>
+</ol>
+<p>It ends with your URLs:</p>
+<pre><code>GLPI (manage assets, racks, rooms):   https://dc.nehraeduhub.lan/
+DC Viewer (read-only rack screens):   https://dc.nehraeduhub.lan:8443/viewer/
+Inventory dashboard:                  https://dc.nehraeduhub.lan:8443/viewer/inventory.html
+Device status (Grafana):              https://dc.nehraeduhub.lan:8443/viewer/status.html
+Learning library:                     https://dc.nehraeduhub.lan:8443/glpi-datacenter-library.html
+</code></pre>
+<p>Unattended install: <code>sudo ADMIN_PASSWORD='…' DISABLE_DEMO_USERS=yes SERVER_NAME=… ./install-offline.sh</code></p>
+<hr />
+<h2 id="step-6-verify-and-secure-the-credentials">Step 6: Verify and secure the credentials</h2>
+<pre><code class="language-bash">sudo /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline/scripts/verify.sh
+</code></pre>
+<p>It checks all containers, GLPI (locally and through HTTPS), the redirect, the certificate expiry, an API login, the default password, the collector, monitoring sync, Prometheus targets, backups and disk.</p>
+<p><strong>Check:</strong> <code>Result: all good</code>. The warnings "Collector has nothing to collect yet" and "No backup yet" are expected at this point. Steps 7 and 9 clear them.</p>
+<p>Then:</p>
+<ol>
+<li>Open <code>https://dc.nehraeduhub.lan/</code> and log in as <strong>glpi</strong> with the password from step 5.</li>
+<li>Open the Status tab and log in to Grafana as <strong>admin</strong>. Its password is <code>GRAFANA_ADMIN_PASSWORD</code> in <code>site/datacenter-offline/.env</code>.</li>
+<li><strong>Store in your vault</strong>: the GLPI admin password, plus <code>GRAFANA_ADMIN_PASSWORD</code>, <code>GLPI_DB_PASSWORD</code> and <code>MONITOR_GLPI_PASSWORD</code> from <code>.env</code>. Keep <code>.env</code> at <code>chmod 600</code>, as the installer sets it.</li>
+<li>In GLPI, create <strong>named accounts</strong> for your team: <strong>Administration → Users</strong>. Give a read-only profile to people who only need the viewer.</li>
+</ol>
+<hr />
+<h2 id="step-7-connect-your-equipment">Step 7: Connect your equipment</h2>
+<h3 id="71-enable-snmp-accounts-on-devices">7.1 Enable SNMP / accounts on devices</h3>
+<p>Follow <strong><code>EQUIPMENT.md</code></strong> for each device type: Sophos, Alteon, iLO, iDRAC, Cisco, Dell, HP/Aruba, vCenter, VME hosts.</p>
+<h3 id="72-tell-the-collector-what-to-scan">7.2 Tell the collector what to scan</h3>
+<pre><code class="language-bash">cd /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline
+sudo nano collector/collector.conf
+</code></pre>
+<pre><code class="language-bash">INTERVAL_MINUTES=60
+SNMP_RANGES=&quot;
+10.10.0.1-10.10.0.254      # network management: switches, routers, Sophos, Alteon
+10.10.9.1-10.10.9.254      # out-of-band: iLO, iDRAC
+&quot;
+SNMP_CREDENTIALS=&quot;
+version:3,username:dcmon,authprotocol:sha,authpassword:XXXX,privprotocol:aes,privpassword:YYYY
+&quot;
+REMOTES=&quot;
+ssh://inventory@10.10.3.21   # HPE VME host 1
+ssh://inventory@10.10.3.22   # HPE VME host 2
+&quot;
+ESX_HOSTS=&quot;
+10.10.2.10 svc-glpi@vsphere.local ZZZZ   # vCenter (SimpliVity)
+&quot;
+</code></pre>
+<p>On every Linux or VME host listed in <code>REMOTES</code>, authorise the collector's key: <code>cat collector/ssh/id_ed25519.pub</code> (EQUIPMENT.md shows how).</p>
+<pre><code class="language-bash">sudo docker compose restart collector monitor-sync
+sudo docker compose exec collector collect.sh once     # first collection now (a /24 takes a few minutes)
+</code></pre>
+<p><strong>Check:</strong>
+- <strong>Inventory dashboard → Automatic collection</strong> shows each step <strong>OK</strong>.
+- <strong>Status → Up / down</strong> lists your devices within 5 minutes.
+- <strong>Status → Network &amp; hardware</strong> shows them 1–2 minutes later.</p>
+<p>Nothing appearing? See <em>Troubleshooting</em> below.</p>
+<h3 id="73-racks-and-rooms">7.3 Racks and rooms</h3>
+<p>Fill in <code>layout/racks.csv</code> and <code>layout/devices.csv</code>, and <strong>use the real serial numbers</strong>, so collected devices merge with the rack entries instead of duplicating. Then:</p>
+<pre><code class="language-bash">python3 scripts/import_layout.py --url http://127.0.0.1:8081 --user glpi \
+    --racks layout/racks.csv --devices layout/devices.csv --dry-run    # preview
+python3 scripts/import_layout.py --url http://127.0.0.1:8081 --user glpi \
+    --racks layout/racks.csv --devices layout/devices.csv
+</code></pre>
+<p><strong>Check:</strong> <strong>DC Viewer → Racks</strong> shows the floor plan and your rack elevations.</p>
+<h3 id="74-service-checks-optional-recommended">7.4 Service checks (optional, recommended)</h3>
+<p>Copy <code>monitoring/manual/your-services.yml.disabled</code> to <code>your-services.yml</code>. Fill in the addresses of the Sophos web admin, Alteon VIPs, vCenter, the VME Manager and the Accesleron portal. These are picked up within a minute.</p>
+<h3 id="75-glpi-agents-optional">7.5 GLPI Agents (optional)</h3>
+<p>Only needed for servers you don't inventory over SSH or WinRM. Copy <code>/opt/dc/dc-offline-bundle-*/agents/</code> to the server. It already contains <code>server-ca.crt</code>, so agents trust your HTTPS certificate. Then:</p>
+<pre><code class="language-bash">sudo ./install-agent-linux.sh https://dc.nehraeduhub.lan/       # Linux
+install-agent-windows.cmd https://dc.nehraeduhub.lan/           # Windows, as Administrator
+</code></pre>
+<hr />
+<h2 id="step-8-firewall-the-server">Step 8: Firewall the server</h2>
+<p>Allow ports 443, 8443 and 80 only from admin and NOC networks, and port 22 from your admin hosts. On Ubuntu:</p>
+<pre><code class="language-bash">sudo ufw allow from 10.10.100.0/24 to any port 443,8443,80 proto tcp   # admin/NOC network
+sudo ufw allow from 10.10.100.0/24 to any port 22 proto tcp
+sudo ufw enable
+</code></pre>
+<p>Docker publishes container ports through its own iptables rules, which <strong>bypass ufw</strong>. Enforce the restriction on your network firewall as well, or bind the ports to the admin interface only.</p>
+<hr />
+<h2 id="step-9-backups">Step 9: Backups</h2>
+<pre><code class="language-bash">cd /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline
+sudo ./scripts/backup.sh            # database + GLPI files + .env -&gt; backups/&lt;timestamp&gt;/, keeps 14
+</code></pre>
+<p>Schedule it nightly at 02:00:</p>
+<pre><code class="language-bash">echo &quot;0 2 * * * root /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline/scripts/backup.sh &gt;&gt; /var/log/dc-backup.log 2&gt;&amp;1&quot; \
+  | sudo tee /etc/cron.d/dc-backup
+</code></pre>
+<p><strong>Copy <code>backups/</code> off the server</strong> every day (backup server, NAS). It contains the GLPI encryption key and passwords, so protect it like the server.</p>
+<p><strong>Test a restore once before go-live</strong>, on a test VM: install the same bundle, then follow <em>Restore</em> in <code>datacenter-offline/README.md</code>.</p>
+<hr />
+<h2 id="step-10-go-live-checklist">Step 10: Go-live checklist</h2>
+<ul>
+<li>[ ] <code>verify.sh</code> → <strong>all good</strong>, no FAIL</li>
+<li>[ ] Internal CA certificate installed; no browser warning</li>
+<li>[ ] GLPI admin password changed, demo accounts disabled, named user accounts created</li>
+<li>[ ] Passwords from <code>.env</code> stored in the vault</li>
+<li>[ ] All equipment types appear in GLPI, the Status tab and Network &amp; hardware</li>
+<li>[ ] Rack layout imported; collected devices merged (no duplicates under <strong>Administration → Inventory</strong>)</li>
+<li>[ ] Backups scheduled, copied off the server, and a restore tested</li>
+<li>[ ] Server firewall and network firewall rules in place</li>
+<li>[ ] NOC knows the URLs; the wall screen shows the Status tab (<code>GRAFANA_ANONYMOUS=true</code> only on a closed NOC network)</li>
+<li>[ ] This guide and <code>.env</code> location recorded in your operations documentation</li>
+</ul>
+<hr />
+<h2 id="day-2-operations">Day-2 operations</h2>
+<p>All commands are run in <code>/opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline</code> with <code>sudo</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health check</td>
+<td><code>./scripts/verify.sh</code> (weekly, or after any change)</td>
+</tr>
+<tr>
+<td>Status of containers</td>
+<td><code>docker compose ps</code></td>
+</tr>
+<tr>
+<td>Logs</td>
+<td><code>docker compose logs --tail 100 glpi</code> (or collector, monitor-sync, portal, grafana…)</td>
+</tr>
+<tr>
+<td>Collect now</td>
+<td><code>docker compose exec collector collect.sh once</code></td>
+</tr>
+<tr>
+<td>Change scan ranges / credentials</td>
+<td>edit <code>collector/collector.conf</code>, then <code>docker compose restart collector monitor-sync</code></td>
+</tr>
+<tr>
+<td>Add a service check</td>
+<td>add a file to <code>monitoring/manual/</code> (no restart needed)</td>
+</tr>
+<tr>
+<td>Replace the HTTPS certificate</td>
+<td>copy the new <code>tls/server.crt</code> + <code>tls/server.key</code>, then <code>docker compose restart portal</code>; also copy <code>server.crt</code> to the agents' <code>server-ca.crt</code></td>
+</tr>
+<tr>
+<td>Stop / start everything</td>
+<td><code>docker compose stop</code> / <code>docker compose start</code></td>
+</tr>
+<tr>
+<td>After a server reboot</td>
+<td>nothing to do: Docker starts on boot and the containers restart automatically. Run <code>verify.sh</code></td>
+</tr>
+<tr>
+<td>Disk space</td>
+<td>Prometheus keeps 90 days (<code>PROMETHEUS_RETENTION</code> in <code>.env</code>); backups keep 14 (<code>KEEP=</code> for backup.sh)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="upgrading">Upgrading</h3>
+<ol>
+<li>Build a new bundle (step 2) on the internet PC. It contains the newer versions set in <code>.env.example</code>.</li>
+<li>On the server, <code>sudo ./scripts/backup.sh</code> in the current installation.</li>
+<li>Extract the new bundle next to the old one: <code>sudo tar -xzf dc-offline-bundle-NEW.tar.gz -C /opt/dc</code></li>
+<li>In the new folder, run <code>sudo ./site/datacenter-offline/scripts/preflight.sh</code>, then <code>sudo ./install-offline.sh</code>.
+   The installer <strong>finds the running installation and carries over</strong> its <code>.env</code>, collector settings, SSH key, certificates, service checks and rack CSVs. Your data stays in the Docker volumes, and GLPI upgrades its database automatically.</li>
+<li>Run <code>sudo ./site/datacenter-offline/scripts/verify.sh</code>. Update the backup cron path to the new folder.</li>
+<li>Keep the old folder (and its <code>backups/</code>) until you're satisfied, then delete it.</li>
+</ol>
+<p><strong>Rollback:</strong> run <code>install-offline.sh</code> from the <strong>old</strong> folder, then restore the backup from step 2 (see README <em>Restore</em>). A database that GLPI has already upgraded can't be used by the older version without that restore.</p>
+<h3 id="switching-between-http-and-https">Switching between HTTP and HTTPS</h3>
+<p>Set <code>TLS=yes</code> or <code>TLS=no</code> in <code>.env</code>, and clear <code>GLPI_PUBLIC_URL=</code> and <code>GRAFANA_ROOT_URL=</code> so they're recalculated. Then re-run <code>sudo ./install-offline.sh</code> from the bundle folder.</p>
+<h3 id="uninstall">Uninstall</h3>
+<pre><code class="language-bash">sudo docker compose down          # stop and remove containers (data volumes are kept)
+sudo docker compose down -v       # ALSO deletes all data: database, files, history
+</code></pre>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>preflight.sh</code>: port 80/443/8443 in use</td>
+<td>Another web server is installed</td>
+<td>Stop or remove it (<code>systemctl disable --now apache2 nginx</code>) or change <code>PORTAL_TLS_PORT</code></td>
+</tr>
+<tr>
+<td>Install stops at "Waiting for GLPI"</td>
+<td>Database still initialising on slow disk</td>
+<td><code>docker compose logs glpi db</code>; re-run <code>install-offline.sh</code> (safe to repeat)</td>
+</tr>
+<tr>
+<td>Browser certificate warning</td>
+<td>Self-signed certificate</td>
+<td>Install your internal CA certificate (Day-2: Replace the HTTPS certificate)</td>
+</tr>
+<tr>
+<td>Device not in GLPI</td>
+<td>SNMP blocked or wrong credentials</td>
+<td>Inventory dashboard → collection errors; test from the server: <code>docker compose exec collector glpi-netinventory --host &lt;ip&gt; --credentials version:2c,community:&lt;c&gt;</code></td>
+</tr>
+<tr>
+<td>Device in <strong>Administration → Inventory → Refused equipment</strong></td>
+<td>Device reports no serial and no MAC over SNMP</td>
+<td>Widen the device's SNMP view (ENTITY-MIB, IF-MIB)</td>
+</tr>
+<tr>
+<td>Same device twice in GLPI</td>
+<td>Imported from CSV without a serial, then collected</td>
+<td>Put the serial in <code>devices.csv</code>, delete the duplicate, re-run the import</td>
+</tr>
+<tr>
+<td>Device "Not answering SNMP" in Network &amp; hardware</td>
+<td>Credential works for collection but not from monitoring</td>
+<td>The first matching credential in <code>SNMP_CREDENTIALS</code> is used. Check the device's SNMP ACL allows the server</td>
+</tr>
+<tr>
+<td>Server shows DOWN but works</td>
+<td>ICMP blocked by its firewall</td>
+<td>Allow ping from the server, or replace it with a <code>tcp_connect</code> check and exclude its GLPI status (<code>MONITOR_EXCLUDE_STATES</code>)</td>
+</tr>
+<tr>
+<td>HPE iLO health "Unknown"</td>
+<td>Agentless Management not enabled</td>
+<td>Enable AMS in iLO (EQUIPMENT.md)</td>
+</tr>
+<tr>
+<td>Grafana asks to log in inside the Status tab</td>
+<td>Separate Grafana account</td>
+<td>Log in as admin once, or create Grafana viewer accounts; <code>GRAFANA_ANONYMOUS=true</code> for NOC screens</td>
+</tr>
+<tr>
+<td><code>verify.sh</code>: "glpi still has the default password"</td>
+<td>Password never changed</td>
+<td><code>docker compose exec glpi php bin/console user:reset_password glpi</code></td>
+</tr>
+<tr>
+<td><code>verify.sh</code>: container restarting</td>
+<td>Configuration error</td>
+<td><code>docker compose logs &lt;service&gt;</code>; most often a typo in <code>collector.conf</code> or <code>monitoring/manual/*.yml</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="where-things-are">Where things are</h2>
+<pre><code>/opt/dc/dc-offline-bundle-YYYYMMDD/
+├── install-offline.sh              installer (also used for upgrades)
+├── SHA256SUMS                      bundle checksums
+├── images/  docker/  agents/       container images, Docker packages, GLPI Agents (+ server-ca.crt)
+└── site/
+    ├── index.html, glpi-datacenter-library.html     website and learning library
+    └── datacenter-offline/                          the installation
+        ├── .env                    settings and generated passwords (chmod 600)
+        ├── tls/                    HTTPS certificate and key
+        ├── collector/collector.conf, collector/ssh/   what to scan, SSH key
+        ├── layout/*.csv            rack layout for import_layout.py
+        ├── monitoring/manual/      extra service checks
+        ├── backups/                nightly backups (copy off the server!)
+        ├── scripts/                preflight, verify, backup, import, configure
+        ├── EQUIPMENT.md            device-side setup
+        └── README.md               full reference
+</code></pre>
+</main></body>
+</html>

@@ -12,8 +12,37 @@ BUNDLE=$(cd "$(dirname "$0")" && pwd)
 KIT=$BUNDLE/site/datacenter-offline
 cd "$BUNDLE"
 
-command -v docker >/dev/null || { echo "Docker is not installed. See README: Installing Docker offline." >&2; exit 1; }
+[ "$(id -u)" -eq 0 ] || { echo "Run as root: sudo ./install-offline.sh" >&2; exit 1; }
+
+# Docker Engine from the bundle when the server doesn't have it yet
+install_docker() {
+  local pkgs="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
+  [ -d "$BUNDLE/docker" ] || { echo "Docker is not installed and the bundle has no docker/ folder (built with SERVER_OS=none)." >&2; exit 1; }
+  # shellcheck disable=SC1091
+  . /etc/os-release
+  read -r t_id t_ver < "$BUNDLE/docker/TARGET"
+  if [ "$t_id" != "$ID" ] || [ "${t_ver%%.*}" != "${VERSION_ID%%.*}" ]; then
+    echo "WARNING: bundle Docker packages are for $t_id $t_ver, this server is $ID $VERSION_ID." >&2
+  fi
+  echo "Installing Docker Engine from the bundle..."
+  if command -v apt-get >/dev/null; then
+    local list=/etc/apt/sources.list.d/dc-offline-docker.list
+    echo "deb [trusted=yes] file:$BUNDLE/docker ./" > "$list"
+    apt-get update -qq -o Dir::Etc::sourcelist="$list" -o Dir::Etc::sourceparts=- -o APT::Get::List-Cleanup=0
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends $pkgs
+    rm -f "$list"
+  elif command -v dnf >/dev/null; then
+    # shellcheck disable=SC2086
+    dnf install -y -q --disablerepo='*' --repofrompath=dc-offline-docker,"file://$BUNDLE/docker" \
+      --enablerepo=dc-offline-docker --nogpgcheck $pkgs
+  else
+    echo "No apt-get or dnf found: install Docker Engine manually." >&2; exit 1
+  fi
+  systemctl enable --now docker
+}
+command -v docker >/dev/null || install_docker
 docker compose version >/dev/null || { echo "The docker compose plugin is missing." >&2; exit 1; }
+systemctl is-active --quiet docker 2>/dev/null || systemctl start docker 2>/dev/null || true
 
 if [ -f SHA256SUMS ]; then
   echo "Verifying bundle checksums..."
@@ -27,6 +56,21 @@ for f in images/*.tar.gz; do
 done
 
 cd "$KIT"
+
+# Upgrade from a bundle extracted into another folder: carry over that
+# installation's settings, keys and certificates (its data lives in Docker volumes)
+prev=$(docker inspect dc-glpi-1 -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' 2>/dev/null || true)
+if [ -n "$prev" ] && [ "$prev" != "$KIT" ] && [ -f "$prev/.env" ] && [ ! -f .env ]; then
+  echo "Existing installation found in $prev - carrying its settings over to this version."
+  cp -p "$prev/.env" .env
+  [ -f "$prev/collector/collector.conf" ] && cp -p "$prev/collector/collector.conf" collector/
+  [ -d "$prev/collector/ssh" ] && cp -rp "$prev/collector/ssh" collector/
+  [ -d "$prev/tls" ] && cp -rp "$prev/tls" .
+  cp -p "$prev"/monitoring/manual/*.yml monitoring/manual/ 2>/dev/null || true
+  for f in "$prev"/layout/*.csv; do [ -f "$f" ] && cp -p "$f" layout/; done
+  echo "  Backups stay in $prev/backups. Keep that folder until this version is verified."
+fi
+
 first_install=no
 if [ ! -f .env ]; then
   first_install=yes
@@ -46,6 +90,10 @@ for key in GLPI_VERSION MARIADB_VERSION NGINX_VERSION AGENT_VERSION GRAFANA_VERS
   fi
 done
 
+# Installs made before HTTPS support keep plain HTTP until you switch (see guide)
+grep -q '^TLS=' .env || echo "TLS=no" >> .env
+tls=$(grep '^TLS=' .env | cut -d= -f2 | tr 'A-Z' 'a-z')
+
 # Fill in monitoring settings once: random passwords and this server's address
 setenv() { # key value  (only when empty or missing)
   if grep -q "^$1=." .env; then return; fi
@@ -58,9 +106,19 @@ glpi_port=$(grep '^GLPI_PORT=' .env | cut -d= -f2)
 portal_port=$(grep '^PORTAL_PORT=' .env | cut -d= -f2)
 setenv GRAFANA_ADMIN_PASSWORD "$(randpw)"
 setenv MONITOR_GLPI_PASSWORD "$(randpw)"
-setenv GLPI_PUBLIC_URL "http://${ip:-localhost}$(port_suffix "$glpi_port")/"
-setenv GRAFANA_ROOT_URL "http://${ip:-localhost}$(port_suffix "${portal_port:-8080}")/grafana/"
-for key in GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION MONITOR_EXCLUDE_STATES; do
+server_name=${SERVER_NAME:-$(grep "^SERVER_NAME=" .env | cut -d= -f2)}
+host=${server_name:-${ip:-localhost}}
+if [ "$tls" = yes ]; then
+  setenv GLPI_PUBLIC_URL "https://$host/"
+  setenv GRAFANA_ROOT_URL "https://$host:$(grep '^PORTAL_TLS_PORT=' .env | cut -d= -f2 | grep . || echo 8443)/grafana/"
+  compose_file=docker-compose.yml:docker-compose.tls.yml
+else
+  setenv GLPI_PUBLIC_URL "http://$host$(port_suffix "$glpi_port")/"
+  setenv GRAFANA_ROOT_URL "http://$host$(port_suffix "${portal_port:-8080}")/grafana/"
+  compose_file=docker-compose.yml
+fi
+if grep -q '^COMPOSE_FILE=' .env; then sed -i "s#^COMPOSE_FILE=.*#COMPOSE_FILE=$compose_file#" .env; else echo "COMPOSE_FILE=$compose_file" >> .env; fi
+for key in GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION MONITOR_EXCLUDE_STATES GLPI_LOCAL_PORT PORTAL_TLS_PORT; do
   grep -q "^$key=" .env || grep "^$key=" .env.example >> .env
 done
 chmod 600 .env
@@ -76,14 +134,43 @@ fi
 chmod 600 collector/collector.conf
 mkdir -p collector/ssh && chmod 700 collector/ssh
 if [ ! -f collector/ssh/id_ed25519 ]; then
-  docker run --rm -v "$KIT/collector/ssh:/k" --entrypoint ssh-keygen "dc-collector:${AGENT_VERSION}" \
+  docker run --rm -v "$KIT/collector/ssh:/k:z" --entrypoint ssh-keygen "dc-collector:${AGENT_VERSION}" \
     -q -t ed25519 -N '' -C dc-collector -f /k/id_ed25519
   echo "Created SSH key for agentless inventory: collector/ssh/id_ed25519.pub"
 fi
 
+# HTTPS certificate: use tls/server.crt + tls/server.key if you put your own
+# there (internal CA), else generate a self-signed one for this server
+if [ "$tls" = yes ] && { [ ! -s tls/server.crt ] || [ ! -s tls/server.key ]; }; then
+  mkdir -p tls
+  fqdn=$(hostname -f 2>/dev/null || hostname)
+  san="DNS:$(hostname),DNS:$fqdn,IP:127.0.0.1${ip:+,IP:$ip}"
+  [ -n "$server_name" ] && san="DNS:$server_name,$san"
+  cert_args=(req -x509 -newkey rsa:3072 -sha256 -days 825 -nodes -subj "/CN=${server_name:-$fqdn}"
+             -addext "subjectAltName=$san")
+  if command -v openssl >/dev/null; then
+    openssl "${cert_args[@]}" -keyout tls/server.key -out tls/server.crt 2>/dev/null
+  else
+    docker run --rm --user 0:0 -v "$KIT/tls:/t:z" --entrypoint openssl "glpi/glpi:$GLPI_VERSION" \
+      "${cert_args[@]}" -keyout /t/server.key -out /t/server.crt 2>/dev/null
+  fi
+  chmod 600 tls/server.key
+  echo "Created a self-signed HTTPS certificate for: $san"
+  echo "  (replace tls/server.crt and tls/server.key with one from your internal CA, then: docker compose restart portal)"
+fi
+
+# Agents installed on servers need to trust the HTTPS certificate
+if [ "$tls" = yes ] && [ -d "$BUNDLE/agents" ]; then
+  cp tls/server.crt "$BUNDLE/agents/server-ca.crt" 2>/dev/null || true
+fi
+
 # "Open in GLPI" links in the DC Viewer
-glpi_url="'http://' + location.hostname"
-[ "${GLPI_PORT:-80}" != "80" ] && glpi_url="$glpi_url + ':$GLPI_PORT'"
+if [ "$tls" = yes ]; then
+  glpi_url="'https://' + location.hostname"
+else
+  glpi_url="'http://' + location.hostname"
+  [ "${GLPI_PORT:-80}" != "80" ] && glpi_url="$glpi_url + ':$GLPI_PORT'"
+fi
 sed -i "s#^  glpiUrl: .*#  glpiUrl: $glpi_url,#" viewer/config.js
 
 echo "Starting containers..."
@@ -93,8 +180,9 @@ docker compose up -d
 docker compose up -d --force-recreate --no-deps portal blackbox prometheus monitor-sync snmp-exporter >/dev/null
 
 echo "Waiting for GLPI (first start installs the database, ~1-3 minutes)..."
+if [ "$tls" = yes ]; then local_glpi="http://127.0.0.1:${GLPI_LOCAL_PORT:-8081}"; else local_glpi="http://127.0.0.1:${GLPI_PORT:-80}"; fi
 for _ in $(seq 1 90); do
-  code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:${GLPI_PORT:-80}/" || true)
+  code=$(curl -s -o /dev/null -w '%{http_code}' "$local_glpi/" || true)
   [ "$code" = 200 ] || [ "$code" = 302 ] && break
   sleep 4
 done
@@ -141,20 +229,27 @@ case "${DISABLE_DEMO_USERS:-no}" in
   [Yy]*) for u in tech normal post-only; do console user:disable "$u" >/dev/null && echo "Disabled $u"; done ;;
 esac
 
+if [ "$tls" = yes ]; then
+  glpi_link="https://$host/"; portal="https://$host:${PORTAL_TLS_PORT:-8443}"
+else
+  glpi_link="http://$host$(port_suffix "${GLPI_PORT:-80}")/"; portal="http://$host:${PORTAL_PORT:-8080}"
+fi
 cat <<MSG
 
 Data centre stack is running.
-  GLPI (manage assets, racks, rooms):   http://${ip:-<server-ip>}:${GLPI_PORT:-80}/
-  DC Viewer (read-only rack screens):   http://${ip:-<server-ip>}:${PORTAL_PORT:-8080}/viewer/
-  Inventory dashboard:                  http://${ip:-<server-ip>}:${PORTAL_PORT:-8080}/viewer/inventory.html
-  Device status (Grafana):              http://${ip:-<server-ip>}:${PORTAL_PORT:-8080}/viewer/status.html
+  GLPI (manage assets, racks, rooms):   $glpi_link
+  DC Viewer (read-only rack screens):   $portal/viewer/
+  Inventory dashboard:                  $portal/viewer/inventory.html
+  Device status (Grafana):              $portal/viewer/status.html
       Grafana login: admin / password in $KIT/.env (GRAFANA_ADMIN_PASSWORD)
-  Learning library:                     http://${ip:-<server-ip>}:${PORTAL_PORT:-8080}/glpi-datacenter-library.html
+  Learning library:                     $portal/glpi-datacenter-library.html
   GLPI Agent installers:                $BUNDLE/agents/
+  GLPI for scripts on this server:      $local_glpi
 
 Automatic collection: edit $KIT/collector/collector.conf (IP ranges, SNMP,
 SSH/WinRM, VMware), then:  cd $KIT && docker compose restart collector
 Collect now:               cd $KIT && docker compose exec collector collect.sh once
+Check everything:          $KIT/scripts/verify.sh
 
-Next steps: see $KIT/README.md
+Next steps: see DEPLOYMENT-GUIDE.md
 MSG

@@ -3,23 +3,27 @@
 Run GLPI on your own server with **no internet connection**. **See [EQUIPMENT.md](EQUIPMENT.md)** for what to enable on your Sophos firewall, Radware Alteon, HPE SimpliVity, HPE VM Essentials, Accesleron, HP/Dell servers and Cisco/Dell/HP switches and routers.
  A built-in collector **fetches your devices' details from the network automatically** (SNMP, SSH, WinRM, VMware). You see the results in a rack viewer, an inventory dashboard and the full GLPI GUI.
 
+**Step-by-step production deployment: [DEPLOYMENT-GUIDE.md](../DEPLOYMENT-GUIDE.md)** (also included in the zip).
+
+Addresses below are for the default **HTTPS mode** (`TLS=yes` in `.env`). In HTTP mode, GLPI is `http://<server>/` and the portal is `http://<server>:8080/`.
+
 | What | URL on your server | Used for |
 |---|---|---|
-| **GLPI** | `http://<server>/` | Main GUI: data centres, server rooms, racks, assets, cables, tickets, contracts |
-| **DC Viewer – Racks** | `http://<server>:8080/viewer/` | Read-only screen for the NOC or a wall display: floor plan, rack fronts and backs, space/power/weight, device search |
-| **DC Viewer – Inventory** | `http://<server>:8080/viewer/inventory.html` | Everything collected from the network: summary, collection status, charts, network map, device table with CSV export |
-| **DC Viewer – Status** (Grafana) | `http://<server>:8080/viewer/status.html` | **Up / down**: every device's live status, history, availability and ping. **Network & hardware**: ports down, traffic, errors, CPU, firewall HA, and server hardware health from iLO/iDRAC. Full Grafana is at `http://<server>:8080/grafana/` |
-| **Learning library** | `http://<server>:8080/glpi-datacenter-library.html` | NehraEduHub GLPI data centre course, works offline |
+| **GLPI** | `https://<server>/` | Main GUI: data centres, server rooms, racks, assets, cables, tickets, contracts |
+| **DC Viewer – Racks** | `https://<server>:8443/viewer/` | Read-only screen for the NOC or a wall display: floor plan, rack fronts and backs, space/power/weight, device search |
+| **DC Viewer – Inventory** | `https://<server>:8443/viewer/inventory.html` | Everything collected from the network: summary, collection status, charts, network map, device table with CSV export |
+| **DC Viewer – Status** (Grafana) | `https://<server>:8443/viewer/status.html` | **Up / down**: every device's live status, history, availability and ping. **Network & hardware**: ports down, traffic, errors, CPU, firewall HA, and server hardware health from iLO/iDRAC. Full Grafana is at `https://<server>:8443/grafana/` |
+| **Learning library** | `https://<server>:8443/glpi-datacenter-library.html` | NehraEduHub GLPI data centre course, works offline |
 
 ```
                     ┌──────────────── your offline server (Docker) ────────────────┐
- browser ──:80────► │ glpi      (GLPI 11, Apache, cron)  ◄── inventory ◄───────────┼── GLPI Agent on servers (optional)
+ (GLPI via :443)    │ glpi      (GLPI 11, Apache, cron)  ◄── inventory ◄───────────┼── GLPI Agent on servers (optional)
                     │   ▲                                                           │
                     │   │ results every N minutes                                   │   SNMP: switches, routers, firewalls,
                     │ collector (GLPI Agent tools) ─────── scans your network ──────┼──►      PDUs, UPS, storage, printers
                     │   │ status.json                                               │   SSH / WinRM: Linux & Windows servers
                     │   ▼                                                           │   vSphere API: ESXi hosts, vCenter
- browser ──:8080──► │ portal    (nginx) ── /apirest.php ──► glpi                    │
+ browser :443/8443► │ portal    (nginx) ── /apirest.php ──► glpi                    │
                     │   ├─ /viewer/  Racks + Inventory dashboard                    │
                     │   └─ library pages                                            │
                     │ db        (MariaDB 11.4)                                      │
@@ -94,13 +98,13 @@ You can enter everything in the GLPI GUI. For many racks, use the CSV import:
 
 ```bash
 cd site/datacenter-offline
-python3 scripts/import_layout.py --url http://localhost --user glpi \
+python3 scripts/import_layout.py --url http://127.0.0.1:8081 --user glpi \
     --racks layout/racks.csv --devices layout/devices.csv --dry-run   # preview
-python3 scripts/import_layout.py --url http://localhost --user glpi \
+python3 scripts/import_layout.py --url http://127.0.0.1:8081 --user glpi \
     --racks layout/racks.csv --devices layout/devices.csv
 ```
 
-You can run the import again whenever the CSVs change. It matches objects by name, updates what changed and moves devices to their new U positions.
+On the server itself, the import talks to GLPI at `http://127.0.0.1:8081` in HTTPS mode, or `http://localhost` in HTTP mode. You can run it again whenever the CSVs change. It matches objects by name, updates what changed and moves devices to their new U positions.
 
 Device `type` values: `server`, `storage`, `switch`, `router`, `firewall`, `pdu`, `ups`, `enclosure`, `patchpanel`, `kvm`, or any GLPI itemtype (`Computer`, `NetworkEquipment`, `PDU`, `PassiveDCEquipment`, `Enclosure`, `Peripheral`, `Monitor`).
 
@@ -164,7 +168,7 @@ Collected devices are not placed in racks automatically. Place them in the GLPI 
 
 ## 5. Using the DC Viewer
 
-Open `http://<server>:8080/viewer/` and sign in with your GLPI account. Each user sees only what their GLPI profile allows. Switch between **Racks** and **Inventory** at the top.
+Open `https://<server>:8443/viewer/` and sign in with your GLPI account. Each user sees only what their GLPI profile allows. Switch between **Racks** and **Inventory** at the top.
 
 ### Inventory dashboard
 
@@ -194,7 +198,7 @@ For a wall screen, create a GLPI user with a read-only profile.
 
 Every device in GLPI that has an IPv4 address is **pinged every 30 seconds**. Nothing extra needs configuring: as soon as the collector or an agent adds a device to GLPI, it is monitored within 5 minutes.
 
-Open the **Status** tab in the DC Viewer (`http://<server>:8080/viewer/status.html`). Sign in to Grafana as `admin` with `GRAFANA_ADMIN_PASSWORD` from `.env`.
+Open the **Status** tab in the DC Viewer (`https://<server>:8443/viewer/status.html`). Sign in to Grafana as `admin` with `GRAFANA_ADMIN_PASSWORD` from `.env`.
 
 ![Device status dashboard in Grafana](docs/device-status.png)
 
@@ -269,9 +273,9 @@ docker compose restart glpi
 ## 8. Security checklist
 
 - [ ] `glpi` password changed and demo accounts disabled (the installer offers both)
-- [ ] Server firewall allows ports 80/8080 only from admin and NOC networks
+- [ ] Server firewall allows ports 80, 443 and 8443 (HTTP mode: 80 and 8080) only from admin and NOC networks
 - [ ] Grafana `admin` password kept safe; leave `GRAFANA_ANONYMOUS=false` unless the portal is only reachable from the NOC
-- [ ] HTTPS: put your internal CA certificate on a reverse proxy in front of ports 80 and 8080
+- [ ] HTTPS on (`TLS=yes`, the default) with a certificate from your internal CA in `tls/server.crt` and `tls/server.key`. The self-signed one is only a start
 - [ ] To use the import script from an admin PC, set `API_ADMIN_RANGE_START/END` in `.env`, then run `scripts/configure-glpi.sh`
 - [ ] Read-only SNMP credentials, and a dedicated low-privilege inventory account for SSH/WinRM/vSphere
 - [ ] `collector/collector.conf` stays `chmod 600` (it holds credentials)

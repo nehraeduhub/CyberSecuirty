@@ -5,10 +5,13 @@
 #   - Docker images (GLPI, MariaDB, nginx, network collector, Grafana, Prometheus,
 #     Blackbox and SNMP exporters) saved as tar files
 #   - GLPI Agent installers for Linux and Windows
+#   - Docker Engine packages for the server's OS (so the server needs no internet at all)
 # Copy the archive to the data centre server (USB / internal share) and run install-offline.sh.
 #
-#   ./scripts/prepare-offline-bundle.sh
-#   AGENT_VERSION=latest ./scripts/prepare-offline-bundle.sh   # newest GLPI Agent instead of .env.example's
+#   ./scripts/prepare-offline-bundle.sh                         # server runs Ubuntu 24.04 (default)
+#   SERVER_OS=rockylinux:9 ./scripts/prepare-offline-bundle.sh  # or ubuntu:22.04, debian:12, almalinux:9 (RHEL 9)
+#   SERVER_OS=none ./scripts/prepare-offline-bundle.sh          # Docker is already on the server
+#   AGENT_VERSION=latest ./scripts/prepare-offline-bundle.sh    # newest GLPI Agent instead of .env.example's
 set -euo pipefail
 
 KIT=$(cd "$(dirname "$0")/.." && pwd)
@@ -18,6 +21,7 @@ agent_override=${AGENT_VERSION:-}
 set -a; . "$KIT/.env.example"; set +a
 AGENT_VERSION=${agent_override:-$AGENT_VERSION}
 
+SERVER_OS=${SERVER_OS:-ubuntu:24.04}
 name=dc-offline-bundle-$(date +%Y%m%d)
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
@@ -55,6 +59,11 @@ docker build -q --platform linux/amd64 --build-arg AGENT_VERSION="$AGENT_VERSION
 rm -f "$KIT/collector/glpi-agent-$AGENT_VERSION-linux-installer.pl"
 docker save "dc-collector:$AGENT_VERSION" | gzip > "$out/images/dc-collector_$AGENT_VERSION.tar.gz"
 
+if [ "$SERVER_OS" != none ]; then
+  echo "Downloading Docker Engine packages for $SERVER_OS ..."
+  "$KIT/scripts/download-docker-packages.sh" "$SERVER_OS" "$out/docker"
+fi
+
 echo "Copying site and kit ..."
 cp "$SITE"/*.html "$SITE"/*.jpg "$out/site/" 2>/dev/null || true
 mkdir -p "$out/site/datacenter-offline"
@@ -62,6 +71,7 @@ tar -C "$KIT" --exclude=./.env --exclude=./backups --exclude=./collector/collect
   --exclude=./collector/ssh --exclude='./collector/glpi-agent-*' -cf - . | tar -C "$out/site/datacenter-offline" -xf -
 sed -i "s/^AGENT_VERSION=.*/AGENT_VERSION=$AGENT_VERSION/" "$out/site/datacenter-offline/.env.example"
 cp "$KIT/scripts/install-offline.sh" "$out/"
+cp "$SITE"/DEPLOYMENT-GUIDE.* "$SITE"/README-FIRST.txt "$out/" 2>/dev/null || true
 
 (cd "$out" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
 tar -C "$work" -czf "$name.tar.gz" "$name"

@@ -52,6 +52,10 @@ console config:set enable_api 1
 console config:set enable_api_login_credentials 1
 console config:set enable_api_login_external_token 1
 
+if [ -n "${GLPI_PUBLIC_URL:-}" ]; then
+  console config:set url_base "${GLPI_PUBLIC_URL%/}"
+fi
+
 echo "Allowing API access..."
 subnet=$(docker network inspect "$(compose ps -q glpi | xargs docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{$k}}{{end}}')" \
   -f '{{range .IPAM.Config}}{{.Subnet}} {{end}}' | tr ' ' '\n' | grep -m1 '\.')

@@ -1,0 +1,19 @@
+# HTTPS mode. Enabled by COMPOSE_FILE=docker-compose.yml:docker-compose.tls.yml
+# in .env (install-offline.sh sets it when TLS=yes).
+#   https://<server>/        GLPI
+#   https://<server>:8443/   DC Viewer, library, Grafana
+# GLPI stays reachable without TLS only from the server itself (127.0.0.1:8081)
+# for scripts such as import_layout.py.
+services:
+  glpi:
+    ports: !override
+      - "127.0.0.1:${GLPI_LOCAL_PORT:-8081}:80"
+
+  portal:
+    ports: !override
+      - "80:80"
+      - "443:443"
+      - "${PORTAL_TLS_PORT:-8443}:8443"
+    volumes:
+      - ./nginx/tls.conf:/etc/nginx/conf.d/default.conf:ro,z
+      - ./tls:/etc/nginx/tls:ro,z
