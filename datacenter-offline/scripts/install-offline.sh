@@ -144,7 +144,9 @@ fi
 if [ "$tls" = yes ] && { [ ! -s tls/server.crt ] || [ ! -s tls/server.key ]; }; then
   mkdir -p tls
   fqdn=$(hostname -f 2>/dev/null || hostname)
-  san="DNS:$(hostname),DNS:$fqdn,IP:127.0.0.1${ip:+,IP:$ip}"
+  san="DNS:$(hostname)"
+  [ "$fqdn" != "$(hostname)" ] && san="$san,DNS:$fqdn"
+  san="$san,IP:127.0.0.1${ip:+,IP:$ip}"
   [ -n "$server_name" ] && san="DNS:$server_name,$san"
   cert_args=(req -x509 -newkey rsa:3072 -sha256 -days 825 -nodes -subj "/CN=${server_name:-$fqdn}"
              -addext "subjectAltName=$san")

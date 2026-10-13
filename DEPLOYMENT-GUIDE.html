@@ -34,28 +34,11 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 <body><main>
 <h1 id="nehraeduhub-data-centre-kit-production-deployment-guide-offline">NehraEduHub Data Centre Kit: Production Deployment Guide (Offline)</h1>
 <p>This guide takes you from the zip file to a running, verified, backed-up system in your data centre, on a server with <strong>no internet access</strong>. Follow the steps in order. Each step ends with a check.</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>You get</strong></td>
-<td>GLPI 11 (assets, racks, rooms, tickets), automatic network collection, the DC Viewer (racks, inventory dashboard), Grafana device status and network/hardware health, and the learning library</td>
-</tr>
-<tr>
-<td><strong>Time</strong></td>
-<td>About 1 hour to build the bundle, 30 minutes to install, then 1–2 hours to connect your equipment</td>
-</tr>
-<tr>
-<td><strong>People</strong></td>
-<td>A Linux administrator (server and install), plus a network engineer to enable SNMP on devices</td>
-</tr>
-</tbody>
-</table>
+<ul>
+<li><strong>You get:</strong> GLPI 11 (assets, racks, rooms, tickets), automatic network collection, the DC Viewer (racks, inventory dashboard), Grafana device status and network/hardware health, and the learning library.</li>
+<li><strong>Time:</strong> about 1 hour to build the bundle, 30 minutes to install, then 1–2 hours to connect your equipment.</li>
+<li><strong>People:</strong> a Linux administrator (server and install), plus a network engineer to enable SNMP on devices.</li>
+</ul>
 <pre><code> Internet PC (Linux + Docker)              USB / internal share               Offline production server
  ┌────────────────────────────┐      ┌───────────────────────────┐       ┌──────────────────────────────┐
  │ Step 2: build the bundle   │ ───► │ dc-offline-bundle-*.tar.gz│ ───►  │ Steps 3–10: preflight,       │

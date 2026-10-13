@@ -2,11 +2,9 @@
 
 This guide takes you from the zip file to a running, verified, backed-up system in your data centre, on a server with **no internet access**. Follow the steps in order. Each step ends with a check.
 
-| | |
-|---|---|
-| **You get** | GLPI 11 (assets, racks, rooms, tickets), automatic network collection, the DC Viewer (racks, inventory dashboard), Grafana device status and network/hardware health, and the learning library |
-| **Time** | About 1 hour to build the bundle, 30 minutes to install, then 1–2 hours to connect your equipment |
-| **People** | A Linux administrator (server and install), plus a network engineer to enable SNMP on devices |
+- **You get:** GLPI 11 (assets, racks, rooms, tickets), automatic network collection, the DC Viewer (racks, inventory dashboard), Grafana device status and network/hardware health, and the learning library.
+- **Time:** about 1 hour to build the bundle, 30 minutes to install, then 1–2 hours to connect your equipment.
+- **People:** a Linux administrator (server and install), plus a network engineer to enable SNMP on devices.
 
 ```
  Internet PC (Linux + Docker)              USB / internal share               Offline production server
