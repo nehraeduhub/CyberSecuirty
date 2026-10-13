@@ -1,0 +1,13 @@
+rack,name,type,model,units,u,face,half,power_w,weight_kg,serial
+DEL1-HALLA-R01,PP-R01-01,patchpanel,24-port Cat6 patch panel,1,42,front,,0,1,
+DEL1-HALLA-R01,SW-TOR-R01-01,switch,48-port 10G ToR switch,1,41,front,,350,8,
+DEL1-HALLA-R01,SW-MGMT-R01-01,switch,24-port 1G mgmt switch,1,40,front,,60,4,
+DEL1-HALLA-R01,SRV-WEB-01,server,2U rack server,2,30,front,,500,25,
+DEL1-HALLA-R01,SRV-WEB-02,server,2U rack server,2,28,front,,500,25,
+DEL1-HALLA-R01,SRV-APP-01,server,1U rack server,1,26,front,,350,15,
+DEL1-HALLA-R01,SAN-01,storage,3U storage array,3,5,front,,800,45,
+DEL1-HALLA-R01,UPS-R01-01,ups,2U rack UPS 3kVA,2,1,front,,3000,40,
+DEL1-HALLA-R01,PDU-R01-A,pdu,0U metered PDU,,20,left,,3700,5,
+DEL1-HALLA-R01,PDU-R01-B,pdu,0U metered PDU,,20,right,,3700,5,
+DEL1-HALLA-R02,FW-EDGE-01,firewall,1U firewall,1,40,front,,150,6,
+DEL1-HALLA-R02,SRV-DB-01,server,2U rack server,2,20,front,,500,25,

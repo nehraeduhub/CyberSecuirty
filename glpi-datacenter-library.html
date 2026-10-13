@@ -20,8 +20,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #05080a url('https://wallpaperaccess.com/full/317501.jpg') no-repeat center center fixed;
-      background-size: cover;
+      background: radial-gradient(circle at 20% 0%, #0c2a2c 0%, #05080a 60%) fixed;
       color: var(--text);
       line-height: 1.6;
     }
@@ -309,6 +308,7 @@
         <button role="tab" id="tab-security" aria-controls="panel-security" aria-selected="false" tabindex="-1">8. Security &amp; Best Practice</button>
         <button role="tab" id="tab-lab" aria-controls="panel-lab" aria-selected="false" tabindex="-1">9. Hands-on Lab</button>
         <button role="tab" id="tab-quiz" aria-controls="panel-quiz" aria-selected="false" tabindex="-1">10. Quiz</button>
+        <button role="tab" id="tab-offline" aria-controls="panel-offline" aria-selected="false" tabindex="-1">11. Your Offline DC</button>
       </div>
 
       <!-- 1. Overview -->
@@ -652,6 +652,50 @@ sudo glpi-agent --server https://glpi.example.com/ --force</code></pre>
           <button class="btn" type="submit">Check answers</button>
           <p id="quiz-score" aria-live="polite"></p>
         </form>
+      </section>
+      <!-- 11. Offline kit -->
+      <section class="tabpanel" role="tabpanel" id="panel-offline" aria-labelledby="tab-offline" tabindex="0" hidden>
+        <h2>Run it in your own data centre (offline)</h2>
+        <p>The <code>datacenter-offline/</code> kit in this repository installs everything on <strong>your own server without internet access</strong>: GLPI for management, the <strong>DC Viewer</strong> rack screen, and this library.</p>
+
+        <div class="hierarchy" aria-label="Steps: build bundle, copy, install, import, connect devices">
+          <span class="node">1. Build bundle (online PC)</span><span class="arrow">&rarr;</span>
+          <span class="node">2. Copy via USB</span><span class="arrow">&rarr;</span>
+          <span class="node">3. install-offline.sh</span><span class="arrow">&rarr;</span>
+          <span class="node">4. Import racks CSV</span><span class="arrow">&rarr;</span>
+          <span class="node">5. Agents + SNMP</span>
+        </div>
+
+        <h3>1&ndash;3. Build and install</h3>
+<pre><code># on a PC with internet + Docker
+./datacenter-offline/scripts/prepare-offline-bundle.sh
+
+# on the offline server (Docker installed)
+tar -xzf dc-offline-bundle-YYYYMMDD.tar.gz
+cd dc-offline-bundle-YYYYMMDD &amp;&amp; sudo ./install-offline.sh</code></pre>
+
+        <div class="table-wrap">
+          <table>
+            <tr><th>Service</th><th>Address</th><th>Use</th></tr>
+            <tr><td>GLPI</td><td><code>http://&lt;server&gt;/</code></td><td>Full management GUI: rooms, racks, assets, cables, tickets</td></tr>
+            <tr><td>DC Viewer</td><td><code>http://&lt;server&gt;:8080/viewer/</code></td><td>Floor plan, front/rear rack views, space, power and weight, device search</td></tr>
+            <tr><td>Library</td><td><code>http://&lt;server&gt;:8080/glpi-datacenter-library.html</code></td><td>This course, served offline</td></tr>
+          </table>
+        </div>
+
+        <h3>4. Import your layout</h3>
+        <p>Describe rooms and racks in <code>layout/racks.csv</code> and devices with their U position in <code>layout/devices.csv</code>, then run:</p>
+<pre><code>python3 scripts/import_layout.py --url http://localhost --user glpi \
+    --racks layout/racks.csv --devices layout/devices.csv</code></pre>
+        <div class="note">Always fill in the <strong>serial number</strong>. GLPI links agent and SNMP inventory to existing assets by serial or UUID, not by name. Without it you get a duplicate asset.</div>
+
+        <h3>5. Connect devices</h3>
+        <ul>
+          <li><strong>Linux servers:</strong> <code>sudo ./install-agent-linux.sh http://&lt;glpi-server&gt;/</code></li>
+          <li><strong>Windows servers:</strong> <code>install-agent-windows.cmd http://&lt;glpi-server&gt;/</code> (or deploy the MSI by GPO)</li>
+          <li><strong>Switches, firewalls, PDUs, UPS, storage:</strong> <code>./scripts/snmp-discover.sh 10.10.0.1 10.10.0.254</code> with read-only SNMP credentials</li>
+        </ul>
+        <p>Full instructions, security checklist and backup/restore are in <code>datacenter-offline/README.md</code>.</p>
       </section>
     </main>
 

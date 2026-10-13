@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DC Viewer | NehraEduHub</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+  <!-- Login -->
+  <main id="login-view" class="login" hidden>
+    <form id="login-form" class="card login-card" autocomplete="on">
+      <h1>DC Viewer</h1>
+      <p class="muted">Sign in with your GLPI account. You see only what your GLPI profile allows.</p>
+      <label>Login <input name="user" autocomplete="username" required></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+      <p class="muted small"><a href="../index.html">&larr; Back to NehraEduHub</a></p>
+    </form>
+  </main>
+
+  <!-- App -->
+  <div id="app-view" hidden>
+    <header class="topbar">
+      <div class="brand">DC Viewer</div>
+      <label class="sr-only" for="room-select">Server room</label>
+      <select id="room-select"></select>
+      <label class="sr-only" for="search">Search devices</label>
+      <input id="search" type="search" placeholder="Search name or serial&hellip;">
+      <div class="spacer"></div>
+      <span id="updated" class="muted small"></span>
+      <button id="refresh" class="btn ghost" type="button" title="Reload from GLPI">Refresh</button>
+      <a id="glpi-link" class="btn ghost" target="_blank" rel="noopener">Open GLPI</a>
+      <button id="logout" class="btn ghost" type="button">Sign out</button>
+    </header>
+
+    <section id="stats" class="stats" aria-label="Room summary"></section>
+
+    <div class="layout">
+      <section class="card floor-card">
+        <div class="card-head">
+          <h2 id="room-title">Floor plan</h2>
+          <span class="legend"><i class="sw lo"></i>&lt;50% U used <i class="sw mid"></i>50&ndash;80% <i class="sw hi"></i>&gt;80%</span>
+        </div>
+        <div id="floor" class="floor"></div>
+        <div id="unplaced"></div>
+        <div id="search-results"></div>
+      </section>
+
+      <section class="card rack-card">
+        <div class="card-head">
+          <h2 id="rack-title">Select a rack</h2>
+          <div class="seg" role="group" aria-label="Rack face">
+            <button type="button" data-face="0" aria-pressed="true">Front</button>
+            <button type="button" data-face="1" aria-pressed="false">Rear</button>
+          </div>
+        </div>
+        <div id="rack-meta" class="rack-meta"></div>
+        <div class="rack-wrap">
+          <div id="pdu-left" class="pdu-side"></div>
+          <div id="rack" class="rack" aria-label="Rack elevation"></div>
+          <div id="pdu-right" class="pdu-side"></div>
+        </div>
+      </section>
+
+      <aside class="card detail-card">
+        <h2>Device</h2>
+        <div id="detail" class="muted">Click a device in the rack.</div>
+      </aside>
+    </div>
+
+    <p id="app-error" class="error" role="alert"></p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

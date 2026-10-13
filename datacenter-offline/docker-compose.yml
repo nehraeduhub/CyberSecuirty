@@ -1,0 +1,60 @@
+# NehraEduHub offline data centre stack
+#   glpi    - GLPI asset manager (main GUI, rack/room views, inventory endpoint)
+#   db      - MariaDB database for GLPI
+#   portal  - nginx serving the learning library + DC Viewer, and proxying the GLPI REST API
+#
+# All images are pinned so the same versions can be saved into an offline bundle.
+name: dc
+
+services:
+  glpi:
+    image: "glpi/glpi:${GLPI_VERSION:-11.0.11}"
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      GLPI_DB_HOST: db
+      GLPI_DB_PORT: 3306
+    volumes:
+      - glpi_data:/var/glpi
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${GLPI_PORT:-80}:80"
+
+  db:
+    image: "mariadb:${MARIADB_VERSION:-11.4}"
+    restart: unless-stopped
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+      MARIADB_DATABASE: ${GLPI_DB_NAME}
+      MARIADB_USER: ${GLPI_DB_USER}
+      MARIADB_PASSWORD: ${GLPI_DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  portal:
+    image: "nginx:${NGINX_VERSION:-1.27-alpine}"
+    restart: unless-stopped
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./viewer:/usr/share/nginx/html/viewer:ro
+      - ../index.html:/usr/share/nginx/html/index.html:ro
+      - ../glpi-datacenter-library.html:/usr/share/nginx/html/glpi-datacenter-library.html:ro
+      - ../Cyber Security Overview.jpg:/usr/share/nginx/html/Cyber Security Overview.jpg:ro
+      - ../IT Lab Image.jpg:/usr/share/nginx/html/IT Lab Image.jpg:ro
+      - ../Cybersecurity Certification.jpg:/usr/share/nginx/html/Cybersecurity Certification.jpg:ro
+      - ../Online Course Training.jpg:/usr/share/nginx/html/Online Course Training.jpg:ro
+    depends_on:
+      - glpi
+    ports:
+      - "${PORTAL_PORT:-8080}:80"
+
+volumes:
+  glpi_data:
+  db_data:
