@@ -12,8 +12,9 @@ WORK=
 
 log() { echo "$(date '+%F %T') $*"; }
 
-# Print non-empty, non-comment lines of a multi-line variable
-lines() { printf '%s\n' "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v -e '^$' -e '^#' || true; }
+# Print non-empty, non-comment lines of a multi-line variable ("  # note" at the
+# end of a line is a comment too)
+lines() { printf '%s\n' "$1" | sed -e 's/[[:space:]][[:space:]]*#.*$//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v -e '^$' -e '^#' || true; }
 
 json_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | tr -d '\n\r'; }
 

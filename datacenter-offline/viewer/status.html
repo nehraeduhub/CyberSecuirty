@@ -15,8 +15,11 @@
       <a href="inventory.html">Inventory</a>
       <a href="status.html" aria-current="page">Status</a>
     </nav>
+    <div class="seg" role="group" aria-label="Dashboard">
+      <button type="button" data-dash="dc-device-status/device-status" aria-pressed="true">Up / down</button>
+      <button type="button" data-dash="dc-network-health/network-and-hardware" aria-pressed="false">Network &amp; hardware</button>
+    </div>
     <div class="spacer"></div>
-    <span class="muted small">Live device up/down status from Grafana &middot; checks every 30 s</span>
     <a id="grafana-open" class="btn ghost" target="_blank" rel="noopener">Open in Grafana</a>
   </header>
   <iframe id="grafana" class="status-frame" title="Device status dashboard (Grafana)"></iframe>
@@ -24,9 +27,20 @@
     (function () {
       var cfg = window.DC_VIEWER_CONFIG || {};
       var base = (cfg.grafanaPath || '../grafana/').replace(/\/?$/, '/');
-      var dash = base + 'd/dc-device-status/device-status?orgId=1';
-      document.getElementById('grafana').src = dash + '&kiosk';
-      document.getElementById('grafana-open').href = dash;
+      var buttons = document.querySelectorAll('[data-dash]');
+
+      function show(path) {
+        var dash = base + 'd/' + path + '?orgId=1';
+        document.getElementById('grafana').src = dash + '&kiosk';
+        document.getElementById('grafana-open').href = dash;
+        buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.dash === path)); });
+        try { history.replaceState(null, '', '#' + path.split('/')[0]); } catch (e) { /* ignore */ }
+      }
+
+      buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.dash); }); });
+      var wanted = location.hash.slice(1);
+      var start = Array.prototype.find.call(buttons, function (b) { return b.dataset.dash.indexOf(wanted + '/') === 0; });
+      show((start || buttons[0]).dataset.dash);
     })();
   </script>
 </body>

@@ -1,0 +1,33 @@
+# Service checks for the NehraEduHub estate. Replace the addresses, then copy to
+# your-services.yml (Prometheus picks it up within a minute). Shown in Grafana
+# "Device status" with type "Service".
+#
+# module: http_2xx    web page answers with 2xx (self-signed certificates OK)
+#         tcp_connect port is open
+#         ssh_banner  SSH server answers
+
+# Sophos Firewall web admin
+- targets: ["https://10.10.0.1:4444"]
+  labels: { module: http_2xx, name: "Sophos web admin", type: Service, rack: "" }
+
+# Radware Alteon: management and each important virtual service (VIP)
+- targets: ["https://10.10.0.5"]
+  labels: { module: http_2xx, name: "Alteon management", type: Service, rack: "" }
+- targets: ["https://10.20.0.10"]
+  labels: { module: http_2xx, name: "VIP www (Alteon)", type: Service, rack: "" }
+- targets: ["10.20.0.11:443"]
+  labels: { module: tcp_connect, name: "VIP app 443 (Alteon)", type: Service, rack: "" }
+
+# HPE SimpliVity: vCenter
+- targets: ["https://10.10.2.10"]
+  labels: { module: http_2xx, name: "vCenter", type: Service, rack: "" }
+
+# HPE VM Essentials manager
+- targets: ["https://10.10.3.10"]
+  labels: { module: http_2xx, name: "VME Manager", type: Service, rack: "" }
+
+# Accesleron cloud portal and API
+- targets: ["https://10.10.4.10"]
+  labels: { module: http_2xx, name: "Accesleron portal", type: Service, rack: "" }
+- targets: ["10.10.4.11:443"]
+  labels: { module: tcp_connect, name: "Accesleron API 443", type: Service, rack: "" }

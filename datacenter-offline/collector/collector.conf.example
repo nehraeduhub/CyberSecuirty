@@ -8,15 +8,17 @@ INTERVAL_MINUTES=60
 THREADS=16
 
 # ---------------------------------------------------------------- SNMP
-# IP ranges to discover: switches, routers, firewalls, PDUs, UPS, storage,
-# printers, iLO/iDRAC/IPMI cards. One range per line: first-last or a single IP.
-# Nothing is scanned until you add a range here.
+# IP ranges to discover: Cisco/Dell/HP switches and routers, Sophos firewall,
+# Radware Alteon, iLO and iDRAC cards, PDUs, UPS. One range per line:
+# first-last or a single IP. Nothing is scanned until you add a range here.
+# See EQUIPMENT.md for what to enable on each device.
 SNMP_RANGES="
-# 10.10.0.1-10.10.0.254
-# 10.10.1.1-10.10.1.254
+# 10.10.0.1-10.10.0.254      # network management (switches, routers, Sophos, Alteon)
+# 10.10.9.1-10.10.9.254      # out-of-band (iLO, iDRAC)
 "
 
-# Read-only SNMP credentials, tried in order. One per line.
+# Read-only SNMP credentials, tried in order (put the most common first). One
+# per line. Also used by the monitoring to poll ports and hardware health.
 SNMP_CREDENTIALS="
 # version:2c,community:CHANGE-ME
 # version:3,username:glpi,authprotocol:sha,authpassword:CHANGE,privprotocol:aes,privpassword:CHANGE
@@ -26,13 +28,15 @@ SNMP_CREDENTIALS="
 # Linux/Unix over SSH (key in collector/ssh/id_ed25519, see README) and
 # Windows over WinRM (enable with: winrm quickconfig). One URL per line.
 REMOTES="
+# ssh://inventory@10.10.3.21        # HPE VM Essentials host
 # ssh://inventory@10.10.1.21
 # ssh://inventory@10.10.1.22
 # winrm://inventory:CHANGE@10.10.1.40
 "
 
 # ------------------------------------------------------------- VMware
-# ESXi hosts or vCenter: host user password (one per line, read-only role)
+# ESXi hosts or vCenter: host user password (one per line, read-only role).
+# For HPE SimpliVity, list the vCenter that manages the federation.
 ESX_HOSTS="
-# 10.10.2.10 inventory@vsphere.local CHANGE
+# 10.10.2.10 svc-glpi@vsphere.local CHANGE
 "

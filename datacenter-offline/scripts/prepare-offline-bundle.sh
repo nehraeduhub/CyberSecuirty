@@ -3,7 +3,7 @@
 # Produces dc-offline-bundle-<date>.tar.gz containing:
 #   - this kit, the NehraEduHub site and learning library
 #   - Docker images (GLPI, MariaDB, nginx, network collector, Grafana, Prometheus,
-#     Blackbox exporter) saved as tar files
+#     Blackbox and SNMP exporters) saved as tar files
 #   - GLPI Agent installers for Linux and Windows
 # Copy the archive to the data centre server (USB / internal share) and run install-offline.sh.
 #
@@ -26,7 +26,7 @@ mkdir -p "$out/images" "$out/agents" "$out/site"
 
 images=("glpi/glpi:$GLPI_VERSION" "mariadb:$MARIADB_VERSION" "nginx:$NGINX_VERSION"
         "grafana/grafana-oss:$GRAFANA_VERSION" "prom/prometheus:$PROMETHEUS_VERSION"
-        "prom/blackbox-exporter:$BLACKBOX_VERSION")
+        "prom/blackbox-exporter:$BLACKBOX_VERSION" "prom/snmp-exporter:$SNMP_EXPORTER_VERSION")
 for img in "${images[@]}"; do
   echo "Pulling $img ..."
   docker pull -q --platform linux/amd64 "$img"

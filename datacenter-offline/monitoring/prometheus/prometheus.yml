@@ -1,5 +1,6 @@
-# Device up/down monitoring. Targets come from GLPI (targets/glpi.json, written
-# by the monitor-sync service) plus any hand-written files in monitoring/manual/.
+# Device monitoring. Targets come from GLPI (written by the monitor-sync service:
+# targets/glpi.json for ping, targets/snmp.json for SNMP) plus any hand-written
+# checks in monitoring/manual/.
 global:
   scrape_interval: 30s
   scrape_timeout: 10s
@@ -13,7 +14,7 @@ scrape_configs:
       module: [icmp]
     file_sd_configs:
       - files:
-          - /etc/prometheus/targets/*.json
+          - /etc/prometheus/targets/glpi.json
           - /etc/prometheus/manual/*.yml
         refresh_interval: 1m
     relabel_configs:
@@ -27,6 +28,36 @@ scrape_configs:
       - target_label: __address__
         replacement: blackbox:9115
 
+  # SNMP: ports, uptime and vendor health of network devices, iLO and iDRAC
+  - job_name: snmp
+    scrape_interval: 60s
+    scrape_timeout: 50s
+    metrics_path: /snmp
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/snmp.json]
+        refresh_interval: 1m
+    relabel_configs:
+      - source_labels: [module]
+        target_label: __param_module
+      - source_labels: [auth]
+        target_label: __param_auth
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: snmp-exporter:9116
+    metric_relabel_configs:
+      # Keep the series count sane on large switches: drop per-port packet
+      # counters the dashboards don't use
+      - source_labels: [__name__]
+        regex: if(In|Out)(N?UcastPkts|Multicast.*|Broadcast.*|Octets|UnknownProtos|QLen)|ifHC(In|Out)(Ucast|Multicast|Broadcast)Pkts|ifSpecific|ifPromiscuousMode|ifLinkUpDownTrapEnable|ifCounterDiscontinuityTime|sysOR.*
+        action: drop
+
   - job_name: blackbox
     static_configs:
       - targets: [blackbox:9115]
+
+  - job_name: snmp-exporter
+    static_configs:
+      - targets: [snmp-exporter:9116]

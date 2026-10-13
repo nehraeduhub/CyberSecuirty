@@ -706,6 +706,22 @@ docker compose exec collector collect.sh once  # collect now</code></pre>
 
         <h3>6. Watch device status (Grafana)</h3>
         <p>Every device in GLPI that has an IP address is <strong>pinged every 30 seconds</strong> by Prometheus and the Blackbox exporter. The <strong>Status</strong> tab shows the Grafana <em>Device status</em> dashboard: how many devices are up and down, which are down and for how long, an UP/DOWN history per device, 24-hour availability and ping times. Extra checks (SSH, web pages, TCP ports) go in <code>monitoring/manual/*.yml</code>.</p>
+        <p>A second dashboard, <strong>Network &amp; hardware</strong>, polls every switch, router, firewall, load balancer, iLO and iDRAC over SNMP. It shows ports that are down, traffic and errors, switch and router CPU, Sophos HA state and resources, and server hardware health such as power supplies, temperatures and drives.</p>
+
+        <h3>7. Your equipment</h3>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Equipment</th><th>Collected by</th><th>Health in Grafana</th></tr>
+            <tr><td>Sophos Firewall</td><td>SNMP</td><td>HA state, memory, disk, swap, users, ports</td></tr>
+            <tr><td>Radware Alteon SLB</td><td>SNMP</td><td>Ports, traffic, errors; VIP checks over HTTPS/TCP</td></tr>
+            <tr><td>HPE SimpliVity (VMware)</td><td>vCenter API + iLO SNMP</td><td>Node hardware via iLO</td></tr>
+            <tr><td>HPE VM Essentials</td><td>SSH to KVM hosts + iLO SNMP</td><td>Host hardware via iLO; Manager over HTTPS</td></tr>
+            <tr><td>Accesleron cloud</td><td>Monitor only</td><td>Ping and portal/API checks</td></tr>
+            <tr><td>HP / Dell servers</td><td>iLO / iDRAC SNMP + SSH/WinRM</td><td>Power, temperatures, drives, global status</td></tr>
+            <tr><td>Cisco, Dell, HP switches and routers</td><td>SNMP (with LLDP/CDP)</td><td>Ports, traffic, errors, CPU</td></tr>
+          </table>
+        </div>
+        <p>Device-side setup steps are in <code>datacenter-offline/EQUIPMENT.md</code>.</p>
         <p>Full instructions, security checklist and backup/restore are in <code>datacenter-offline/README.md</code>.</p>
       </section>
     </main>

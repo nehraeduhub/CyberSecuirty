@@ -62,4 +62,25 @@ if [ -n "${API_ADMIN_RANGE_START:-}" ] && [ -n "${API_ADMIN_RANGE_END:-}" ]; the
   upsert_client "DC kit - admin LAN" "$(ip2int "$API_ADMIN_RANGE_START")" "$(ip2int "$API_ADMIN_RANGE_END")"
 fi
 
+# Manufacturer names: SNMP reports HPE iLO as "Compaq" and Radware Alteon as
+# "Nortel"/"Alteon" (legacy owners of those OID ranges). Dictionary rules fix the
+# name for new inventory; replaying them fixes what is already in GLPI.
+add_manufacturer_rule() { # uuid name regex new-name
+  local id
+  id=$(sql "SELECT id FROM glpi_rules WHERE uuid='$1'")
+  if [ -z "$id" ]; then
+    sql "INSERT INTO glpi_rules (entities_id, sub_type, ranking, name, description, \`match\`, is_active, comment,
+           is_recursive, uuid, \`condition\`, date_creation, date_mod)
+         VALUES (0, 'RuleDictionnaryManufacturer', 0, '$2', '', 'AND', 1, 'Added by the DC kit', 1, '$1', 0, NOW(), NOW())"
+    id=$(sql "SELECT id FROM glpi_rules WHERE uuid='$1'")
+    sql "INSERT INTO glpi_rulecriterias (rules_id, criteria, \`condition\`, pattern) VALUES ($id, 'name', 6, '$3')"
+    sql "INSERT INTO glpi_ruleactions (rules_id, action_type, field, value) VALUES ($id, 'assign', 'name', '$4')"
+    echo "  manufacturer rule: $2"
+  fi
+}
+echo "Manufacturer name rules..."
+add_manufacturer_rule dckit-manufacturer-hpe 'HPE: Compaq (iLO) -> Hewlett Packard Enterprise' '/^(Compaq|HPE)$/i' 'Hewlett Packard Enterprise'
+add_manufacturer_rule dckit-manufacturer-radware 'Radware: Alteon/Nortel -> Radware' '/^(Alteon|Nortel)$/i' 'Radware'
+console rules:replay_dictionnary_rules --dictionnary=Manufacturer >/dev/null 2>&1 || true
+
 echo "GLPI configured."

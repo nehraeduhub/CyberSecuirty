@@ -77,7 +77,18 @@
   "annotations": {
     "list": []
   },
-  "links": [],
+  "links": [
+    {
+      "type": "dashboards",
+      "tags": [
+        "data centre"
+      ],
+      "asDropdown": false,
+      "includeVars": false,
+      "keepTime": true,
+      "title": "Dashboards"
+    }
+  ],
   "panels": [
     {
       "type": "stat",

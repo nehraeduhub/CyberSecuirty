@@ -1,0 +1,1513 @@
+{
+  "uid": "dc-network-health",
+  "title": "Network & hardware",
+  "tags": [
+    "data centre",
+    "glpi"
+  ],
+  "timezone": "browser",
+  "editable": false,
+  "graphTooltip": 1,
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": [
+      {
+        "name": "vendor",
+        "label": "Vendor",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "dc-prometheus"
+        },
+        "query": {
+          "query": "label_values(up{job=\"snmp\"}, vendor)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "definition": "label_values(up{job=\"snmp\"}, vendor)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "sort": 1
+      },
+      {
+        "name": "device",
+        "label": "Device",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "dc-prometheus"
+        },
+        "query": {
+          "query": "label_values(up{job=\"snmp\", vendor=~\"$vendor\"}, name)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "definition": "label_values(up{job=\"snmp\", vendor=~\"$vendor\"}, name)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "sort": 1
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "dashboards",
+      "tags": [
+        "data centre"
+      ],
+      "asDropdown": false,
+      "includeVars": false,
+      "keepTime": true,
+      "title": "Dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Devices polled",
+      "description": "Network devices, firewalls, load balancers, iLO and iDRAC read over SNMP.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "count(up{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) or vector(0)",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 1,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Not answering SNMP",
+      "description": "Reachable in GLPI but SNMP did not answer on the last poll.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "count(up{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 0) or vector(0)",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#d03b3b",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 2,
+      "gridPos": {
+        "x": 4,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Ports down",
+      "description": "Ports that are enabled but have no link. Spare ports that are shut down are not counted.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "count((ifOperStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 2) and on(instance, ifIndex) (ifAdminStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 1)) or vector(0)",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#d03b3b",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 3,
+      "gridPos": {
+        "x": 9,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Hardware alerts",
+      "description": "Devices reporting a degraded or failed component: power supply, temperature, disks, controller, HA.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "count((max by (instance, name, vendor, glpi_url) (clamp_min(max by (instance, name, vendor, glpi_url) ({__name__=~\"cpqHeTemperatureCondition|cpqHeFltTolPowerSupplyCondition|cpqHeFltTolPwrSupplyCondition|cpqDaPhyDrvCondition|cpqDaLogDrvCondition|cpqDaCntlrCondition\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) - 1, 0) or clamp(max by (instance, name, vendor, glpi_url) ({__name__=~\"globalSystemStatus|globalStorageStatus\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) - 2, 0, 3) or max by (instance, name, vendor, glpi_url) ((dellNetPowerSupplyOperStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == bool 2) * 2 + 1) or max by (instance, name, vendor, glpi_url) (sfosDeviceCurrentHAState{sfosDeviceCurrentHAState=\"faulty\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 2 + 1) or max by (instance, name, vendor, glpi_url) (up{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) * 0)) >= 2) or vector(0)",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#d03b3b",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 4,
+      "gridPos": {
+        "x": 14,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Restarted in last 24 h",
+      "description": "Devices whose SNMP uptime is under 24 hours.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "count(sysUpTime{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} < 8640000) or vector(0)",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 5,
+      "gridPos": {
+        "x": 19,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Devices",
+      "description": "SNMP status, hardware health, uptime and port counts per device. Click a name to open it in GLPI.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "max by (instance, name, vendor, glpi_url) (up{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"})",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "B",
+          "expr": "max by (instance, name, vendor, glpi_url) (clamp_min(max by (instance, name, vendor, glpi_url) ({__name__=~\"cpqHeTemperatureCondition|cpqHeFltTolPowerSupplyCondition|cpqHeFltTolPwrSupplyCondition|cpqDaPhyDrvCondition|cpqDaLogDrvCondition|cpqDaCntlrCondition\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) - 1, 0) or clamp(max by (instance, name, vendor, glpi_url) ({__name__=~\"globalSystemStatus|globalStorageStatus\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) - 2, 0, 3) or max by (instance, name, vendor, glpi_url) ((dellNetPowerSupplyOperStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == bool 2) * 2 + 1) or max by (instance, name, vendor, glpi_url) (sfosDeviceCurrentHAState{sfosDeviceCurrentHAState=\"faulty\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 2 + 1) or max by (instance, name, vendor, glpi_url) (up{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) * 0)",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "C",
+          "expr": "max by (instance, name, vendor, glpi_url) (sysUpTime{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) / 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "D",
+          "expr": "count by (instance, name, vendor, glpi_url) (ifOperStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 1)",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "E",
+          "expr": "count by (instance, name, vendor, glpi_url) ((ifOperStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 2) and on(instance, ifIndex) (ifAdminStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 1))",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "glpi_url": true,
+              "instance": false
+            },
+            "renameByName": {
+              "name": "Name",
+              "vendor": "Vendor",
+              "instance": "Address",
+              "Value #A": "SNMP",
+              "Value #B": "Health",
+              "Value #C": "Uptime",
+              "Value #D": "Ports up",
+              "Value #E": "Ports down"
+            },
+            "indexByName": {
+              "name": 0,
+              "vendor": 1,
+              "instance": 2,
+              "Value #A": 3,
+              "Value #B": 4,
+              "Value #C": 5,
+              "Value #D": 6,
+              "Value #E": 7
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "Health",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          },
+          "noValue": "–"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SNMP"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "OK",
+                        "color": "#0ca30c",
+                        "index": 0
+                      },
+                      "0": {
+                        "text": "NO ANSWER",
+                        "color": "#d03b3b",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Health"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Unknown",
+                        "color": "#8a9a98",
+                        "index": 0
+                      },
+                      "1": {
+                        "text": "OK",
+                        "color": "#0ca30c",
+                        "index": 1
+                      },
+                      "2": {
+                        "text": "Warning",
+                        "color": "#fab219",
+                        "index": 2
+                      },
+                      "3": {
+                        "text": "Critical",
+                        "color": "#d03b3b",
+                        "index": 3
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Uptime"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ports down"
+            },
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "0"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Name"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open in GLPI",
+                    "url": "${__data.fields.glpi_url}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "id": 6,
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 13
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Ports down",
+      "description": "Enabled ports with no link, and how long since the link went down (from the device's own counters).",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "max by (instance, name, vendor, glpi_url, ifName) ((ifOperStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 2) and on(instance, ifIndex) (ifAdminStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 1))",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "B",
+          "expr": "max by (instance, name, vendor, glpi_url, ifName) (((ifLastChange{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 0 + on(instance) group_left() max by (instance) (sysUpTime{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"})) - ifLastChange{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) / 100 and on(instance, ifIndex) ((ifOperStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 2) and on(instance, ifIndex) (ifAdminStatus{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} == 1)))",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "glpi_url": true,
+              "instance": true,
+              "Value #A": true,
+              "vendor": true
+            },
+            "renameByName": {
+              "name": "Name",
+              "vendor": "Vendor",
+              "instance": "Address",
+              "ifName": "Port",
+              "Value #B": "Down for"
+            },
+            "indexByName": {
+              "name": 0,
+              "ifName": 1,
+              "vendor": 2,
+              "instance": 3,
+              "Value #B": 4
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          },
+          "noValue": "–"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Down for"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Name"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open in GLPI",
+                    "url": "${__data.fields.glpi_url}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "id": 7,
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Port errors, last hour",
+      "description": "Ports that counted input or output errors in the last hour: usually a bad cable, optic or duplex mismatch.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "sum by (instance, name, vendor, glpi_url, ifName) (increase(ifInErrors{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}[1h]) + increase(ifOutErrors{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}[1h])) > 0",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "glpi_url": true,
+              "instance": true,
+              "vendor": true
+            },
+            "renameByName": {
+              "name": "Name",
+              "vendor": "Vendor",
+              "instance": "Address",
+              "ifName": "Port",
+              "Value": "Errors"
+            },
+            "indexByName": {
+              "name": 0,
+              "ifName": 1,
+              "vendor": 2,
+              "instance": 3,
+              "Value": 4
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          },
+          "decimals": 0,
+          "noValue": "–"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Name"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open in GLPI",
+                    "url": "${__data.fields.glpi_url}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "id": 8,
+      "gridPos": {
+        "x": 12,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Traffic, selected devices",
+      "description": "Total bits per second in and out across all ports of the selected devices.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "sum(rate(ifHCInOctets{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}[5m])) * 8",
+          "legendFormat": "In",
+          "range": true,
+          "format": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "B",
+          "expr": "sum(rate(ifHCOutOctets{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}[5m])) * 8",
+          "legendFormat": "Out",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 0,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "In"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Out"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 9,
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 14,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "Busiest ports now",
+      "description": "In + out, averaged over 5 minutes.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "topk(10, (rate(ifHCInOctets{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}[5m]) + rate(ifHCOutOctets{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}[5m])) * 8)",
+          "legendFormat": "{{name}} {{ifName}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "valueMode": "text",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "maxVizHeight": 22
+      },
+      "id": 10,
+      "gridPos": {
+        "x": 14,
+        "y": 25,
+        "w": 10,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Firewalls (Sophos)",
+      "description": "Sophos Firewall resources and HA state, from the SFOS SNMP MIB.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "max by (instance, name, vendor, glpi_url) (sfosMemoryPercentUsage{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"})",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "B",
+          "expr": "max by (instance, name, vendor, glpi_url) (sfosDiskPercentUsage{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"})",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "C",
+          "expr": "max by (instance, name, vendor, glpi_url) (sfosSwapPercentUsage{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"})",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "D",
+          "expr": "max by (instance, name, vendor, glpi_url) (sfosLiveUsersCount{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"})",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "E",
+          "expr": "max by (instance, name, vendor, glpi_url) (sfosDeviceCurrentHAState{sfosDeviceCurrentHAState=\"notapplicable\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 0 or sfosDeviceCurrentHAState{sfosDeviceCurrentHAState=\"auxiliary\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 1 or sfosDeviceCurrentHAState{sfosDeviceCurrentHAState=\"standAlone\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 2 or sfosDeviceCurrentHAState{sfosDeviceCurrentHAState=\"primary\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 3 or sfosDeviceCurrentHAState{sfosDeviceCurrentHAState=\"faulty\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 4 or sfosDeviceCurrentHAState{sfosDeviceCurrentHAState=\"ready\", job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} * 5)",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "glpi_url": true,
+              "instance": false,
+              "vendor": true
+            },
+            "renameByName": {
+              "name": "Name",
+              "instance": "Address",
+              "Value #A": "Memory",
+              "Value #B": "Disk",
+              "Value #C": "Swap",
+              "Value #D": "Live users",
+              "Value #E": "HA state"
+            },
+            "indexByName": {
+              "name": 0,
+              "instance": 1,
+              "Value #E": 2,
+              "Value #A": 3,
+              "Value #B": 4,
+              "Value #C": 5,
+              "Value #D": 6
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          },
+          "noValue": "–"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Memory|Disk|Swap"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "HA state"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Not applicable",
+                        "index": 0
+                      },
+                      "1": {
+                        "text": "Auxiliary",
+                        "index": 1
+                      },
+                      "2": {
+                        "text": "Standalone",
+                        "index": 2
+                      },
+                      "3": {
+                        "text": "Primary",
+                        "index": 3
+                      },
+                      "4": {
+                        "text": "Faulty",
+                        "color": "#d03b3b",
+                        "index": 4
+                      },
+                      "5": {
+                        "text": "Ready",
+                        "index": 5
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Name"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open in GLPI",
+                    "url": "${__data.fields.glpi_url}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "id": 11,
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 24,
+        "h": 6
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "Switch & router CPU",
+      "description": "5-minute CPU average: Cisco (CISCO-PROCESS-MIB) and Dell OS10.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "max by (name) (cpmCPUTotal5minRev{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) or max by (name) (dellNetCpuUtil5Min{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"})",
+          "legendFormat": "{{name}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "valueMode": "text",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "maxVizHeight": 22
+      },
+      "id": 12,
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "Hottest sensor per server (iLO / iDRAC)",
+      "description": "Highest temperature reading per server. HPE from iLO (needs Agentless Management), Dell from iDRAC.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "max by (name) (cpqHeTemperatureCelsius{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) or max by (name) (temperatureProbeReading{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"}) / 10",
+          "legendFormat": "{{name}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "min": 0,
+          "max": 100,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "valueMode": "text",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "maxVizHeight": 22
+      },
+      "id": 13,
+      "gridPos": {
+        "x": 8,
+        "y": 40,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Server hardware components not OK (HPE iLO)",
+      "description": "Each power supply, temperature sensor or drive that iLO reports as degraded or failed.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "label_replace(cpqHeFltTolPowerSupplyCondition{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} > 2, \"component\", \"Power supply bay $1\", \"cpqHeFltTolPowerSupplyBay\", \"(.*)\") or label_replace(cpqHeTemperatureCondition{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} > 2, \"component\", \"Temperature sensor $1\", \"cpqHeTemperatureIndex\", \"(.*)\") or label_replace(cpqDaPhyDrvCondition{job=\"snmp\", vendor=~\"$vendor\", name=~\"$device\"} > 2, \"component\", \"Physical drive $1\", \"cpqDaPhyDrvIndex\", \"(.*)\")",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "job": true,
+              "auth": true,
+              "module": true,
+              "itemtype": true,
+              "glpi_id": true,
+              "glpi_url": true,
+              "status": true,
+              "rack": true,
+              "type": true,
+              "vendor": true,
+              "cpqHeFltTolPowerSupplyBay": true,
+              "cpqHeFltTolPowerSupplyChassis": true,
+              "cpqHeTemperatureIndex": true,
+              "cpqHeTemperatureChassis": true,
+              "cpqDaPhyDrvIndex": true,
+              "cpqDaPhyDrvCntlrIndex": true
+            },
+            "renameByName": {
+              "name": "Name",
+              "instance": "Address",
+              "component": "Component",
+              "Value": "Condition"
+            },
+            "indexByName": {
+              "name": 0,
+              "component": 1,
+              "Value": 2,
+              "instance": 3
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          },
+          "noValue": "All components OK"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Condition"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "3": {
+                        "text": "Degraded",
+                        "color": "#fab219"
+                      },
+                      "4": {
+                        "text": "Failed",
+                        "color": "#d03b3b"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "id": 14,
+      "gridPos": {
+        "x": 16,
+        "y": 40,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    }
+  ]
+}

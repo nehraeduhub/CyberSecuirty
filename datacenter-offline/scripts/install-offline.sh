@@ -37,7 +37,7 @@ if [ ! -f .env ]; then
   echo "Created .env with a random database password."
 fi
 # Image versions always follow the bundle (this is how upgrades happen)
-for key in GLPI_VERSION MARIADB_VERSION NGINX_VERSION AGENT_VERSION GRAFANA_VERSION PROMETHEUS_VERSION BLACKBOX_VERSION; do
+for key in GLPI_VERSION MARIADB_VERSION NGINX_VERSION AGENT_VERSION GRAFANA_VERSION PROMETHEUS_VERSION BLACKBOX_VERSION SNMP_EXPORTER_VERSION; do
   val=$(grep "^$key=" .env.example | cut -d= -f2-)
   if grep -q "^$key=" .env; then
     sed -i "s/^$key=.*/$key=$val/" .env
@@ -90,7 +90,7 @@ echo "Starting containers..."
 docker compose up -d
 # Containers that mount single config files keep the old file after an upgrade
 # replaces it; recreate them (they hold no data) so they read the new versions
-docker compose up -d --force-recreate --no-deps portal blackbox prometheus monitor-sync >/dev/null
+docker compose up -d --force-recreate --no-deps portal blackbox prometheus monitor-sync snmp-exporter >/dev/null
 
 echo "Waiting for GLPI (first start installs the database, ~1-3 minutes)..."
 for _ in $(seq 1 90); do

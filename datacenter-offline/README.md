@@ -1,13 +1,14 @@
 # Offline Data Centre Kit (GLPI)
 
-Run GLPI on your own server with **no internet connection**. A built-in collector **fetches your devices' details from the network automatically** (SNMP, SSH, WinRM, VMware). You see the results in a rack viewer, an inventory dashboard and the full GLPI GUI.
+Run GLPI on your own server with **no internet connection**. **See [EQUIPMENT.md](EQUIPMENT.md)** for what to enable on your Sophos firewall, Radware Alteon, HPE SimpliVity, HPE VM Essentials, Accesleron, HP/Dell servers and Cisco/Dell/HP switches and routers.
+ A built-in collector **fetches your devices' details from the network automatically** (SNMP, SSH, WinRM, VMware). You see the results in a rack viewer, an inventory dashboard and the full GLPI GUI.
 
 | What | URL on your server | Used for |
 |---|---|---|
 | **GLPI** | `http://<server>/` | Main GUI: data centres, server rooms, racks, assets, cables, tickets, contracts |
 | **DC Viewer – Racks** | `http://<server>:8080/viewer/` | Read-only screen for the NOC or a wall display: floor plan, rack fronts and backs, space/power/weight, device search |
 | **DC Viewer – Inventory** | `http://<server>:8080/viewer/inventory.html` | Everything collected from the network: summary, collection status, charts, network map, device table with CSV export |
-| **DC Viewer – Status** (Grafana) | `http://<server>:8080/viewer/status.html` | Live up/down status of every device, up/down history, availability and ping times. Full Grafana is at `http://<server>:8080/grafana/` |
+| **DC Viewer – Status** (Grafana) | `http://<server>:8080/viewer/status.html` | **Up / down**: every device's live status, history, availability and ping. **Network & hardware**: ports down, traffic, errors, CPU, firewall HA, and server hardware health from iLO/iDRAC. Full Grafana is at `http://<server>:8080/grafana/` |
 | **Learning library** | `http://<server>:8080/glpi-datacenter-library.html` | NehraEduHub GLPI data centre course, works offline |
 
 ```
@@ -25,6 +26,8 @@ Run GLPI on your own server with **no internet connection**. A built-in collecto
                     │                                                               │
                     │ monitor-sync ── GLPI devices with an IP ──► ping targets      │
                     │ prometheus ──► blackbox ── ping / TCP / HTTP every 30 s ──────┼──► every monitored device
+                    │            └─► snmp-exporter ── SNMP every 60 s ──────────────┼──► switches, routers, firewall,
+                    │                                                               │    SLB, iLO, iDRAC
                     │ grafana   (/grafana/, Status tab) ◄── prometheus              │
                     └───────────────────────────────────────────────────────────────┘
 ```
@@ -43,7 +46,7 @@ AGENT_VERSION=latest ./datacenter-offline/scripts/prepare-offline-bundle.sh
 
 This creates `dc-offline-bundle-YYYYMMDD.tar.gz` (about 900 MB). It contains:
 
-- Docker images: `glpi/glpi:11.0.11`, `mariadb:11.4`, `nginx:1.27-alpine`, the network collector `dc-collector:1.17` (built from Ubuntu 24.04 and GLPI Agent 1.17), `grafana/grafana-oss:13.0.2`, `prom/prometheus:v3.5.5` and `prom/blackbox-exporter:v0.28.0` (versions set in `.env.example`)
+- Docker images: `glpi/glpi:11.0.11`, `mariadb:11.4`, `nginx:1.27-alpine`, the network collector `dc-collector:1.17` (built from Ubuntu 24.04 and GLPI Agent 1.17), `grafana/grafana-oss:13.0.2`, `prom/prometheus:v3.5.5`, `prom/blackbox-exporter:v0.28.0` and `prom/snmp-exporter:v0.30.1` (versions set in `.env.example`)
 - GLPI Agent installers for Linux (`.pl`) and Windows (`.msi`)
 - This kit, the website and the learning library
 - `SHA256SUMS` so the server can check the copy wasn't corrupted
@@ -209,6 +212,18 @@ Grafana shows a one-time "what's new" popup to each user the first time they ope
 
 How it fits together: `monitor-sync` reads devices and IPs from GLPI with the read-only `dc-monitor` account and writes Prometheus targets labelled with name, type, rack and GLPI link. Prometheus asks the Blackbox exporter to ping each one and keeps 90 days of history (`PROMETHEUS_RETENTION`).
 
+### Network & hardware dashboard
+
+![Network & hardware dashboard](docs/network-health.png)
+
+Every network device, firewall, load balancer, iLO and iDRAC in GLPI is also **polled over SNMP every minute**, using the credentials in `collector/collector.conf`. For each device, monitor-sync finds the credential that works and reads the vendor from its sysObjectID. It then adds that vendor's health metrics: **Sophos** (HA state, memory, disk, swap, live users), **Cisco** (CPU), **HPE iLO** (power supplies, temperatures, drives), **Dell iDRAC** (global and storage status, temperatures) and **Dell OS10** (CPU, power supplies).
+
+- **Devices**: SNMP answering, **Health** (OK / Warning / Critical; Unknown when the vendor has no health MIB), uptime, ports up and down
+- **Ports down**: ports that are enabled but have no link, with how long they've been down. Shut-down spare ports are not counted
+- **Port errors, last hour**: usually a bad cable, optic or duplex mismatch
+- **Traffic** and **busiest ports**, **firewall (Sophos)** table, **switch & router CPU**, **hottest sensor per server**, and **server components not OK** (e.g. "Power supply bay 2 – Degraded")
+- Filter by **Vendor** and **Device**. Switch between the two dashboards in the Status tab, or use the **Dashboards** link in Grafana
+
 **Checks beyond ping.** Put extra checks in `monitoring/manual/*.yml`. They're picked up within a minute, and `example.yml.disabled` shows the format:
 
 ```yaml
@@ -218,7 +233,7 @@ How it fits together: `monitor-sync` reads devices and IPs from GLPI with the re
   labels: { module: http_2xx, name: "Core switch web UI", type: Service }
 ```
 
-The modules are `icmp` (the default), `tcp_connect` (any port), `http_2xx` (web page answers) and `ssh_banner`. Define more in `monitoring/blackbox/blackbox.yml`.
+The modules are `icmp` (the default), `tcp_connect` (any port), `http_2xx` (web page answers) and `ssh_banner`. Define more in `monitoring/blackbox/blackbox.yml`. `your-services.yml.disabled` has ready-made checks for the Sophos web admin, Alteon VIPs, vCenter, the VME Manager and the Accesleron portal: fill in the addresses and rename it to `.yml`.
 
 **Settings in `.env`:**
 
@@ -271,7 +286,8 @@ docker compose restart glpi
 | `nginx/default.conf` | Portal: library, viewer, API proxy |
 | `viewer/` | DC Viewer: Racks (`index.html`), Inventory (`inventory.html`) and Status (`status.html`, embeds Grafana); plain HTML/JS/CSS with no external libraries |
 | `collector/` | Network collector image (`Dockerfile`, `collect.sh`) and `collector.conf.example` |
-| `monitoring/` | Prometheus, Blackbox and Grafana config, the Device status dashboard, the GLPI target sync (`targets/glpi-targets.pl`) and extra checks (`manual/`) |
+| `monitoring/` | Prometheus, Blackbox and Grafana config, the Device status and Network & hardware dashboards, the GLPI → ping/SNMP target sync (`targets/glpi-targets.pl`) and extra checks (`manual/`) |
+| `EQUIPMENT.md` | Per-device setup for your Sophos, Radware, HPE SimpliVity/VME, Accesleron, HP/Dell servers and Cisco/Dell/HP network gear |
 | `scripts/prepare-offline-bundle.sh` | Build the bundle (online machine) |
 | `scripts/install-offline.sh` | Install from the bundle (offline server) |
 | `scripts/configure-glpi.sh` | Turn on inventory and the API, allow API clients |
