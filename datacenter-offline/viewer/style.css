@@ -489,3 +489,7 @@ input, select {
 .data-table.mini { font-size: 0.9em; }
 .sort { background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; }
 #more { margin-top: 10px; }
+
+/* Status tab: Grafana fills the page under the top bar */
+.status-page { display: flex; flex-direction: column; height: 100vh; margin: 0; }
+.status-frame { flex: 1; width: 100%; border: 0; background: var(--bg); }

@@ -1,0 +1,982 @@
+{
+  "uid": "dc-device-status",
+  "title": "Device status",
+  "tags": [
+    "data centre",
+    "glpi"
+  ],
+  "timezone": "browser",
+  "editable": false,
+  "graphTooltip": 1,
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "type",
+        "label": "Type",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "dc-prometheus"
+        },
+        "query": {
+          "query": "label_values(probe_success{job=\"device\"}, type)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "definition": "label_values(probe_success{job=\"device\"}, type)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "sort": 1
+      },
+      {
+        "name": "rack",
+        "label": "Rack",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "dc-prometheus"
+        },
+        "query": {
+          "query": "label_values(probe_success{job=\"device\", type=~\"$type\"}, rack)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "definition": "label_values(probe_success{job=\"device\", type=~\"$type\"}, rack)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "sort": 1
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Devices monitored",
+      "description": "Every device in GLPI with an IPv4 address, plus manual checks.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "count(probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"}) or vector(0)",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 1,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Up",
+      "description": "Answering right now.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "sum(probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"}) or vector(0)",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#0ca30c"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 2,
+      "gridPos": {
+        "x": 5,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Down",
+      "description": "Not answering on the last check. Green when nothing is down.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "count(probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"} == 0) or vector(0)",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#d03b3b",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 3,
+      "gridPos": {
+        "x": 10,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Availability, last 24 h",
+      "description": "Share of successful checks across the selected devices.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "avg(avg_over_time(probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"}[24h])) * 100",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 4,
+      "gridPos": {
+        "x": 14,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Median round trip",
+      "description": "Typical ping time across devices right now.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "quantile(0.5, probe_icmp_duration_seconds{phase=\"rtt\", job=\"device\", type=~\"$type\", rack=~\"$rack\"} and on(instance) (probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"} == 1))",
+          "legendFormat": "",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "showPercentChange": false
+      },
+      "id": 5,
+      "gridPos": {
+        "x": 19,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Devices down now",
+      "description": "Devices that did not answer the last check, and how long since they last answered (within 7 days).",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "max by (instance, name, type, rack, glpi_url) (probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"}) == 0",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "B",
+          "expr": "max by (instance, name, type, rack, glpi_url) (time() - max_over_time(timestamp(probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"} == 1)[7d:1m])) and on(instance) (probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"} == 0)",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "job": true,
+              "itemtype": true,
+              "glpi_id": true,
+              "phase": true,
+              "module": true,
+              "status": true,
+              "glpi_url": true,
+              "Value #A": true
+            },
+            "renameByName": {
+              "name": "Name",
+              "type": "Type",
+              "rack": "Rack",
+              "instance": "Address",
+              "Value #B": "Down for"
+            },
+            "indexByName": {
+              "name": 0,
+              "type": 1,
+              "rack": 2,
+              "instance": 3,
+              "Value #B": 4
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          },
+          "noValue": "–"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Down for"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Name"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open in GLPI",
+                    "url": "${__data.fields.glpi_url}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "noValue": "Nothing is down.",
+      "id": 6,
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 6
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "state-timeline",
+      "title": "Up / down history",
+      "description": "One row per device. Green UP, red DOWN.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"}",
+          "legendFormat": "{{name}}",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP",
+                  "color": "#0ca30c",
+                  "index": 0
+                },
+                "0": {
+                  "text": "DOWN",
+                  "color": "#d03b3b",
+                  "index": 1
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#8a9a98"
+          },
+          "custom": {
+            "lineWidth": 0,
+            "fillOpacity": 85
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.8,
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "id": 7,
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 24,
+        "h": 12
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "table",
+      "title": "All devices",
+      "description": "Status on the last check, current ping time and availability over 24 hours. Click a name to open it in GLPI.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "max by (instance, name, type, rack, glpi_url) (probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"})",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "B",
+          "expr": "max by (instance, name, type, rack, glpi_url) (probe_icmp_duration_seconds{phase=\"rtt\", job=\"device\", type=~\"$type\", rack=~\"$rack\"} and on(instance) (probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"} == 1))",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "C",
+          "expr": "max by (instance, name, type, rack, glpi_url) (avg_over_time(probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"}[24h]))",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "job": true,
+              "itemtype": true,
+              "glpi_id": true,
+              "phase": true,
+              "module": true,
+              "status": true,
+              "glpi_url": true
+            },
+            "renameByName": {
+              "name": "Name",
+              "type": "Type",
+              "rack": "Rack",
+              "instance": "Address",
+              "Value #A": "Status",
+              "Value #B": "Ping",
+              "Value #C": "Availability 24 h"
+            },
+            "indexByName": {
+              "name": 0,
+              "Value #A": 1,
+              "type": 2,
+              "rack": 3,
+              "instance": 4,
+              "Value #B": 5,
+              "Value #C": 6
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "Status",
+                "desc": false
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          },
+          "noValue": "–"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "UP",
+                        "color": "#0ca30c",
+                        "index": 0
+                      },
+                      "0": {
+                        "text": "DOWN",
+                        "color": "#d03b3b",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ping"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Availability 24 h"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Name"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open in GLPI",
+                    "url": "${__data.fields.glpi_url}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Status",
+            "desc": false
+          }
+        ]
+      },
+      "id": 8,
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 24,
+        "h": 12
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Ping round-trip time",
+      "description": "Median and 95th percentile across the selected devices.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "quantile(0.5, probe_icmp_duration_seconds{phase=\"rtt\", job=\"device\", type=~\"$type\", rack=~\"$rack\"} and on(instance) (probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"} == 1))",
+          "legendFormat": "Median",
+          "range": true,
+          "format": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "B",
+          "expr": "quantile(0.95, probe_icmp_duration_seconds{phase=\"rtt\", job=\"device\", type=~\"$type\", rack=~\"$rack\"} and on(instance) (probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"} == 1))",
+          "legendFormat": "95th percentile",
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 0,
+            "showPoints": "never",
+            "axisSoftMin": 0,
+            "gradientMode": "none"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Median"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "95th percentile"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 9,
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 16,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "Slowest devices now",
+      "description": "Highest ping times on the last check.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dc-prometheus"
+          },
+          "refId": "A",
+          "expr": "topk(10, probe_icmp_duration_seconds{phase=\"rtt\", job=\"device\", type=~\"$type\", rack=~\"$rack\"} and on(instance) (probe_success{job=\"device\", type=~\"$type\", rack=~\"$rack\"} == 1))",
+          "legendFormat": "{{name}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "valueMode": "text",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "minVizHeight": 16,
+        "maxVizHeight": 22,
+        "namePlacement": "left",
+        "sizing": "manual"
+      },
+      "id": 10,
+      "gridPos": {
+        "x": 16,
+        "y": 34,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dc-prometheus"
+      }
+    }
+  ]
+}

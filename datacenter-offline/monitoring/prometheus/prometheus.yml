@@ -1,0 +1,32 @@
+# Device up/down monitoring. Targets come from GLPI (targets/glpi.json, written
+# by the monitor-sync service) plus any hand-written files in monitoring/manual/.
+global:
+  scrape_interval: 30s
+  scrape_timeout: 10s
+  evaluation_interval: 30s
+
+scrape_configs:
+  # Ping every device (or another blackbox module set with a "module" label)
+  - job_name: device
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/*.json
+          - /etc/prometheus/manual/*.yml
+        refresh_interval: 1m
+    relabel_configs:
+      - source_labels: [module]
+        regex: (.+)
+        target_label: __param_module
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+
+  - job_name: blackbox
+    static_configs:
+      - targets: [blackbox:9115]

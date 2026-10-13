@@ -7,6 +7,7 @@ Run GLPI on your own server with **no internet connection**. A built-in collecto
 | **GLPI** | `http://<server>/` | Main GUI: data centres, server rooms, racks, assets, cables, tickets, contracts |
 | **DC Viewer – Racks** | `http://<server>:8080/viewer/` | Read-only screen for the NOC or a wall display: floor plan, rack fronts and backs, space/power/weight, device search |
 | **DC Viewer – Inventory** | `http://<server>:8080/viewer/inventory.html` | Everything collected from the network: summary, collection status, charts, network map, device table with CSV export |
+| **DC Viewer – Status** (Grafana) | `http://<server>:8080/viewer/status.html` | Live up/down status of every device, up/down history, availability and ping times. Full Grafana is at `http://<server>:8080/grafana/` |
 | **Learning library** | `http://<server>:8080/glpi-datacenter-library.html` | NehraEduHub GLPI data centre course, works offline |
 
 ```
@@ -21,6 +22,10 @@ Run GLPI on your own server with **no internet connection**. A built-in collecto
                     │   ├─ /viewer/  Racks + Inventory dashboard                    │
                     │   └─ library pages                                            │
                     │ db        (MariaDB 11.4)                                      │
+                    │                                                               │
+                    │ monitor-sync ── GLPI devices with an IP ──► ping targets      │
+                    │ prometheus ──► blackbox ── ping / TCP / HTTP every 30 s ──────┼──► every monitored device
+                    │ grafana   (/grafana/, Status tab) ◄── prometheus              │
                     └───────────────────────────────────────────────────────────────┘
 ```
 
@@ -36,9 +41,9 @@ Requires Docker and `curl`. Run it from this repository:
 AGENT_VERSION=latest ./datacenter-offline/scripts/prepare-offline-bundle.sh
 ```
 
-This creates `dc-offline-bundle-YYYYMMDD.tar.gz` (about 650 MB). It contains:
+This creates `dc-offline-bundle-YYYYMMDD.tar.gz` (about 900 MB). It contains:
 
-- Docker images: `glpi/glpi:11.0.11`, `mariadb:11.4`, `nginx:1.27-alpine`, and the network collector `dc-collector:1.17`, which is built from Ubuntu 24.04 and GLPI Agent 1.17 (versions set in `.env.example`)
+- Docker images: `glpi/glpi:11.0.11`, `mariadb:11.4`, `nginx:1.27-alpine`, the network collector `dc-collector:1.17` (built from Ubuntu 24.04 and GLPI Agent 1.17), `grafana/grafana-oss:13.0.2`, `prom/prometheus:v3.5.5` and `prom/blackbox-exporter:v0.28.0` (versions set in `.env.example`)
 - GLPI Agent installers for Linux (`.pl`) and Windows (`.msi`)
 - This kit, the website and the learning library
 - `SHA256SUMS` so the server can check the copy wasn't corrupted
@@ -65,12 +70,14 @@ The installer:
 
 1. checks the bundle files against `SHA256SUMS` and loads the Docker images (nothing is downloaded)
 2. creates `.env` with a random database password
-3. starts GLPI, MariaDB, the portal and the collector; on first start GLPI installs its database (1–3 minutes)
+3. starts GLPI, MariaDB, the portal, the collector and the monitoring (Prometheus, Blackbox, Grafana); on first start GLPI installs its database (1–3 minutes)
 4. turns on GLPI inventory and the REST API, and allows API access from the Docker network
-5. creates `collector/collector.conf` and an SSH key for agentless inventory
+5. creates `collector/collector.conf` and an SSH key for agentless inventory, random passwords for Grafana `admin` and the read-only GLPI account `dc-monitor`, and this server's address for links
 6. asks for a new password for the `glpi` super-admin and offers to disable the demo accounts `tech`, `normal` and `post-only`
 
 Non-interactive: `sudo ADMIN_PASSWORD='…' DISABLE_DEMO_USERS=yes ./install-offline.sh`
+
+Re-running the installer from a newer bundle is how you **upgrade**. It keeps `.env`, your data and your passwords, and only asks for the admin password on the first install.
 
 Ports are in `site/datacenter-offline/.env` (`GLPI_PORT`, `PORTAL_PORT`). After changing them, run `docker compose up -d` in that folder. Image versions always follow the bundle, so installing a newer bundle upgrades the stack.
 
@@ -180,11 +187,59 @@ Open `http://<server>:8080/viewer/` and sign in with your GLPI account. Each use
 
 For a wall screen, create a GLPI user with a read-only profile.
 
-## 6. Backup and restore
+## 6. Device status: up / down (Grafana)
+
+Every device in GLPI that has an IPv4 address is **pinged every 30 seconds**. Nothing extra needs configuring: as soon as the collector or an agent adds a device to GLPI, it is monitored within 5 minutes.
+
+Open the **Status** tab in the DC Viewer (`http://<server>:8080/viewer/status.html`). Sign in to Grafana as `admin` with `GRAFANA_ADMIN_PASSWORD` from `.env`.
+
+![Device status dashboard in Grafana](docs/device-status.png)
+
+The **Device status** dashboard shows:
+
+- **Devices monitored / Up / Down**: the Down tile turns red as soon as anything stops answering
+- **Availability, last 24 h** and **median round trip**
+- **Devices down now**, with how long each has been down. Click a name to open it in GLPI
+- **Up / down history**: one row per device, green UP and red DOWN, so you can see outages and flapping
+- **All devices**: status, ping time and 24-hour availability, sortable and filterable
+- **Ping round-trip time** (median and 95th percentile) and **slowest devices now**
+- **Type** and **Rack** filters at the top, and the time range (default: last 6 hours)
+
+Grafana shows a one-time "what's new" popup to each user the first time they open the full Grafana. Close it once; it doesn't appear in the Status tab.
+
+How it fits together: `monitor-sync` reads devices and IPs from GLPI with the read-only `dc-monitor` account and writes Prometheus targets labelled with name, type, rack and GLPI link. Prometheus asks the Blackbox exporter to ping each one and keeps 90 days of history (`PROMETHEUS_RETENTION`).
+
+**Checks beyond ping.** Put extra checks in `monitoring/manual/*.yml`. They're picked up within a minute, and `example.yml.disabled` shows the format:
+
+```yaml
+- targets: ["10.10.1.21:22"]
+  labels: { module: ssh_banner, name: "SRV-WEB-01 SSH", type: Service }
+- targets: ["https://10.10.0.5"]
+  labels: { module: http_2xx, name: "Core switch web UI", type: Service }
+```
+
+The modules are `icmp` (the default), `tcp_connect` (any port), `http_2xx` (web page answers) and `ssh_banner`. Define more in `monitoring/blackbox/blackbox.yml`.
+
+**Settings in `.env`:**
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `GRAFANA_ANONYMOUS` | `false` | `true` shows dashboards without logging in (for wall screens on a trusted network) |
+| `MONITOR_EXCLUDE_STATES` | empty | GLPI statuses not to monitor, e.g. `Retired,In stock` |
+| `MONITOR_SYNC_MINUTES` | `5` | How often GLPI devices are re-read |
+| `PROMETHEUS_RETENTION` | `90d` | How long to keep history |
+
+After changing them, run `docker compose up -d`. `GRAFANA_ADMIN_PASSWORD` only applies the first time Grafana starts; change it later inside Grafana.
+
+Devices that block ping (some firewalls) show as DOWN. Give them a `tcp_connect` or `http_2xx` check in `monitoring/manual/`, and set their GLPI status to one in `MONITOR_EXCLUDE_STATES` to skip the ping.
+
+## 7. Backup and restore
 
 ```bash
 ./scripts/backup.sh                 # writes backups/<timestamp>/, keeps 14
 ```
+
+Monitoring history (Prometheus) is not included, and Grafana's dashboards are recreated from `monitoring/` on start.
 
 Copy `backups/` off the server. It contains the database, the GLPI encryption key and `.env`, so keep it as protected as the server.
 
@@ -196,10 +251,11 @@ docker compose exec -T glpi tar -C /var/glpi -xzf - < backups/<ts>/glpi-data.tar
 docker compose restart glpi
 ```
 
-## 7. Security checklist
+## 8. Security checklist
 
 - [ ] `glpi` password changed and demo accounts disabled (the installer offers both)
 - [ ] Server firewall allows ports 80/8080 only from admin and NOC networks
+- [ ] Grafana `admin` password kept safe; leave `GRAFANA_ANONYMOUS=false` unless the portal is only reachable from the NOC
 - [ ] HTTPS: put your internal CA certificate on a reverse proxy in front of ports 80 and 8080
 - [ ] To use the import script from an admin PC, set `API_ADMIN_RANGE_START/END` in `.env`, then run `scripts/configure-glpi.sh`
 - [ ] Read-only SNMP credentials, and a dedicated low-privilege inventory account for SSH/WinRM/vSphere
@@ -213,8 +269,9 @@ docker compose restart glpi
 |---|---|
 | `docker-compose.yml`, `.env.example` | The stack and its settings |
 | `nginx/default.conf` | Portal: library, viewer, API proxy |
-| `viewer/` | DC Viewer: Racks (`index.html`) and Inventory (`inventory.html`), plain HTML/JS/CSS with no external libraries |
+| `viewer/` | DC Viewer: Racks (`index.html`), Inventory (`inventory.html`) and Status (`status.html`, embeds Grafana); plain HTML/JS/CSS with no external libraries |
 | `collector/` | Network collector image (`Dockerfile`, `collect.sh`) and `collector.conf.example` |
+| `monitoring/` | Prometheus, Blackbox and Grafana config, the Device status dashboard, the GLPI target sync (`targets/glpi-targets.pl`) and extra checks (`manual/`) |
 | `scripts/prepare-offline-bundle.sh` | Build the bundle (online machine) |
 | `scripts/install-offline.sh` | Install from the bundle (offline server) |
 | `scripts/configure-glpi.sh` | Turn on inventory and the API, allow API clients |

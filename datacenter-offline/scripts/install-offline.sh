@@ -27,7 +27,9 @@ for f in images/*.tar.gz; do
 done
 
 cd "$KIT"
+first_install=no
 if [ ! -f .env ]; then
+  first_install=yes
   cp .env.example .env
   pw=$(head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)
   sed -i "s/^GLPI_DB_PASSWORD=.*/GLPI_DB_PASSWORD=$pw/" .env
@@ -35,7 +37,7 @@ if [ ! -f .env ]; then
   echo "Created .env with a random database password."
 fi
 # Image versions always follow the bundle (this is how upgrades happen)
-for key in GLPI_VERSION MARIADB_VERSION NGINX_VERSION AGENT_VERSION; do
+for key in GLPI_VERSION MARIADB_VERSION NGINX_VERSION AGENT_VERSION GRAFANA_VERSION PROMETHEUS_VERSION BLACKBOX_VERSION; do
   val=$(grep "^$key=" .env.example | cut -d= -f2-)
   if grep -q "^$key=" .env; then
     sed -i "s/^$key=.*/$key=$val/" .env
@@ -43,6 +45,26 @@ for key in GLPI_VERSION MARIADB_VERSION NGINX_VERSION AGENT_VERSION; do
     echo "$key=$val" >> .env
   fi
 done
+
+# Fill in monitoring settings once: random passwords and this server's address
+setenv() { # key value  (only when empty or missing)
+  if grep -q "^$1=." .env; then return; fi
+  if grep -q "^$1=" .env; then sed -i "s#^$1=.*#$1=$2#" .env; else echo "$1=$2" >> .env; fi
+}
+randpw() { head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24; }
+ip=$(hostname -I 2>/dev/null | awk '{print $1}')
+port_suffix() { [ "${1:-80}" = 80 ] && echo "" || echo ":$1"; }
+glpi_port=$(grep '^GLPI_PORT=' .env | cut -d= -f2)
+portal_port=$(grep '^PORTAL_PORT=' .env | cut -d= -f2)
+setenv GRAFANA_ADMIN_PASSWORD "$(randpw)"
+setenv MONITOR_GLPI_PASSWORD "$(randpw)"
+setenv GLPI_PUBLIC_URL "http://${ip:-localhost}$(port_suffix "$glpi_port")/"
+setenv GRAFANA_ROOT_URL "http://${ip:-localhost}$(port_suffix "${portal_port:-8080}")/grafana/"
+for key in GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION MONITOR_EXCLUDE_STATES; do
+  grep -q "^$key=" .env || grep "^$key=" .env.example >> .env
+done
+chmod 600 .env
+
 # shellcheck disable=SC1091
 set -a; . ./.env; set +a
 
@@ -66,6 +88,9 @@ sed -i "s#^  glpiUrl: .*#  glpiUrl: $glpi_url,#" viewer/config.js
 
 echo "Starting containers..."
 docker compose up -d
+# Containers that mount single config files keep the old file after an upgrade
+# replaces it; recreate them (they hold no data) so they read the new versions
+docker compose up -d --force-recreate --no-deps portal blackbox prometheus monitor-sync >/dev/null
 
 echo "Waiting for GLPI (first start installs the database, ~1-3 minutes)..."
 for _ in $(seq 1 90); do
@@ -77,32 +102,53 @@ done
 ./scripts/configure-glpi.sh
 
 console() { docker compose exec -T glpi php bin/console --no-interaction "$@"; }
+sql() { docker compose exec -T db mariadb -u"$GLPI_DB_USER" -p"$GLPI_DB_PASSWORD" "$GLPI_DB_NAME" -N -e "$1"; }
 
-if [ -z "${ADMIN_PASSWORD:-}" ] && [ -t 0 ]; then
+# Admin password and demo accounts: asked on first install; on upgrades only
+# when ADMIN_PASSWORD / DISABLE_DEMO_USERS are given explicitly
+if [ -z "${ADMIN_PASSWORD:-}" ] && [ "$first_install" = yes ] && [ -t 0 ]; then
   read -rsp "New password for the GLPI super-admin 'glpi' (empty = keep default, NOT recommended): " ADMIN_PASSWORD; echo
 fi
 if [ -n "${ADMIN_PASSWORD:-}" ]; then
-  console user:reset_password glpi --password="$ADMIN_PASSWORD" >/dev/null
-  echo "Password for 'glpi' changed."
-else
+  if console user:reset_password glpi --password="$ADMIN_PASSWORD" >/dev/null 2>&1; then
+    echo "Password for 'glpi' changed."
+  else
+    echo "Password for 'glpi' not changed (GLPI refused it: already in use or too recent)."
+  fi
+elif [ "$first_install" = yes ]; then
   echo "WARNING: 'glpi' still uses the default password 'glpi'. Change it at first login."
 fi
 
-if [ -z "${DISABLE_DEMO_USERS:-}" ] && [ -t 0 ]; then
+if [ -z "${DISABLE_DEMO_USERS:-}" ] && [ "$first_install" = yes ] && [ -t 0 ]; then
   read -rp "Disable the demo accounts tech, normal and post-only? [Y/n] " DISABLE_DEMO_USERS
   DISABLE_DEMO_USERS=${DISABLE_DEMO_USERS:-yes}
 fi
+
+# Read-only GLPI account the monitoring uses to list devices and their IPs
+if [ -z "$(sql "SELECT id FROM glpi_users WHERE name='dc-monitor'")" ]; then
+  console user:create dc-monitor --password="$MONITOR_GLPI_PASSWORD" >/dev/null
+fi
+profile=$(sql "SELECT id FROM glpi_profiles WHERE name IN ('Read-Only','Observer') ORDER BY name='Read-Only' DESC LIMIT 1")
+granted=$(sql "SELECT pu.id FROM glpi_profiles_users pu JOIN glpi_users u ON u.id=pu.users_id
+               WHERE u.name='dc-monitor' AND pu.profiles_id=${profile:-0} AND pu.entities_id=0 LIMIT 1")
+if [ -n "$profile" ] && [ -z "$granted" ]; then
+  console user:grant dc-monitor --profile="$profile" --entity=0 --recursive >/dev/null
+fi
+docker compose restart monitor-sync >/dev/null
+echo "Monitoring account 'dc-monitor' (read-only) ready."
+
 case "${DISABLE_DEMO_USERS:-no}" in
   [Yy]*) for u in tech normal post-only; do console user:disable "$u" >/dev/null && echo "Disabled $u"; done ;;
 esac
 
-ip=$(hostname -I 2>/dev/null | awk '{print $1}')
 cat <<MSG
 
 Data centre stack is running.
   GLPI (manage assets, racks, rooms):   http://${ip:-<server-ip>}:${GLPI_PORT:-80}/
   DC Viewer (read-only rack screens):   http://${ip:-<server-ip>}:${PORTAL_PORT:-8080}/viewer/
   Inventory dashboard:                  http://${ip:-<server-ip>}:${PORTAL_PORT:-8080}/viewer/inventory.html
+  Device status (Grafana):              http://${ip:-<server-ip>}:${PORTAL_PORT:-8080}/viewer/status.html
+      Grafana login: admin / password in $KIT/.env (GRAFANA_ADMIN_PASSWORD)
   Learning library:                     http://${ip:-<server-ip>}:${PORTAL_PORT:-8080}/glpi-datacenter-library.html
   GLPI Agent installers:                $BUNDLE/agents/
 

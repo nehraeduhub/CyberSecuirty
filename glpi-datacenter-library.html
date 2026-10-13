@@ -663,7 +663,8 @@ sudo glpi-agent --server https://glpi.example.com/ --force</code></pre>
           <span class="node">2. Copy via USB</span><span class="arrow">&rarr;</span>
           <span class="node">3. install-offline.sh</span><span class="arrow">&rarr;</span>
           <span class="node">4. Import racks CSV</span><span class="arrow">&rarr;</span>
-          <span class="node">5. Automatic collection</span>
+          <span class="node">5. Automatic collection</span><span class="arrow">&rarr;</span>
+          <span class="node">6. Status in Grafana</span>
         </div>
 
         <h3>1&ndash;3. Build and install</h3>
@@ -680,6 +681,7 @@ cd dc-offline-bundle-YYYYMMDD &amp;&amp; sudo ./install-offline.sh</code></pre>
             <tr><td>GLPI</td><td><code>http://&lt;server&gt;/</code></td><td>Full management GUI: rooms, racks, assets, cables, tickets</td></tr>
             <tr><td>DC Viewer</td><td><code>http://&lt;server&gt;:8080/viewer/</code></td><td>Floor plan, front/rear rack views, space, power and weight, device search</td></tr>
             <tr><td>Inventory</td><td><code>http://&lt;server&gt;:8080/viewer/inventory.html</code></td><td>Everything collected from the network: charts, network map, device table</td></tr>
+            <tr><td>Status (Grafana)</td><td><code>http://&lt;server&gt;:8080/viewer/status.html</code></td><td>Live UP/DOWN of every device, outage history, availability and ping times</td></tr>
             <tr><td>Library</td><td><code>http://&lt;server&gt;:8080/glpi-datacenter-library.html</code></td><td>This course, served offline</td></tr>
           </table>
         </div>
@@ -701,6 +703,9 @@ cd dc-offline-bundle-YYYYMMDD &amp;&amp; sudo ./install-offline.sh</code></pre>
 docker compose exec collector collect.sh once  # collect now</code></pre>
         <p>The <strong>Inventory dashboard</strong> (<code>http://&lt;server&gt;:8080/viewer/inventory.html</code>) shows the results: summary tiles, collection status, charts, a <strong>network map</strong> built from switch LLDP/CDP data, and a searchable device table with CSV export.</p>
         <p>Prefer an agent? <code>install-agent-linux.sh</code> and <code>install-agent-windows.cmd</code> are still included.</p>
+
+        <h3>6. Watch device status (Grafana)</h3>
+        <p>Every device in GLPI that has an IP address is <strong>pinged every 30 seconds</strong> by Prometheus and the Blackbox exporter. The <strong>Status</strong> tab shows the Grafana <em>Device status</em> dashboard: how many devices are up and down, which are down and for how long, an UP/DOWN history per device, 24-hour availability and ping times. Extra checks (SSH, web pages, TCP ports) go in <code>monitoring/manual/*.yml</code>.</p>
         <p>Full instructions, security checklist and backup/restore are in <code>datacenter-offline/README.md</code>.</p>
       </section>
     </main>

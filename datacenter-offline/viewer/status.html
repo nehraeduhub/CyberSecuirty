@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Status | DC Viewer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body class="status-page">
+  <header class="topbar">
+    <div class="brand">DC Viewer</div>
+    <nav class="nav" aria-label="Views">
+      <a href="index.html">Racks</a>
+      <a href="inventory.html">Inventory</a>
+      <a href="status.html" aria-current="page">Status</a>
+    </nav>
+    <div class="spacer"></div>
+    <span class="muted small">Live device up/down status from Grafana &middot; checks every 30 s</span>
+    <a id="grafana-open" class="btn ghost" target="_blank" rel="noopener">Open in Grafana</a>
+  </header>
+  <iframe id="grafana" class="status-frame" title="Device status dashboard (Grafana)"></iframe>
+  <script>
+    (function () {
+      var cfg = window.DC_VIEWER_CONFIG || {};
+      var base = (cfg.grafanaPath || '../grafana/').replace(/\/?$/, '/');
+      var dash = base + 'd/dc-device-status/device-status?orgId=1';
+      document.getElementById('grafana').src = dash + '&kiosk';
+      document.getElementById('grafana-open').href = dash;
+    })();
+  </script>
+</body>
+</html>

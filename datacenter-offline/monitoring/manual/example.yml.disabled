@@ -1,0 +1,6 @@
+# Extra checks that are not (or not only) ping. Copy to <name>.yml to enable;
+# Prometheus picks up changes within a minute. Labels show in Grafana.
+- targets: ["10.10.1.21:22"]
+  labels: { module: ssh_banner, name: "SRV-WEB-01 SSH", type: Service, rack: "" }
+- targets: ["https://10.10.0.5"]
+  labels: { module: http_2xx, name: "Core switch web UI", type: Service, rack: "" }
