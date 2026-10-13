@@ -663,7 +663,7 @@ sudo glpi-agent --server https://glpi.example.com/ --force</code></pre>
           <span class="node">2. Copy via USB</span><span class="arrow">&rarr;</span>
           <span class="node">3. install-offline.sh</span><span class="arrow">&rarr;</span>
           <span class="node">4. Import racks CSV</span><span class="arrow">&rarr;</span>
-          <span class="node">5. Agents + SNMP</span>
+          <span class="node">5. Automatic collection</span>
         </div>
 
         <h3>1&ndash;3. Build and install</h3>
@@ -679,6 +679,7 @@ cd dc-offline-bundle-YYYYMMDD &amp;&amp; sudo ./install-offline.sh</code></pre>
             <tr><th>Service</th><th>Address</th><th>Use</th></tr>
             <tr><td>GLPI</td><td><code>http://&lt;server&gt;/</code></td><td>Full management GUI: rooms, racks, assets, cables, tickets</td></tr>
             <tr><td>DC Viewer</td><td><code>http://&lt;server&gt;:8080/viewer/</code></td><td>Floor plan, front/rear rack views, space, power and weight, device search</td></tr>
+            <tr><td>Inventory</td><td><code>http://&lt;server&gt;:8080/viewer/inventory.html</code></td><td>Everything collected from the network: charts, network map, device table</td></tr>
             <tr><td>Library</td><td><code>http://&lt;server&gt;:8080/glpi-datacenter-library.html</code></td><td>This course, served offline</td></tr>
           </table>
         </div>
@@ -689,12 +690,17 @@ cd dc-offline-bundle-YYYYMMDD &amp;&amp; sudo ./install-offline.sh</code></pre>
     --racks layout/racks.csv --devices layout/devices.csv</code></pre>
         <div class="note">Always fill in the <strong>serial number</strong>. GLPI links agent and SNMP inventory to existing assets by serial or UUID, not by name. Without it you get a duplicate asset.</div>
 
-        <h3>5. Connect devices</h3>
+        <h3>5. Collect devices automatically</h3>
+        <p>The <strong>collector</strong> container scans your network on a schedule and sends what it finds to GLPI. Nothing has to be installed on the devices. Configure it in <code>collector/collector.conf</code>:</p>
         <ul>
-          <li><strong>Linux servers:</strong> <code>sudo ./install-agent-linux.sh http://&lt;glpi-server&gt;/</code></li>
-          <li><strong>Windows servers:</strong> <code>install-agent-windows.cmd http://&lt;glpi-server&gt;/</code> (or deploy the MSI by GPO)</li>
-          <li><strong>Switches, firewalls, PDUs, UPS, storage:</strong> <code>./scripts/snmp-discover.sh 10.10.0.1 10.10.0.254</code> with read-only SNMP credentials</li>
+          <li><strong>SNMP ranges:</strong> switches, routers, firewalls, PDUs, UPS, storage, printers (read-only community or SNMPv3)</li>
+          <li><strong>SSH / WinRM:</strong> Linux and Windows servers, using an inventory account</li>
+          <li><strong>VMware:</strong> ESXi hosts and vCenter, using a read-only user</li>
         </ul>
+<pre><code>docker compose restart collector               # apply the settings
+docker compose exec collector collect.sh once  # collect now</code></pre>
+        <p>The <strong>Inventory dashboard</strong> (<code>http://&lt;server&gt;:8080/viewer/inventory.html</code>) shows the results: summary tiles, collection status, charts, a <strong>network map</strong> built from switch LLDP/CDP data, and a searchable device table with CSV export.</p>
+        <p>Prefer an agent? <code>install-agent-linux.sh</code> and <code>install-agent-windows.cmd</code> are still included.</p>
         <p>Full instructions, security checklist and backup/restore are in <code>datacenter-offline/README.md</code>.</p>
       </section>
     </main>

@@ -4,10 +4,8 @@
 (function () {
   'use strict';
 
-  var CFG = window.DC_VIEWER_CONFIG || {};
-  var API = CFG.apiUrl || '../apirest.php';
-  var GLPI = (CFG.glpiUrl || location.protocol + '//' + location.hostname).replace(/\/$/, '');
-  var REFRESH_MS = (CFG.refreshMinutes || 5) * 60000;
+  var DC = window.DC;
+  var el = DC.el, $ = DC.$, fetchAll = DC.fetchAll, byId = DC.byId, glpiForm = DC.glpiForm;
   var U_PX = 18;
 
   // Itemtypes GLPI can mount in a rack, and how they are coloured
@@ -23,84 +21,9 @@
   var PDU_SIDE = { 1: 'left', 2: 'right', 3: 'top', 4: 'bottom' };
 
   var state = {
-    token: null, data: null, roomId: null, rackId: null, face: 0,
+    data: null, roomId: null, rackId: null, face: 0,
     selected: null, query: ''
   };
-
-  var $ = function (id) { return document.getElementById(id); };
-
-  function el(tag, attrs, children) {
-    var node = document.createElement(tag);
-    Object.keys(attrs || {}).forEach(function (k) {
-      if (k === 'class') node.className = attrs[k];
-      else if (k === 'text') node.textContent = attrs[k];
-      else if (k === 'style') node.style.cssText = attrs[k];
-      else if (k.slice(0, 2) === 'on') node.addEventListener(k.slice(2), attrs[k]);
-      else node.setAttribute(k, attrs[k]);
-    });
-    (children || []).forEach(function (c) {
-      if (c != null) node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-    });
-    return node;
-  }
-
-  function store(key, value) {
-    try {
-      if (value == null) sessionStorage.removeItem(key);
-      else sessionStorage.setItem(key, value);
-    } catch (e) { /* storage unavailable */ }
-  }
-
-  function recall(key) {
-    try { return sessionStorage.getItem(key); } catch (e) { return null; }
-  }
-
-  // ---------------------------------------------------------------- API
-  function api(path, opts) {
-    opts = opts || {};
-    var headers = { 'Content-Type': 'application/json' };
-    if (state.token) headers['Session-Token'] = state.token;
-    if (CFG.appToken) headers['App-Token'] = CFG.appToken;
-    Object.assign(headers, opts.headers || {});
-    return fetch(API + '/' + path, { headers: headers }).then(function (r) {
-      return r.text().then(function (body) {
-        var json = null;
-        try { json = body ? JSON.parse(body) : null; } catch (e) { /* not json */ }
-        if (!r.ok) {
-          var err = new Error(Array.isArray(json) ? json.join(': ') : 'HTTP ' + r.status);
-          err.status = r.status;
-          err.code = Array.isArray(json) ? json[0] : '';
-          throw err;
-        }
-        return { json: json, headers: r.headers };
-      });
-    });
-  }
-
-  function fetchAll(itemtype) {
-    var out = [], step = 1000;
-    function page(start) {
-      return api(itemtype + '?is_deleted=0&range=' + start + '-' + (start + step - 1))
-        .then(function (res) {
-          out = out.concat(res.json || []);
-          var total = parseInt(((res.headers.get('Content-Range') || '/0').split('/')[1]), 10) || 0;
-          return start + step < total ? page(start + step) : out;
-        })
-        .catch(function (e) {
-          if (e.code === 'ERROR_RANGE_EXCEED_TOTAL') return out;
-          // Missing right on an itemtype should not break the whole view
-          if (e.status === 401 || e.status === 403) return out;
-          throw e;
-        });
-    }
-    return page(0);
-  }
-
-  function byId(list) {
-    var m = {};
-    list.forEach(function (o) { m[o.id] = o; });
-    return m;
-  }
 
   function load() {
     $('app-error').textContent = '';
@@ -131,14 +54,7 @@
   }
 
   function handleError(e) {
-    if (e.status === 401) {
-      // Session expired
-      logout(true);
-      $('login-error').textContent = 'Your session has expired. Please sign in again.';
-      return;
-    }
-    $('app-error').textContent = 'Could not load data from GLPI: ' + e.message;
-    $('updated').textContent = '';
+    DC.loadError(e, $('app-error'), $('updated'));
   }
 
   // ---------------------------------------------------------- helpers
@@ -189,10 +105,6 @@
     var q = state.query.toLowerCase();
     return ((item.name || '') + ' ' + (item.serial || '') + ' ' + (item.otherserial || ''))
       .toLowerCase().indexOf(q) !== -1;
-  }
-
-  function glpiForm(itemtype, id) {
-    return GLPI + '/front/' + itemtype.toLowerCase() + '.form.php?id=' + id;
   }
 
   // ----------------------------------------------------------- render
@@ -509,46 +421,15 @@
 
   var timer = null;
 
-  function showApp() {
-    $('login-view').hidden = true;
-    $('app-view').hidden = false;
+  function startApp() {
     setFace(state.face);
     load();
     clearInterval(timer);
-    timer = setInterval(load, REFRESH_MS);
-  }
-
-  function logout(expired) {
-    if (!expired && state.token) api('killSession').catch(function () {});
-    clearInterval(timer);
-    state.token = null;
-    store('dcv-token', null);
-    $('app-view').hidden = true;
-    $('login-view').hidden = false;
-  }
-
-  function login(e) {
-    e.preventDefault();
-    var f = e.target;
-    $('login-error').textContent = '';
-    var cred = btoa(unescape(encodeURIComponent(f.user.value + ':' + f.password.value)));
-    api('initSession', { headers: { Authorization: 'Basic ' + cred } }).then(function (res) {
-      state.token = res.json.session_token;
-      store('dcv-token', state.token);
-      f.password.value = '';
-      showApp();
-    }).catch(function (err) {
-      $('login-error').textContent = err.status === 401
-        ? 'Wrong login or password.'
-        : 'Cannot reach the GLPI API (' + err.message + '). Is the REST API enabled for this network?';
-    });
+    timer = setInterval(load, DC.refreshMs);
   }
 
   // ------------------------------------------------------------- init
   readHash();
-  $('glpi-link').href = GLPI + '/';
-  $('login-form').addEventListener('submit', login);
-  $('logout').addEventListener('click', function () { logout(false); });
   $('refresh').addEventListener('click', load);
   $('room-select').addEventListener('change', function (e) {
     state.roomId = parseInt(e.target.value, 10);
@@ -569,7 +450,5 @@
     b.addEventListener('click', function () { setFace(parseInt(b.dataset.face, 10)); });
   });
 
-  state.token = recall('dcv-token');
-  if (state.token) showApp();
-  else $('login-view').hidden = false;
+  DC.initAuth({ onReady: startApp, onLogout: function () { clearInterval(timer); } });
 })();

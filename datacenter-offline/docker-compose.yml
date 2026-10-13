@@ -2,6 +2,7 @@
 #   glpi    - GLPI asset manager (main GUI, rack/room views, inventory endpoint)
 #   db      - MariaDB database for GLPI
 #   portal  - nginx serving the learning library + DC Viewer, and proxying the GLPI REST API
+#   collector - scheduled network collection (SNMP, SSH/WinRM, VMware) pushed into GLPI
 #
 # All images are pinned so the same versions can be saved into an offline bundle.
 name: dc
@@ -44,6 +45,7 @@ services:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./viewer:/usr/share/nginx/html/viewer:ro
+      - collector_status:/usr/share/nginx/html/collector:ro
       - ../index.html:/usr/share/nginx/html/index.html:ro
       - ../glpi-datacenter-library.html:/usr/share/nginx/html/glpi-datacenter-library.html:ro
       - ../Cyber Security Overview.jpg:/usr/share/nginx/html/Cyber Security Overview.jpg:ro
@@ -55,6 +57,23 @@ services:
     ports:
       - "${PORTAL_PORT:-8080}:80"
 
+  collector:
+    image: "dc-collector:${AGENT_VERSION:-1.17}"
+    build:
+      context: ./collector
+      args:
+        AGENT_VERSION: ${AGENT_VERSION:-1.17}
+    restart: unless-stopped
+    environment:
+      GLPI_URL: http://glpi/
+    volumes:
+      - ./collector/collector.conf:/etc/collector/collector.conf:ro
+      - ./collector/ssh:/root/.ssh
+      - collector_status:/status
+    depends_on:
+      - glpi
+
 volumes:
   glpi_data:
   db_data:
+  collector_status:

@@ -2,18 +2,20 @@
 # Build the offline bundle on a machine WITH internet access and Docker.
 # Produces dc-offline-bundle-<date>.tar.gz containing:
 #   - this kit, the NehraEduHub site and learning library
-#   - Docker images (GLPI, MariaDB, nginx) saved as tar files
+#   - Docker images (GLPI, MariaDB, nginx, network collector) saved as tar files
 #   - GLPI Agent installers for Linux and Windows
 # Copy the archive to the data centre server (USB / internal share) and run install-offline.sh.
 #
 #   ./scripts/prepare-offline-bundle.sh
-#   AGENT_VERSION=1.17 ./scripts/prepare-offline-bundle.sh   # pin the agent version
+#   AGENT_VERSION=latest ./scripts/prepare-offline-bundle.sh   # newest GLPI Agent instead of .env.example's
 set -euo pipefail
 
 KIT=$(cd "$(dirname "$0")/.." && pwd)
 SITE=$(dirname "$KIT")
+agent_override=${AGENT_VERSION:-}
 # shellcheck disable=SC1091
 set -a; . "$KIT/.env.example"; set +a
+AGENT_VERSION=${agent_override:-$AGENT_VERSION}
 
 name=dc-offline-bundle-$(date +%Y%m%d)
 work=$(mktemp -d)
@@ -29,7 +31,7 @@ for img in "${images[@]}"; do
   docker save "$img" | gzip > "$out/images/$file"
 done
 
-if [ -z "${AGENT_VERSION:-}" ]; then
+if [ "$AGENT_VERSION" = latest ]; then
   AGENT_VERSION=$(curl -fsSL https://api.github.com/repos/glpi-project/glpi-agent/releases/latest \
     | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/') || true
 fi
@@ -43,10 +45,19 @@ curl -fSL -o "$out/agents/glpi-agent-$AGENT_VERSION-linux-installer.pl" "$base/g
 curl -fSL -o "$out/agents/GLPI-Agent-$AGENT_VERSION-x64.msi" "$base/GLPI-Agent-$AGENT_VERSION-x64.msi"
 cp "$KIT"/agents/install-agent-* "$out/agents/"
 
+echo "Building network collector image ..."
+cp "$out/agents/glpi-agent-$AGENT_VERSION-linux-installer.pl" "$KIT/collector/"
+docker build -q --platform linux/amd64 --build-arg AGENT_VERSION="$AGENT_VERSION" \
+  -t "dc-collector:$AGENT_VERSION" "$KIT/collector"
+rm -f "$KIT/collector/glpi-agent-$AGENT_VERSION-linux-installer.pl"
+docker save "dc-collector:$AGENT_VERSION" | gzip > "$out/images/dc-collector_$AGENT_VERSION.tar.gz"
+
 echo "Copying site and kit ..."
 cp "$SITE"/*.html "$SITE"/*.jpg "$out/site/" 2>/dev/null || true
 mkdir -p "$out/site/datacenter-offline"
-tar -C "$KIT" --exclude=./.env --exclude=./backups -cf - . | tar -C "$out/site/datacenter-offline" -xf -
+tar -C "$KIT" --exclude=./.env --exclude=./backups --exclude=./collector/collector.conf \
+  --exclude=./collector/ssh --exclude='./collector/glpi-agent-*' -cf - . | tar -C "$out/site/datacenter-offline" -xf -
+sed -i "s/^AGENT_VERSION=.*/AGENT_VERSION=$AGENT_VERSION/" "$out/site/datacenter-offline/.env.example"
 cp "$KIT/scripts/install-offline.sh" "$out/"
 
 (cd "$out" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)

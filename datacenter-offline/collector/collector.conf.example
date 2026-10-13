@@ -1,0 +1,38 @@
+# Network collector settings. Copy to collector.conf (chmod 600: it holds credentials).
+# Lines starting with # are ignored in every list.
+
+# How often to collect, in minutes
+INTERVAL_MINUTES=60
+
+# Parallel threads for SNMP scans
+THREADS=16
+
+# ---------------------------------------------------------------- SNMP
+# IP ranges to discover: switches, routers, firewalls, PDUs, UPS, storage,
+# printers, iLO/iDRAC/IPMI cards. One range per line: first-last or a single IP.
+# Nothing is scanned until you add a range here.
+SNMP_RANGES="
+# 10.10.0.1-10.10.0.254
+# 10.10.1.1-10.10.1.254
+"
+
+# Read-only SNMP credentials, tried in order. One per line.
+SNMP_CREDENTIALS="
+# version:2c,community:CHANGE-ME
+# version:3,username:glpi,authprotocol:sha,authpassword:CHANGE,privprotocol:aes,privpassword:CHANGE
+"
+
+# ------------------------------------------------- Agentless servers
+# Linux/Unix over SSH (key in collector/ssh/id_ed25519, see README) and
+# Windows over WinRM (enable with: winrm quickconfig). One URL per line.
+REMOTES="
+# ssh://inventory@10.10.1.21
+# ssh://inventory@10.10.1.22
+# winrm://inventory:CHANGE@10.10.1.40
+"
+
+# ------------------------------------------------------------- VMware
+# ESXi hosts or vCenter: host user password (one per line, read-only role)
+ESX_HOSTS="
+# 10.10.2.10 inventory@vsphere.local CHANGE
+"

@@ -25,6 +25,10 @@
   <div id="app-view" hidden>
     <header class="topbar">
       <div class="brand">DC Viewer</div>
+      <nav class="nav" aria-label="Views">
+        <a href="index.html" aria-current="page">Racks</a>
+        <a href="inventory.html">Inventory</a>
+      </nav>
       <label class="sr-only" for="room-select">Server room</label>
       <select id="room-select"></select>
       <label class="sr-only" for="search">Search devices</label>
@@ -74,6 +78,7 @@
     <p id="app-error" class="error" role="alert"></p>
   </div>
 
+  <script src="glpi-client.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
