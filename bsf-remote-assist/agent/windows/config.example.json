@@ -1,0 +1,7 @@
+{
+  "server": "https://remote.example.local",
+  "device_id": "00000000-0000-0000-0000-000000000000",
+  "enrollment_token": "ONE-TIME-TOKEN",
+  "agent_version": "0.7.0",
+  "heartbeat_seconds": 30
+}
