@@ -4,3 +4,11 @@ __pycache__/
 node_modules/
 dist/
 staticfiles/
+tests/local-stack/stack.env
+frontend/dist/
+backend/staticfiles/
+backend/db.sqlite3
+deploy/certs/*
+!deploy/certs/README.txt
+deploy/secrets/*
+!deploy/secrets/README.txt

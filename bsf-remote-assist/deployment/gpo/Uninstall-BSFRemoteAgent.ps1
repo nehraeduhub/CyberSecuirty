@@ -1,10 +1,12 @@
+<#
+.SYNOPSIS
+  Removes the BSF Remote agent. Pass the same installer used for installation (it carries the uninstaller).
+#>
 [CmdletBinding()]
-param([switch]$RemoveMeshAgent)
-$ErrorActionPreference = 'SilentlyContinue'
-$taskName = 'BSF Remote Heartbeat'
-Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
-if ($RemoveMeshAgent) {
-  Get-CimInstance Win32_Product | Where-Object { $_.Name -match 'MeshCentral|Mesh Agent' } | ForEach-Object { $_.Uninstall() }
-}
-Remove-Item 'C:\ProgramData\BSFRemote' -Recurse -Force
-Write-Host 'BSF Remote management component removed.'
+param([Parameter(Mandatory = $true)][string]$InstallerPath)
+$ErrorActionPreference = 'Stop'
+$local = Join-Path $env:TEMP 'BSFRemoteAgent-uninstall.exe'
+Copy-Item -Path $InstallerPath -Destination $local -Force
+Start-Process -FilePath $local -ArgumentList '-fulluninstall' -Wait
+Remove-Item (Join-Path $env:ProgramData 'BSFRemote') -Recurse -Force -ErrorAction SilentlyContinue
+Write-Host 'BSF Remote agent removed. Remove or revoke the device in BSF Remote > Device Approval.'

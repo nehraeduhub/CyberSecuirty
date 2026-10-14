@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import MFAMethod, StepUpGrant
 try:
-    import pyotp, qrcode
+    import pyotp, qrcode, qrcode.image.svg
 except ImportError:
     pyotp=qrcode=None
 
@@ -29,7 +29,10 @@ def mfa_enroll(request):
     m, _=MFAMethod.objects.get_or_create(user=request.user,defaults={'secret':pyotp.random_base32()})
     if m.enabled: return Response({'detail':'MFA is already enabled'},409)
     uri=pyotp.TOTP(m.secret).provisioning_uri(name=request.user.username,issuer_name=settings.PORTAL_MFA_ISSUER)
-    return Response({'secret':m.secret,'otpauth_uri':uri})
+    svg=''
+    if qrcode is not None:
+        buf=io.BytesIO(); qrcode.make(uri,image_factory=qrcode.image.svg.SvgPathImage).save(buf); svg=buf.getvalue().decode()
+    return Response({'secret':m.secret,'otpauth_uri':uri,'qr_svg':svg})
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -40,6 +43,8 @@ def mfa_verify(request):
     code=str(request.data.get('code','')).replace(' ','')
     if not pyotp.TOTP(m.secret).verify(code,valid_window=1): return Response({'detail':'Invalid MFA code'},401)
     m.enabled=True; m.verified_at=timezone.now(); m.save(update_fields=['enabled','verified_at','updated_at'])
+    from remote_sessions.services import audit
+    audit(request.user,'MFA_ENABLED',request.user,request)
     return Response({'ok':True})
 
 @api_view(['POST'])
@@ -49,13 +54,18 @@ def stepup_verify(request):
     m=getattr(request.user,'mfa',None)
     if not m or not m.enabled: return Response({'detail':'MFA must be enrolled and enabled'},403)
     code=str(request.data.get('code','')).replace(' ','')
-    if not pyotp.TOTP(m.secret).verify(code,valid_window=1): return Response({'detail':'Invalid MFA code'},401)
+    from remote_sessions.services import audit
+    from django.core.cache import cache
+    replay_key=f'mfa-used:{request.user.pk}:{code}'
+    if cache.get(replay_key) or not pyotp.TOTP(m.secret).verify(code,valid_window=1):
+        audit(request.user,'MFA_STEPUP_FAILED',request.user,request); return Response({'detail':'Invalid MFA code'},401)
+    cache.set(replay_key,1,120)
     purpose=str(request.data.get('purpose','REMOTE_CONNECT'))[:64]
     grant=StepUpGrant.objects.create(user=request.user,purpose=purpose,expires_at=timezone.now()+timedelta(minutes=5))
     return Response({'grant':str(grant.id),'expires_at':grant.expires_at})
 
 def consume_stepup(user,grant_id,purpose):
     try: g=StepUpGrant.objects.get(id=grant_id,user=user,purpose=purpose,used=False)
-    except StepUpGrant.DoesNotExist: return False
+    except Exception: return False
     if g.expires_at < timezone.now(): return False
     g.used=True; g.save(update_fields=['used']); return True

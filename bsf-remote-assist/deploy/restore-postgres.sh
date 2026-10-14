@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
+# Restores the portal database from a backup-postgres.sh dump. Usage: restore-postgres.sh <portal-*.dump>
 set -euo pipefail
-: "${POSTGRES_HOST:?POSTGRES_HOST is required}"
-: "${POSTGRES_DB:?POSTGRES_DB is required}"
-: "${POSTGRES_USER:?POSTGRES_USER is required}"
-: "${BACKUP_FILE:?BACKUP_FILE is required}"
-read -r -p "RESTORE will overwrite objects in database '$POSTGRES_DB'. Type RESTORE to continue: " CONFIRM
+cd "$(dirname "$0")/.."
+set -a; . ./.env; set +a
+BACKUP_FILE="${1:?usage: $0 <portal-YYYYmmdd-HHMMSS.dump>}"
+read -r -p "RESTORE will overwrite database '$POSTGRES_DB'. Type RESTORE to continue: " CONFIRM
 [[ "$CONFIRM" == "RESTORE" ]] || { echo "Cancelled"; exit 1; }
-export PGPASSWORD="${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
-pg_restore -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner "$BACKUP_FILE"
-unset PGPASSWORD
-echo "Restore completed"
+docker compose exec -T db pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner < "$BACKUP_FILE"
+echo "Restore completed. MeshCentral data is restored by extracting meshcentral-data-*.tgz into the meshdata volume while meshcentral is stopped."

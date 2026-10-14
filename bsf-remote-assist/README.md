@@ -1,107 +1,73 @@
-# BSF Remote Assist — Final Deployment
+# BSF Remote — self-hosted remote support (MeshCentral engine)
 
-## Authentication model
+BSF Remote is an on-premises remote-support portal with a Zoho Assist–like workflow, built on the
+open-source **MeshCentral 1.2.5** remote-control engine. The portal does identity, authorization,
+consent, session lifecycle and audit; MeshCentral does the remote desktop, terminal, file transfer,
+chat, power actions and relaying. Everything runs inside the MPLS network: no cloud relay, no
+external authentication, no CDN, no Internet access at run time.
 
-**Local authentication is the default. Active Directory is optional.** The first administrator is created from `BOOTSTRAP_ADMIN_USERNAME` and `BOOTSTRAP_ADMIN_PASSWORD` during deployment. There is no public self-registration. Administrators create local remote-support users from the portal and assign roles.
+No Zoho code, branding or service is used.
 
-After first login, a SUPERADMIN/ADMIN can configure **Active Directory / LDAPS** from **Settings → Active Directory / LDAPS**. AD accounts still require a portal user record and administrator approval; AD authentication does not auto-create portal accounts.
+## What it does
 
-Recommended first deployment sequence:
-1. Copy `.env.example` to `.env`.
-2. Set strong PostgreSQL, Django and bootstrap-admin passwords.
-3. Keep AD disabled/blank initially.
-4. Run `./deploy/preflight.sh`.
-5. Run `./deploy/install.sh`.
-6. Log in with the bootstrap local administrator.
-7. Create a local technician/remote user.
-8. Configure devices/MeshCentral and test one Windows PC.
-9. Optionally configure LDAPS from the GUI, provision AD users, approve them, and test AD login.
-10. Only after pilot validation deploy the endpoint agent through the pilot GPO.
+**Attended support** — technician clicks *Start Remote Support* → a one-time 9-digit code and an
+internal link (`https://<portal>/join/<code>`, valid 10 min by default) → the user opens it, sees who is
+asking and for what, approves, downloads the on-demand agent *from the internal portal*, runs it and
+clicks **Connect** → the technician sees the computer and opens the console → the user gets an
+on-screen **Yes/No** prompt for the desktop, and again for terminal and files → either side can end it
+at any time (portal button, user's join page, closing the agent, or the connection bar on the PC).
 
-## Security
+**Unattended access** — administrators create device groups; each has an official agent installer
+served by the internal portal (GPO deployable). New endpoints register as **pending** and cannot be
+reached until an administrator approves them *and* grants a technician permission for the group or
+device. Connecting checks account status, role, device approval and permission, and a **TOTP step-up**
+(MFA) by policy. Only then does the server grant the technician's engine account rights on that
+one device, for that one session.
 
-Do not expose PostgreSQL or Redis to the user network. Do not expose Windows RDP/SMB for remote support. Keep MeshCentral and portal HTTPS-only through the reverse proxy. Store production secrets outside source control.
+**Remote console** — browser console embedded in the portal: remote desktop with keyboard/mouse
+(MeshCentral's multi-display selector, Ctrl-Alt-Del, clipboard), terminal and file transfer (only if
+permitted), chat, reboot with automatic reconnect, device events, session timer, end session.
 
-The bootstrap admin password is not reset on every container restart. Set `BOOTSTRAP_ADMIN_RESET=true` only for an intentional recovery/reset operation, then return it to `false`.
+**Records** — every session stores technician, target device (name/OS/IP), how it was authorized
+(remote-user consent or permission + MFA), the remote user's on-screen decisions, enabled
+capabilities, created/opened/ended times, who ended it and why, and the technician's outcome note;
+plus a full audit log and the engine's own event trail. Optional session recording per group.
 
-The package is a deployment candidate and must be validated against the actual server, TLS certificate, DNS, firewall and MeshCentral version before production rollout.
-# BSF Remote Assist — FINAL DEPLOYMENT PACKAGE
+## How access is enforced
 
-Self-hosted remote-support portal for an AD-controlled environment. The portal provides administrator-controlled accounts, RBAC, device approval, MFA/step-up authorization, audit records and a MeshCentral remote-management engine.
+Technicians never hold standing rights in MeshCentral. Each portal user has a least-privilege
+MeshCentral account with **no device rights**; the portal adds rights on exactly one device when a
+session is authorized and, when it ends (or is revoked, expires, or the account/device is disabled),
+removes the rights, closes the live desktop/terminal/file tunnels on the agent and closes the
+technician's console. The portal signs the console in with a one-minute token; no MeshCentral
+password exists for technicians or for the portal's service account.
 
-## Important status
-This is the consolidated deployment package, not a guarantee of production readiness without site validation. Do not deploy directly to the full endpoint population. First complete the pilot checklist in `deploy/FINAL-DEPLOYMENT-SOP.md` on 5–10 domain PCs.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-The package deliberately does NOT contain:
-- your AD password or service-account secret
-- TLS private keys
-- MeshCentral login-token signing secret
-- production database data
-- a fabricated MeshCentral agent binary
+## Status
 
-Those must be generated/provisioned in your data centre.
+* The complete attended and unattended workflows were run end to end with **two real MeshCentral
+  agents on Linux test endpoints**, through the real browser UI, inside a network namespace with **no
+  route to the Internet**: 44/44 acceptance checks passed. Evidence: [docs/evidence/](docs/evidence/).
+* **Not yet done: the two-Windows-PC acceptance.** No Windows machines were available in the build
+  environment. The procedure and checklist are in [docs/ACCEPTANCE-TEST.md](docs/ACCEPTANCE-TEST.md).
+  Do not treat the system as accepted until that has passed.
+* Known limitations and untested items: [docs/STATUS-AND-LIMITATIONS.md](docs/STATUS-AND-LIMITATIONS.md).
 
-## Architecture
-- `remote.inet.gov.in` — BSF Remote React portal + Django API
-- `mesh.remote.inet.gov.in` — MeshCentral remote engine
-- PostgreSQL — portal database
-- Redis — application cache/session infrastructure
-- NGINX — TLS reverse proxy
-- AD/LDAPS — authentication source; portal accounts remain administrator-controlled
-- Windows endpoints — official MeshCentral agent + BSF endpoint heartbeat/enrollment where required
+## Deploy
 
-MeshCentral supports Docker deployments, reverse-proxy configuration and login-token/framing features. Pin the exact tested release rather than using a floating `latest` image. Official Docker documentation lists versioned image tags. See the deployment references in `docs/REFERENCES.md`.
+1. [deploy/OFFLINE-IMAGES.md](deploy/OFFLINE-IMAGES.md) — build the images on a connected build host and load them on the server.
+2. [deploy/DEPLOYMENT.md](deploy/DEPLOYMENT.md) — DNS, internal certificate, secrets, `.env`, start, first login.
+3. [deploy/NETWORK-PORTS.md](deploy/NETWORK-PORTS.md) — firewall rules (browser, agent and relay traffic).
+4. [deployment/gpo/README.md](deployment/gpo/README.md) — Windows agent rollout.
 
-## Deployment order
-1. Prepare Ubuntu LTS server/VM and Docker Engine + Compose.
-2. Create DNS A/AAAA records for `remote.inet.gov.in` and `mesh.remote.inet.gov.in`.
-3. Place the approved wildcard/SAN TLS certificate and private key under `deploy/certs/`.
-4. Copy `.env.example` to `.env` and replace every placeholder.
-5. Verify LDAPS from the server to the domain controller.
-6. Run `./deploy/preflight.sh`.
-7. Run `./deploy/install.sh`.
-8. Complete initial MeshCentral administrator setup using the controlled bootstrap procedure.
-9. Configure the BSF Remote administrator account and provision only approved AD users.
-10. Create/approve the first device group and enroll 5–10 pilot endpoints.
-11. Test attended/unattended connection, MFA, terminal, reboot, file transfer policy, audit and disconnect.
-12. Only after acceptance, deploy the Windows agent through a pilot GPO OU.
-13. Expand GPO deployment in controlled batches.
+## Repository layout
 
-## TLS
-Use a certificate trusted by all managed endpoints. The certificate SANs must cover at least:
-- `remote.inet.gov.in`
-- `mesh.remote.inet.gov.in`
-
-Do not commit private keys to Git or copy them into the Docker images.
-
-## Sophos / firewall principle
-Keep the service inside the data-centre/DMZ design approved by your security team. Do not expose RDP 3389 or SMB 445 to the Internet. Permit only the portal/remote service traffic required by the approved architecture and the AD/LDAPS, PostgreSQL and management dependencies on their respective internal networks.
-
-See:
-- `deploy/DATA-CENTRE-PORTS.md`
-- `deploy/SECURITY-PORTS.md`
-
-## Backup
-Run:
-```bash
-./deploy/backup-postgres.sh
-```
-
-Test restoration before production rollout:
-```bash
-./deploy/restore-postgres.sh <backup-file>
-```
-
-Also back up the persistent MeshCentral data/files/backups volumes according to your DC/DR policy.
-
-## Upgrade rule
-Never run `docker compose pull` followed by an uncontrolled production restart for MeshCentral. Review the exact release, security advisories, compatibility, backup and rollback plan first. Update `MESHCENTRAL_IMAGE` to the tested version, validate in pilot, then roll forward.
-
-## Validation
-```bash
-python3 -m compileall backend
-./deploy/preflight.sh
-./deploy/healthcheck.sh
-```
-
-For application tests, activate the deployment environment and run Django checks/migrations as described in `deploy/FINAL-DEPLOYMENT-SOP.md`.
+| Path | Contents |
+|---|---|
+| `backend/` | Django API: accounts/MFA, devices, permissions, sessions, audit, MeshCentral client (`remote_bridge/meshapi.py`), session worker |
+| `frontend/` | React portal: technician, administrator and remote-user (`/join`) pages, remote console |
+| `meshcentral/` | Pinned offline MeshCentral image, config renderer, service-account bootstrap |
+| `deploy/` | NGINX template, scripts (secrets, preflight, install, health, backup) and deployment docs |
+| `deployment/gpo/` | Windows agent GPO scripts |
+| `tests/e2e/`, `tests/local-stack/` | Acceptance test and the isolated local stack used to run it |

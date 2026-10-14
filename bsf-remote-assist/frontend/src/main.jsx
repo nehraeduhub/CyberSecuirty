@@ -1,36 +1,65 @@
-import React,{useEffect,useState} from 'react';
-import {createRoot} from 'react-dom/client';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import { api, navigate } from './api.js';
+import Portal from './Portal.jsx';
+import Console from './Console.jsx';
+import Join from './Join.jsx';
 import './style.css';
-const nav=['Dashboard','Devices','Sessions','Technicians','Groups','Audit Logs','Settings'];
-function App(){
- const [me,setMe]=useState(null),[devices,setDevices]=useState([]),[sessions,setSessions]=useState([]),[users,setUsers]=useState([]),[tab,setTab]=useState('Dashboard'),[msg,setMsg]=useState(''),[login,setLogin]=useState({username:'',password:''});
- const [showLogin,setShowLogin]=useState(false),[selected,setSelected]=useState(null),[session,setSession]=useState(null),[mfa,setMfa]=useState({enabled:false,configured:false}),[mfaSecret,setMfaSecret]=useState(''),[directory,setDirectory]=useState({enabled:false,configured:false,server_uri:'',bind_dn:'',user_base_dn:'',group_dn:'',verify_ssl:true});
- const load=async()=>{try{const m=await axios.get('/api/me/');setMe(m.data);setDevices((await axios.get('/api/devices/')).data);setSessions((await axios.get('/api/sessions/')).data);if(['ADMIN','SUPERADMIN'].includes(m.data.role)){setUsers((await axios.get('/api/access/users/')).data);setDirectory((await axios.get('/api/access/directory/')).data)} setMfa((await axios.get('/api/security/mfa/status/')).data)}catch(e){setShowLogin(true);setMsg('Sign in with your local administrator account. AD is optional and can be configured after launch.')} };
- useEffect(()=>{load()},[]);
- const doLogin=async()=>{try{const c=await axios.get('/api/access/csrf/');await axios.post('/api/access/login/',login,{headers:{'X-CSRFToken':c.data.csrfToken}});setShowLogin(false);setMsg('');load()}catch(e){setMsg(e.response?.data?.detail||'Login failed')}};
- const provision=async()=>{const ad=window.prompt('AD username to provision:');if(!ad)return;await axios.post('/api/access/users/provision/',{ad_username:ad,role:'TECHNICIAN'});setMsg('AD user provisioned. Approve after verifying the account.');load()};
- const createLocal=async()=>{const username=window.prompt('New local username:');if(!username)return;const password=window.prompt('Temporary password (change it after first login):');if(!password)return;await axios.post('/api/access/users/',{username,password,role:'TECHNICIAN'});setMsg('Local remote user created.');load()};
- const saveDirectory=async()=>{try{await axios.post('/api/access/directory/',directory);setMsg('Active Directory settings saved. Now provision AD users and approve them.');load()}catch(e){setMsg(e.response?.data?.detail||'Unable to save AD settings')}};
- const approve=async id=>{await axios.post(`/api/access/users/${id}/approve/`);load()}; const disable=async id=>{await axios.post(`/api/access/users/${id}/disable/`);load()};
- const connect=async(d,mode='UNATTENDED')=>{try{const r=await axios.post('/api/sessions/create/',{mode,device_id:d.id});let payload={};if(mode==='UNATTENDED'&&!['ADMIN','SUPERADMIN'].includes(me?.role)){const code=window.prompt('Enter your 6-digit MFA code to authorize this remote connection:');if(!code)throw new Error('MFA cancelled');const g=await axios.post('/api/security/stepup/verify/',{code,purpose:'REMOTE_CONNECT'});payload.stepup_grant=g.data.grant;}const st=await axios.post(`/api/sessions/${r.data.session_id}/start/`,payload);setSession({...r.data,...st.data,device:d});setSelected(d);setMsg(mode==='ATTENDED'?'Share code '+r.data.code:'Authorized session started.');load()}catch(e){setMsg(e.response?.data?.detail||e.message||'Unable to start session')}};
-const enrollMFA=async()=>{try{const r=await axios.post('/api/security/mfa/enroll/');setMfaSecret(r.data.secret);window.alert('Add this secret to your authenticator: '+r.data.secret);const code=window.prompt('Enter the current 6-digit authenticator code:');if(code){await axios.post('/api/security/mfa/verify/',{code});setMfa({configured:true,enabled:true});setMsg('MFA enabled.')}}catch(e){setMsg(e.response?.data?.detail||'MFA enrollment failed')}};
- const action=async a=>{try{if(a==='terminal'){const command=window.prompt('PowerShell command to run on the approved endpoint:');if(!command)return;const r=await axios.post(`/api/sessions/${session.id}/execute/`,{action:a,command});setMsg(`terminal: command dispatched`)}else if(a==='reboot'){if(!window.confirm('Reboot this approved endpoint now?'))return;const r=await axios.post(`/api/sessions/${session.id}/execute/`,{action:a});setMsg('reboot: dispatched')}else{const r=await axios.post(`/api/sessions/${session.id}/action/`,{action:a});setMsg(`${a}: ${r.data.message}`)}load()}catch(e){setMsg(e.response?.data?.detail||`${a} denied`)}};
- const end=async()=>{await axios.post(`/api/sessions/${session.id}/end/`);setSession(null);setSelected(null);setMsg('Session ended.');load()};
- if(showLogin)return <div className="login"><div className="loginbox"><h1>BSF REMOTE</h1><p>Authorized personnel only</p><input placeholder="Username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})}/><input type="password" placeholder="Password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})}/><button onClick={doLogin}>Sign In</button><small>Self-registration is disabled. Local users are created by an administrator. Active Directory can be enabled later.</small>{msg&&<div className="notice">{msg}</div>}</div></div>;
- return <div className="app"><header><div><b>BSF REMOTE</b><span> Secure Remote Assist</span></div><div>{me?.username} <em>{me?.role}</em></div></header><main><aside><div className="brand">Remote Assist</div>{nav.map(x=><div className={'nav '+(tab===x?'active':'')} onClick={()=>setTab(x)} key={x}>{x}</div>)}</aside><section><div className="top"><div><h1>{tab}</h1><p>Administrator-controlled self-hosted remote support</p></div>{tab==='Dashboard'&&<button onClick={()=>setTab('Devices')}>View Devices</button>}</div>{msg&&<div className="notice">{msg}</div>}
- {session&&<SessionPanel session={session} onAction={action} onEnd={end}/>} 
- {tab==='Dashboard'&&<><div className="cards"><div><small>Authorized Devices</small><strong>{devices.length}</strong></div><div><small>Online</small><strong>{devices.filter(x=>x.online).length}</strong></div><div><small>My Sessions</small><strong>{sessions.length}</strong></div><div><small>Role</small><strong>{me?.role||'-'}</strong></div></div><Panel title="Authorized Devices"><DeviceTable devices={devices} onConnect={connect}/></Panel></>}
- {tab==='Devices'&&<Panel title="Authorized Managed Devices"><DeviceTable devices={devices} onConnect={connect}/></Panel>}
- {tab==='Sessions'&&<Panel title="My Sessions"><SessionTable sessions={sessions}/></Panel>}
- {tab==='Technicians'&&['ADMIN','SUPERADMIN'].includes(me?.role)&&<Panel title="Portal Users — Administrator Controlled"><button onClick={createLocal}>+ Create Local Remote User</button> <button onClick={provision}>+ Provision AD User</button><table><thead><tr><th>Username / AD User</th><th>Role</th><th>Portal</th><th>Action</th></tr></thead><tbody>{users.map(u=><tr key={u.id}><td>{u.ad_username||u.username}</td><td>{u.role}</td><td>{u.portal_enabled?'ENABLED':'PENDING'}</td><td>{u.portal_enabled?<button className="danger" onClick={()=>disable(u.id)}>Disable</button>:<button onClick={()=>approve(u.id)}>Approve</button>}</td></tr>)}</tbody></table></Panel>}
- {tab==='Technicians'&&!['ADMIN','SUPERADMIN'].includes(me?.role)&&<Panel title="Restricted">Administrator access required.</Panel>}
- {tab==='Groups'&&<Panel title="Device Groups"><p>Groups are used as permission boundaries. Example: HQ / IT, DC / Servers, DRC / Backup.</p></Panel>}
- {tab==='Audit Logs'&&<Panel title="Audit Logs"><p>Stage 5 records session creation, start/end and privileged actions. A dedicated searchable audit viewer is part of the security hardening stage.</p></Panel>}
- {tab==='Settings'&&<><Panel title="Security Settings"><button onClick={enrollMFA}>Configure MFA</button><p>MFA status: <b>{mfa.enabled?'ENABLED':'NOT ENABLED'}</b></p><ul><li>Local authentication: <b>ENABLED</b></li><li>Self-registration: <b>DISABLED</b></li><li>Admin-controlled users: <b>REQUIRED</b></li><li>Active Directory: <b>OPTIONAL BACKUP</b></li><li>Device authorization: <b>REQUIRED</b></li><li>Per-action RBAC: <b>ENABLED</b></li><li>Unattended access: <b>STEP-UP MFA REQUIRED</b></li></ul></Panel><Panel title="Active Directory / LDAPS (Optional)"><input placeholder="LDAPS URI, e.g. ldaps://dc01.inet.gov.in:636" value={directory.server_uri} onChange={e=>setDirectory({...directory,server_uri:e.target.value})}/><input placeholder="Bind DN" value={directory.bind_dn} onChange={e=>setDirectory({...directory,bind_dn:e.target.value})}/><input type="password" placeholder="Bind password (leave blank to keep existing)" onChange={e=>setDirectory({...directory,bind_password:e.target.value})}/><input placeholder="User Base DN" value={directory.user_base_dn} onChange={e=>setDirectory({...directory,user_base_dn:e.target.value})}/><input placeholder="Optional AD group DN" value={directory.group_dn} onChange={e=>setDirectory({...directory,group_dn:e.target.value})}/><label><input type="checkbox" checked={directory.verify_ssl} onChange={e=>setDirectory({...directory,verify_ssl:e.target.checked})}/> Verify LDAPS certificate</label><label><input type="checkbox" checked={directory.enabled} onChange={e=>setDirectory({...directory,enabled:e.target.checked})}/> Enable AD authentication</label><button onClick={saveDirectory}>Save AD Settings</button></Panel></>}
- </section></main></div>}
-function SessionPanel({session,onAction,onEnd}){return <div className="session"><div><b>ACTIVE SESSION</b><span>{session.device?.name} · {session.device?.ip_address||'—'}</span></div><div className="actions"><button onClick={()=>window.open(session.mesh_url,'_blank','noopener,noreferrer')}>Open Remote Console</button><button onClick={()=>onAction('file_transfer')}>File Transfer</button><button onClick={()=>onAction('terminal')}>Terminal</button><button onClick={()=>onAction('reboot')}>Reboot</button><button className="danger" onClick={onEnd}>End Session</button></div></div>}
-function Panel({title,children}){return <div className="panel"><h2>{title}</h2>{children}</div>}
-function DeviceTable({devices,onConnect}){return <table><thead><tr><th>Name</th><th>IP</th><th>Group</th><th>Status</th><th>Action</th></tr></thead><tbody>{devices.map(d=><tr key={d.id}><td><b>{d.name}</b><small>{d.os||''}</small></td><td>{d.ip_address||'-'}</td><td>{d.group||d.unit||'-'}</td><td><span className={d.online?'online':'offline'}>{d.online?'ONLINE':'OFFLINE'}</span></td><td>{d.approved&&<button onClick={()=>onConnect(d)}>Connect</button>}</td></tr>)}</tbody></table>}
-function SessionTable({sessions}){return <table><thead><tr><th>Code</th><th>Mode</th><th>Status</th><th>Created</th></tr></thead><tbody>{sessions.map(s=><tr key={s.id}><td>{s.code}</td><td>{s.mode}</td><td>{s.status}</td><td>{new Date(s.created_at).toLocaleString()}</td></tr>)}</tbody></table>}
-createRoot(document.getElementById('root')).render(<App/>);
+
+function usePath() {
+  const [path, setPath] = useState(window.location.pathname);
+  useEffect(() => {
+    const on = () => setPath(window.location.pathname);
+    window.addEventListener('popstate', on);
+    return () => window.removeEventListener('popstate', on);
+  }, []);
+  return path;
+}
+
+function Login({ onDone }) {
+  const [form, setForm] = useState({ username: '', password: '' });
+  const [msg, setMsg] = useState('');
+  const [busy, setBusy] = useState(false);
+  const submit = async (e) => {
+    e.preventDefault();
+    setBusy(true); setMsg('');
+    try {
+      await api.ensureCsrf();
+      await api.post('/api/access/login/', form);
+      onDone();
+    } catch (err) { setMsg(err.message); } finally { setBusy(false); }
+  };
+  return (
+    <div className="login">
+      <form className="loginbox" onSubmit={submit}>
+        <div className="brandmark">BSF REMOTE</div>
+        <p className="muted">Secure Remote Assist — authorized personnel only</p>
+        <input autoFocus placeholder="Username" autoComplete="username" value={form.username}
+          onChange={(e) => setForm({ ...form, username: e.target.value })} />
+        <input type="password" placeholder="Password" autoComplete="current-password" value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })} />
+        <button className="primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+        {msg && <div className="notice error">{msg}</div>}
+        <small className="muted">Accounts are created by an administrator. Remote users joining a support
+          session do not sign in — open <a href="/join" onClick={(e) => { e.preventDefault(); navigate('/join'); }}>/join</a> and enter the code from your technician.</small>
+      </form>
+    </div>
+  );
+}
+
+function App() {
+  const path = usePath();
+  const [me, setMe] = useState(undefined);
+  const loadMe = async () => {
+    try { await api.ensureCsrf(); setMe(await api.get('/api/me/')); } catch { setMe(null); }
+  };
+  useEffect(() => { if (!path.startsWith('/join')) loadMe(); }, [path.startsWith('/join')]);
+
+  if (path.startsWith('/join')) return <Join code={path.split('/')[2] || ''} />;
+  if (me === undefined) return <div className="center muted">Loading…</div>;
+  if (me === null) return <Login onDone={loadMe} />;
+  if (path.startsWith('/console/')) return <Console sessionId={path.split('/')[2]} me={me} />;
+  return <Portal me={me} path={path} onLogout={async () => { await api.post('/api/access/logout/'); setMe(null); navigate('/'); }} reloadMe={loadMe} />;
+}
+
+createRoot(document.getElementById('root')).render(<App />);

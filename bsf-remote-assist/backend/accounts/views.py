@@ -2,15 +2,23 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from .models import DirectoryProvider
 from .services import encrypt_secret, get_directory
+from remote_sessions.services import audit
+from security.models import MFAMethod
 User=get_user_model()
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def me(request):
     u=request.user
-    return Response({'username':u.username,'role':u.role,'portal_enabled':u.portal_enabled,'is_staff':u.is_staff,'auth_source':u.auth_source})
+    from django.conf import settings
+    return Response({'username':u.username,'role':u.role,'portal_enabled':u.portal_enabled,'is_staff':u.is_staff,'auth_source':u.auth_source,
+                     'mfa_enabled':MFAMethod.objects.filter(user=u,enabled=True).exists(),
+                     'policy':{'unattended_mfa':settings.UNATTENDED_REQUIRE_MFA,'attended_mfa':settings.ATTENDED_REQUIRE_MFA,
+                               'attended_ttl_minutes':settings.ATTENDED_CODE_TTL_MINUTES,'session_max_minutes':settings.SESSION_MAX_MINUTES}})
 
 def is_admin(u): return bool(u.is_authenticated and u.role in ('ADMIN','SUPERADMIN'))
 
@@ -25,7 +33,10 @@ def users(request):
     role=d.get('role','TECHNICIAN')
     if role not in User.Role.values: return Response({'error':'invalid role'},400)
     if role in ('ADMIN','SUPERADMIN') and request.user.role!='SUPERADMIN': return Response({'error':'only SUPERADMIN can create administrators'},403)
+    try: validate_password(password)
+    except ValidationError as e: return Response({'error':' '.join(e.messages)},400)
     u=User.objects.create_user(username=username,email=d.get('email',''),password=password,role=role,portal_enabled=True,is_active=True,auth_source='LOCAL',created_by=request.user)
+    audit(request.user,'USER_CREATED',u,request,username=u.username,role=role,auth_source='LOCAL')
     return Response({'id':u.id,'username':u.username,'role':u.role,'auth_source':'LOCAL'},201)
 
 @api_view(['GET','POST'])
@@ -38,4 +49,5 @@ def directory(request):
     d=request.data; cfg=cfg or DirectoryProvider(name='Active Directory')
     cfg.server_uri=(d.get('server_uri') or '').strip(); cfg.bind_dn=(d.get('bind_dn') or '').strip(); cfg.user_base_dn=(d.get('user_base_dn') or '').strip(); cfg.group_dn=(d.get('group_dn') or '').strip(); cfg.verify_ssl=bool(d.get('verify_ssl',True)); cfg.enabled=bool(d.get('enabled',False))
     if d.get('bind_password'): cfg.bind_password_enc=encrypt_secret(d['bind_password'])
-    cfg.save(); return Response({'ok':True,'enabled':cfg.enabled,'message':'Directory settings saved. AD login is available immediately for provisioned AD portal users.'})
+    cfg.save(); audit(request.user,'DIRECTORY_SETTINGS_CHANGED',cfg,request,enabled=cfg.enabled,server_uri=cfg.server_uri)
+    return Response({'ok':True,'enabled':cfg.enabled,'message':'Directory settings saved. AD login is available immediately for provisioned AD portal users.'})

@@ -1,0 +1,769 @@
+{
+  "results": [
+    {
+      "check": "Portal health and admin login",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Admin created technician accounts in the portal",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Device group created and linked to a MeshCentral device group",
+      "pass": true,
+      "detail": "{\"id\": 1, \"name\": \"HQ-IT\", \"description\": \"\", \"active\": true, \"auto_approve\": false, \"record_sessions\": true, \"linked\": true, \"devices\": 0}"
+    },
+    {
+      "check": "Windows agent installer served by internal portal with internal server URL embedded",
+      "pass": true,
+      "detail": "wss://mesh.remote.bsf.test:443/agent.ashx"
+    },
+    {
+      "check": "Managed agent package downloaded from portal",
+      "pass": true,
+      "detail": "1769901 bytes"
+    },
+    {
+      "check": "Managed endpoint registered with internal MeshCentral and appears in portal",
+      "pass": true,
+      "detail": "vm Ubuntu 24.04.5 LTS"
+    },
+    {
+      "check": "Newly registered device is NOT approved (pending)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Connect refused while device is pending approval (agent installed is not enough)",
+      "pass": true,
+      "detail": "{\"detail\":\"You are not authorized for this device.\"}"
+    },
+    {
+      "check": "Administrator approved the device",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "tech1 granted group permission (connect, files, terminal, reboot)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Unauthorized technician does not see the device",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Unauthorized technician is refused by the server",
+      "pass": true,
+      "detail": "{\"detail\":\"You are not authorized for this device.\"}"
+    },
+    {
+      "check": "Authorized technician without MFA step-up is refused",
+      "pass": true,
+      "detail": "{\"detail\":\"MFA is required for this connection. Enroll an authenticator under Settings first.\"}"
+    },
+    {
+      "check": "No technician MeshCentral account has standing rights on the endpoint",
+      "pass": true,
+      "detail": "None"
+    },
+    {
+      "check": "Technician enrolled TOTP MFA",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Unattended connect authorized after MFA step-up; console opened",
+      "pass": true,
+      "detail": "9d77258f-81e8-47d4-8fd2-6c1c1fdde309"
+    },
+    {
+      "check": "Rights granted on exactly this endpoint for the session (device-level link)",
+      "pass": true,
+      "detail": "{'user//bsftech-2': {'rights': 12863496, 'name': 'tech1'}}"
+    },
+    {
+      "check": "Remote desktop of PC-2 visible in browser console (frame connected)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Keyboard and mouse input reached PC-2 (window title changed on the endpoint)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Remote terminal executed a command on PC-2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Remote file browser connected (file transfer channel)",
+      "pass": true,
+      "detail": "\u00a0 10/14/2026, 7:37:08 PM\u00a0 n/a bin \u00a0 4/8/2024, 4:14:20 PM\u00a0 n/a bin.usr-is-merged \u00a0 4/22/2024, 1:08:03 PM\u00a0 n/a boot \u00a0 10/1"
+    },
+    {
+      "check": "Chat window opened against MeshCentral messenger for this device",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Reboot command delivered to the agent (agent logged power action 3)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Console shows device offline during restart",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Console reconnected automatically after the endpoint came back",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Rights removed from endpoint at session end",
+      "pass": true,
+      "detail": "{}"
+    },
+    {
+      "check": "No live tunnels remain for the technician on the endpoint",
+      "pass": true,
+      "detail": "No websocket sessions."
+    },
+    {
+      "check": "Console cannot be reopened after the session ended",
+      "pass": true,
+      "detail": "{\"detail\":\"Session is ended.\"}"
+    },
+    {
+      "check": "Session record: technician, device, MFA, capabilities, times, outcome",
+      "pass": true,
+      "detail": "{\"status\": \"ENDED\", \"ended_by\": \"TECHNICIAN\", \"end_reason\": \"Ended by technician\", \"capabilities\": {\"chat\": true, \"files\": true, \"reboot\": true, \"desktop\": true, \"terminal\": true}}"
+    },
+    {
+      "check": "Revoking device approval terminates an open session immediately",
+      "pass": true,
+      "detail": "Authorization revoked / tunnels: No websocket sessions."
+    },
+    {
+      "check": "Attended session code generated (9 digits, time-limited, internal URL)",
+      "pass": true,
+      "detail": "https://remote.bsf.test/join/371468863"
+    },
+    {
+      "check": "Remote user downloaded the session agent from the internal portal",
+      "pass": true,
+      "detail": "BSF-Remote-Support-371468863.tar.gz"
+    },
+    {
+      "check": "Session code cannot be reused by anyone else after approval",
+      "pass": true,
+      "detail": "{\"detail\":\"This session code has already been used.\"}"
+    },
+    {
+      "check": "Technician sees the remote computer after the user clicked Connect",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Remote user approved on-screen consent; desktop connected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Keyboard/mouse control on PC-1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Remote user terminated the session; technician console closed",
+      "pass": true,
+      "detail": "Remote user ended the session from the support page"
+    },
+    {
+      "check": "Agent-side consent outcomes recorded (desktop accepted, terminal rejected)",
+      "pass": true,
+      "detail": "{\"desktop\": \"accepted\", \"terminal\": \"rejected\"}"
+    },
+    {
+      "check": "Per-session MeshCentral group deleted at session end",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Closing the agent on the remote PC ends the session",
+      "pass": true,
+      "detail": "Remote user closed the support agent or disconnected"
+    },
+    {
+      "check": "Cancelled invitation code is rejected",
+      "pass": true,
+      "detail": "{\"detail\":\"This code is not valid or has expired. Ask your technician for a new code.\"}"
+    },
+    {
+      "check": "Unknown code rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Audit log contains the full lifecycle",
+      "pass": true,
+      "detail": "missing: []"
+    },
+    {
+      "check": "Browsers made no request to any host other than the two internal servers",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "context": {
+    "portal": "https://remote.bsf.test",
+    "network": "lo               UNKNOWN        127.0.0.1/8 \n",
+    "routes": "",
+    "internet_check": "unreachable: ConnectionError",
+    "pc2_device": {
+      "id": "4e066027-f896-4140-88c3-d25d6aa9c57a",
+      "name": "vm",
+      "hostname": "vm",
+      "ip_address": "127.0.0.1",
+      "os": "Ubuntu 24.04.5 LTS",
+      "group": "HQ-IT",
+      "online": true,
+      "approved": false,
+      "removed": false,
+      "agent_version": "Feb 15 2026, 1740302142",
+      "last_seen": "2026-10-14T19:37:38.698807Z",
+      "can_connect": false,
+      "capabilities": {}
+    },
+    "pc2_node": "node//xq6G@rmVpk1ifP9JTnKTgiNYRuT22jYCs4t5YnKrN6rQxu4xkow$pINaJKMcJgJC",
+    "unattended_session": "9d77258f-81e8-47d4-8fd2-6c1c1fdde309",
+    "unattended_record": {
+      "id": "9d77258f-81e8-47d4-8fd2-6c1c1fdde309",
+      "code": "675395574",
+      "mode": "UNATTENDED",
+      "status": "ENDED",
+      "technician": "tech1",
+      "device_id": "4e066027-f896-4140-88c3-d25d6aa9c57a",
+      "target_name": "vm",
+      "target_os": "Ubuntu 24.04.5 LTS",
+      "target_ip": "127.0.0.1",
+      "capabilities": {
+        "chat": true,
+        "files": true,
+        "reboot": true,
+        "desktop": true,
+        "terminal": true
+      },
+      "mfa_verified": true,
+      "created_at": "2026-10-14T19:38:00.853458+00:00",
+      "expires_at": null,
+      "authorized_at": "2026-10-14T19:38:00.851812+00:00",
+      "started_at": "2026-10-14T19:38:00.916443+00:00",
+      "ended_at": "2026-10-14T19:38:42.684544+00:00",
+      "deadline_at": "2026-10-14T21:38:00.851812+00:00",
+      "customer_name": "",
+      "customer_consent_at": null,
+      "ended_by": "TECHNICIAN",
+      "end_reason": "Ended by technician",
+      "outcome": "Resolved - unattended test",
+      "device_online": true,
+      "remote_consent": {},
+      "recording": false,
+      "mesh_events": [
+        {
+          "msg": "Removed user device rights for vm",
+          "time": "2026-10-14T19:38:42.711Z",
+          "user": "bsf-portal-svc",
+          "msgid": 81
+        },
+        {
+          "msg": "Remote Desktop Connection Bar Activated/Updated (127.0.0.1)",
+          "time": "2026-10-14T19:38:38.565Z",
+          "user": "bsftech-2",
+          "msgid": 31
+        },
+        {
+          "msg": "Started remote desktop with toast notification (127.0.0.1)",
+          "time": "2026-10-14T19:38:38.535Z",
+          "user": "bsftech-2",
+          "msgid": 35
+        },
+        {
+          "msg": "Started desktop session \"ufwnxt8wxbg\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-14T19:38:38.440Z",
+          "user": "bsftech-2",
+          "msgid": 15
+        },
+        {
+          "msg": "Finished recording session, 4 second(s)",
+          "time": "2026-10-14T19:38:29.088Z",
+          "user": "",
+          "msgid": null
+        },
+        {
+          "msg": "Performing power action=3, forced=0",
+          "time": "2026-10-14T19:38:26.129Z",
+          "user": "bsf-portal-svc",
+          "msgid": 25
+        },
+        {
+          "msg": "Ended file management session \"70l1d4wx38j\" from 127.0.0.1 to 127.0.0.1, 3 second(s)",
+          "time": "2026-10-14T19:38:24.086Z",
+          "user": "bsftech-2",
+          "msgid": 12
+        },
+        {
+          "msg": "Finished recording session, 5 second(s)",
+          "time": "2026-10-14T19:38:22.695Z",
+          "user": "",
+          "msgid": null
+        },
+        {
+          "msg": "Opening: https://mesh.remote.bsf.test:443/messenger?id=meshmessenger/node%2F%2Fxq6G%40rmVpk1ifP9JTnKTgiNYRuT22jYCs4t5YnKrN6rQxu4xkow%24pINaJKMcJgJC/user%2F%2Fbsftech-2",
+          "time": "2026-10-14T19:38:21.380Z",
+          "user": "bsftech-2",
+          "msgid": 20
+        },
+        {
+          "msg": "Started remote files with toast notification (127.0.0.1)",
+          "time": "2026-10-14T19:38:20.264Z",
+          "user": "bsftech-2",
+          "msgid": 42
+        },
+        {
+          "msg": "Started file management session \"70l1d4wx38j\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-14T19:38:20.261Z",
+          "user": "bsftech-2",
+          "msgid": 16
+        },
+        {
+          "msg": "Ended terminal session \"q2smsfe087\" from 127.0.0.1 to 127.0.0.1, 5 second(s)",
+          "time": "2026-10-14T19:38:17.694Z",
+          "user": "bsftech-2",
+          "msgid": 10
+        },
+        {
+          "msg": "Finished recording session, 7 second(s)",
+          "time": "2026-10-14T19:38:14.788Z",
+          "user": "",
+          "msgid": null
+        },
+        {
+          "msg": "Started terminal session \"q2smsfe087\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-14T19:38:12.389Z",
+          "user": "bsftech-2",
+          "msgid": 14
+        },
+        {
+          "msg": "Ended desktop session \"goldf1olk3g\" from 127.0.0.1 to 127.0.0.1, 7 second(s)",
+          "time": "2026-10-14T19:38:09.785Z",
+          "user": "bsftech-2",
+          "msgid": 11
+        },
+        {
+          "msg": "Remote Desktop Connection Bar Activated/Updated (127.0.0.1)",
+          "time": "2026-10-14T19:38:02.563Z",
+          "user": "bsftech-2",
+          "msgid": 31
+        },
+        {
+          "msg": "Started remote desktop with toast notification (127.0.0.1)",
+          "time": "2026-10-14T19:38:02.524Z",
+          "user": "bsftech-2",
+          "msgid": 35
+        },
+        {
+          "msg": "Started desktop session \"goldf1olk3g\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-14T19:38:02.369Z",
+          "user": "bsftech-2",
+          "msgid": 15
+        },
+        {
+          "msg": "Changed user device rights for vm",
+          "time": "2026-10-14T19:38:00.850Z",
+          "user": "bsf-portal-svc",
+          "msgid": 82
+        }
+      ],
+      "authorization": {
+        "mfa": true,
+        "role": "TECHNICIAN",
+        "source": "perm:1",
+        "mesh_rights": 12863496
+      },
+      "audit": [
+        {
+          "action": "SESSION_AUTHORIZED",
+          "created_at": "2026-10-14T19:38:00.855261Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "mfa": true,
+            "mode": "UNATTENDED",
+            "device": "vm",
+            "device_id": "4e066027-f896-4140-88c3-d25d6aa9c57a",
+            "mesh_rights": 12863496,
+            "capabilities": {
+              "chat": true,
+              "files": true,
+              "reboot": true,
+              "desktop": true,
+              "terminal": true
+            }
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "DEVICE_ONLINE",
+          "created_at": "2026-10-14T19:38:00.892712Z",
+          "source_ip": null,
+          "details": {
+            "node": "vm"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "SESSION_STARTED",
+          "created_at": "2026-10-14T19:38:00.918517Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "code": "675395574",
+            "target": "vm"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-14T19:38:00.919776Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "desktop"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-14T19:38:09.775031Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "terminal"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-14T19:38:17.679155Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "files"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CHAT_OPENED",
+          "created_at": "2026-10-14T19:38:21.381208Z",
+          "source_ip": "127.0.0.1",
+          "details": {},
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-14T19:38:24.074514Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "desktop"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "DEVICE_REBOOT",
+          "created_at": "2026-10-14T19:38:26.131447Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "target": "vm"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "DEVICE_OFFLINE",
+          "created_at": "2026-10-14T19:38:30.362399Z",
+          "source_ip": null,
+          "details": {
+            "node": "vm"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "DEVICE_ONLINE",
+          "created_at": "2026-10-14T19:38:33.386310Z",
+          "source_ip": null,
+          "details": {
+            "node": "vm"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-14T19:38:33.919057Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "desktop"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "SESSION_ENDED",
+          "created_at": "2026-10-14T19:38:42.767509Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "reason": "Ended by technician",
+            "ended_by": "TECHNICIAN",
+            "revoke_error": null,
+            "remote_consent": {},
+            "duration_seconds": 41
+          },
+          "actor__username": "tech1"
+        }
+      ]
+    },
+    "attended_session": "533da594-6428-4d31-9654-60ffe9b80dee",
+    "attended_record": {
+      "id": "533da594-6428-4d31-9654-60ffe9b80dee",
+      "code": "371468863",
+      "mode": "ATTENDED",
+      "status": "ENDED",
+      "technician": "tech1",
+      "device_id": null,
+      "target_name": "vm",
+      "target_os": "Ubuntu 24.04.5 LTS",
+      "target_ip": "127.0.0.1",
+      "capabilities": {
+        "chat": true,
+        "files": true,
+        "reboot": false,
+        "desktop": true,
+        "terminal": true
+      },
+      "mfa_verified": false,
+      "created_at": "2026-10-14T19:38:55.934291+00:00",
+      "expires_at": "2026-10-14T19:48:55.932267+00:00",
+      "authorized_at": "2026-10-14T19:38:58.470578+00:00",
+      "started_at": "2026-10-14T19:38:59.642602+00:00",
+      "ended_at": "2026-10-14T19:39:17.653078+00:00",
+      "deadline_at": "2026-10-14T21:38:58.470578+00:00",
+      "customer_name": "Remote User One",
+      "customer_consent_at": "2026-10-14T19:38:56.582638+00:00",
+      "ended_by": "REMOTE_USER",
+      "end_reason": "Remote user ended the session from the support page",
+      "outcome": "",
+      "device_online": true,
+      "remote_consent": {
+        "desktop": "accepted",
+        "terminal": "rejected"
+      },
+      "recording": true,
+      "join_url": "https://remote.bsf.test/join/371468863",
+      "mesh_events": [
+        {
+          "msg": "Removed user device rights for vm",
+          "time": "2026-10-14T19:39:17.662Z",
+          "user": "bsf-portal-svc",
+          "msgid": 81
+        },
+        {
+          "msg": "Finished recording session, 8 second(s)",
+          "time": "2026-10-14T19:39:14.759Z",
+          "user": "",
+          "msgid": null
+        },
+        {
+          "msg": "Ended terminal session \"i3bcjceciq\" from 127.0.0.1 to 127.0.0.1, 1 second(s)",
+          "time": "2026-10-14T19:39:13.430Z",
+          "user": "bsftech-2",
+          "msgid": 10
+        },
+        {
+          "msg": "Local user rejected remote terminal request (127.0.0.1)",
+          "time": "2026-10-14T19:39:13.428Z",
+          "user": "bsftech-2",
+          "msgid": 28
+        },
+        {
+          "msg": "Started terminal session \"i3bcjceciq\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-14T19:39:12.311Z",
+          "user": "bsftech-2",
+          "msgid": 14
+        },
+        {
+          "msg": "Ended desktop session \"mcw7bs2jre\" from 127.0.0.1 to 127.0.0.1, 8 second(s)",
+          "time": "2026-10-14T19:39:09.758Z",
+          "user": "bsftech-2",
+          "msgid": 11
+        },
+        {
+          "msg": "Remote Desktop Connection Bar Activated/Updated (127.0.0.1)",
+          "time": "2026-10-14T19:39:03.453Z",
+          "user": "bsftech-2",
+          "msgid": 31
+        },
+        {
+          "msg": "Starting remote desktop after local user accepted (127.0.0.1)",
+          "time": "2026-10-14T19:39:03.430Z",
+          "user": "bsftech-2",
+          "msgid": 30
+        },
+        {
+          "msg": "Started desktop session \"mcw7bs2jre\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-14T19:39:01.282Z",
+          "user": "bsftech-2",
+          "msgid": 15
+        },
+        {
+          "msg": "Changed user device rights for vm",
+          "time": "2026-10-14T19:38:58.470Z",
+          "user": "bsf-portal-svc",
+          "msgid": 82
+        }
+      ],
+      "authorization": {
+        "role": "TECHNICIAN",
+        "policy": "attended",
+        "recording": true,
+        "mesh_rights": 12601352,
+        "consent_flags": 127
+      },
+      "audit": [
+        {
+          "action": "SESSION_CREATED",
+          "created_at": "2026-10-14T19:38:55.939777Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "code": "371468863",
+            "mode": "ATTENDED",
+            "expires_at": "2026-10-14T19:48:55.932267+00:00",
+            "capabilities": {
+              "chat": true,
+              "files": true,
+              "reboot": false,
+              "desktop": true,
+              "terminal": true
+            }
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "REMOTE_USER_OPENED_INVITATION",
+          "created_at": "2026-10-14T19:38:56.301559Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "code": "371468863"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "REMOTE_USER_CONSENTED",
+          "created_at": "2026-10-14T19:38:56.590069Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "name": "Remote User One",
+            "technician": "tech1",
+            "capabilities": {
+              "chat": true,
+              "files": true,
+              "reboot": false,
+              "desktop": true,
+              "terminal": true
+            }
+          },
+          "actor__username": null
+        },
+        {
+          "action": "REMOTE_USER_DOWNLOADED_AGENT",
+          "created_at": "2026-10-14T19:38:57.223975Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "bytes": 1769917,
+            "platform": "linux-x64"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "REMOTE_AGENT_CONNECTED",
+          "created_at": "2026-10-14T19:38:58.471744Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "os": "Ubuntu 24.04.5 LTS",
+            "code": "371468863",
+            "target": "vm",
+            "ip_reported": "127.0.0.1",
+            "extra_agents_removed": 0
+          },
+          "actor__username": null
+        },
+        {
+          "action": "DEVICE_ONLINE",
+          "created_at": "2026-10-14T19:38:59.325024Z",
+          "source_ip": null,
+          "details": {
+            "node": "vm"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "SESSION_STARTED",
+          "created_at": "2026-10-14T19:38:59.644208Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "code": "371468863",
+            "target": "vm"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-14T19:38:59.645395Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "desktop"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-14T19:39:09.745911Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "terminal"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "SESSION_ENDED",
+          "created_at": "2026-10-14T19:39:17.725134Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "reason": "Remote user ended the session from the support page",
+            "ended_by": "REMOTE_USER",
+            "revoke_error": null,
+            "remote_consent": {
+              "desktop": "accepted",
+              "terminal": "rejected"
+            },
+            "duration_seconds": 18
+          },
+          "actor__username": null
+        }
+      ]
+    },
+    "external_requests": [],
+    "started": "2026-10-14T19:37:15.589654+00:00",
+    "finished": "2026-10-14T19:39:40.210051+00:00"
+  },
+  "passed": 44,
+  "failed": 0
+}
