@@ -8,7 +8,7 @@ for f in .env deploy/certs/fullchain.pem deploy/certs/privkey.pem deploy/certs/c
   [ -s "$f" ] || err "missing $f"
 done
 if [ -f .env ]; then
-  grep -q 'CHANGE-ME' .env && err ".env still contains CHANGE-ME placeholders"
+  grep -q '^[^#]*CHANGE-ME' .env && err ".env still contains CHANGE-ME placeholders"
   grep -q '^DJANGO_DEBUG=False' .env || err "DJANGO_DEBUG must be False"
   set -a; . ./.env; set +a
 fi

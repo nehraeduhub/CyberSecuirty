@@ -10,9 +10,13 @@
 | Multi-monitor selection | MeshCentral provides a display selector for Windows agents; test PCs here had one display | §2 A.4 |
 | Real reboot and reconnect | On the shared test host the reboot was intercepted (delivery verified, restart simulated) | §2 A.6 |
 | GPO install script and service name `BSFRemoteAgent` | Written for Windows, not executed | §2 A.1 |
-| Docker Compose deployment | No Docker daemon in the build environment; the identical components and templates ran natively in the test harness; `docker compose config` validates | Build and start per OFFLINE-IMAGES.md / DEPLOYMENT.md in the pilot |
 | AD/LDAPS login | No directory available | Pilot with a test OU |
 | Console idle timeout, session maximum duration | Implemented (MeshCentral `userSessionIdleTimeout`; worker deadline) but not exercised by the automated run (long timers) | §2 A.9 |
+
+Docker deployment: **verified** — `setup.sh install` on a clean copy of the bundle, followed by the full
+acceptance test against the containers (44/44, `docs/evidence/docker-install-run/`). `setup.sh build-images`
+could not be run end to end in the build environment (its Internet access goes through a TLS-inspecting proxy);
+the same Dockerfiles were built with a proxy-CA wrapper.
 
 ## Limitations (by design or of the engine)
 

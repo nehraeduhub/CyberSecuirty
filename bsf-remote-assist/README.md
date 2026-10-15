@@ -48,13 +48,19 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 * The complete attended and unattended workflows were run end to end with **two real MeshCentral
   agents on Linux test endpoints**, through the real browser UI, inside a network namespace with **no
-  route to the Internet**: 44/44 acceptance checks passed. Evidence: [docs/evidence/](docs/evidence/).
+  route to the Internet**: 44/44 acceptance checks passed. The same test also passed 44/44 against the
+  Docker deployment created by `setup.sh install`. Evidence: [docs/evidence/](docs/evidence/).
 * **Not yet done: the two-Windows-PC acceptance.** No Windows machines were available in the build
   environment. The procedure and checklist are in [docs/ACCEPTANCE-TEST.md](docs/ACCEPTANCE-TEST.md).
   Do not treat the system as accepted until that has passed.
 * Known limitations and untested items: [docs/STATUS-AND-LIMITATIONS.md](docs/STATUS-AND-LIMITATIONS.md).
 
 ## Deploy
+
+**Start here: [USER-GUIDE.md](USER-GUIDE.md)** — `./setup.sh build-images` on a connected machine, then
+`sudo ./setup.sh install` on the Linux server; publishing on the MPLS (DNS, certificate, firewall) is in §4.
+
+Reference documents:
 
 1. [deploy/OFFLINE-IMAGES.md](deploy/OFFLINE-IMAGES.md) — build the images on a connected build host and load them on the server.
 2. [deploy/DEPLOYMENT.md](deploy/DEPLOYMENT.md) — DNS, internal certificate, secrets, `.env`, start, first login.
