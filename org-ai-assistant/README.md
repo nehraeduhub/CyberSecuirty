@@ -12,6 +12,7 @@ databases: personal details, postings, HR, training and pay.
 > - First version of the assistant (command line) with a SQL safety check, per-user access and an audit log.
 >
 > **Pilot on a CPU-only server: read [docs/PILOT_PLAN.md](docs/PILOT_PLAN.md).**
+> **Model already installed on your server? Follow [docs/CONNECT_EXISTING_MODEL.md](docs/CONNECT_EXISTING_MODEL.md).**
 
 ---
 
@@ -58,15 +59,19 @@ personal records themselves.
 ```
 org-ai-assistant/
 ├── docker-compose.yml            # PostgreSQL + Ollama (CPU) + assistant
-├── docs/PILOT_PLAN.md            # CPU-only pilot: sizing, models, schedule
+├── docs/
+│   ├── PILOT_PLAN.md             # CPU-only pilot: sizing, models, schedule
+│   └── CONNECT_EXISTING_MODEL.md # use the Ollama model already on the server
 ├── scripts/
 │   ├── setup_db.sh               # create the DB without Docker (EMP_COUNT=300000 for full size)
 │   ├── offline_bundle.sh         # on an internet machine: download images + models
+│   ├── download_python_packages.sh # on an internet machine: assistant's Python packages
 │   └── import_bundle.sh          # on the offline server: verify + load them
 ├── agent/                        # the assistant (Python)
 │   ├── agent.py                  # question -> SQL -> check -> run -> answer -> audit
 │   ├── sql_guard.py              # blocks anything except safe SELECTs on ai_views
 │   ├── schema_context.py         # builds the schema description from DB comments
+│   ├── check_setup.py            # checks DB, model name, context window, speed
 │   ├── ask.py                    # command-line chat
 │   ├── evaluate.py               # accuracy + speed test of a model
 │   └── tests/                    # unit tests + end-to-end test with a fake LLM

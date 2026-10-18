@@ -110,7 +110,7 @@ before buying hardware.
 
 | Week | Work | Done when |
 |---|---|---|
-| 1 | Build the offline bundle (`scripts/offline_bundle.sh`) on an internet machine, scan it, move it in, run `scripts/import_bundle.sh` | `ollama list` shows the models on the server |
+| 1 | Model already installed: follow [CONNECT_EXISTING_MODEL.md](CONNECT_EXISTING_MODEL.md). Otherwise build the offline bundle (`scripts/offline_bundle.sh`) and run `scripts/import_bundle.sh` | `python check_setup.py` passes |
 | 1 | Load 3 lakh dummy employees; run `evaluate.py` with 7B and 14B | Accuracy and seconds per question recorded for each model |
 | 2 | Collect 50-100 real questions from the pilot HR users; add them with correct SQL to `database/04_sample_questions.sql` | Test set covers postings, leave, training and pay |
 | 2-3 | Improve view and column comments and the examples until accuracy ≥ 85-90% | `evaluate.py` result |

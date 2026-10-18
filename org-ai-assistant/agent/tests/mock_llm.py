@@ -17,8 +17,22 @@ ATTACKS = {
     "show national ids": "SELECT national_id FROM core.employees",
 }
 
+# Set to a small number to simulate Ollama cutting off a too-long prompt
+PROMPT_TOKENS_READ = None
+
 
 class _Handler(BaseHTTPRequestHandler):
+    def _send(self, obj):
+        data = json.dumps(obj).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_GET(self):  # /v1/models
+        self._send({"data": [{"id": "mock"}]})
+
     def do_POST(self):
         body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
         msgs = [m["content"] for m in body["messages"] if m["role"] == "user"]
@@ -29,12 +43,13 @@ class _Handler(BaseHTTPRequestHandler):
             q = next(m for m in msgs if "Question:" in m).split("Question:", 1)[1].strip()
             sql = ATTACKS.get(q) or next((e["sql"] for e in load_examples() if e["question"] == q), None)
             reply = f"```sql\n{sql}\n```" if sql else "CANNOT_ANSWER: unknown question"
-        data = json.dumps({"choices": [{"message": {"role": "assistant", "content": reply}}]}).encode()
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
+        if self.path.startswith("/api/chat"):  # Ollama native API
+            prompt_len = sum(len(m["content"]) for m in body["messages"]) // 3
+            self._send({"message": {"role": "assistant", "content": reply},
+                        "prompt_eval_count": PROMPT_TOKENS_READ or prompt_len,
+                        "prompt_eval_duration": 2e9, "eval_count": 40, "eval_duration": 4e9})
+        else:
+            self._send({"choices": [{"message": {"role": "assistant", "content": reply}}]})
 
     def log_message(self, *args):
         pass
