@@ -1,0 +1,27 @@
+# Step 1 - dummy HR database only.
+# Later steps add: LLM server (Ollama/vLLM), the agent API, and the chat UI.
+#
+# Offline use: on an internet-connected machine run
+#   docker pull postgres:16
+#   docker save postgres:16 -o postgres16.tar
+# copy the .tar into the data centre, then:  docker load -i postgres16.tar
+services:
+  hr-db:
+    image: postgres:16
+    container_name: org-hr-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: org_hr
+      POSTGRES_USER: hr_owner
+      POSTGRES_PASSWORD: change_me_owner   # change this
+    ports:
+      - "127.0.0.1:5432:5432"              # bound to localhost only
+    volumes:
+      - hr-db-data:/var/lib/postgresql/data
+      # Files run once, in name order, when the volume is first created
+      - ./database/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./database/02_seed_dummy_data.sql:/docker-entrypoint-initdb.d/02_seed_dummy_data.sql:ro
+      - ./database/03_security_roles.sql:/docker-entrypoint-initdb.d/03_security_roles.sql:ro
+
+volumes:
+  hr-db-data:
