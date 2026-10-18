@@ -1,10 +1,14 @@
-# Step 1 - dummy HR database only.
-# Later steps add: LLM server (Ollama/vLLM), the agent API, and the chat UI.
+# Pilot stack, CPU only (no GPU needed):
+#   hr-db   PostgreSQL with the dummy HR data
+#   ollama  local LLM server (runs on CPU)
+#   agent   the HR assistant (command line for now; web UI comes in a later step)
 #
-# Offline use: on an internet-connected machine run
-#   docker pull postgres:16
-#   docker save postgres:16 -o postgres16.tar
-# copy the .tar into the data centre, then:  docker load -i postgres16.tar
+# Offline: build the bundle on an internet-connected machine with
+#   ./scripts/offline_bundle.sh   then on the data-centre server  ./scripts/import_bundle.sh
+#
+# Start:   docker compose up -d hr-db ollama
+# Ask:     docker compose run --rm agent python ask.py --role hr_admin "How many employees per region?"
+# Measure: docker compose run --rm agent python evaluate.py
 services:
   hr-db:
     image: postgres:16
@@ -14,14 +18,54 @@ services:
       POSTGRES_DB: org_hr
       POSTGRES_USER: hr_owner
       POSTGRES_PASSWORD: change_me_owner   # change this
+    # Sized for a 64 GB RAM server that also runs the LLM, with an HDD
+    command: >
+      postgres
+        -c shared_buffers=8GB
+        -c effective_cache_size=20GB
+        -c work_mem=64MB
+        -c maintenance_work_mem=1GB
+        -c max_parallel_workers_per_gather=4
+        -c random_page_cost=4
+        -c log_min_duration_statement=5000
+    shm_size: 2g
     ports:
       - "127.0.0.1:5432:5432"              # bound to localhost only
     volumes:
       - hr-db-data:/var/lib/postgresql/data
-      # Files run once, in name order, when the volume is first created
+      # Run once, in name order, when the volume is first created (500 employees).
+      # For 3 lakh employees see docs/PILOT_PLAN.md.
       - ./database/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
       - ./database/02_seed_dummy_data.sql:/docker-entrypoint-initdb.d/02_seed_dummy_data.sql:ro
       - ./database/03_security_roles.sql:/docker-entrypoint-initdb.d/03_security_roles.sql:ro
 
+  ollama:
+    image: ollama/ollama:latest            # pin the exact version you bundled
+    container_name: org-ollama
+    restart: unless-stopped
+    environment:
+      OLLAMA_KEEP_ALIVE: "-1"              # keep the model in RAM (loading from HDD is slow)
+      OLLAMA_NUM_PARALLEL: "2"             # requests answered at the same time
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      OLLAMA_CONTEXT_LENGTH: "8192"        # schema + examples need more than the default
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+
+  agent:
+    build: ./agent
+    image: org-hr-agent:pilot
+    profiles: ["cli"]                      # only runs with "docker compose run"
+    depends_on: [hr-db, ollama]
+    environment:
+      AI_DB_DSN: "host=hr-db dbname=org_hr user=ai_readonly password=change_me_ai_readonly"
+      AI_AUDIT_DSN: "host=hr-db dbname=org_hr user=ai_audit_writer password=change_me_audit_writer"
+      LLM_BASE_URL: "http://ollama:11434/v1"
+      LLM_MODEL: "qwen2.5-coder:14b"
+    volumes:
+      - ./database:/database:ro            # example questions file
+
 volumes:
   hr-db-data:
+  ollama-models:

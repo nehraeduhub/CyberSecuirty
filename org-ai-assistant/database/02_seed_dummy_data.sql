@@ -1,10 +1,14 @@
 -- =====================================================================
 -- Dummy data generator. ALL names, IDs, phone numbers and bank details
 -- below are randomly generated and FAKE.
--- Change :emp_count at the top to generate more/fewer employees.
+-- Number of employees: default 500. For a full-size test (3 lakh):
+--   psql -v emp_count=300000 -d org_hr -f 02_seed_dummy_data.sql
 -- setseed() keeps most of the data the same on every run (row counts can vary slightly).
 -- =====================================================================
-\set emp_count 500
+\if :{?emp_count}
+\else
+  \set emp_count 500
+\endif
 
 BEGIN;
 SELECT setseed(0.42);
@@ -140,16 +144,32 @@ UPDATE core.employees
 SET date_of_exit = LEAST(CURRENT_DATE - 1, date_of_joining + (floor(random()*(CURRENT_DATE - date_of_joining)))::int + 1)
 WHERE employment_status IN ('Resigned','Retired');
 
--- Reporting manager: a random employee one or more levels senior
+ANALYZE core.employees;     -- fresh statistics so the next steps get good plans
+
+-- Reporting manager: a random active employee from the nearest more senior
+-- level in the same department. Managers are numbered within each
+-- (department, level) group so each pick is a cheap lookup, even for lakhs.
+WITH mgr AS (
+    SELECT e.department_id, d.hierarchy_lvl AS lvl, e.employee_id,
+           row_number() OVER (PARTITION BY e.department_id, d.hierarchy_lvl ORDER BY e.employee_id) AS rn
+    FROM core.employees e JOIN core.designations d USING (designation_id)
+    WHERE e.employment_status = 'Active'
+), grp AS MATERIALIZED (       -- ~80 rows; built once, not per employee
+    SELECT department_id, lvl, count(*) AS n FROM mgr GROUP BY 1, 2
+), choice AS (
+    SELECT e.employee_id, g.department_id, g.lvl, 1 + floor(random() * g.n)::int AS rn
+    FROM core.employees e
+    JOIN core.designations d USING (designation_id)
+    CROSS JOIN LATERAL (
+        SELECT * FROM grp
+        WHERE grp.department_id = e.department_id AND grp.lvl > d.hierarchy_lvl
+        ORDER BY grp.lvl LIMIT 1
+    ) g
+)
 UPDATE core.employees e
-SET reporting_to = (
-    SELECT m.employee_id FROM core.employees m
-    JOIN core.designations md ON md.designation_id = m.designation_id
-    JOIN core.designations ed ON ed.designation_id = e.designation_id
-    WHERE md.hierarchy_lvl > ed.hierarchy_lvl AND m.employee_id <> e.employee_id
-      AND m.employment_status = 'Active'
-    ORDER BY (m.department_id = e.department_id) DESC, md.hierarchy_lvl, random()
-    LIMIT 1);
+SET reporting_to = m.employee_id
+FROM choice c JOIN mgr m USING (department_id, lvl, rn)
+WHERE e.employee_id = c.employee_id;
 
 -- Emergency contacts (1 per employee)
 INSERT INTO core.emergency_contacts (employee_id, contact_name, relationship, phone)
@@ -175,7 +195,9 @@ WHERE n = 0 OR random() < 0.4;
 WITH plan AS (
     SELECT e.employee_id, e.current_unit_id, e.designation_id, e.date_of_joining,
            COALESCE(e.date_of_exit, CURRENT_DATE) AS end_dt,
-           1 + floor(random()*4)::int AS n_post
+           -- 1-4 postings, but at most one per ~6 months of service
+           LEAST(1 + floor(random()*4)::int,
+                 GREATEST(1, (COALESCE(e.date_of_exit, CURRENT_DATE) - e.date_of_joining) / 180)) AS n_post
     FROM core.employees e
 ), slots AS (
     SELECT p.*, s AS seq,
@@ -237,31 +259,35 @@ SELECT employee_id,
        (ARRAY['Open','Closed','Closed','Under Appeal'])[1 + floor(random()*4)::int]
 FROM core.employees WHERE random() < 0.03;
 
+ANALYZE;
+
 -- ---------------- Training sessions & enrolments ----------------
+-- About one session per course for every 250 employees (minimum 6).
 INSERT INTO training.sessions (course_id, unit_id, start_date, end_date, trainer_name, capacity)
 SELECT c.course_id,
        (ARRAY[15,15,15,1,4,16])[1 + floor(random()*6)::int],
        sd, sd + c.duration_days - 1,
        (ARRAY['Dr. A. Kapoor','Col. (Retd) R. Singh','Ms. S. Iyer','Mr. P. Thomas','Ms. N. Gill'])[1 + floor(random()*5)::int],
-       30
+       60
 FROM training.courses c
-CROSS JOIN generate_series(1, 6) n
+CROSS JOIN generate_series(1, GREATEST(6, :emp_count / 250)) n
 CROSS JOIN LATERAL (SELECT CURRENT_DATE - (floor(random()*1095))::int + 60 + 0 * n + 0 * c.course_id AS sd) x;
 
+-- Each active employee is enrolled in 0-5 random sessions held after joining.
 INSERT INTO training.enrollments (session_id, employee_id, status, score, certificate_no)
-SELECT s.session_id, e.employee_id, st,
+SELECT DISTINCT ON (s.session_id, e.employee_id)
+       s.session_id, e.employee_id, st,
        CASE WHEN st IN ('Completed','Failed') THEN round((CASE WHEN st='Completed' THEN 50 + random()*50 ELSE random()*49 END)::numeric, 2) END,
        CASE WHEN st = 'Completed' THEN 'CERT-' || s.session_id || '-' || e.employee_id END
-FROM training.sessions s
-CROSS JOIN LATERAL (
-    SELECT employee_id FROM core.employees
-    WHERE employment_status = 'Active' AND date_of_joining < s.start_date
-    ORDER BY random() LIMIT 10 + floor(random()*20)::int
-) e
+FROM core.employees e
+CROSS JOIN generate_series(1, 5) n
+CROSS JOIN LATERAL (SELECT 1 + floor(random() * (SELECT max(session_id) FROM training.sessions))::int + 0 * n + 0 * e.employee_id AS sid) r
+JOIN training.sessions s ON s.session_id = r.sid
 CROSS JOIN LATERAL (
     SELECT CASE WHEN s.start_date > CURRENT_DATE THEN 'Nominated'
-                ELSE (ARRAY['Completed','Completed','Completed','Completed','Attended','Failed','Absent'])[1 + floor(random()*7)::int] END AS st
-) x;
+                ELSE (ARRAY['Completed','Completed','Completed','Completed','Attended','Failed','Absent'])[1 + floor(random()*7)::int + 0 * s.session_id] END AS st
+) x
+WHERE e.employment_status = 'Active' AND e.date_of_joining < s.start_date AND random() < 0.6;
 
 -- ---------------- Pay ----------------
 INSERT INTO pay.employee_pay (employee_id, basic_pay, effective_from)
@@ -292,6 +318,8 @@ FROM (
     WHERE e.employment_status IN ('Active','On Deputation','Suspended')
       AND e.date_of_joining <= m::date
 ) t;
+
+ANALYZE pay.payroll;
 
 -- Allowance break-up per slip
 INSERT INTO pay.payroll_allowances (payroll_id, allowance_type_id, amount)

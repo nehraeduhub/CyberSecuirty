@@ -6,8 +6,12 @@ internet. Staff ask questions in plain English (or Hindi), for example
 the last 3 months"*, and it answers from the organisation's SQL/PostgreSQL
 databases: personal details, postings, HR, training and pay.
 
-> **Status: Step 1 done.** A dummy database with fake data, plus the security
-> layer the AI will use. The later steps are listed below.
+> **Status:** Steps 1-3 done, Step 4 started.
+> - Dummy database (500 employees, or 3 lakh for full-size tests) with the security layer the AI uses.
+> - CPU-only pilot stack: PostgreSQL + Ollama + the assistant, installable without internet.
+> - First version of the assistant (command line) with a SQL safety check, per-user access and an audit log.
+>
+> **Pilot on a CPU-only server: read [docs/PILOT_PLAN.md](docs/PILOT_PLAN.md).**
 
 ---
 
@@ -53,8 +57,19 @@ personal records themselves.
 
 ```
 org-ai-assistant/
-├── docker-compose.yml            # runs the dummy PostgreSQL DB
-├── scripts/setup_db.sh           # same thing without Docker
+├── docker-compose.yml            # PostgreSQL + Ollama (CPU) + assistant
+├── docs/PILOT_PLAN.md            # CPU-only pilot: sizing, models, schedule
+├── scripts/
+│   ├── setup_db.sh               # create the DB without Docker (EMP_COUNT=300000 for full size)
+│   ├── offline_bundle.sh         # on an internet machine: download images + models
+│   └── import_bundle.sh          # on the offline server: verify + load them
+├── agent/                        # the assistant (Python)
+│   ├── agent.py                  # question -> SQL -> check -> run -> answer -> audit
+│   ├── sql_guard.py              # blocks anything except safe SELECTs on ai_views
+│   ├── schema_context.py         # builds the schema description from DB comments
+│   ├── ask.py                    # command-line chat
+│   ├── evaluate.py               # accuracy + speed test of a model
+│   └── tests/                    # unit tests + end-to-end test with a fake LLM
 └── database/
     ├── 01_schema.sql             # tables: core, hr, training, pay, audit
     ├── 02_seed_dummy_data.sql    # 500 fake employees + history (change emp_count)
@@ -128,8 +143,10 @@ DELETE FROM ai_views.courses;               -- permission denied / read-only
 
 ## 4. Roadmap: the next steps
 
-### Step 2: Hardware and offline software bundle
-- **GPU server** (one is enough to start):
+### Step 2: Hardware and offline software bundle ✅ (CPU pilot)
+- **Pilot on CPU only:** see [docs/PILOT_PLAN.md](docs/PILOT_PLAN.md). Build the bundle with
+  `scripts/offline_bundle.sh`, install it with `scripts/import_bundle.sh`.
+- **GPU server** (for the full rollout later):
   - Pilot: 1 × 24–48 GB GPU (e.g. RTX 4090 / L40S / A6000) runs a 7B–32B model.
   - Production (50–300 users): 1–2 × 80 GB GPU (A100/H100 class) runs a 32B–70B model.
   - 64–128 GB RAM, 1 TB NVMe, Ubuntu Server LTS.
@@ -142,18 +159,24 @@ DELETE FROM ai_views.courses;               -- permission denied / read-only
     Mistral or DeepSeek families** with a licence that allows commercial
     on-prem use. Pick the newest one that fits your GPU; coder models are best at SQL.
 
-### Step 3: Local LLM server
+### Step 3: Local LLM server ✅ (Ollama on CPU, in docker-compose.yml)
 - **Ollama** (simplest, good for the pilot) or **vLLM** (faster, more users at once).
 - Both expose an OpenAI-compatible API on the local network only; the firewall blocks all outbound traffic.
 
-### Step 4: Agent API (Python / FastAPI)
-- Login via your AD/LDAP; map each user to `hr_admin` / `manager` / `employee` + `employee_id`.
-- Build the prompt from table comments + relevant example Q→SQL pairs.
-- **SQL guard** before execution: parse with `sqlglot`; allow a single `SELECT` only;
-  only `ai_views.*`; force `LIMIT`; block functions such as `pg_read_file` and `dblink`.
-- Execute with `ai_readonly`, `SET LOCAL app.user_role / app.employee_id` inside the transaction.
-- Write every question, SQL, row count and blocked attempt to `audit.ai_query_log`.
-- Ask the LLM to summarise the rows; show the SQL and a table to the user.
+### Step 4: Agent API (Python / FastAPI): core done, web API next
+Done in `agent/`: SQL generation, SQL guard, row-level security context, retry on
+error, plain-English summary, audit log, command-line chat, evaluation.
+
+```bash
+docker compose run --rm agent python ask.py --role hr_admin "How many employees are posted in each region?"
+docker compose run --rm agent python ask.py --role employee --employee-id 2 "Show my net pay for the last 3 months"
+cd agent && pip install -r requirements.txt && python -m pytest tests   # tests (fake LLM, no model needed)
+```
+
+Still to do:
+- Web API (FastAPI) with login via your AD/LDAP; map each user to `hr_admin` / `manager` / `employee` + `employee_id`.
+- When there are many examples, pick only the ones most similar to the question (keeps the CPU prompt short).
+- Show the SQL and the result table in the chat screen.
 
 ### Step 5: Chat UI
 - **Open WebUI** (ChatGPT-like, works offline) pointed at the Agent API, or a small custom web page.

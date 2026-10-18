@@ -2,9 +2,12 @@
 # Creates the dummy HR database on a PostgreSQL server installed directly
 # on the host (no Docker). Run as a user that can connect as a superuser,
 # e.g.:  sudo -u postgres ./scripts/setup_db.sh
+# Full-size test with 3 lakh employees (takes several minutes, ~6 GB disk):
+#         sudo -u postgres EMP_COUNT=300000 ./scripts/setup_db.sh
 set -euo pipefail
 
 DB_NAME="${DB_NAME:-org_hr}"
+EMP_COUNT="${EMP_COUNT:-500}"
 DIR="$(cd "$(dirname "$0")/../database" && pwd)"
 
 echo "Recreating database ${DB_NAME} ..."
@@ -13,8 +16,10 @@ createdb "$DB_NAME"
 
 for f in 01_schema.sql 02_seed_dummy_data.sql 03_security_roles.sql; do
   echo "Running $f"
-  psql -q -v ON_ERROR_STOP=1 -d "$DB_NAME" -f "$DIR/$f"
+  psql -q -v ON_ERROR_STOP=1 -v emp_count="$EMP_COUNT" -d "$DB_NAME" -f "$DIR/$f"
 done
+echo "Updating planner statistics ..."
+psql -q -d "$DB_NAME" -c "VACUUM ANALYZE"
 
 echo
 echo "Done. Test the AI's read-only login with:"
