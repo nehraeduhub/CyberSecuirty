@@ -250,6 +250,7 @@ CREATE INDEX ON core.employees (department_id);
 CREATE INDEX ON core.employees (current_unit_id);
 CREATE INDEX ON core.employees (designation_id);
 CREATE INDEX ON core.employees (last_name, first_name);
+CREATE INDEX ON core.employees (reporting_to);
 CREATE INDEX ON hr.postings (employee_id, from_date);
 CREATE INDEX ON hr.leave_applications (employee_id, from_date);
 CREATE INDEX ON training.enrollments (employee_id);

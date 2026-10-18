@@ -121,29 +121,32 @@ GRANT USAGE ON SCHEMA pay, hr, core TO ai_readonly;
 GRANT SELECT ON pay.payroll, hr.performance_appraisals, hr.leave_applications, hr.leave_types TO ai_readonly;
 GRANT SELECT (employee_id, reporting_to) ON core.employees TO ai_readonly;
 
-CREATE OR REPLACE FUNCTION core.can_see_employee(target_emp INT) RETURNS BOOLEAN
-LANGUAGE sql STABLE AS $$
-  WITH ctx AS (
-    SELECT current_setting('app.user_role', true) AS r,
-           NULLIF(current_setting('app.employee_id', true), '')::int AS me
-  )
-  SELECT COALESCE(CASE ctx.r
-           WHEN 'hr_admin' THEN TRUE
-           WHEN 'manager'  THEN target_emp = ctx.me
-                                OR EXISTS (SELECT 1 FROM core.employees x
-                                           WHERE x.employee_id = target_emp AND x.reporting_to = ctx.me)
-           WHEN 'employee' THEN target_emp = ctx.me
-         END, FALSE)            -- no / unknown role => see nothing
-  FROM ctx
-$$;
+-- Small helpers. They are simple enough for PostgreSQL to inline, so the
+-- policy below is evaluated as a plain condition, fast even on lakhs of rows.
+CREATE OR REPLACE FUNCTION core.app_role() RETURNS TEXT
+LANGUAGE sql STABLE AS $$ SELECT current_setting('app.user_role', true) $$;
+
+CREATE OR REPLACE FUNCTION core.app_employee_id() RETURNS INT
+LANGUAGE sql STABLE AS $$ SELECT NULLIF(current_setting('app.employee_id', true), '')::int $$;
 
 ALTER TABLE pay.payroll                ENABLE ROW LEVEL SECURITY;
 ALTER TABLE hr.performance_appraisals  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE hr.leave_applications      ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS ai_payroll_rls ON pay.payroll;
-DROP POLICY IF EXISTS ai_appraisal_rls ON hr.performance_appraisals;
-DROP POLICY IF EXISTS ai_leave_rls ON hr.leave_applications;
-CREATE POLICY ai_payroll_rls   ON pay.payroll               FOR SELECT TO ai_readonly USING (core.can_see_employee(employee_id));
-CREATE POLICY ai_appraisal_rls ON hr.performance_appraisals FOR SELECT TO ai_readonly USING (core.can_see_employee(employee_id));
-CREATE POLICY ai_leave_rls     ON hr.leave_applications     FOR SELECT TO ai_readonly USING (core.can_see_employee(employee_id));
+-- hr_admin: everyone. employee: self. manager: self + direct reports.
+-- No role (or an unknown one): nothing.
+DO $$
+DECLARE
+  t TEXT;
+  rule CONSTANT TEXT := $r$
+    core.app_role() = 'hr_admin'
+    OR (core.app_role() IN ('manager', 'employee') AND employee_id = core.app_employee_id())
+    OR (core.app_role() = 'manager' AND employee_id IN (
+          SELECT x.employee_id FROM core.employees x WHERE x.reporting_to = core.app_employee_id()))
+  $r$;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['pay.payroll', 'hr.performance_appraisals', 'hr.leave_applications'] LOOP
+    EXECUTE format('DROP POLICY IF EXISTS ai_rls ON %s', t);
+    EXECUTE format('CREATE POLICY ai_rls ON %s FOR SELECT TO ai_readonly USING (%s)', t, rule);
+  END LOOP;
+END $$;

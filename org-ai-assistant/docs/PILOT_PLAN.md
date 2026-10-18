@@ -120,8 +120,22 @@ before buying hardware.
 
 ## 8. Measured on the test machine
 
-Measured in a 4-core cloud test machine, **not** your server:
+Measured on a **4-core, 16 GB cloud test machine with SSD**, not your
+server. Your 64 cores will be faster for generation; your HDD will be slower
+for the first run of large reports.
 
-- Generating 3 lakh dummy employees: _see below_
-- Database size: _see below_
-- Sample questions on 3 lakh data: _see below_
+| | Result |
+|---|---|
+| Dummy data, 3 lakh employees | 9.5 minutes to generate |
+| Rows | 3 lakh employees, 6.9 lakh postings, 13.5 lakh leave records, 12 lakh appraisals, 7 lakh training enrolments, 30 lakh salary slips |
+| Database size | 2.2 GB |
+| Sample questions (SQL only, no LLM) | 0.01-4.8 s each; the slowest is "total net pay per month for 6 months" over 30 lakh slips |
+
+The per-user access rules (row-level security) are written as plain
+conditions so PostgreSQL can optimise them. A first version that called a
+function for every row timed out at this size; testing at full size is what
+caught it.
+
+**Not measured yet:** LLM speed and accuracy. Model downloads are blocked
+on the test machine, so the pipeline was tested with a fake LLM. Run
+`evaluate.py` on your server to get the real numbers.
