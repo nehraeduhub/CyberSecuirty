@@ -1,0 +1,9 @@
+{
+  "_comment": "Copy to config/detection_rules.json to tune rules without code changes. Only thresholds, severity, confidence and enabled can be overridden. Rule IDs are listed in rules.py and in every report.",
+  "rules": {
+    "TG-AUTH-002": {"threshold": {"distinct_users": 10}},
+    "TG-C2-001": {"threshold": {"min_connections": 30, "max_jitter": 0.2}},
+    "TG-EXF-001": {"threshold": {"bytes_out": 1000000000}},
+    "TG-STAT-001": {"enabled": false}
+  }
+}

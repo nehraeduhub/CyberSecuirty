@@ -99,6 +99,9 @@ Open **http://127.0.0.1:8787**.
 | Task | How |
 |---|---|
 | Analyse logs | **Threat Analysis → Log files**: drop `auth.log`, `access.log`, firewall or Windows exports |
+| Analyse SIEM exports | Drop several CSV / JSON / JSONL / XML / CEF exports at once. They are correlated together (see [SIEM-ANALYSIS-GUIDE.md](SIEM-ANALYSIS-GUIDE.md)) |
+| Describe your network | **Trusted Networks** page: LAN ranges, ISP IPs, servers, firewalls, jump hosts, scanners. This is context for the engine and the AI |
+| Your logo and name on reports | **Branding** page |
 | Audit this machine | **Threat Analysis → This machine → Run host audit** |
 | Full audit with PDF from the terminal | `sudo python3 agent.py audit --pdf audit.pdf --client "ACME" --assessor "SOC"` |
 | Scan a log from the terminal | `python3 agent.py scan /var/log/auth.log --ai --pdf incident.pdf` |

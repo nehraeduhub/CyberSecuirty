@@ -178,6 +178,29 @@
   .form input, .form select, .form textarea { width: 100%; }
   .note { padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--orange) 12%, transparent);
           border: 1px solid color-mix(in srgb, var(--orange) 35%, transparent); font-size: 13px; margin-top: 12px; }
+  input[type="color"] { height: 38px; padding: 3px; cursor: pointer; }
+  .logo img { width: 36px; height: 44px; object-fit: contain; flex: none; }
+  .chain { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+  .chain span { font-size: 11.5px; padding: 2px 8px; border-radius: 6px; background: color-mix(in srgb, var(--brand-hi) 20%, var(--surface2)); border: 1px solid var(--border); }
+  .chain span + span::before { content: "→ "; color: var(--muted); }
+  .incident { border: 1px solid var(--border); border-left: 4px solid var(--c); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: var(--surface2); }
+  .incident h3 { margin: 0 0 4px; font-size: 14.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .incident table td, .incident table th { font-size: 12.5px; padding: 5px 8px; }
+  .small { font-size: 12.5px; }
+  .scorebar { display: inline-block; width: 70px; height: 7px; border-radius: 4px; background: var(--surface3); vertical-align: middle; overflow: hidden; }
+  .scorebar i { display: block; height: 100%; background: var(--c); }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .entry-off td { opacity: .5; }
+  .formgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 14px; }
+  .formgrid label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+  .formgrid input, .formgrid select, .formgrid textarea { width: 100%; }
+  .panel { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--surface2); margin-top: 12px; }
+  .brand-preview { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .brand-preview .bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #fff; }
+  .brand-preview .bar img { height: 40px; background: #fff2; border-radius: 6px; }
+  .brand-preview .foot { padding: 8px 16px; font-size: 12px; color: var(--muted); border-top: 3px solid var(--g); }
+  .progress { height: 6px; background: var(--surface3); border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--green-hi); transition: width .2s; }
   .toast { position: fixed; bottom: 18px; right: 18px; z-index: 40; background: var(--surface3); border: 1px solid var(--border);
            border-left: 4px solid var(--green-hi); padding: 11px 15px; border-radius: 8px; box-shadow: var(--shadow); max-width: 380px; }
   .spin { width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: sp .7s linear infinite; display: inline-block; }
@@ -196,19 +219,15 @@
 <body>
 <aside id="sidebar">
   <div class="logo">
-    <svg viewBox="40 50 170 230" aria-hidden="true">
-      <path d="M120,58 L200,74 L200,150 C200,208 168,244 120,270 C72,244 40,208 40,150 L40,74 Z" fill="#123E6B" stroke="#2f6db0" stroke-width="4"/>
-      <circle cx="122" cy="196" r="48" fill="#1E9E4F"/><circle cx="122" cy="196" r="27" fill="#123E6B"/>
-      <rect x="122" y="184" width="68" height="24" fill="#123E6B"/><rect x="148" y="193" width="32" height="13" fill="#1E9E4F"/>
-      <rect x="167" y="193" width="13" height="23" fill="#1E9E4F"/><rect x="74" y="92" width="96" height="22" fill="#F59E1E"/>
-      <rect x="112" y="112" width="20" height="66" fill="#F59E1E"/>
-    </svg>
-    <div><b id="brandName">Tech Guardians</b><small>CyberSec AI Agent</small></div>
+    <img id="brandLogo" src="/branding/logo" alt="">
+    <div><b id="brandName">Tech Guardians</b><small id="appName">CyberSec AI Agent</small></div>
   </div>
   <nav>
     <button class="active" data-page="analyze"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Threat Analysis</button>
     <button data-page="chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg>AI Analyst</button>
     <button data-page="report"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>Reports</button>
+    <button data-page="trust"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8 12h8M12 8v8"/></svg>Trusted Networks</button>
+    <button data-page="branding"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.5"/><circle cx="12" cy="7.5" r="1.5"/><circle cx="15.5" cy="10" r="1.5"/><path d="M12 21a3 3 0 0 1 0-6h2a2 2 0 0 0 2-2"/></svg>Branding</button>
     <button data-page="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>Settings</button>
   </nav>
   <div class="ai-card">
@@ -236,14 +255,15 @@
         <span class="muted" id="fileName"></span>
       </div>
       <div id="src-logs">
-        <div class="drop" id="drop"><b>Drop log files here</b> or click to browse<br>
-          <span style="font-size:12.5px">auth.log · secure · syslog · nginx/apache access · ufw · Windows event exports · shell history — up to 25 MB</span>
+        <div class="drop" id="drop"><b>Drop SIEM exports or log files here</b> or click to browse (several at once)<br>
+          <span style="font-size:12.5px">CSV · JSON · JSON Lines · Windows Event XML/CSV · syslog · CEF/LEEF · firewall · VPN · IDS · proxy · DNS · EDR · web logs · .gz — streamed, up to <span id="maxMb">512</span> MB per file</span>
           <input type="file" id="fileInput" class="hidden" multiple></div>
+        <div class="progress hidden" id="upProg"><i></i></div>
         <details id="pasteBox"><summary class="muted" style="cursor:pointer">…or paste log lines</summary>
           <textarea id="logText" rows="8" placeholder="Paste log lines here" style="margin-top:8px"></textarea></details>
         <div class="row" style="margin-top:12px">
           <button class="btn primary" id="analyzeBtn">⚡ Analyze</button>
-          <span class="muted">Try a sample:</span><span id="samples" class="row"></span>
+          <span class="muted">Try a sample:</span><button class="btn sm brand" id="siemSample" title="6 SIEM exports: Windows CSV/XML, firewall JSONL, DNS JSON, IDS CEF, VPN syslog">SIEM dataset (6 sources)</button><span id="samples" class="row"></span>
         </div>
       </div>
       <div id="src-host" class="hidden">
@@ -274,11 +294,13 @@
       <div class="actions">
         <button class="btn primary" id="investigateBtn">🤖 AI Investigate</button>
         <button class="btn brand" id="pdfBtn">📄 PDF Report</button>
+        <button class="btn" data-instant="investigation">⚡ Investigation (no AI)</button>
         <button class="btn" data-instant="playbook">⚡ Response plan</button>
         <button class="btn" data-instant="block">⚡ Block attackers</button>
         <button class="btn" data-instant="iocs">⚡ IOCs</button>
         <button class="btn ghost" id="jsonBtn">{ } JSON</button>
       </div>
+      <div class="card hidden" id="incCard"><h2>Correlated incidents <span class="count" id="incCount"></span></h2><div id="incidents"></div></div>
       <div class="grid2">
         <div class="card"><h2>Severity distribution</h2><div class="sevbars" id="sevBars"></div></div>
         <div class="card"><h2>Suspicious activity over time <span class="count" id="tlBucket"></span></h2><svg id="timeline" role="img" aria-label="Suspicious events over time"></svg><div id="tlEmpty" class="muted hidden">No timestamps found in these records.</div></div>
@@ -288,10 +310,15 @@
         <div class="filters" id="filters"></div>
         <div id="findings"></div>
       </div>
+      <div class="card hidden" id="uebaCard"><h2>UEBA — behaviour analytics <span class="count">score 0-100, explained</span></h2>
+        <div style="overflow-x:auto"><table><thead><tr><th>Account</th><th>Score</th><th>Baseline</th><th>Reasons</th></tr></thead><tbody id="ueba"></tbody></table></div></div>
       <div class="card" id="actorsCard">
-        <h2>Attacker profiles <span class="count" id="actorCount"></span></h2>
-        <div style="overflow-x:auto"><table><thead><tr><th>Source IP</th><th>Verdict</th><th>Events</th><th>Activity</th><th>First seen</th><th>Last seen</th></tr></thead><tbody id="actors"></tbody></table></div>
+        <h2>Addresses involved <span class="count" id="actorCount"></span></h2>
+        <div style="overflow-x:auto"><table><thead><tr><th>IP address</th><th>Verdict</th><th>Classification (trusted inventory)</th><th>Events</th><th>Activity</th><th>First seen</th><th>Last seen</th></tr></thead><tbody id="actors"></tbody></table></div>
       </div>
+      <div class="card hidden" id="ingestCard"><h2>Data sources &amp; parsing <span class="count" id="ingestMeta"></span></h2>
+        <div style="overflow-x:auto"><table><thead><tr><th>File</th><th>Format</th><th>Probable source</th><th>Events</th><th>Time range (UTC)</th><th>Fields missing</th><th>Problems</th></tr></thead><tbody id="ingest"></tbody></table></div></div>
+      <div class="card hidden" id="limitsCard"><h2>Limitations &amp; missing telemetry</h2><ul id="limits" class="small" style="margin:0;padding-left:18px"></ul></div>
       <div class="card" id="iocCard">
         <h2>Indicators of compromise <button class="btn sm ghost" id="copyIocs" style="margin-left:auto">Copy all</button></h2>
         <div class="ioc-grid" id="iocs"></div>
@@ -306,6 +333,7 @@
       <div id="chatLog"></div>
       <div class="composer">
         <div class="quick" id="quick">
+          <button class="chip" data-instant="investigation"><b>⚡</b> Investigation</button>
           <button class="chip" data-instant="playbook"><b>⚡</b> Response plan</button>
           <button class="chip" data-instant="block"><b>⚡</b> Block IPs</button>
           <button class="chip" data-instant="iocs"><b>⚡</b> IOCs</button>
@@ -356,6 +384,55 @@
     </div>
   </section>
 
+  <!-- ================= TRUSTED NETWORKS ================= -->
+  <section class="page" id="page-trust">
+    <div class="card">
+      <h2>Trusted Networks &amp; Assets <span class="count" id="trustCount"></span></h2>
+      <p class="muted small" style="margin-top:0">Tell the engine and the AI agent which networks, ISP addresses, servers and devices are yours. <b>Trust is context, never an exemption:</b> trusted, internal and ISP addresses are still analysed and can still produce high-severity findings.</p>
+      <div class="tabs" id="trustTabs"></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>On</th><th>Name</th><th>Address</th><th>Type / zone</th><th>Classification</th><th>Criticality</th><th></th></tr></thead><tbody id="trustRows"></tbody></table></div>
+      <div class="row" style="margin-top:12px"><button class="btn primary" id="trustAdd">＋ Add entry</button><div class="spacer"></div>
+        <a class="btn sm" href="/api/trust/export?format=json" download>⬇ Export JSON</a><a class="btn sm" href="/api/trust/export?format=csv" download>⬇ Export CSV</a></div>
+      <div class="panel hidden" id="trustForm"></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2>Import (preview before applying)</h2>
+        <div class="formgrid">
+          <div><label>Format</label><select id="impFmt"><option value="csv">CSV</option><option value="json">JSON</option></select></div>
+          <div><label>Mode</label><select id="impMode"><option value="merge">Merge (add/update)</option><option value="replace">Replace everything</option></select></div>
+          <div><label>File</label><input type="file" id="impFile" accept=".csv,.json"></div>
+        </div>
+        <textarea id="impText" rows="5" placeholder="…or paste CSV / JSON here" style="margin-top:10px"></textarea>
+        <div class="row" style="margin-top:10px"><button class="btn" id="impPreview">🔍 Preview</button><button class="btn primary" id="impApply" disabled>Apply validated rows</button></div>
+        <div id="impResult" class="small" style="margin-top:10px"></div>
+      </div>
+      <div class="card"><h2>Test an address</h2>
+        <div class="row"><input id="tryIp" placeholder="e.g. 192.0.2.53" style="flex:1"><button class="btn" id="tryBtn">Classify</button></div>
+        <div id="tryResult" class="small" style="margin-top:10px"></div>
+        <h2 style="margin-top:18px">Precedence</h2>
+        <ol class="small muted" style="margin:0;padding-left:18px"><li>Invalid address</li><li>Suspicious / blocked indicator (always wins)</li><li>Exact asset IP</li><li>Most specific ISP / external service / network range</li><li>Loopback / link-local</li><li>Other private (RFC 1918, ULA, CGNAT)</li><li>Public, not in inventory</li></ol>
+      </div>
+    </div>
+    <div class="card"><h2>Change history <span class="count">who changed what, when, previous value</span></h2>
+      <div style="overflow-x:auto;max-height:340px"><table><thead><tr><th>Time (UTC)</th><th>Who</th><th>Area</th><th>Action</th><th>Target</th><th>Before → after</th></tr></thead><tbody id="auditRows"></tbody></table></div></div>
+  </section>
+
+  <!-- ================= BRANDING ================= -->
+  <section class="page" id="page-branding">
+    <div class="grid2">
+      <div class="card"><h2>Branding &amp; report configuration</h2>
+        <div class="formgrid" id="brandForm"></div>
+        <div class="panel"><b>Logo</b> <span class="muted small">PNG or JPEG, up to 2 MB, 16–4096 px. SVG is not accepted (it can contain scripts).</span>
+          <div class="row" style="margin-top:8px"><input type="file" id="logoFile" accept="image/png,image/jpeg"><button class="btn sm" id="logoReset">Use default logo</button></div>
+          <div id="logoInfo" class="small muted" style="margin-top:6px"></div></div>
+        <div class="row" style="margin-top:14px"><button class="btn primary" id="brandSave">Save branding</button><span class="muted small">Applies immediately to the app, login page and new reports. No rebuild needed.</span></div>
+      </div>
+      <div class="card"><h2>Preview</h2>
+        <div class="brand-preview" id="brandPreview"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= SETTINGS ================= -->
   <section class="page" id="page-settings">
     <div class="card">
@@ -374,6 +451,11 @@
         <div><label>CPU threads (0 = auto)</label><input id="cfgThreads" type="number" min="0" step="1"></div>
       </div>
       <div class="muted" style="margin-top:12px;font-size:12.5px">Fastest on CPU: a small or MoE model, context 4096, threads = number of physical cores. See <b>docs/LINUX-GUIDE.md</b>.</div>
+      <h2 style="margin-top:22px">Analysis</h2>
+      <div class="form">
+        <div><label><input type="checkbox" id="cfgLearn"> Learn UEBA baselines from each analysis</label><div class="muted small">Only accounts not involved in incidents or high findings are learned.</div></div>
+        <div><label>Time zone of logs without zone info (hours from UTC)</label><input id="cfgTz" type="number" step="0.5" min="-14" max="14"></div>
+      </div>
       <div class="row" style="margin-top:16px"><button class="btn primary" id="cfgSave">Save settings</button><button class="btn" id="warmBtn">Pre-load model now</button></div>
     </div>
   </section>
@@ -412,13 +494,17 @@ $("#themeBtn").onclick = () => {
 };
 const PAGES = { analyze: ["Threat Analysis", "Analyse logs or audit this machine — fully offline"],
   chat: ["AI Analyst", "Local, uncensored AI — nothing leaves this machine"],
-  report: ["Reports", "Branded PDF incident / audit report"], settings: ["Settings", "AI engine and performance"] };
+  report: ["Reports", "Branded PDF incident / audit report"], settings: ["Settings", "AI engine and performance"],
+  trust: ["Trusted Networks & Assets", "Your networks, ISP addresses and assets - context for the engine and the AI"],
+  branding: ["Branding", "Application name, logo, colours and report labels"] };
 function showPage(p) {
   $$("nav button").forEach((b) => b.classList.toggle("active", b.dataset.page === p));
   $$(".page").forEach((s) => s.classList.toggle("active", s.id === "page-" + p));
   $("#pageTitle").textContent = PAGES[p][0]; $("#pageSub").textContent = PAGES[p][1];
   $("#sidebar").classList.remove("open");
   if (p === "report") refreshReportPage();
+  if (p === "trust") loadTrust();
+  if (p === "branding") loadBranding();
   if (p === "chat") $("#chatInput").focus();
 }
 $$("nav button").forEach((b) => b.onclick = () => showPage(b.dataset.page));
@@ -435,7 +521,8 @@ function renderStatus(s) {
   $("#modelList").innerHTML = s.models.map((m) => `<option value="${esc(m)}">`).join("");
   $("#samples").innerHTML = s.samples.map((n) => `<button class="btn sm" data-sample="${esc(n)}">${esc(n)}</button>`).join("");
   $("#rootNote").classList.toggle("hidden", !!s.is_root);
-  if (s.brand) { $("#brandName").textContent = s.brand.brand_name; $("#credit").textContent = s.brand.author_mark; }
+  if (s.branding) applyBranding(s.branding);
+  $("#maxMb").textContent = s.max_upload_mb || 512;
   if (!s.online) $("#perf").textContent = "Rules, audit and reports still work offline.";
 }
 async function refreshStatus() {
@@ -449,6 +536,7 @@ function fillSettings() {
   $("#cfgProvider").value = status.provider; $("#cfgUrl").value = status.base_url; $("#cfgModel").value = status.model || "";
   $("#cfgKey").value = status.has_api_key ? "********" : ""; $("#cfgTemp").value = status.temperature; $("#tempVal").textContent = status.temperature;
   $("#cfgCtx").value = String(status.num_ctx); $("#cfgPredict").value = status.num_predict; $("#cfgThreads").value = status.num_thread;
+  $("#cfgLearn").checked = !!status.learn_baseline; $("#cfgTz").value = status.tz_hours || 0;
 }
 $('nav button[data-page="settings"]').addEventListener("click", fillSettings);
 $("#cfgTemp").oninput = (e) => $("#tempVal").textContent = e.target.value;
@@ -460,6 +548,7 @@ $("#cfgSave").onclick = async () => {
     if ($("#cfgCtx").value) body.num_ctx = +$("#cfgCtx").value;
     if ($("#cfgPredict").value) body.num_predict = +$("#cfgPredict").value;
     if ($("#cfgThreads").value !== "") body.num_thread = +$("#cfgThreads").value;
+    body.learn_baseline = $("#cfgLearn").checked; body.tz_hours = +$("#cfgTz").value || 0;
     renderStatus(await api("/api/config", body)); toast(status.online ? "Saved — connected ✔" : "Saved, but the AI server is offline");
   } catch (e) { toast("Error: " + e.message); }
 };
@@ -477,13 +566,49 @@ $("#fileInput").onchange = (e) => e.target.files.length && loadFiles(e.target.fi
 drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("over"); };
 drop.ondragleave = () => drop.classList.remove("over");
 drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("over"); e.dataTransfer.files.length && loadFiles(e.dataTransfer.files); };
-async function loadFiles(files) {
-  const list = [...files], total = list.reduce((n, f) => n + f.size, 0);
-  if (total > 25 * 1024 * 1024) return toast("Too large (max 25 MB in total)");
-  sourceName = list.map((f) => f.name).join(", "); $("#fileName").textContent = sourceName;
-  $("#logText").value = (await Promise.all(list.map((f) => f.text()))).join("\n");
-  analyze();
+function uploadOne(file, batch, onProgress) {
+  return new Promise((resolve, reject) => {  // XHR for upload progress; the server streams to disk
+    const x = new XMLHttpRequest();
+    x.open("POST", `/api/upload?batch=${batch}`);
+    x.setRequestHeader("Content-Type", "application/octet-stream");
+    x.setRequestHeader("X-Filename", file.name);
+    x.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded);
+    x.onload = () => x.status === 200 ? resolve(JSON.parse(x.responseText)) :
+      x.status === 401 ? location.reload() : reject(new Error((JSON.parse(x.responseText || "{}").error) || x.statusText));
+    x.onerror = () => reject(new Error("upload failed"));
+    x.send(file);
+  });
 }
+async function loadFiles(files) {
+  const list = [...files], limit = (status.max_upload_mb || 512) * 1024 * 1024;
+  const big = list.find((f) => f.size > limit);
+  if (big) return toast(`${big.name} is larger than ${status.max_upload_mb || 512} MB`);
+  sourceName = list.map((f) => f.name).join(", "); $("#fileName").textContent = sourceName;
+  const total = list.reduce((n, f) => n + f.size, 0) || 1, bar = $("#upProg");
+  let done = 0;
+  const batch = [...crypto.getRandomValues(new Uint8Array(8))].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const btn = $("#analyzeBtn"), t0 = performance.now();
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Uploading';
+  bar.classList.remove("hidden");
+  try {
+    for (const f of list) {
+      await uploadOne(f, batch, (loaded) => $("i", bar).style.width = `${(done + loaded) / total * 100}%`);
+      done += f.size;
+    }
+    btn.innerHTML = '<span class="spin"></span> Analyzing';
+    setResult(await api("/api/analyze-batch", {batch}), performance.now() - t0);
+  } catch (e) { toast("Error: " + e.message); }
+  bar.classList.add("hidden"); $("i", bar).style.width = "0";
+  btn.disabled = false; btn.textContent = "⚡ Analyze";
+}
+$("#siemSample").onclick = async () => {
+  const btn = $("#siemSample"), t0 = performance.now();
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Analyzing';
+  sourceName = "SIEM sample dataset"; $("#fileName").textContent = sourceName;
+  try { setResult(await api("/api/analyze-sample", {name: "siem"}), performance.now() - t0); }
+  catch (e) { toast("Error: " + e.message); }
+  btn.disabled = false; btn.textContent = "SIEM dataset (6 sources)";
+};
 $("#samples").onclick = async (e) => {
   const n = e.target.dataset.sample; if (!n) return;
   sourceName = n; $("#fileName").textContent = n;
@@ -497,7 +622,7 @@ $("#analyzeBtn").onclick = () => { if (!$("#logText").value.trim()) { $("#pasteB
 async function analyze() {
   const btn = $("#analyzeBtn"), t0 = performance.now();
   btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Analyzing';
-  try { setResult(await api("/api/analyze", {text: $("#logText").value}), performance.now() - t0); }
+  try { setResult(await api("/api/analyze", {text: $("#logText").value, name: sourceName || "pasted log"}), performance.now() - t0); }
   catch (e) { toast("Error: " + e.message); }
   btn.disabled = false; btn.textContent = "⚡ Analyze";
 }
@@ -514,7 +639,7 @@ function setResult(a, ms) {
   analysis = a; aiReport = ""; sevFilter = "all"; query = "";
   $("#emptyState").classList.add("hidden"); $("#results").classList.remove("hidden");
   renderKpis(a, ms); renderSevBars(a); drawTimeline(a); renderFilters(a); renderFindings();
-  renderActors(a); renderIocs(a); renderHost(a);
+  renderActors(a); renderIocs(a); renderHost(a); renderIncidents(a); renderUeba(a); renderIngest(a); renderLimits(a);
   $("#results").scrollIntoView({behavior: "smooth", block: "start"});
 }
 const GRADE_COL = {A: "#1E9E4F", B: "#5aa84b", C: "#b58400", D: "#d4561b", E: "#d1391c", F: "#c4122f"};
@@ -534,8 +659,10 @@ function renderKpis(a, ms) {
       <div class="hint" style="margin-top:6px">Grade <span class="grade" style="background:${GRADE_COL[a.grade] || "#5a6470"};width:26px;height:26px;font-size:14px">${esc(a.grade)}</span></div>
       <div class="hint" style="margin-top:4px">${sub}</div></div></div></div>` +
     ["critical", "high", "medium", "low"].map((s) => `<div class="kpi sev" style="--c:${sevVar(s)}"><div class="label">${s}</div><div class="value">${a.summary[s]}</div><div class="hint">finding${a.summary[s] === 1 ? "" : "s"}</div></div>`).join("") +
+    (a.incidents ? `<div class="kpi"><div class="label">Incidents</div><div class="value">${a.incidents.length}</div>
+      <div class="hint">${a.lines.toLocaleString()} events · ${(a.ingestion || []).length} source file(s)</div></div>` :
     `<div class="kpi"><div class="label">${a.kind === "host" ? "Total events" : "Suspicious events"}</div><div class="value">${events.toLocaleString()}</div>
-      <div class="hint">${(a.ip_profiles || []).filter((p) => p.verdict !== "Noisy").length} hostile source(s)</div></div>`;
+      <div class="hint">${(a.ip_profiles || []).filter((p) => p.verdict !== "Noisy").length} hostile source(s)</div></div>`);
 }
 function renderSevBars(a) {
   const max = Math.max(1, ...SEVS.map((s) => a.summary[s]));
@@ -584,24 +711,33 @@ $("#filters").onclick = (e) => {
 };
 function renderFindings() {
   const list = analysis.findings.map((f, i) => [f, i]).filter(([f]) => (sevFilter === "all" || f.severity === sevFilter) &&
-    (!query || JSON.stringify([f.title, f.ips, f.mitre, f.category, f.samples]).toLowerCase().includes(query)));
+    (!query || JSON.stringify([f.title, f.ips, f.mitre, f.category, f.samples, f.rule_id, f.users, f.hosts, f.incident]).toLowerCase().includes(query)));
   $("#findCount").textContent = `${list.length} of ${analysis.findings.length}`;
   $("#findings").innerHTML = list.length ? list.map(([f, i], n) => `
     <details class="finding" ${n < 2 && f.severity !== "info" ? "open" : ""}>
       <summary><span class="pill" style="--c:${sevVar(f.severity)}">${f.severity}</span>
-        <div><div class="t">${esc(f.title)}</div><div class="meta"><span>${esc(f.category || "")}</span><span>MITRE ${esc(f.mitre)} ${esc(f.mitre_name || "")}</span>
-          ${f.first_seen ? `<span>🕑 ${esc(f.first_seen)}</span>` : ""}</div></div>
+        <div><div class="t">${f.fid ? `<span class="muted">${esc(f.fid)}</span> ` : ""}${esc(f.title)}</div><div class="meta">${f.rule_id ? `<span>${esc(f.rule_id)}</span>` : ""}<span>${esc(f.category || "")}</span><span>MITRE ${esc(f.mitre)} ${esc(f.mitre_name || "")}</span>
+          ${f.risk ? `<span>risk <b>${f.risk.score}</b> · confidence ${f.confidence}%${f.ueba_score ? ` · UEBA ${f.ueba_score}` : ""}</span>` : ""}
+          ${f.incident ? `<span>🔗 ${esc(f.incident)}</span>` : ""}${f.first_seen ? `<span>🕑 ${esc(f.first_seen)}</span>` : ""}</div></div>
         <span class="muted">×${f.count}</span></summary>
       <div class="body">
         <dl class="kv">
           ${f.description ? `<dt>What</dt><dd>${esc(f.description)}</dd>` : ""}
           ${f.impact ? `<dt>Impact</dt><dd>${esc(f.impact)}</dd>` : ""}
           ${f.recommendation ? `<dt>Fix</dt><dd>${esc(f.recommendation)}</dd>` : ""}
-          ${f.ips?.length ? `<dt>Sources</dt><dd>${f.ips.map((ip) => `<span class="tag">${esc(ip)}</span>`).join("")}</dd>` : ""}
+          ${f.users?.length ? `<dt>Accounts</dt><dd>${f.users.map((u) => `<span class="tag">${esc(u)}</span>`).join("")}</dd>` : ""}
+          ${f.hosts?.length ? `<dt>Hosts</dt><dd>${f.hosts.map((u) => `<span class="tag">${esc(u)}</span>`).join("")}</dd>` : ""}
+          ${f.ips?.length ? `<dt>Addresses</dt><dd>${f.ips.map((ip) => `<span class="tag">${esc(ip)}</span>`).join("")}</dd>` : ""}
+          ${f.trust_context?.length ? `<dt>Trust context</dt><dd>${f.trust_context.slice(0, 6).map((c) => `${esc(c.ip || c.host)}: <b>${esc(c.label)}</b>${c.name ? ` (${esc(c.name)})` : ""}`).join("<br>")}</dd>` : ""}
+          ${f.notes?.length ? `<dt>Notes</dt><dd>${f.notes.map(esc).join("<br>")}</dd>` : ""}
+          ${f.fp ? `<dt>False positives</dt><dd>${esc(f.fp)}</dd>` : ""}
+          ${f.limitation ? `<dt>Limitations</dt><dd>${esc(f.limitation)}</dd>` : ""}
+          ${f.risk?.factors ? `<dt>Risk factors</dt><dd class="small">${f.risk.factors.map((x) => `${esc(x.factor)} (${x.points >= 0 ? "+" : ""}${x.points})`).join(" · ")}</dd>` : ""}
+          ${f.evidence?.length ? `<dt>Evidence</dt><dd class="small">${f.evidence.slice(0, 20).map(esc).join(", ")}${(f.evidence_refs || []).length > 20 ? " …" : ""}</dd>` : ""}
           ${f.first_seen && f.last_seen !== f.first_seen ? `<dt>Window</dt><dd>${esc(f.first_seen)} → ${esc(f.last_seen)}</dd>` : ""}
           ${f.references?.length ? `<dt>References</dt><dd>${f.references.map((r) => /^https?:/.test(r) ? `<a href="${esc(r)}" target="_blank" rel="noopener">${esc(r.replace(/^https?:\/\//, ""))}</a>` : esc(r)).join(" · ")}</dd>` : ""}
         </dl>
-        ${f.samples.map((s) => `<pre>${s.line ? `<span class="ln">L${s.line} </span>` : ""}${esc(s.text)}</pre>`).join("")}
+        ${f.samples.map((s) => `<pre>${s.evidence ? `<span class="ln">[${esc(s.evidence)}] </span>` : ""}${s.ref ? `<span class="ln">${esc(s.ref)} </span>` : s.line ? `<span class="ln">L${s.line} </span>` : ""}${esc(s.text)}</pre>`).join("")}
         <div class="row" style="margin-top:8px"><button class="btn sm" data-ask="${i}">🤖 Ask AI about this</button></div>
       </div>
     </details>`).join("") : `<div class="empty">✅ Nothing matches — ${analysis.findings.length ? "change the filter" : "no threats matched the built-in rules. Try AI Investigate for a second opinion."}</div>`;
@@ -614,13 +750,53 @@ $("#findings").onclick = (e) => {
 function renderActors(a) {
   const p = a.ip_profiles || [];
   $("#actorsCard").classList.toggle("hidden", !p.length); $("#actorCount").textContent = p.length ? `${p.length}` : "";
-  const vc = {Malicious: "critical", Suspicious: "medium", Noisy: "info"};
+  const vc = {Malicious: "critical", Suspicious: "medium", Noisy: "info", "Affected internal asset": "high"};
   $("#actors").innerHTML = p.slice(0, 30).map((x) => `<tr><td><span class="tag">${esc(x.ip)}</span>${x.public ? "" : ' <span class="muted">internal</span>'}</td>
-    <td><span class="pill" style="--c:${sevVar(vc[x.verdict])}">${x.verdict}</span></td><td>${x.events}</td>
+    <td><span class="pill" style="--c:${sevVar(vc[x.verdict] || "info")}">${esc(x.verdict)}</span></td>
+    <td class="small">${esc(x.classification || "")}${x.asset ? `<br><b>${esc(x.asset)}</b>` : ""}</td><td>${x.events}</td>
     <td>${x.activity.map(esc).join("<br>")}</td><td class="muted">${esc(x.first_seen || "—")}</td><td class="muted">${esc(x.last_seen || "—")}</td></tr>`).join("");
 }
+function renderIncidents(a) {
+  const incs = a.incidents || [];
+  $("#incCard").classList.toggle("hidden", !incs.length); $("#incCount").textContent = incs.length ? `${incs.length}` : "";
+  $("#incidents").innerHTML = incs.map((i, n) => `<div class="incident" style="--c:${sevVar(i.severity)}">
+    <h3><span class="pill" style="--c:${sevVar(i.severity)}">${esc(i.severity)}</span>${esc(i.id)} · ${esc(i.status)} · risk ${i.risk.score}/100 · confidence ${i.confidence}%</h3>
+    <div class="small">${esc(i.title)}</div>
+    <div class="chain">${i.tactics.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+    <div class="small muted">${esc(i.first_seen || "?")} → ${esc(i.last_seen || "?")} · actors: <b>${esc(i.users.join(", ") || "-")}</b> · hosts: ${esc(i.hosts.join(", ") || "-")} · sources: ${esc(i.source_types.join(", "))} · findings: ${esc((i.finding_ids || []).join(", "))}</div>
+    <details ${n === 0 ? "open" : ""}><summary class="small" style="cursor:pointer;margin-top:8px">Attack timeline (${i.timeline.length} steps)</summary>
+      <div style="overflow-x:auto;max-height:360px"><table><thead><tr><th>Time (UTC)</th><th>Evidence</th><th>Stage</th><th>Event / detection</th></tr></thead><tbody>
+      ${i.timeline.map((t) => `<tr><td class="muted">${esc(t.ts || "-")}</td><td><span class="tag">${esc(t.evidence || "-")}</span></td><td>${esc(t.tactic || "Alert")}</td><td>${esc(t.finding)}<br><span class="muted">${esc(t.summary)}</span></td></tr>`).join("")}
+      </tbody></table></div></details>
+    <details><summary class="small" style="cursor:pointer;margin-top:6px">Response checklist (recommendations only — nothing is executed)</summary>
+      <ul class="small">${i.checklist.map((c) => `<li><b>${esc(c.phase)}:</b> ${esc(c.step)}</li>`).join("")}${i.actions.map((c) => `<li><b>${esc(c.phase)}:</b> ${esc(c.action)}${c.requires_authorisation ? ' <span class="pill" style="--c:var(--medium)">needs authorisation</span>' : ""} <span class="muted">${esc((c.evidence || []).join(", "))}</span></li>`).join("")}</ul></details>
+  </div>`).join("");
+}
+function renderUeba(a) {
+  const e = (a.ueba?.entities || []).filter((u) => u.score || u.reasons.length);
+  $("#uebaCard").classList.toggle("hidden", !e.length);
+  $("#ueba").innerHTML = e.slice(0, 20).map((u) => {
+    const c = u.score >= 70 ? "high" : u.score >= 40 ? "medium" : "low";
+    return `<tr><td><span class="tag">${esc(u.entity)}</span></td><td><span class="scorebar" style="--c:${sevVar(c)}"><i style="width:${u.score}%"></i></span> <b>${u.score}</b></td>
+      <td class="small muted">${u.baseline.logons} logons / ${u.baseline.history_days} days${u.insufficient_history ? '<br><span class="pill" style="--c:var(--info)">thin baseline</span>' : ""}</td>
+      <td class="small">${u.reasons.map((r) => `${esc(r.text)} <span class="muted">(+${r.weight}${r.ref ? `, ${esc(r.ref)}` : ""})</span>`).join("<br>") || '<span class="muted">no anomalies</span>'}</td></tr>`;
+  }).join("");
+}
+function renderIngest(a) {
+  const ing = a.ingestion || [];
+  $("#ingestCard").classList.toggle("hidden", !ing.length);
+  $("#ingestMeta").textContent = ing.length ? `${a.lines.toLocaleString()} events · ${a.duration_s}s` : "";
+  $("#ingest").innerHTML = ing.map((i) => `<tr><td><b>${esc(i.file)}</b></td><td>${esc(i.format)}</td><td>${esc(i.probable_source.join(", "))}</td><td>${i.events.toLocaleString()}</td>
+    <td class="small muted">${esc(i.time_range.start || "-")}<br>${esc(i.time_range.end || "-")}</td><td class="small">${esc(i.fields_unavailable.slice(0, 8).join(", ") || "-")}</td>
+    <td class="small">${i.parse_failures ? `<span class="pill" style="--c:var(--medium)">${i.parse_failures} failed</span>` : ""}${i.no_timestamp ? ` ${i.no_timestamp} without time` : ""}${Object.keys(i.timezones).some((z) => z.startsWith("not stated")) ? "<br>no time zone (UTC assumed)" : ""}</td></tr>`).join("");
+}
+function renderLimits(a) {
+  const l = a.limitations || [];
+  $("#limitsCard").classList.toggle("hidden", !l.length);
+  $("#limits").innerHTML = l.map((x) => `<li><b>${esc(x.area)}:</b> ${esc(x.detail)} <span class="muted">${esc(x.impact)}</span></li>`).join("");
+}
 function renderIocs(a) {
-  const i = a.iocs || {}, groups = [["ips", "IP addresses"], ["domains", "Domains"], ["urls", "URLs"], ["files", "Files"], ["users", "Accounts"]];
+  const i = a.iocs || {}, groups = [["ips", "IP addresses"], ["domains", "Domains"], ["urls", "URLs"], ["files", "Files"], ["hashes", "Hashes"], ["users", "Accounts"]];
   const has = groups.some(([k]) => i[k]?.length);
   $("#iocCard").classList.toggle("hidden", !has);
   $("#iocs").innerHTML = groups.filter(([k]) => i[k]?.length).map(([k, t]) => `<div><h3>${t} (${i[k].length})</h3>${i[k].map((v) => `<span class="tag">${esc(v)}</span>`).join("")}</div>`).join("");
@@ -672,7 +848,7 @@ async function instant(kind, label) {
   addMsg("user", `⚡ ${label}`);
   const t0 = performance.now();
   try {
-    const r = await api("/api/instant", {kind, analysis});
+    const r = await api("/api/instant", {kind, analysis_id: analysis.analysis_id, analysis: analysis.analysis_id ? null : analysis});
     addMsg("assistant", r.markdown, {stamp: `⚡ local engine · ${Math.round(performance.now() - t0)} ms`});
     chat.push({role: "user", content: label}, {role: "assistant", content: r.markdown});
   } catch (e) { addMsg("assistant", "[error] " + e.message).classList.add("error"); }
@@ -691,7 +867,8 @@ async function send(text, investigate = false) {
   let reply = "", t0 = performance.now(), tFirst = 0;
   try {
     const r = await fetch("/api/chat", {method: "POST", headers: {"Content-Type": "application/json"}, signal: controller.signal,
-      body: JSON.stringify({messages: chat, investigate, analysis: ($("#useContext").checked || investigate) ? analysis : null})});
+      body: JSON.stringify({messages: chat, investigate, use_context: $("#useContext").checked || investigate,
+        analysis_id: analysis?.analysis_id, analysis: analysis?.analysis_id ? null : (($("#useContext").checked || investigate) ? analysis : null)})});
     if (r.status === 401) { location.reload(); return; }
     const reader = r.body.getReader(), dec = new TextDecoder();
     for (;;) {
@@ -741,8 +918,10 @@ async function pdf() {
   if (!meta.ref) delete meta.ref;
   toast("Building PDF…", 1500);
   try {
-    const r = await api("/api/report/pdf", {analysis, meta, ai_text: $("#rAi").checked ? aiReport : ""});
-    download(`security-report-${new Date().toISOString().slice(0, 10)}.pdf`, await r.blob());
+    const r = await api("/api/report/pdf", {analysis_id: analysis.analysis_id, analysis: analysis.analysis_id ? null : analysis,
+      meta, ai_text: $("#rAi").checked ? aiReport : ""});
+    const name = (r.headers.get("Content-Disposition") || "").match(/filename="([^"]+)"/);
+    download(name ? name[1] : `security-report-${new Date().toISOString().slice(0, 10)}.pdf`, await r.blob());
   } catch (e) { toast("PDF error: " + e.message); }
 }
 $("#pdfBtn").onclick = pdf; $("#pdfBtn2").onclick = pdf;
@@ -750,9 +929,13 @@ $("#genAiBtn").onclick = () => { if (!analysis) return toast("Run an analysis fi
 $("#mdBtn").onclick = () => {
   if (!analysis) return toast("Run an analysis first");
   const a = analysis, d = new Date().toISOString().replace("T", " ").slice(0, 19);
-  let m = `# ${status.brand?.brand_name || "Security"} — ${a.kind === "host" ? "Host Audit" : "Incident"} Report\n\n**Source:** ${$("#rSource").value || sourceName}  \n**Client:** ${$("#rClient").value || "-"}  \n**Generated:** ${d}\n\n`;
+  let m = `# ${status.branding?.organisation_name || "Security"} — ${status.branding?.report_title || (a.kind === "host" ? "Host Audit" : "Incident") + " Report"}\n\n**Source:** ${$("#rSource").value || sourceName}  \n**Client:** ${$("#rClient").value || "-"}  \n**Generated:** ${d}\n\n`;
   m += `| Risk | Level | Grade | Critical | High | Medium | Low |\n|---|---|---|---|---|---|---|\n| ${a.risk_score}/100 | ${a.risk_level.toUpperCase()} | ${a.grade} | ${a.summary.critical} | ${a.summary.high} | ${a.summary.medium} | ${a.summary.low} |\n\n`;
   if (aiReport && $("#rAi").checked) m += `## AI Analyst Assessment\n\n${aiReport}\n\n`;
+  (a.incidents || []).forEach((i) => {
+    m += `## ${i.id} — ${i.status} (risk ${i.risk.score}/100)\n\n${i.title}\n\n| Time (UTC) | Evidence | Stage | Event |\n|---|---|---|---|\n` +
+      i.timeline.map((t) => `| ${t.ts} | ${t.evidence} | ${t.tactic || "Alert"} | ${(t.finding + " — " + t.summary).replace(/\|/g, "/")} |`).join("\n") + "\n\n";
+  });
   m += "## Findings\n\n";
   a.findings.forEach((f, i) => {
     m += `### F-${String(i + 1).padStart(2, "0")} [${f.severity.toUpperCase()}] ${f.title}\n\n- **MITRE:** ${f.mitre} ${f.mitre_name || ""}\n- **Events:** ${f.count}\n`;
@@ -763,6 +946,186 @@ $("#mdBtn").onclick = () => {
   if (a.ip_profiles?.length) m += "## Attacker profiles\n\n| IP | Verdict | Events | Activity |\n|---|---|---|---|\n" + a.ip_profiles.map((p) => `| ${p.ip} | ${p.verdict} | ${p.events} | ${p.activity.join("; ")} |`).join("\n") + "\n";
   download(`security-report-${d.slice(0, 10)}.md`, m, "text/markdown");
 };
+
+/* ---------- branding ---------- */
+function applyBranding(b) {
+  $("#brandName").textContent = b.organisation_name; $("#appName").textContent = b.application_name;
+  $("#credit").textContent = b.footer_text || ""; document.title = b.application_name;
+  $("#brandLogo").src = b.logo_url;
+  const r = document.documentElement.style;
+  r.setProperty("--brand", b.primary_colour); r.setProperty("--green", b.accent_colour); r.setProperty("--orange", b.highlight_colour);
+}
+const BRAND_FIELDS = [["application_name", "Application name"], ["organisation_name", "Organisation / institute"], ["report_title", "Report title"],
+  ["report_subtitle", "Report subtitle"], ["analyst_name", "Report author / analyst"], ["classification", "Classification label"],
+  ["organisation_address", "Address or department"], ["contact", "Contact information"], ["header_text", "Report header text"],
+  ["footer_text", "Footer text"], ["report_version", "Report version"], ["filename_prefix", "Report filename prefix"],
+  ["primary_colour", "Primary colour", "color"], ["accent_colour", "Accent colour", "color"], ["highlight_colour", "Highlight colour", "color"],
+  ["secondary_colour", "Light background colour", "color"], ["confidentiality_notice", "Confidentiality notice", "textarea"]];
+let brandCur = {}, pendingLogo = null;
+async function loadBranding() {
+  brandCur = await api("/api/branding"); pendingLogo = null;
+  $("#brandForm").innerHTML = BRAND_FIELDS.map(([k, label, type]) => `<div ${type === "textarea" ? 'style="grid-column:1/-1"' : ""}><label>${label}</label>${
+    type === "textarea" ? `<textarea data-b="${k}" rows="3" style="font-family:inherit">${esc(brandCur[k] || "")}</textarea>` :
+    `<input data-b="${k}" type="${type || "text"}" value="${esc(brandCur[k] || "")}">`}</div>`).join("");
+  $("#logoInfo").textContent = brandCur.logo_path ? `Current: ${brandCur.logo_path}` : "Using the default logo.";
+  $$("#brandForm [data-b]").forEach((el) => el.oninput = brandPreview);
+  brandPreview();
+}
+function brandValues() {
+  const v = {};
+  $$("#brandForm [data-b]").forEach((el) => v[el.dataset.b] = el.value);
+  return v;
+}
+function brandPreview() {
+  const v = brandValues(), logo = pendingLogo?.dataUrl || brandCur.logo_url;
+  $("#brandPreview").innerHTML = `<div class="bar" style="background:${esc(v.primary_colour)};border-left:10px solid ${esc(v.accent_colour)}">
+    <img src="${esc(logo)}" alt=""><div><b style="font-size:16px">${esc(v.organisation_name)}</b><br><span style="opacity:.8;font-size:12px">${esc(v.classification)} — ${esc(v.report_title)}</span></div></div>
+    <div style="padding:14px 16px;background:${esc(v.secondary_colour)};color:#16202e"><b style="color:${esc(v.primary_colour)}">${esc(v.report_title)}</b><br>
+    <span style="color:${esc(v.accent_colour)};font-size:13px">${esc(v.report_subtitle)}</span><br><span style="font-size:12px">${esc(v.analyst_name || "")}</span></div>
+    <div class="foot" style="--g:${esc(v.accent_colour)}">${esc(v.footer_text)} · v${esc(v.report_version)}</div>`;
+}
+$("#logoFile").onchange = (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  if (!/^image\/(png|jpeg)$/.test(f.type)) { toast("Only PNG or JPEG logos"); e.target.value = ""; return; }
+  if (f.size > 2 * 1024 * 1024) { toast("Logo larger than 2 MB"); e.target.value = ""; return; }
+  const rd = new FileReader();
+  rd.onload = async () => {
+    try {
+      const up = await api("/api/branding/logo", {data_b64: rd.result.split(",")[1]});
+      pendingLogo = {path: up.logo_path, dataUrl: rd.result};
+      $("#logoInfo").textContent = `Preview: ${f.name} (${up.width}×${up.height}). Click "Save branding" to apply.`;
+      brandPreview();
+    } catch (err) { toast("Logo rejected: " + err.message); e.target.value = ""; }
+  };
+  rd.readAsDataURL(f);
+};
+$("#logoReset").onclick = () => { pendingLogo = {path: "", dataUrl: "/branding/logo?default"}; $("#logoInfo").textContent = 'Default logo will be used after "Save branding".'; brandPreview(); };
+$("#brandSave").onclick = async () => {
+  const v = brandValues();
+  if (pendingLogo) v.logo_path = pendingLogo.path;
+  const save = async (confirm_replace) => api("/api/branding", {branding: v, confirm_replace});
+  try {
+    let b;
+    try { b = await save(false); }
+    catch (e) {
+      if (!/confirm/.test(e.message)) throw e;
+      if (!confirm("Replace the current custom logo? The old file is kept in assets/branding/.")) return;
+      b = await save(true);
+    }
+    toast("Branding saved ✔"); brandCur = b; pendingLogo = null; applyBranding(b); loadBranding();
+  } catch (e) { toast("Error: " + e.message); }
+};
+
+/* ---------- trusted networks & assets ---------- */
+let trustData = null, trustSection = "trusted_networks";
+const SECTION_FIELDS = {
+  trusted_networks: [["cidr", "Network (CIDR)"], ["zone", "Zone"], ["environment", "Environment"]],
+  isp_public_ips: [["cidr", "IP or CIDR"], ["isp", "ISP"], ["zone", "Zone"]],
+  trusted_assets: [["ip", "IP address"], ["hostname", "Hostname"], ["asset_id", "Asset ID"], ["asset_type", "Asset type", "asset_type"], ["zone", "Zone"], ["allowed_services", "Allowed ports (comma separated)"], ["environment", "Environment"]],
+  approved_external_services: [["cidr", "IP or CIDR (or leave empty and use domain)"], ["domain", "Domain (e.g. *.example.com)"]],
+  suspicious_indicators: [["cidr", "IP or CIDR"], ["reason", "Reason"]],
+  service_accounts: [["username", "User name"], ["allowed_hosts", "Allowed hosts (comma separated)"], ["interactive_allowed", "Interactive logon allowed", "bool"]],
+};
+const COMMON_FIELDS = [["name", "Name"], ["classification", "Trust classification", "classification"], ["owner", "Owner / team"],
+  ["criticality", "Business criticality", "criticality"], ["valid_from", "Valid from", "date"], ["valid_until", "Valid until", "date"],
+  ["description", "Description"], ["notes", "Administrative notes"], ["enabled", "Enabled", "bool"]];
+async function loadTrust() {
+  trustData = await api("/api/trust");
+  const counts = Object.fromEntries(Object.entries(trustData.data).map(([k, v]) => [k, v.length]));
+  $("#trustTabs").innerHTML = Object.entries(trustData.sections).map(([k, label]) =>
+    `<button class="chip ${k === trustSection ? "active" : ""}" data-sec="${k}">${esc(label)} (${counts[k] || 0})</button>`).join("");
+  const enabled = Object.values(trustData.data).flat().filter((e) => e.enabled).length;
+  $("#trustCount").textContent = `${enabled} enabled entr${enabled === 1 ? "y" : "ies"}`;
+  renderTrustRows(); loadAudit();
+  if (trustData.errors?.length) toast("Configuration problems: " + trustData.errors.join("; "), 8000);
+}
+$("#trustTabs").onclick = (e) => { const k = e.target.dataset.sec; if (!k) return; trustSection = k; $("#trustForm").classList.add("hidden"); loadTrust(); };
+function renderTrustRows() {
+  const rows = trustData.data[trustSection] || [];
+  $("#trustRows").innerHTML = rows.length ? rows.map((e) => `<tr class="${e.enabled ? "" : "entry-off"}">
+    <td><input type="checkbox" data-toggle="${esc(e.id)}" ${e.enabled ? "checked" : ""}></td><td><b>${esc(e.name)}</b>${e.description ? `<br><span class="muted small">${esc(e.description)}</span>` : ""}</td>
+    <td><span class="tag">${esc(e.cidr || e.ip || e.domain || e.username || "")}</span>${e.hostname ? `<br><span class="small">${esc(e.hostname)}</span>` : ""}</td>
+    <td class="small">${esc([e.asset_type, e.zone, e.environment].filter(Boolean).join(" · ") || "-")}</td>
+    <td class="small">${esc(trustData.classes[e.classification] || e.classification)}</td><td class="small">${esc(e.criticality || "-")}</td>
+    <td><button class="btn sm" data-edit="${esc(e.id)}">Edit</button> <button class="btn sm ghost" data-del="${esc(e.id)}">Delete</button></td></tr>`).join("")
+    : `<tr><td colspan="7" class="muted">No entries in this section yet.</td></tr>`;
+}
+$("#trustRows").onclick = async (e) => {
+  const t = e.target, rows = trustData.data[trustSection];
+  if (t.dataset.edit) trustFormOpen(rows.find((x) => x.id === t.dataset.edit));
+  if (t.dataset.del && confirm("Delete this entry? The change is recorded in the change history.")) {
+    try { await api("/api/trust/delete", {section: trustSection, id: t.dataset.del}); toast("Deleted"); loadTrust(); } catch (err) { toast("Error: " + err.message); }
+  }
+  if (t.dataset.toggle) {
+    const entry = Object.assign({}, rows.find((x) => x.id === t.dataset.toggle), {enabled: t.checked});
+    try { await api("/api/trust/entry", {section: trustSection, entry}); loadTrust(); } catch (err) { toast("Error: " + err.message); t.checked = !t.checked; }
+  }
+};
+$("#trustAdd").onclick = () => trustFormOpen({enabled: true});
+function trustFormOpen(entry) {
+  const fields = SECTION_FIELDS[trustSection].concat(COMMON_FIELDS), f = $("#trustForm");
+  const input = ([k, label, type]) => {
+    const v = entry[k] ?? "";
+    if (type === "bool") return `<div><label><input type="checkbox" data-f="${k}" ${v === true || v === "true" ? "checked" : ""}> ${label}</label></div>`;
+    if (type === "classification") return `<div><label>${label}</label><select data-f="${k}"><option value="">(default for section)</option>${Object.entries(trustData.classes).filter(([c]) => c !== "suspicious_blocked").map(([c, l]) => `<option value="${c}" ${c === v ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></div>`;
+    if (type === "criticality" || type === "asset_type") {
+      const opts = type === "criticality" ? trustData.criticality : trustData.asset_types;
+      return `<div><label>${label}</label><select data-f="${k}"><option value=""></option>${opts.map((o) => `<option ${o === v ? "selected" : ""}>${o}</option>`).join("")}</select></div>`;
+    }
+    return `<div><label>${label}</label><input data-f="${k}" type="${type === "date" ? "date" : "text"}" value="${esc(Array.isArray(v) ? v.join(", ") : v)}"></div>`;
+  };
+  f.innerHTML = `<b>${entry.id ? "Edit" : "Add"} — ${esc(trustData.sections[trustSection])}</b>
+    <div class="formgrid" style="margin-top:10px">${fields.filter(([k]) => !(trustSection === "suspicious_indicators" && k === "classification")).map(input).join("")}</div>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="tfSave">Save</button><button class="btn ghost" id="tfCancel">Cancel</button>
+    <span class="muted small">Addresses are validated; ranges wider than /8 (IPv4) or /16 (IPv6) are refused.</span></div>`;
+  f.classList.remove("hidden");
+  $("#tfCancel").onclick = () => f.classList.add("hidden");
+  $("#tfSave").onclick = async () => {
+    const out = {id: entry.id};
+    $$("[data-f]", f).forEach((el) => out[el.dataset.f] = el.type === "checkbox" ? el.checked : el.value.trim());
+    try { await api("/api/trust/entry", {section: trustSection, entry: out}); toast("Saved ✔"); f.classList.add("hidden"); loadTrust(); }
+    catch (err) { toast("Not saved: " + err.message, 6000); }
+  };
+}
+$("#impFile").onchange = async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  $("#impText").value = await file.text(); $("#impFmt").value = file.name.toLowerCase().endsWith(".json") ? "json" : "csv";
+  $("#impApply").disabled = true;
+};
+$("#impText").oninput = () => $("#impApply").disabled = true;
+async function importCall(path) {
+  return api(path, {format: $("#impFmt").value, mode: $("#impMode").value, text: $("#impText").value});
+}
+$("#impPreview").onclick = async () => {
+  try {
+    const p = await importCall("/api/trust/import/preview");
+    const list = (k) => p.changes[k].slice(0, 12).map((c) => `${esc(c.section)}: ${esc(c.name)} ${esc(c.where || "")}`).join("<br>");
+    $("#impResult").innerHTML = `<b>Preview (${p.mode})</b>: ${p.counts.add} to add, ${p.counts.update} to update, ${p.counts.unchanged} unchanged, ${p.counts.remove} to remove, <b>${p.errors.length} rejected</b>
+      ${p.counts.add ? `<div style="margin-top:6px"><b>Add:</b><br>${list("add")}</div>` : ""}${p.counts.update ? `<div style="margin-top:6px"><b>Update:</b><br>${list("update")}</div>` : ""}
+      ${p.counts.remove ? `<div style="margin-top:6px"><b>Remove:</b><br>${list("remove")}</div>` : ""}
+      ${p.errors.length ? `<div class="note">${p.errors.slice(0, 15).map(esc).join("<br>")}</div>` : ""}`;
+    $("#impApply").disabled = !(p.counts.add + p.counts.update + p.counts.remove);
+  } catch (e) { $("#impResult").innerHTML = `<div class="note">${esc(e.message)}</div>`; $("#impApply").disabled = true; }
+};
+$("#impApply").onclick = async () => {
+  if ($("#impMode").value === "replace" && !confirm("Replace ALL trusted entries with the validated rows of this import?")) return;
+  try { const p = await importCall("/api/trust/import/apply"); toast(`Imported: ${p.counts.add} added, ${p.counts.update} updated`); $("#impApply").disabled = true; loadTrust(); }
+  catch (e) { toast("Import failed: " + e.message); }
+};
+$("#tryBtn").onclick = async () => {
+  try {
+    const c = await api("/api/trust/classify", {ip: $("#tryIp").value});
+    $("#tryResult").innerHTML = `<b>${esc(c.label)}</b> · trust class: ${esc(trustData?.classes?.[c.trust_class] || c.trust_class)}${c.entry ? `<br>Matched: <b>${esc(c.entry.name)}</b> (${esc(c.matched)})` : ""}
+      <br><span class="muted">Context only — activity from this address is still analysed at full severity.</span>`;
+  } catch (e) { toast(e.message); }
+};
+async function loadAudit() {
+  const r = await api("/api/audit-log");
+  $("#auditRows").innerHTML = r.entries.length ? r.entries.slice(0, 100).map((x) => `<tr><td class="small muted">${esc(x.time)}</td><td class="small">${esc(x.actor)}</td>
+    <td class="small">${esc(x.area)}</td><td class="small">${esc(x.action)}</td><td class="small">${esc(x.target)}</td>
+    <td class="small"><code>${esc(JSON.stringify(x.before)).slice(0, 160)}</code> → <code>${esc(JSON.stringify(x.after)).slice(0, 160)}</code></td></tr>`).join("")
+    : `<tr><td colspan="6" class="muted">No changes recorded yet.</td></tr>`;
+}
 
 welcome();
 refreshStatus();

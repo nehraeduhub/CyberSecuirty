@@ -23,18 +23,24 @@ import threading
 import time
 import webbrowser
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError, URLError
+from urllib.parse import parse_qs, urlparse
 from urllib.request import ProxyHandler, Request, build_opener
 
+import branding
+import config_store
 import detector
 import host_audit
+import investigator
 import knowledge
+import pipeline
 import report_pdf
+import trust
 
-VERSION = "2.0.0"
+VERSION = "3.0.0"
 ROOT = Path(__file__).resolve().parent
 STATIC = ROOT / "static"
 SAMPLES = ROOT / "samples"
@@ -52,7 +58,11 @@ DEFAULTS = {
     "num_predict": 1200,      # max reply length in tokens
     "num_thread": 0,          # CPU threads for the model; 0 = let Ollama decide (physical cores)
     "keep_alive": "-1",       # keep the model loaded in RAM forever (no reload delay)
-    "report": {},             # PDF branding overrides, see report_pdf.BRAND
+    "report": {},             # legacy PDF branding overrides (Branding settings take precedence)
+    "max_upload_mb": 512,     # per uploaded file
+    "keep_uploads": False,    # delete uploaded logs after analysis (evidence is kept in the result)
+    "learn_baseline": True,   # update UEBA baselines from accounts not involved in incidents
+    "tz_hours": 0,            # time zone of logs that carry no zone information (0 = UTC)
     "host": "127.0.0.1",      # "0.0.0.0" or this machine's IP to open the UI from other computers
     "access_token": "",       # required to log in when listening on the network (auto-generated)
     "port": 8787,
@@ -104,7 +114,7 @@ def load_config():
 
 
 SAVED_KEYS = ("provider", "base_url", "model", "api_key", "temperature", "num_ctx", "num_predict",
-              "num_thread", "keep_alive", "report")
+              "num_thread", "keep_alive", "report", "learn_baseline", "tz_hours")
 
 
 def save_config(cfg, keys=SAVED_KEYS):
@@ -331,11 +341,15 @@ def _raw_stream(cfg, messages):
                     yield chunk
 
 
-def build_messages(history, analysis=None):
+def build_messages(history, analysis=None, num_ctx=4096):
     # System prompt first and unchanged, then the analysis: Ollama reuses its cache for this
     # identical prefix, so follow-up questions only process the new tokens.
     msgs = [{"role": "system", "content": SYSTEM_PROMPT}]
-    if analysis:
+    if analysis and analysis.get("incidents") is not None:
+        budget = max(3000, int(num_ctx) * 3 - 5000)  # leave room for the question and the answer
+        msgs.append({"role": "system", "content": investigator.AGENT_RULES + "\n\nFACTS:\n" +
+                     investigator.case_file(analysis, budget)})
+    elif analysis:
         msgs.append({"role": "system",
                      "content": "Current analysis results:\n" + detector.ai_context(analysis)})
     for m in history[-MAX_HISTORY:]:
@@ -343,6 +357,8 @@ def build_messages(history, analysis=None):
             msgs.append({"role": m["role"], "content": m["content"]})
     return msgs
 
+
+DEFAULT_LOGO_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 50 170 230"><path d="M120,58 L200,74 L200,150 C200,208 168,244 120,270 C72,244 40,208 40,150 L40,74 Z" fill="#123E6B" stroke="#2f6db0" stroke-width="4"/><circle cx="122" cy="196" r="48" fill="#1E9E4F"/><circle cx="122" cy="196" r="27" fill="#123E6B"/><rect x="122" y="184" width="68" height="24" fill="#123E6B"/><rect x="148" y="193" width="32" height="13" fill="#1E9E4F"/><rect x="167" y="193" width="13" height="23" fill="#1E9E4F"/><rect x="74" y="92" width="96" height="22" fill="#F59E1E"/><rect x="112" y="112" width="20" height="66" fill="#F59E1E"/></svg>"""
 
 LOGIN_PAGE = """<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CyberSec AI Agent - Sign in</title>
@@ -353,8 +369,9 @@ p{color:#7d8da1;font-size:13px;margin:0 0 18px}input{width:100%;box-sizing:borde
 border:1px solid #24344a;background:#162232;color:#e4ebf3;font:inherit}button{margin-top:14px;width:100%;padding:10px;
 border:0;border-radius:8px;background:#1E9E4F;color:#fff;font:inherit;font-weight:600;cursor:pointer}
 #e{color:#ff4d6a;font-size:13px;min-height:18px;margin-top:10px}</style></head><body>
-<form id="f"><h1>&#128737; CyberSec AI Agent</h1><p>Enter the access token shown in the agent's terminal
-(or in config.json on the server).</p><input id="t" type="password" placeholder="Access token" autofocus
+<form id="f"><img src="/branding/logo" alt="" style="height:54px;display:block;margin:0 auto 10px">
+<h1 style="text-align:center">{APP}</h1><p style="text-align:center">{ORG}</p><p>Enter the access token shown in the
+agent's terminal (or run <code>python3 agent.py info</code> on the server).</p><input id="t" type="password" placeholder="Access token" autofocus
 autocomplete="current-password"><button>Sign in</button><div id="e"></div></form>
 <script>document.getElementById("f").onsubmit=async(ev)=>{ev.preventDefault();
 const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},
@@ -368,6 +385,10 @@ INVESTIGATE_PROMPT = ("Investigate these findings. Start with a 2-3 sentence exe
                       "## Confidence & false positives, ## Top 5 actions now (with commands).")
 
 
+def _html(s):
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+
+
 def instant_answer(kind, analysis, index=None):
     """Answers computed locally in milliseconds - no AI needed."""
     if kind == "block":
@@ -379,7 +400,58 @@ def instant_answer(kind, analysis, index=None):
         return knowledge.playbook_markdown(analysis)
     if kind == "explain":
         return knowledge.explain_markdown(dict(analysis["findings"][int(index)]))
+    if kind == "investigation":
+        return investigation_markdown(analysis)
     raise ValueError("unknown instant answer")
+
+
+def investigation_markdown(analysis):
+    """Deterministic investigation (no AI) rendered for the chat."""
+    if analysis.get("incidents") is None:
+        return knowledge.playbook_markdown(analysis)
+    inv = investigator.investigate(analysis)
+    out = [inv["summary"]]
+    for i in inv["incidents"][:3]:
+        out.append(f"\n### {i['id']} - {i['status']} (risk {i['risk']}/100)")
+        out += [f"- **{s['ts'][11:16] if s['ts'] else '?'} {s['stage']}**: {s['text']} [{', '.join(s['evidence'])}]"
+                for s in i["story"][:14]]
+        out.append("\n**Hypotheses**")
+        out += [f"- ({h['status']}) {h['statement']} [{', '.join(h['evidence'][:3])}]" for h in i["hypotheses"]]
+        if i["gaps"]:
+            out.append("\n**Evidence gaps**")
+            out += [f"- {g}" for g in i["gaps"][:4]]
+        if i["queries"]:
+            out.append("\n**Suggested read-only query (Splunk)**\n```\n" + i["queries"][0]["splunk"] + "\n```")
+    if not inv["incidents"]:
+        out.append("No correlated incidents. See the findings list for individual detections.")
+    return "\n".join(out)
+
+
+# ---------------------------------------------------------------- analysis store
+_ANALYSES = OrderedDict()
+_ANALYSES_MAX = 4
+
+
+def remember(result):
+    aid = secrets.token_hex(8)
+    result["analysis_id"] = aid
+    _ANALYSES[aid] = result
+    while len(_ANALYSES) > _ANALYSES_MAX:
+        _ANALYSES.popitem(last=False)
+    return result
+
+
+def recall(body):
+    a = _ANALYSES.get(str(body.get("analysis_id") or ""))
+    return a if a is not None else body.get("analysis")
+
+
+SAFE_NAME = re.compile(r"[^A-Za-z0-9._\-]+")
+
+
+def safe_filename(name):
+    name = SAFE_NAME.sub("_", Path(str(name or "upload.log")).name).strip("._") or "upload.log"
+    return name[:120]
 
 
 # ---------------------------------------------------------------- web server
@@ -435,14 +507,37 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = self.path.split("?", 1)[0]
+        if path == "/branding/logo":
+            data, ctype = branding.logo_bytes(branding.load())
+            return self._send(200, data, ctype) if data else self._send(200, DEFAULT_LOGO_SVG, "image/svg+xml")
         if not self._authorized():
             if path in ("/", "/index.html"):
-                return self._send(200, LOGIN_PAGE, "text/html; charset=utf-8")
+                b = branding.load()
+                page = LOGIN_PAGE.replace("{APP}", _html(b["application_name"])).replace("{ORG}", _html(b["organisation_name"]))
+                return self._send(200, page, "text/html; charset=utf-8")
             return self._send(401, {"error": "login required"})
         if path in ("/", "/index.html"):
             return self._send(200, (STATIC / "index.html").read_bytes(), "text/html; charset=utf-8")
         if path == "/api/status":
             return self._send(200, self._status())
+        if path == "/api/trust":
+            inv = trust.Inventory.load()
+            return self._send(200, {"data": inv.data, "errors": inv.errors, "sections": trust.SECTION_LABELS,
+                                    "classes": trust.TRUST_CLASSES, "asset_types": trust.ASSET_TYPES,
+                                    "criticality": trust.CRITICALITY, "summary": inv.summary(),
+                                    "precedence": trust.__doc__})
+        if path == "/api/trust/export":
+            inv = trust.Inventory.load()
+            fmt = (parse_qs(urlparse(self.path).query).get("format") or ["json"])[0]
+            if fmt == "csv":
+                return self._send(200, trust.export_csv(inv), "text/csv; charset=utf-8",
+                                  {"Content-Disposition": 'attachment; filename="trusted_assets.csv"'})
+            return self._send(200, json.dumps(inv.data, indent=2), "application/json",
+                              {"Content-Disposition": 'attachment; filename="trusted_assets.json"'})
+        if path == "/api/branding":
+            return self._send(200, branding.load())
+        if path == "/api/audit-log":
+            return self._send(200, {"entries": config_store.read_audit(200)})
         if path.startswith("/samples/"):
             name = path.rsplit("/", 1)[-1]
             allowed = {p.name: p for p in SAMPLES.glob("*.log")}
@@ -457,8 +552,14 @@ class Handler(BaseHTTPRequestHandler):
                 "has_api_key": bool(cfg.get("api_key")), "pdf": report_pdf.AVAILABLE,
                 "num_ctx": cfg["num_ctx"], "num_predict": cfg["num_predict"], "num_thread": cfg["num_thread"],
                 "is_root": hasattr(os, "geteuid") and os.geteuid() == 0,
-                "platform": sys.platform, "brand": dict(report_pdf.BRAND, **(cfg.get("report") or {})),
-                "samples": sorted(p.name for p in SAMPLES.glob("*.log"))}
+                "platform": sys.platform, "branding": _public_branding(),
+                "trust_entries": trust.Inventory.load().enabled_count,
+                "learn_baseline": bool(cfg.get("learn_baseline", True)), "tz_hours": cfg.get("tz_hours", 0),
+                "max_upload_mb": cfg.get("max_upload_mb", 512),
+                "samples": sorted(p.name for p in SAMPLES.glob("*.log")),
+                "siem_samples": sorted(p.name for p in (SAMPLES / "siem").glob("*")
+                                       if p.suffix in (".csv", ".jsonl", ".json", ".cef", ".log", ".xml")
+                                       and "demo" not in p.name and "ioc" not in p.name)}
         try:
             info["models"] = list_models(cfg)
             info["online"] = True
@@ -477,11 +578,21 @@ class Handler(BaseHTTPRequestHandler):
             if host not in ("127.0.0.1", "localhost"):
                 return False
         # Forces a CORS preflight for cross-origin requests, which we never approve.
-        return (self.headers.get("Content-Type") or "").startswith("application/json")
+        ctype = (self.headers.get("Content-Type") or "")
+        return ctype.startswith("application/json") or (
+            ctype.startswith("application/octet-stream") and self.path.startswith("/api/upload"))
+
+    def _actor(self):
+        who = "token-user" if self.cfg.get("access_token") else "local-user"
+        return f"{who}@{self.client_address[0]}"
 
     def do_POST(self):
         if not self._trusted():
             return self._send(403, {"error": "forbidden"})
+        if self.path.startswith("/api/upload"):
+            if not self._authorized():
+                return self._send(401, {"error": "login required"})
+            return self._upload()
         try:
             body = self._json_body()
         except ValueError as e:
@@ -497,16 +608,42 @@ class Handler(BaseHTTPRequestHandler):
             text = body.get("text") or ""
             if not text.strip():
                 return self._send(400, {"error": "No log text supplied"})
-            return self._send(200, detector.analyze(text))
+            res = pipeline.analyze_text(text, str(body.get("name") or "pasted log")[:80],
+                                        tz_hours=float(self.cfg.get("tz_hours") or 0),
+                                        learn_baseline=bool(self.cfg.get("learn_baseline", True)))
+            return self._send(200, remember(pipeline.to_json(res)))
+        if path == "/api/analyze-batch":
+            return self._analyze_batch(body)
+        if path == "/api/analyze-sample":
+            files = sorted(p for p in (SAMPLES / "siem").glob("*") if p.suffix in (".csv", ".jsonl", ".json", ".cef",
+                           ".log", ".xml") and "demo" not in p.name and "ioc" not in p.name)
+            res = pipeline.analyze_files([(p, p.name) for p in files], learn_baseline=False,
+                                         extra_ioc_paths=[SAMPLES / "siem" / "ioc_feed.csv"])
+            return self._send(200, remember(pipeline.to_json(res)))
+        if path.startswith("/api/trust/"):
+            return self._trust(path, body)
+        if path == "/api/branding":
+            try:
+                return self._send(200, branding.save(body.get("branding") or {}, self._actor(),
+                                                     bool(body.get("confirm_replace"))))
+            except PermissionError as e:
+                return self._send(409, {"error": str(e), "needs_confirmation": True})
+            except ValueError as e:
+                return self._send(400, {"error": str(e)})
+        if path == "/api/branding/logo":
+            try:
+                return self._send(200, branding.store_logo(body.get("data_b64") or "", self._actor()))
+            except ValueError as e:
+                return self._send(400, {"error": str(e)})
         if path == "/api/config":
             return self._update_config(body)
         if path == "/api/chat":
             return self._chat(body)
         if path == "/api/audit":
-            return self._send(200, host_audit.run_audit(include_logs=body.get("include_logs", True)))
+            return self._send(200, remember(host_audit.run_audit(include_logs=body.get("include_logs", True))))
         if path == "/api/instant":
             try:
-                md = instant_answer(body.get("kind"), body.get("analysis") or {}, body.get("index"))
+                md = instant_answer(body.get("kind"), recall(body) or {}, body.get("index"))
             except (ValueError, KeyError, IndexError, TypeError) as e:
                 return self._send(400, {"error": f"cannot answer: {e}"})
             return self._send(200, {"markdown": md})
@@ -517,23 +654,109 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"ok": True})
         self._send(404, {"error": "not found"})
 
+    # ------------------------------------------------------------ uploads & analysis
+    def _upload(self):
+        q = parse_qs(urlparse(self.path).query)
+        batch = (q.get("batch") or [""])[0] or secrets.token_hex(8)
+        if not re.fullmatch(r"[a-f0-9]{16}", batch):
+            return self._send(400, {"error": "bad batch id"})
+        name = safe_filename(self.headers.get("X-Filename") or (q.get("name") or ["upload.log"])[0])
+        length = int(self.headers.get("Content-Length") or 0)
+        limit = int(self.cfg.get("max_upload_mb", 512)) * 1024 * 1024
+        if length <= 0:
+            return self._send(400, {"error": "empty upload"})
+        if length > limit:
+            return self._send(413, {"error": f"file larger than {limit // 1024 // 1024} MB"})
+        config_store.ensure_dirs()
+        d = config_store.UPLOAD_DIR / batch
+        d.mkdir(mode=0o700, exist_ok=True)
+        dest = d / name
+        n = 1
+        while dest.exists():
+            dest = d / f"{Path(name).stem}-{n}{Path(name).suffix}"
+            n += 1
+        left = length
+        with open(dest, "wb") as fh:  # stream to disk; never hold the whole file in memory
+            while left > 0:
+                chunk = self.rfile.read(min(1 << 20, left))
+                if not chunk:
+                    break
+                fh.write(chunk)
+                left -= len(chunk)
+        os.chmod(dest, 0o600)
+        return self._send(200, {"batch": batch, "file": dest.name, "bytes": length - left})
+
+    def _analyze_batch(self, body):
+        batch = str(body.get("batch") or "")
+        if not re.fullmatch(r"[a-f0-9]{16}", batch):
+            return self._send(400, {"error": "bad batch id"})
+        d = config_store.UPLOAD_DIR / batch
+        files = sorted(p for p in d.glob("*") if p.is_file()) if d.exists() else []
+        if not files:
+            return self._send(400, {"error": "no uploaded files in this batch"})
+        try:
+            res = pipeline.analyze_files([(p, p.name) for p in files],
+                                         tz_hours=float(body.get("tz_hours", self.cfg.get("tz_hours") or 0)),
+                                         learn_baseline=bool(body.get("learn_baseline", self.cfg.get("learn_baseline", True))))
+        finally:
+            if not self.cfg.get("keep_uploads"):
+                for p in files:
+                    p.unlink(missing_ok=True)
+                try:
+                    d.rmdir()
+                except OSError:
+                    pass
+        return self._send(200, remember(pipeline.to_json(res)))
+
+    # ------------------------------------------------------------ trusted networks & assets
+    def _trust(self, path, body):
+        inv = trust.Inventory.load()
+        actor = self._actor()
+        try:
+            if path == "/api/trust/entry":
+                e = trust.upsert(inv, body.get("section"), body.get("entry") or {}, actor)
+                return self._send(200, {"entry": e, "summary": inv.summary()})
+            if path == "/api/trust/delete":
+                trust.remove(inv, body.get("section"), body.get("id"), actor)
+                return self._send(200, {"ok": True})
+            if path in ("/api/trust/import/preview", "/api/trust/import/apply"):
+                fmt = "csv" if str(body.get("format", "")).lower() == "csv" else "json"
+                raw = trust.parse_import(str(body.get("text") or ""), fmt)
+                mode = "replace" if body.get("mode") == "replace" else "merge"
+                if path.endswith("preview"):
+                    p = trust.preview_import(inv, raw, mode)
+                    p.pop("valid")
+                    return self._send(200, p)
+                p = trust.apply_import(inv, raw, mode, actor)
+                p.pop("valid")
+                return self._send(200, p)
+            if path == "/api/trust/classify":
+                return self._send(200, inv.classify(str(body.get("ip") or "")))
+        except (ValueError, KeyError, TypeError) as e:
+            return self._send(400, {"error": str(e)})
+        return self._send(404, {"error": "not found"})
+
     def _pdf(self, body):
         if not report_pdf.AVAILABLE:
             return self._send(501, {"error": "PDF reports need reportlab. Install it with:  pip install reportlab"})
-        analysis = body.get("analysis")
+        analysis = recall(body)
         if not isinstance(analysis, dict) or "findings" not in analysis:
             return self._send(400, {"error": "run an analysis first"})
         meta = {k: str(v)[:200] for k, v in (body.get("meta") or {}).items()
                 if k in ("client", "assessor", "ref", "source", "scope_note")}
-        meta["model"] = self.cfg.get("model") if body.get("ai_text") else ""
+        ai = analysis.get("ai_investigation") or {}
+        ai_text = str(body.get("ai_text") or ai.get("text") or "")
+        meta["model"] = (ai.get("model") or self.cfg.get("model")) if ai_text else ""
+        b = branding.load()
+        brand = dict(self.cfg.get("report") or {}, **branding.report_brand(b))
         try:
-            pdf = report_pdf.build_pdf(analysis, meta, str(body.get("ai_text") or ""), self.cfg.get("report"))
+            pdf = report_pdf.build_pdf(analysis, meta, ai_text, brand)
         except Exception as e:  # report must never take the server down
             return self._send(500, {"error": f"PDF generation failed: {e}"})
         self.send_response(200)
         self.send_header("Content-Type", "application/pdf")
         self.send_header("Content-Length", str(len(pdf)))
-        self.send_header("Content-Disposition", f'attachment; filename="security-report-{datetime.now():%Y%m%d-%H%M}.pdf"')
+        self.send_header("Content-Disposition", f'attachment; filename="{b["filename_prefix"]}-{datetime.now():%Y%m%d-%H%M}.pdf"')
         self.end_headers()
         self.wfile.write(pdf)
 
@@ -549,6 +772,13 @@ class Handler(BaseHTTPRequestHandler):
                     cfg[key] = max(0, int(body[key]))
                 except (TypeError, ValueError):
                     return self._send(400, {"error": f"{key} must be a number"})
+        if "learn_baseline" in body:
+            cfg["learn_baseline"] = bool(body["learn_baseline"])
+        if "tz_hours" in body:
+            try:
+                cfg["tz_hours"] = max(-14.0, min(14.0, float(body["tz_hours"])))
+            except (TypeError, ValueError):
+                return self._send(400, {"error": "tz_hours must be a number"})
         if isinstance(body.get("api_key"), str) and body["api_key"] != "********":
             cfg["api_key"] = body["api_key"].strip()
         try:
@@ -564,9 +794,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def _chat(self, body):
         history = body.get("messages") or []
+        analysis = recall(body) if (body.get("investigate") or body.get("use_context", True)) else None
+        new_pipeline = bool(analysis and analysis.get("incidents") is not None)
         if body.get("investigate"):
-            history = history + [{"role": "user", "content": INVESTIGATE_PROMPT}]
-        messages = build_messages(history, body.get("analysis"))
+            prompt = investigator.INVESTIGATE_PROMPT if new_pipeline else INVESTIGATE_PROMPT
+            history = history + [{"role": "user", "content": prompt}]
+        messages = build_messages(history, analysis, self.cfg.get("num_ctx", 4096))
+        parts = []
         # Plain streaming response; the connection closes when the reply is done.
         self.send_response(200)
         self.send_header("Content-Type", "text/plain; charset=utf-8")
@@ -575,8 +809,16 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         try:
             for chunk in stream_chat(self.cfg, messages):
+                parts.append(chunk)
                 self.wfile.write(chunk.encode())
                 self.wfile.flush()
+            reply = "".join(parts)
+            if new_pipeline and reply.strip():
+                v = investigator.validate(reply, analysis)
+                self.wfile.write(investigator.validation_footer(v).encode())
+                if body.get("investigate"):
+                    analysis["ai_investigation"] = {"text": reply, "validation": v, "model": self.cfg.get("model"),
+                                                    "time": datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")}
         except (BrokenPipeError, ConnectionResetError):
             pass  # user pressed Stop
         except (LLMError, ValueError) as e:
@@ -644,12 +886,18 @@ def print_result(result):
     else:
         print(f"\nScanned {result['lines']} lines ({', '.join(result['log_types'])})")
     print(f"Risk score: {result['risk_score']}/100 [{result['risk_level'].upper()}]  Grade: {result['grade']}\n")
+    for inc in result.get("incidents") or []:
+        print(f"{inc['id']} [{inc['severity'].upper()}] risk {inc['risk']['score']}/100 - {inc['status']}")
+        print(f"   {inc['title'][:150]}")
+    if result.get("incidents"):
+        print()
     for f in result["findings"]:
         c = COLORS[f["severity"]] if color else ""
-        print(f"{c}[{f['severity'].upper():8}]{reset} {f['title']}  x{f['count']}  "
-              f"({f['mitre']})  {', '.join(f['ips'][:3])}")
+        risk = f" risk {f['risk']['score']}" if f.get("risk") else ""
+        print(f"{c}[{f['severity'].upper():8}]{reset} {f.get('fid', '')} {f.get('rule_id', '')} {f['title']}  "
+              f"x{f['count']}{risk}  ({f['mitre']})  {', '.join(f['ips'][:3])}")
         for s in f["samples"][:2]:
-            where = f"L{s['line']}: " if s.get("line") else ""
+            where = f"{s['ref']}: " if s.get("ref") else f"L{s['line']}: " if s.get("line") else ""
             print(f"           {where}{s['text'][:140]}")
     if not result["findings"]:
         print("No issues found.")
@@ -657,25 +905,39 @@ def print_result(result):
 
 def cli_report(cfg, args, result, source):
     ai_text = ""
+    new_pipeline = result.get("incidents") is not None
+    if new_pipeline:
+        print("\n--- Investigation (deterministic, no AI) ---\n")
+        print(investigation_markdown(result))
     if args.ai:
-        print("\n--- AI assessment ---\n")
+        print("\n--- AI investigation ---\n")
         try:
-            msgs = build_messages([{"role": "user", "content": INVESTIGATE_PROMPT}], result)
+            prompt = investigator.INVESTIGATE_PROMPT if new_pipeline else INVESTIGATE_PROMPT
+            msgs = build_messages([{"role": "user", "content": prompt}], result, cfg.get("num_ctx", 4096))
             parts = []
             for chunk in stream_chat(cfg, msgs):
                 parts.append(chunk)
                 print(chunk, end="", flush=True)
-            print()
             ai_text = "".join(parts)
+            if new_pipeline:
+                print(investigator.validation_footer(investigator.validate(ai_text, result)))
+            print()
         except LLMError as e:
-            print(f"[error] {e}", file=sys.stderr)
+            print(f"[AI unavailable - deterministic analysis above is complete] {e}", file=sys.stderr)
     if args.pdf:
         if not report_pdf.AVAILABLE:
             sys.exit("PDF reports need reportlab:  pip install reportlab")
         meta = {"source": source, "client": args.client or "", "assessor": args.assessor or "",
                 "model": cfg.get("model") if ai_text else ""}
-        Path(args.pdf).write_bytes(report_pdf.build_pdf(result, meta, ai_text, cfg.get("report")))
+        brand = dict(cfg.get("report") or {}, **branding.report_brand(branding.load()))
+        Path(args.pdf).write_bytes(report_pdf.build_pdf(result, meta, ai_text, brand))
         print(f"\nPDF report saved: {args.pdf}")
+
+
+def _public_branding():
+    b = branding.load()
+    return {k: b[k] for k in ("application_name", "organisation_name", "report_title", "primary_colour",
+                              "accent_colour", "highlight_colour", "footer_text", "logo_url", "classification")}
 
 
 def cli_info(cfg):
@@ -691,11 +953,19 @@ def cli_info(cfg):
 
 
 def cli_scan(cfg, args):
-    result = detector.analyze(Path(args.file).read_text(encoding="utf-8", errors="replace"))
+    files = [(Path(f), Path(f).name) for f in args.files]
+    for p, _ in files:
+        if not p.is_file():
+            sys.exit(f"File not found: {p}")
+    inv = trust.Inventory(json.loads(Path(args.trust).read_text())) if args.trust else None
+    result = pipeline.to_json(pipeline.analyze_files(
+        files, tz_hours=float(cfg.get("tz_hours") or 0), inventory=inv,
+        learn_baseline=bool(cfg.get("learn_baseline", True)) and not args.no_learn,
+        extra_ioc_paths=[Path(x) for x in args.ioc or []]))
     if args.json:
         return print(json.dumps(result, indent=2))
     print_result(result)
-    cli_report(cfg, args, result, Path(args.file).name)
+    cli_report(cfg, args, result, ", ".join(n for _, n in files))
 
 
 def cli_audit(cfg, args):
@@ -716,8 +986,11 @@ def main():
     p.add_argument("--no-browser", action="store_true", help="don't open the browser")
     sub = p.add_subparsers(dest="cmd")
     sub.add_parser("info", help="show the web address, access token and config in use")
-    s = sub.add_parser("scan", help="scan a log file from the terminal")
-    s.add_argument("file")
+    s = sub.add_parser("scan", help="analyse SIEM exports / log files from the terminal")
+    s.add_argument("files", nargs="+", help="CSV, JSON, JSONL, XML, CEF, syslog or text logs (.gz ok)")
+    s.add_argument("--trust", metavar="JSON", help="use this trusted-assets file instead of config/trusted_assets.json")
+    s.add_argument("--ioc", metavar="FILE", action="append", help="extra IoC feed (CSV/TXT); repeatable")
+    s.add_argument("--no-learn", action="store_true", help="don't update UEBA baselines from this run")
     a = sub.add_parser("audit", help="security audit of this Linux machine (use sudo for full results)")
     a.add_argument("--no-logs", action="store_true", help="skip scanning the system logs")
     for sp in (s, a):

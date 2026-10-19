@@ -1,3 +1,11 @@
+# local settings and secrets
 config.json
+config/*.json
+!config/examples/*.json
+config/ioc/
+# runtime data: uploads, UEBA baselines, audit trail (may contain sensitive evidence)
+data/
+# uploaded logos
+assets/branding/
 __pycache__/
 *.pyc

@@ -1,0 +1,4 @@
+Oct 18 01:12:00 ids01 CEF:0|OISF|Suricata|7.0|2100498|GPL ATTACK_RESPONSE id check returned root|7|src=198.51.100.2 dst=203.0.113.61 spt=80 dpt=51000 proto=TCP act=alert
+Oct 18 02:00:03 ids01 CEF:0|OISF|Suricata|7.0|2010937|ET SCAN Suspicious inbound to mySQL port 3306|5|src=203.0.113.50 dst=198.51.100.2 spt=40112 dpt=3306 proto=TCP act=alert
+Oct 18 03:14:20 ids01 CEF:0|OISF|Suricata|7.0|2027865|ET MALWARE Possible Cobalt Strike Beacon|9|src=192.0.2.22 dst=203.0.113.99 spt=51544 dpt=443 proto=TCP act=alert
+Oct 18 03:45:30 ids01 CEF:0|OISF|Suricata|7.0|2024897|ET POLICY Possible data exfiltration large outbound TLS|7|src=192.0.2.40 dst=203.0.113.150 spt=50211 dpt=443 proto=TCP act=alert

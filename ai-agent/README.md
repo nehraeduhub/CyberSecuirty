@@ -1,16 +1,23 @@
-# 🛡️ CyberSec AI Agent
+# 🛡️ CyberSec AI Agent — offline SIEM log analysis platform
 
-A **portable, lightweight, fully offline** AI cybersecurity agent with a professional web UI.
-It analyzes security logs, audits the Linux machine it runs on, detects suspicious activity,
-and writes **Tech Guardians branded PDF reports**, using an **uncensored open-source AI model
-running on your own machine**. Your data is never sent to the cloud.
+A **portable, offline cybersecurity analysis platform** with a professional web UI. Upload log
+exports from your SIEM (CSV, JSON, JSON Lines, Windows Event XML, syslog, CEF/LEEF, firewall, VPN,
+IDS, proxy, DNS, EDR, web) and it will:
+
+- detect attacks with about 70 documented rules
+- correlate events into incidents and reconstruct the attack timeline
+- score user behaviour (UEBA)
+- apply your **trusted networks, ISP addresses and assets** as context
+- let a **local, uncensored AI model** investigate the evidence
+- produce a **branded 15-section A4 PDF report**
+
+Nothing leaves your machine.
+
+📘 **Full guide: [docs/SIEM-ANALYSIS-GUIDE.md](docs/SIEM-ANALYSIS-GUIDE.md)** · 🐧 CPU-only Linux setup: [docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md)
 
 ![Dashboard](docs/screenshot-dashboard.jpg)
 
-📑 Example report: [docs/sample-report.pdf](docs/sample-report.pdf)
-
-> 🐧 **CPU-only Linux server (e.g. 64 GB RAM, no GPU, HDD)?** Follow
-> **[docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md)**: a one-command setup tuned for maximum speed.
+📑 Example report: [docs/sample-report.pdf](docs/sample-report.pdf), generated from the six-source sample incident in `samples/siem/`.
 
 | ✅ | Feature |
 |---|---|
@@ -23,7 +30,12 @@ running on your own machine**. Your data is never sent to the cloud.
 | 🖥️ | **Live Linux host audit**: SSH, accounts, sudo, exposed services, firewall, kernel hardening, SUID, malware processes, cron backdoors, updates, plus the system's own logs |
 | 🔎 | Attacker IP profiles, attack timeline, IOC extraction (IPs, URLs, domains, files, accounts) |
 | ⚡ | **Instant local answers** without AI: response plan, firewall block commands (ufw/iptables/nftables/fail2ban/Windows), IOCs, explanations and fixes |
-| 📑 | **PDF report in the Tech Guardians VAPT format**: cover, document control, executive summary with gauge and grade, findings, timeline, IOCs, roadmap, MITRE mapping, AI assessment. Markdown export too |
+| 📥 | **SIEM ingestion**: streamed multi-file upload, automatic format and log-source detection, configurable field mapping, timestamp and time-zone normalisation, parse-failure reporting, evidence references to the original `file:line` |
+| 🔗 | **Correlation and incidents**: actor-based linking across sources, ATT&CK kill-chain ordering, an attack timeline with evidence IDs, and a SOAR checklist (recommendations only) |
+| 👤 | **UEBA**: explainable per-account baselines (hours, sources, hosts, privileges, peers), with thin-history detection |
+| 🏢 | **Trusted Networks & Assets**: CIDR/IP inventory with precedence, import/export with preview, and a change history. Trust is context and never suppresses a finding |
+| 🎨 | **Branding**: app and organisation names, logo (validated PNG/JPEG), colours and report labels, all editable in the UI |
+| 📑 | **15-section A4 PDF report**: finding cards that paginate correctly, timeline, UEBA, trust context, ATT&CK, threat intelligence, risk, false positives, remediation, evidence appendix, limitations. Markdown export too |
 | 💬 | Chat with the agent: exploits, hardening, Sigma/Splunk rules, attacker intent, CTFs |
 
 **Why it's fast:** the rule engine scans about 30,000 log lines per second and explains
@@ -107,6 +119,7 @@ Settings are saved to `config.json`. You can also use environment variables:
 ## 💻 Command-line mode
 
 ```bash
+python agent.py scan export.csv firewall.jsonl dns.json --pdf report.pdf   # SIEM exports, several at once
 python agent.py scan /var/log/auth.log                    # instant rule-based scan
 python agent.py scan access.log --ai --pdf incident.pdf   # + AI assessment + PDF report
 python agent.py scan access.log --json > out.json
@@ -161,13 +174,22 @@ python -m unittest discover -s tests -v
 
 ```
 ai-agent/
-├── agent.py               # web server, local AI client (cache, warm-up), CLI
+├── agent.py               # web server + API, local AI client (cache, warm-up), CLI
+├── parsers.py             # SIEM format detection, streaming readers, field mapping, timestamps
+├── engine.py              # structured rules, UEBA, statistics, threat intel, forensics
+├── rules.py               # detection rule catalogue (IDs, severity, confidence, ATT&CK, FP guidance)
+├── pipeline.py            # upload-to-report pipeline: correlation, risk, evidence register, SOAR
+├── investigator.py        # AI investigation agent: case file, deterministic investigation, answer checks
+├── trust.py               # Trusted Networks & Assets (validation, precedence, import/export, history)
+├── branding.py            # branding settings and safe logo handling
+├── config_store.py        # atomic config files + audit trail
+├── config/examples/       # example trusted assets, branding, field mappings, rule overrides
 ├── detector.py            # log rule engine, correlation, timeline, attacker profiles, IOCs
 ├── knowledge.py           # offline knowledge base + instant answers (fixes, block commands)
 ├── host_audit.py          # live Linux host security audit
 ├── report_pdf.py          # Tech Guardians branded PDF report (optional: reportlab)
 ├── static/index.html      # the web UI (single file, no build step)
-├── samples/               # example attack logs: auth, web, firewall, Windows
+├── samples/               # example attack logs; samples/siem/ = six-source SIEM incident
 ├── scripts/setup-linux.sh # one-command, speed-tuned Linux install
 ├── scripts/benchmark.py   # tokens/second per model on this machine
 ├── docs/LINUX-GUIDE.md    # guide for CPU-only Linux servers

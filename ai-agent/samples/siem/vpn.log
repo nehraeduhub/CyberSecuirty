@@ -1,0 +1,28 @@
+Oct 11 19:41:00 vpn01 vpnd[331]: event=auth_success user=bob src_ip=198.51.100.5 assigned_ip=192.0.2.201 protocol=sslvpn session_id=vpn-7000
+Oct 12 19:32:00 vpn01 vpnd[331]: event=auth_success user=bob src_ip=198.51.100.5 assigned_ip=192.0.2.201 protocol=sslvpn session_id=vpn-7001
+Oct 13 19:09:00 vpn01 vpnd[331]: event=auth_success user=bob src_ip=198.51.100.5 assigned_ip=192.0.2.201 protocol=sslvpn session_id=vpn-7002
+Oct 14 19:10:00 vpn01 vpnd[331]: event=auth_success user=bob src_ip=198.51.100.5 assigned_ip=192.0.2.201 protocol=sslvpn session_id=vpn-7003
+Oct 15 19:11:00 vpn01 vpnd[331]: event=auth_success user=bob src_ip=198.51.100.5 assigned_ip=192.0.2.201 protocol=sslvpn session_id=vpn-7004
+Oct 18 02:55:07 vpn01 vpnd[331]: event=auth_failure user=alice src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:55:14 vpn01 vpnd[331]: event=auth_failure user=alice src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:55:21 vpn01 vpnd[331]: event=auth_failure user=bob src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:55:28 vpn01 vpnd[331]: event=auth_failure user=carol_adm src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:55:35 vpn01 vpnd[331]: event=auth_failure user=dave src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:55:42 vpn01 vpnd[331]: event=auth_failure user=dave src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:55:49 vpn01 vpnd[331]: event=auth_failure user=erin src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:55:56 vpn01 vpnd[331]: event=auth_failure user=frank src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:03 vpn01 vpnd[331]: event=auth_failure user=grace src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:10 vpn01 vpnd[331]: event=auth_failure user=grace src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:17 vpn01 vpnd[331]: event=auth_failure user=heidi src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:24 vpn01 vpnd[331]: event=auth_failure user=ivan src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:31 vpn01 vpnd[331]: event=auth_failure user=judy src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:38 vpn01 vpnd[331]: event=auth_failure user=judy src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:45 vpn01 vpnd[331]: event=auth_failure user=mallory src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:52 vpn01 vpnd[331]: event=auth_failure user=oscar src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:56:59 vpn01 vpnd[331]: event=auth_failure user=peggy src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:57:06 vpn01 vpnd[331]: event=auth_failure user=peggy src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:57:13 vpn01 vpnd[331]: event=auth_failure user=trent src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:57:20 vpn01 vpnd[331]: event=auth_failure user=victor src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:57:27 vpn01 vpnd[331]: event=auth_failure user=walter src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:57:34 vpn01 vpnd[331]: event=auth_failure user=walter src_ip=203.0.113.77 reason=bad_password protocol=sslvpn
+Oct 18 02:58:04 vpn01 vpnd[331]: event=auth_success user=bob src_ip=203.0.113.77 assigned_ip=192.0.2.200 protocol=sslvpn session_id=vpn-8812

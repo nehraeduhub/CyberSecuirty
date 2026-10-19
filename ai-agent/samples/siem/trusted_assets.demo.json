@@ -1,0 +1,141 @@
+{
+  "_comment": "Demo inventory for the sample dataset only (documentation ranges). Import it from Trusted Networks & Assets -> Import to see trust context in the analysis.",
+  "trusted_networks": [
+    {
+      "id": "lan",
+      "name": "Head office LAN",
+      "cidr": "192.0.2.0/24",
+      "zone": "internal",
+      "criticality": "high",
+      "enabled": true
+    },
+    {
+      "id": "vpnpool",
+      "name": "VPN client pool",
+      "cidr": "192.0.2.192/27",
+      "zone": "vpn",
+      "enabled": true
+    }
+  ],
+  "isp_public_ips": [
+    {
+      "id": "isp",
+      "name": "ISP static block",
+      "cidr": "198.51.100.0/29",
+      "isp": "Example ISP",
+      "enabled": true
+    }
+  ],
+  "trusted_assets": [
+    {
+      "id": "dc01",
+      "name": "DC01 domain controller",
+      "ip": "192.0.2.5",
+      "hostname": "DC01",
+      "asset_type": "domain_controller",
+      "criticality": "critical",
+      "zone": "servers",
+      "enabled": true
+    },
+    {
+      "id": "dns",
+      "name": "Internal DNS",
+      "ip": "192.0.2.53",
+      "asset_type": "dns_server",
+      "allowed_services": [
+        53
+      ],
+      "criticality": "high",
+      "enabled": true
+    },
+    {
+      "id": "fs01",
+      "name": "FS01 file server",
+      "ip": "192.0.2.30",
+      "hostname": "FS01",
+      "asset_type": "server",
+      "criticality": "high",
+      "enabled": true
+    },
+    {
+      "id": "db01",
+      "name": "DB01 HR database",
+      "ip": "192.0.2.40",
+      "hostname": "DB01",
+      "asset_type": "database",
+      "criticality": "critical",
+      "enabled": true
+    },
+    {
+      "id": "jump",
+      "name": "Admin jump host",
+      "ip": "192.0.2.10",
+      "hostname": "JUMP01",
+      "asset_type": "jump_host",
+      "classification": "management_host",
+      "enabled": true
+    },
+    {
+      "id": "scan",
+      "name": "Vulnerability scanner",
+      "ip": "192.0.2.250",
+      "asset_type": "scanner",
+      "classification": "monitoring_scanner",
+      "enabled": true,
+      "notes": "Approved weekly scans"
+    },
+    {
+      "id": "web",
+      "name": "Public web server",
+      "ip": "198.51.100.2",
+      "hostname": "WEB01",
+      "asset_type": "web_server",
+      "classification": "public_server",
+      "allowed_services": [
+        80,
+        443
+      ],
+      "criticality": "high",
+      "enabled": true
+    },
+    {
+      "id": "fw",
+      "name": "Perimeter firewall",
+      "ip": "192.0.2.1",
+      "asset_type": "firewall",
+      "classification": "management_host",
+      "criticality": "critical",
+      "enabled": true
+    },
+    {
+      "id": "ws-bob",
+      "name": "Bob's workstation",
+      "ip": "192.0.2.22",
+      "hostname": "WS-BOB",
+      "asset_type": "workstation",
+      "criticality": "medium",
+      "enabled": true
+    }
+  ],
+  "approved_external_services": [
+    {
+      "id": "upd",
+      "name": "Update mirror",
+      "cidr": "203.0.113.200/32",
+      "enabled": true
+    }
+  ],
+  "suspicious_indicators": [],
+  "service_accounts": [
+    {
+      "id": "svcb",
+      "name": "Backup service",
+      "username": "svc_backup",
+      "allowed_hosts": [
+        "BACKUP01"
+      ],
+      "interactive_allowed": false,
+      "enabled": true
+    }
+  ]
+}

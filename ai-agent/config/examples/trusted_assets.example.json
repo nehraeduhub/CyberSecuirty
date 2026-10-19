@@ -1,0 +1,43 @@
+{
+  "_comment": "EXAMPLE ONLY. All entries use documentation ranges (RFC 5737 / RFC 3849) and are DISABLED. Replace them with your organisation's approved networks and set enabled to true. Edit from the web UI (Trusted Networks & Assets) or this file.",
+  "version": 1,
+  "trusted_networks": [
+    {"id": "net-lan", "name": "Internal LAN", "cidr": "192.0.2.0/24", "zone": "internal", "classification": "internal_trusted",
+     "owner": "IT Infrastructure", "criticality": "high", "environment": "production", "enabled": false,
+     "description": "Example only - replace with your LAN range"},
+    {"id": "net-mgmt", "name": "Management network", "cidr": "192.0.2.0/28", "zone": "management", "classification": "management_host",
+     "owner": "Network team", "criticality": "critical", "enabled": false, "description": "Example only - out-of-band management"},
+    {"id": "net-v6", "name": "Internal IPv6", "cidr": "2001:db8:100::/48", "zone": "internal", "classification": "internal_trusted",
+     "enabled": false, "description": "Example only"}
+  ],
+  "isp_public_ips": [
+    {"id": "isp-1", "name": "ISP static block", "cidr": "198.51.100.0/29", "isp": "Example ISP", "zone": "perimeter",
+     "classification": "isp_public", "enabled": false, "description": "Example only - your ISP-assigned public range"}
+  ],
+  "trusted_assets": [
+    {"id": "dc01", "asset_id": "AST-0001", "name": "Domain controller", "ip": "192.0.2.5", "hostname": "dc01.example.local",
+     "asset_type": "domain_controller", "zone": "internal", "criticality": "critical", "classification": "internal_trusted", "enabled": false},
+    {"id": "dns01", "name": "Internal DNS", "ip": "192.0.2.53", "hostname": "dns01.example.local", "asset_type": "dns_server",
+     "zone": "internal", "criticality": "high", "allowed_services": [53], "enabled": false},
+    {"id": "jump01", "name": "Admin jump host", "ip": "192.0.2.10", "hostname": "jump01.example.local", "asset_type": "jump_host",
+     "zone": "management", "criticality": "high", "classification": "management_host", "enabled": false},
+    {"id": "vuln01", "name": "Vulnerability scanner", "ip": "192.0.2.250", "asset_type": "scanner", "zone": "internal",
+     "classification": "monitoring_scanner", "enabled": false, "notes": "Scans allowed Sundays 01:00-05:00 only"},
+    {"id": "web01", "name": "Public web server", "ip": "198.51.100.2", "hostname": "www.example.com", "asset_type": "web_server",
+     "zone": "dmz", "criticality": "high", "classification": "public_server", "allowed_services": [80, 443], "enabled": false},
+    {"id": "fw01", "name": "Perimeter firewall", "ip": "192.0.2.1", "asset_type": "firewall", "zone": "perimeter",
+     "criticality": "critical", "classification": "management_host", "enabled": false}
+  ],
+  "approved_external_services": [
+    {"id": "ext-updates", "name": "OS update mirror", "cidr": "203.0.113.128/25", "classification": "known_external_service",
+     "enabled": false, "description": "Example only"},
+    {"id": "ext-m365", "name": "Example SaaS", "domain": "*.example.org", "enabled": false}
+  ],
+  "suspicious_indicators": [
+    {"id": "bad-1", "name": "Known bad host (example)", "cidr": "203.0.113.66/32", "reason": "Example only", "enabled": false}
+  ],
+  "service_accounts": [
+    {"id": "svc-backup", "name": "Backup service", "username": "svc_backup", "allowed_hosts": ["backup01"],
+     "interactive_allowed": false, "enabled": false}
+  ]
+}

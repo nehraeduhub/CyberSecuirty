@@ -1,0 +1,2511 @@
+[
+ {
+  "@timestamp": "2026-10-11T09:32:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T10:04:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T10:10:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T10:13:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T11:08:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T12:54:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T13:01:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T13:19:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T13:49:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T13:56:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T14:32:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T15:12:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T16:02:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T16:53:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T17:08:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-11T17:24:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T10:46:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T10:53:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T11:23:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T11:28:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T12:49:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T12:51:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T14:23:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T14:32:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T15:02:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T15:14:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T15:49:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T15:57:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T16:15:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T17:18:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T17:28:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-12T17:51:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T09:18:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T09:45:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T09:48:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T10:17:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T10:52:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T11:51:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T11:52:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T12:03:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T13:35:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T14:05:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T15:55:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T15:57:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T16:09:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T16:26:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T16:54:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-13T17:08:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T08:18:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T08:25:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T08:26:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T09:23:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T09:53:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T10:08:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T10:48:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T11:01:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T11:24:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T13:50:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T13:59:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T13:59:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T15:28:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T15:44:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T15:56:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-14T16:23:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T08:15:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T09:01:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T09:07:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T10:35:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T11:45:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T12:07:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T12:13:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T12:15:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T14:07:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T14:40:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T15:38:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T16:01:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T16:36:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T17:00:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T17:29:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-15T17:33:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T08:22:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T08:24:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T09:22:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T09:33:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T10:18:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T11:36:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T12:47:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T13:04:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T14:00:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T14:11:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T14:23:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T15:02:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T16:34:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T16:35:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T16:50:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-16T17:22:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T08:20:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T08:22:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T08:50:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T09:49:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T10:04:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T10:51:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T10:53:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T11:46:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T11:56:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T12:12:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T13:08:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T15:02:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T15:40:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T15:44:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T16:21:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-17T17:47:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "f3f3lsugfust43k4w4cw3rdezxkbj4ciepxxycj4xx4eixzurphb.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:05Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "l7yhqq4ns7mhie4l4fuwestklxohmip7bxx5ifetz622eiue45wi.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:10Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "li3dhjtkkuowsfqmritfkjkvcbfcqn2b7st6pzt5edk4265nvjuu.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:15Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "wzixgup5hr4pjgdsy2pkuumk757t7bfz5pnwdds76sag3iqxzxcz.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:20Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "dmxsey4rhigzxvxjmzccciv65jiuukztv7t6bxvh2tb6qod6kyjp.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:25Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "chmb4u2j2n26dinu6yul5vwq6mprtotsn7u6wrshyzwjscsfw4q6.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:30Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "nmrrigppdoodg2v6giak266msusdfocl2lcz7lscatgvs57i5rmh.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:35Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "vk5qlavsmlz3ufzgli6upaqyp4rvtaqxpdh5tkzthsxooi6j5x26.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:40Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "npf4xehdmjku4hn7f4d5i25d5tbzqanec3wede6cs2li2xy4yyfi.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:45Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "whlzioabt53yop5wjrmhc2bpnegc4dpcz4ondisouuptjo2trdl3.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:50Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "7dwyu22jtyl6potj5d22iypqnvf4xfmdrycemn6nvtanmh6pnzpu.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:50:55Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "sy5wtqx75g6unxu2cojbq2sjmvoyp7vq775kwki7ldceda2ioeja.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "n5xd67ba2abrsb3lggjpmqwrzfxz5potfcfzyy6dakf73vgcon6r.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:05Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "cerclubnjzetkpyvyifwdg3oevzubr47owy3lyfspefrjyjyuxgf.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:10Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "at4xrgifl342gbfwfuyas2yfpkykirtr7jek3r2t6exqp7m5gita.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:15Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "zvyv4v3itum6ulzus7puyrzxhmlb5n4se27itpqj3ye46z2cxfgp.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:20Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "wkczv3gagqoo4xz5jwb6gs2fhjwtv5n6w6g44uetchbvgkplkv35.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:25Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "ozll3zbm43yannreglxum5hq7uyzhww5ltfiuhpthlxjy2iy3l7l.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:30Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "k7silu4dwa7imy727247kfboscrosk57hhrxc4n3gptc4qwf4hpn.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:35Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "w3kinndwrkussrgi2driipjupz7jr2y4efzrx57uaf5wezn3n7ru.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:40Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "svi7vdcg5bhk45a3mitkrfxqfxkdzto3fgan6eio4aavh3i6eoyf.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:45Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "gguxtiyijeak4wnj24nfgihyw3uiprfpsbtnmzsdp7yhp7eaxuiy.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:50Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "2xl6ebeaqncdzs23zfjrftfnjuzet3pdpf3h5dtlhaiak7wqkxir.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:51:55Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "hbv3reqe75xd7kxkqghoacapc6xyjlc2oup2urexhdlocze5stuf.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "5axmstp5x7mpja2bowavaytgnp27djrfco2x5fgized3ipsquzuu.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:05Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "4roemigjgk45u2hwn4t5qhfktcnujfpwzdtqlbz4pg5gihadoimz.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:10Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "xfqebem4ifvhc5dk3z7by3lwnlrr4jcps726dfryi2mpbyw67wuy.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:15Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "rlbuobrd6wokgpprdoywllpuwbwjm7tl7cfdoob6avmivludbjjh.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:20Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "xexzgvtuik37ulwolytsilazcluog7jvepwukfv4aqnpewqgady4.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:25Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "2k27ywyg6ok4ecsbuqgevkykefv6b3k3kdgvnm2qstpgdz7jdxa3.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:30Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "fs6mgbnksf6htz67qfylxyxl4cq45qordjgfw2ody26p6tfzcjh4.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:35Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "lknmic3f3mjquefyzur5a2h2jjgggsw2qy76clrzjzczvpd6rxbv.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:40Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "ttr7goit4ur2fm4n27xdketziblmmdpc5dxmrx5zhbpx74l6wwkq.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:45Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "fsbydknoonr2ba6ilaoqtr3yw5qn5tzgaxstg6evrurqtmjpdzui.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:50Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "b7sq2zycmvo6wtklsg6iqlvfowot2vxqs5h6de6mhyt2djimv25j.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:52:55Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "ulf7vluda4rnkk7fi33z36yacmxaumbapowtigytkects5v3iv7w.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:53:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mkzbooinbkhxcyqddgbdh24yhq6jnat2gri2ghshg7mmqmw2skc7.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:53:05Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "n6vpaafh7jfegqo5sq5dglcsxu3hgcaikvw4rfxvlhzz5ry62khi.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:53:10Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "dkg264lywbi67h24cequaovg3p6wyjdak67ke7upvrdoyzpf544f.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:53:15Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "74uh7bgz2caftn5vxdo5v6x4hgoavwsxgck7i2gqmmhzn5mvg2ch.t.tunnel-example.net",
+    "type": "TXT"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "8ss1xvgtbv3cw9r6xt9v.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:02Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "99h2xh36gfq1zz8nv8qr.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:04Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "924klqnms5ggrz283v.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:06Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "62w7n239w0jjjz2m.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:08Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "p91g20hvw20n2f4pwtx.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:10Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "12r1386wm87r5bvfbq.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:12Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "c1cjl45hm1lg6c2.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:14Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mj4wcp6sfz713w7k30wq.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:16Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "v5552m21c9qqr51.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:18Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "wcb3ljz7477s6k90.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:20Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "20p4xw3zj43jmsh1dhh.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:22Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "vfqcrlwlghx7lbns29g.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:24Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "g9nzc490z61mt5.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:26Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "wpd52nvkhvd5vhrwwq.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:28Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "pk8j1nnpmj4zvt.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:30Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "640bf1psk80z9zkc18.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:32Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "q95fqlw3mb9v64pv.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:34Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "vstcm80jnvdfh4wwb0dj.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:36Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "04j71r6fjw62834r06d.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:38Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "1gbs2ncddch5lwdx6k9.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:40Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "rqs0qrnbq1fwb03z.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:42Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "43xc27dp9vfm51.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:44Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "zdm49sqq61bthwkg.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:46Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "q557wm0gm1895730pbw.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T03:55:48Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "wgfcbxzqwwdmj3383pjr.info",
+    "type": "A"
+   },
+   "response_code": "NXDOMAIN"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T08:55:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T09:51:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T10:31:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T11:18:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T12:02:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T12:32:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T13:17:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T13:27:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T13:55:00Z",
+  "client": {
+   "ip": "192.0.2.22"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T14:21:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "intranet.example.local",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T14:47:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T14:52:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "mail.example.com",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T15:23:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T15:57:00Z",
+  "client": {
+   "ip": "192.0.2.23"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T16:17:00Z",
+  "client": {
+   "ip": "192.0.2.24"
+  },
+  "dns": {
+   "question": {
+    "name": "updates.example.net",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ },
+ {
+  "@timestamp": "2026-10-18T16:30:00Z",
+  "client": {
+   "ip": "192.0.2.21"
+  },
+  "dns": {
+   "question": {
+    "name": "www.example.org",
+    "type": "A"
+   },
+   "response_code": "NOERROR"
+  }
+ }
+]

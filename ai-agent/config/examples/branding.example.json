@@ -1,0 +1,20 @@
+{
+  "application_name": "CyberSec AI Agent",
+  "organisation_name": "Tech Guardians",
+  "logo_path": "",
+  "report_title": "Security Incident Analysis Report",
+  "report_subtitle": "Security Operations & Incident Response",
+  "organisation_address": "",
+  "analyst_name": "",
+  "classification": "CONFIDENTIAL",
+  "primary_colour": "#123E6B",
+  "secondary_colour": "#EEF3F9",
+  "accent_colour": "#1E9E4F",
+  "highlight_colour": "#F59E1E",
+  "header_text": "",
+  "footer_text": "Designed & Developed by Rajesh Nehra · Master in Cyber Security",
+  "report_version": "1.0",
+  "contact": "",
+  "confidentiality_notice": "This document is confidential and intended solely for the named recipient. It describes security events identified on systems the organisation owns or is authorised to assess, and must be handled on a strict need-to-know basis.",
+  "filename_prefix": "security-report"
+}

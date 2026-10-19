@@ -1,0 +1,11 @@
+{
+  "_comment": "Copy to config/field_mappings.json to teach the parser your SIEM's column/field names. Keys are canonical fields; values are extra names (case and punctuation are ignored). User aliases take priority over the built-in ones.",
+  "aliases": {
+    "src_ip": ["SourceAddr", "client.address"],
+    "dst_ip": ["DestAddr"],
+    "user": ["UserPrincipal", "actor.alternateId"],
+    "host": ["DeviceHostName"],
+    "event_id": ["EventCodeNumber"],
+    "ts": ["EventTimeUTC"]
+  }
+}
