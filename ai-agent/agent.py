@@ -65,6 +65,10 @@ DEFAULTS = {
     "tz_hours": 0,            # time zone of logs that carry no zone information (0 = UTC)
     "host": "127.0.0.1",      # "0.0.0.0" or this machine's IP to open the UI from other computers
     "access_token": "",       # required to log in when listening on the network (auto-generated)
+    "username": "",           # password login (set with: python3 agent.py set-password); replaces the token
+    "password_hash": "",      # salted PBKDF2-SHA256 hash, never the password itself
+    "session_secret": "",     # signs login cookies (auto-generated)
+    "session_hours": 12,      # how long a password login stays valid
     "port": 8787,
 }
 
@@ -132,6 +136,72 @@ def save_config(cfg, keys=SAVED_KEYS):
 
 
 LOOPBACK = ("127.0.0.1", "localhost", "::1")
+
+# ---------------------------------------------------------------- password login
+PBKDF2_ROUNDS = 600_000
+MIN_PASSWORD = 10
+
+
+def hash_password(password, rounds=PBKDF2_ROUNDS):
+    salt = secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, rounds)
+    return f"pbkdf2_sha256${rounds}${salt.hex()}${dk.hex()}"
+
+
+def check_password(password, stored):
+    try:
+        algo, rounds, salt, digest = stored.split("$")
+        if algo != "pbkdf2_sha256":
+            return False
+        dk = hashlib.pbkdf2_hmac("sha256", str(password).encode("utf-8"), bytes.fromhex(salt), int(rounds))
+    except (ValueError, AttributeError):
+        return False
+    return hmac.compare_digest(dk.hex(), digest)
+
+
+def password_mode(cfg):
+    return bool(cfg.get("password_hash"))
+
+
+def _session_key(cfg):
+    # bound to the password hash: changing or removing the password signs everyone out
+    return (str(cfg.get("session_secret")) + "|" + str(cfg.get("password_hash"))).encode()
+
+
+def make_session(cfg, user):
+    exp = int(time.time() + float(cfg.get("session_hours") or 12) * 3600)
+    msg = f"{user}|{exp}"
+    sig = hmac.new(_session_key(cfg), msg.encode(), hashlib.sha256).hexdigest()
+    return f"{user}|{exp}|{sig}"
+
+
+def check_session(cfg, value):
+    """Returns the user name for a valid, unexpired session cookie, else None."""
+    try:
+        user, exp, sig = value.rsplit("|", 2)
+        if int(exp) < time.time():
+            return None
+    except ValueError:
+        return None
+    good = hmac.new(_session_key(cfg), f"{user}|{exp}".encode(), hashlib.sha256).hexdigest()
+    return user if hmac.compare_digest(sig, good) and user == cfg.get("username") else None
+
+
+_FAILS = {}            # client ip -> [failure times]; slows down password guessing
+_FAILS_LOCK = threading.Lock()
+LOCKOUT = (10, 900)    # 10 failures within 15 minutes locks that address out for the rest of the window
+
+
+def _locked_out(ip):
+    with _FAILS_LOCK:
+        recent = [t for t in _FAILS.get(ip, []) if t > time.time() - LOCKOUT[1]]
+        _FAILS[ip] = recent
+        return len(recent) >= LOCKOUT[0]
+
+
+def _record_fail(ip):
+    with _FAILS_LOCK:
+        _FAILS.setdefault(ip, []).append(time.time())
 
 
 def agent_urls(cfg):
@@ -360,6 +430,10 @@ def build_messages(history, analysis=None, num_ctx=4096):
 
 DEFAULT_LOGO_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 50 170 230"><path d="M120,58 L200,74 L200,150 C200,208 168,244 120,270 C72,244 40,208 40,150 L40,74 Z" fill="#123E6B" stroke="#2f6db0" stroke-width="4"/><circle cx="122" cy="196" r="48" fill="#1E9E4F"/><circle cx="122" cy="196" r="27" fill="#123E6B"/><rect x="122" y="184" width="68" height="24" fill="#123E6B"/><rect x="148" y="193" width="32" height="13" fill="#1E9E4F"/><rect x="167" y="193" width="13" height="23" fill="#1E9E4F"/><rect x="74" y="92" width="96" height="22" fill="#F59E1E"/><rect x="112" y="112" width="20" height="66" fill="#F59E1E"/></svg>"""
 
+LOGIN_TOKEN = """<p>Enter the access token shown in the agent's terminal (or run <code>python3 agent.py info</code>
+on the server).</p><input id="t" type="password" placeholder="Access token" autofocus autocomplete="current-password">"""
+LOGIN_PASSWORD = """<input id="u" placeholder="Username" autofocus autocomplete="username" autocapitalize="none"
+style="margin-bottom:10px"><input id="pw" type="password" placeholder="Password" autocomplete="current-password">"""
 LOGIN_PAGE = """<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CyberSec AI Agent - Sign in</title>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0a111c;color:#e4ebf3;
@@ -370,13 +444,14 @@ border:1px solid #24344a;background:#162232;color:#e4ebf3;font:inherit}button{ma
 border:0;border-radius:8px;background:#1E9E4F;color:#fff;font:inherit;font-weight:600;cursor:pointer}
 #e{color:#ff4d6a;font-size:13px;min-height:18px;margin-top:10px}</style></head><body>
 <form id="f"><img src="/branding/logo" alt="" style="height:54px;display:block;margin:0 auto 10px">
-<h1 style="text-align:center">{APP}</h1><p style="text-align:center">{ORG}</p><p>Enter the access token shown in the
-agent's terminal (or run <code>python3 agent.py info</code> on the server).</p><input id="t" type="password" placeholder="Access token" autofocus
-autocomplete="current-password"><button>Sign in</button><div id="e"></div></form>
+<h1 style="text-align:center">{APP}</h1><p style="text-align:center">{ORG}</p>{FIELDS}
+<button>Sign in</button><div id="e"></div></form>
 <script>document.getElementById("f").onsubmit=async(ev)=>{ev.preventDefault();
+const v=(id)=>{const el=document.getElementById(id);return el?el.value:"";};
 const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({token:document.getElementById("t").value})});
-if(r.ok)location.reload();else document.getElementById("e").textContent="Wrong token - try again.";};</script>
+body:JSON.stringify({token:v("t"),username:v("u"),password:v("pw")})});
+if(r.ok){location.reload();return;}
+const j=await r.json().catch(()=>({}));document.getElementById("e").textContent=j.error||"Sign-in failed.";};</script>
 </body></html>"""
 
 
@@ -489,25 +564,55 @@ class Handler(BaseHTTPRequestHandler):
             raise ValueError(f"Upload too large (max {MAX_BODY // 1024 // 1024} MB)")
         return json.loads(self.rfile.read(length) or b"{}")
 
-    # ---- access control (only active when a token is set, which is automatic on the network)
-    def _authorized(self):
-        token = self.cfg.get("access_token")
-        if not token:
-            return True
-        sent = self.headers.get("X-Agent-Token", "")
+    # ---- access control
+    # Password set (python3 agent.py set-password): username + password, on every address, token not accepted.
+    # Otherwise the access token, which is generated automatically when listening on the network.
+    def _cookie(self, name):
         for part in (self.headers.get("Cookie") or "").split(";"):
             k, _, v = part.strip().partition("=")
-            if k == "tg_token":
-                sent = sent or v
-        return hmac.compare_digest(sent.encode(), token.encode())
+            if k == name:
+                return v
+        return ""
+
+    def _user(self):
+        """Signed-in user name, or None. 'local' when no login is configured."""
+        if password_mode(self.cfg):
+            return check_session(self.cfg, self._cookie("tg_session"))
+        token = self.cfg.get("access_token")
+        if not token:
+            return "local"
+        sent = self.headers.get("X-Agent-Token", "") or self._cookie("tg_token")
+        return "token-user" if hmac.compare_digest(sent.encode(), token.encode()) else None
+
+    def _authorized(self):
+        return self._user() is not None
 
     def _login(self, body):
+        ip = self.client_address[0]
+        if _locked_out(ip):
+            return self._send(429, {"error": "Too many failed sign-ins. Wait 15 minutes and try again."})
+        if password_mode(self.cfg):
+            ok = (hmac.compare_digest(str(body.get("username", "")).strip().encode(), str(self.cfg.get("username")).encode())
+                  & check_password(str(body.get("password", "")), self.cfg["password_hash"]))
+            if not ok:
+                _record_fail(ip)
+                time.sleep(1.5)  # slow down guessing
+                return self._send(401, {"error": "Wrong username or password."})
+            config_store.audit(f"{self.cfg['username']}@{ip}", "login", "sign_in", "", {}, {})
+            cookie = (f"tg_session={make_session(self.cfg, self.cfg['username'])}; HttpOnly; SameSite=Strict; Path=/; "
+                      f"Max-Age={int(float(self.cfg.get('session_hours') or 12) * 3600)}")
+            return self._send(200, {"ok": True}, headers={"Set-Cookie": cookie})
         token = self.cfg.get("access_token") or ""
-        if not hmac.compare_digest(str(body.get("token", "")).encode(), token.encode()):
+        if not token or not hmac.compare_digest(str(body.get("token", "")).encode(), token.encode()):
+            _record_fail(ip)
             time.sleep(1.5)  # slow down guessing
-            return self._send(401, {"error": "wrong access token"})
+            return self._send(401, {"error": "Wrong token - try again."})
         cookie = f"tg_token={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=2592000"
         return self._send(200, {"ok": True}, headers={"Set-Cookie": cookie})
+
+    def _logout(self):
+        expired = "; HttpOnly; SameSite=Strict; Path=/; Max-Age=0"
+        return self._send(200, {"ok": True}, headers={"Set-Cookie": "tg_session=" + expired})
 
     def do_GET(self):
         path = self.path.split("?", 1)[0]
@@ -517,7 +622,8 @@ class Handler(BaseHTTPRequestHandler):
         if not self._authorized():
             if path in ("/", "/index.html"):
                 b = branding.load()
-                page = LOGIN_PAGE.replace("{APP}", _html(b["application_name"])).replace("{ORG}", _html(b["organisation_name"]))
+                page = LOGIN_PAGE.replace("{APP}", _html(b["application_name"])).replace("{ORG}", _html(b["organisation_name"])) \
+                    .replace("{FIELDS}", LOGIN_PASSWORD if password_mode(self.cfg) else LOGIN_TOKEN)
                 return self._send(200, page, "text/html; charset=utf-8")
             return self._send(401, {"error": "login required"})
         if path in ("/", "/index.html"):
@@ -557,6 +663,8 @@ class Handler(BaseHTTPRequestHandler):
                 "num_ctx": cfg["num_ctx"], "num_predict": cfg["num_predict"], "num_thread": cfg["num_thread"],
                 "is_root": hasattr(os, "geteuid") and os.geteuid() == 0,
                 "platform": sys.platform, "branding": _public_branding(),
+                "login": "password" if password_mode(cfg) else "token" if cfg.get("access_token") else "none",
+                "user": self._user() if password_mode(cfg) else None,
                 "trust_entries": trust.Inventory.load().enabled_count,
                 "learn_baseline": bool(cfg.get("learn_baseline", True)), "tz_hours": cfg.get("tz_hours", 0),
                 "max_upload_mb": cfg.get("max_upload_mb", 512),
@@ -587,8 +695,8 @@ class Handler(BaseHTTPRequestHandler):
             ctype.startswith("application/octet-stream") and self.path.startswith("/api/upload"))
 
     def _actor(self):
-        who = "token-user" if self.cfg.get("access_token") else "local-user"
-        return f"{who}@{self.client_address[0]}"
+        who = self._user() or "anonymous"
+        return f"{'local-user' if who == 'local' else who}@{self.client_address[0]}"
 
     def do_POST(self):
         if not self._trusted():
@@ -606,6 +714,8 @@ class Handler(BaseHTTPRequestHandler):
         path = self.path.split("?", 1)[0]
         if path == "/api/login":
             return self._login(body)
+        if path == "/api/logout":
+            return self._logout()
         if not self._authorized():
             return self._send(401, {"error": "login required"})
         if path == "/api/analyze":
@@ -832,7 +942,10 @@ class Handler(BaseHTTPRequestHandler):
 def serve(cfg, open_browser=True):
     Handler.cfg = cfg
     on_network = not is_local_only(cfg)
-    if on_network and not cfg.get("access_token"):
+    if password_mode(cfg) and not cfg.get("session_secret"):
+        cfg["session_secret"] = secrets.token_hex(32)
+        save_config(cfg, ("session_secret",))
+    if on_network and not password_mode(cfg) and not cfg.get("access_token"):
         cfg["access_token"] = secrets.token_urlsafe(18)
         save_config(cfg, ("access_token",))
     server_cls = ThreadingHTTPServer
@@ -860,8 +973,12 @@ def serve(cfg, open_browser=True):
     elif cfg["host"] in ("0.0.0.0", "", "::") and len(urls) == 1:
         print("  [!] No network IP found on this machine - check with:  ip -4 addr")
     print(f"  AI     : {cfg['provider']} @ {cfg['base_url']} (model: {cfg['model'] or 'auto'})")
-    if on_network:
+    if password_mode(cfg):
+        print(f"  Login  : username '{cfg['username']}' + password  (change: python3 agent.py set-password)")
+    elif on_network:
         print(f"  Access token: {cfg['access_token']}   (stored in {CONFIG_FILE.name})")
+        print("  [i] Prefer a password? Run:  python3 agent.py set-password")
+    if on_network:
         print("  [!] Reachable from your network over plain HTTP - use it only on a trusted LAN or VPN.")
     print("  Press Ctrl+C to stop.\n")
     url = urls[0]
@@ -949,11 +1066,46 @@ def cli_info(cfg):
     print(f"Listening on: {cfg['host']}:{cfg['port']}")
     for u in agent_urls(cfg):
         print(f"Web UI      : {u}")
+    if password_mode(cfg):
+        print(f"Login       : username '{cfg.get('username')}' + password (python3 agent.py set-password to change)")
     if is_local_only(cfg):
         print(f'Only this computer can open it. To use the server IP add  "host": "0.0.0.0",  to {CONFIG_FILE.name}')
-    else:
+    elif not password_mode(cfg):
         print(f"Access token: {cfg.get('access_token') or '(created on next start)'}")
     print(f"Network IPs : {', '.join(lan_addresses()) or 'none found'}")
+
+
+def cli_set_password(cfg, args):
+    """Set or change the web login. Run on the server; the password is stored only as a salted hash."""
+    import getpass
+    user = (args.user or cfg.get("username") or "").strip()
+    if not user:
+        user = input("Username [admin]: ").strip() or "admin"
+    if not re.fullmatch(r"[A-Za-z0-9._@-]{1,40}", user):
+        sys.exit("Username may only contain letters, digits and . _ @ - (max 40 characters).")
+    pw = getpass.getpass(f"New password for '{user}' (min {MIN_PASSWORD} characters): ")
+    if len(pw) < MIN_PASSWORD:
+        sys.exit(f"Password too short - use at least {MIN_PASSWORD} characters.")
+    if pw.lower() in (user.lower(), "password12", "password123", "1234567890", "qwertyuiop") or len(set(pw)) < 4:
+        sys.exit("That password is too easy to guess - choose another.")
+    if getpass.getpass("Repeat the password: ") != pw:
+        sys.exit("The passwords don't match - nothing changed.")
+    cfg.update(username=user, password_hash=hash_password(pw), session_secret=secrets.token_hex(32))
+    save_config(cfg, ("username", "password_hash", "session_secret"))
+    config_store.audit(f"cli@{socket.gethostname()}", "login", "set_password", CONFIG_FILE.name, {}, {"username": user})
+    print(f"Password login enabled for '{user}'. The access token is no longer accepted and everyone signed in\n"
+          "must sign in again. Restart the agent to apply it:  sudo systemctl restart cybersec-agent  "
+          "(or stop and start python3 agent.py)")
+
+
+def cli_remove_password(cfg):
+    if not password_mode(cfg):
+        return print("No password is set.")
+    cfg.update(username="", password_hash="", session_secret="")
+    save_config(cfg, ("username", "password_hash", "session_secret"))
+    config_store.audit(f"cli@{socket.gethostname()}", "login", "remove_password", CONFIG_FILE.name, {}, {})
+    print("Password removed. After a restart the agent uses the access token again on the network\n"
+          "(shown by: python3 agent.py info).")
 
 
 def cli_scan(cfg, args):
@@ -990,6 +1142,9 @@ def main():
     p.add_argument("--no-browser", action="store_true", help="don't open the browser")
     sub = p.add_subparsers(dest="cmd")
     sub.add_parser("info", help="show the web address, access token and config in use")
+    sp_pw = sub.add_parser("set-password", help="use a username + password for the web login instead of the token")
+    sp_pw.add_argument("--user", help="login name (default: current one, or admin)")
+    sub.add_parser("remove-password", help="remove the password login and go back to the access token")
     s = sub.add_parser("scan", help="analyse SIEM exports / log files from the terminal")
     s.add_argument("files", nargs="+", help="CSV, JSON, JSONL, XML, CEF, syslog or text logs (.gz ok)")
     s.add_argument("--trust", metavar="JSON", help="use this trusted-assets file instead of config/trusted_assets.json")
@@ -1011,6 +1166,10 @@ def main():
             cfg[key] = getattr(args, key)
     if args.cmd == "info":
         return cli_info(cfg)
+    if args.cmd == "set-password":
+        return cli_set_password(cfg, args)
+    if args.cmd == "remove-password":
+        return cli_remove_password(cfg)
     if args.cmd == "scan":
         cli_scan(cfg, args)
     elif args.cmd == "audit":

@@ -133,6 +133,18 @@ journalctl -u cybersec-agent -n 20         # shows the URL and the access token
   printed in the terminal/log, and stored in `config.json` (readable only by its owner). To
   change it, edit `"access_token"` and restart. All signed-in browsers then have to sign in
   again.
+- **Prefer a username and password?** Run this on the server, then restart the agent:
+  ```bash
+  python3 agent.py set-password            # asks for a username (default admin) and the password twice
+  sudo systemctl restart cybersec-agent    # or stop and start python3 agent.py
+  ```
+  The sign-in page then asks for the username and password, and the access token stops working.
+  - The password must be at least 10 characters. Only a salted PBKDF2-SHA256 hash is stored in `config.json`, never the password itself.
+  - A sign-in lasts 12 hours (`"session_hours"` in `config.json`). **Sign out** is at the bottom of the sidebar.
+  - After 10 wrong passwords from one address, that address is blocked for 15 minutes.
+  - Run `set-password` again to change the password; everyone has to sign in again.
+  - `python3 agent.py remove-password` goes back to the access token.
+  - Once a password is set, it is required on `127.0.0.1` too.
 - If the firewall is on, allow only your LAN:
   `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp`
 - **Ollama stays on 127.0.0.1.** Only the agent talks to it, so the AI is never exposed to
@@ -191,6 +203,8 @@ Other speed tips:
 | Want to use it from another PC | Set `"host": "0.0.0.0"` in `config.json` and sign in with the access token (section 4), or use an SSH tunnel |
 | Can't open `http://SERVER-IP:8787` | Check `"host"` in `config.json`, restart the agent, and open the port: `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp` |
 | Lost the access token | `python3 agent.py info` on the server |
+| Forgot the password | On the server: `python3 agent.py set-password` (sets a new one), then restart the agent |
+| "Too many failed sign-ins" | Wait 15 minutes, or restart the agent |
 | Network IP not printed at start | `git pull` to get the latest version, then `python3 agent.py info`. It shows the config file in use, the host, every URL and the token. As a service, the start-up output goes to `journalctl -u cybersec-agent -n 30`, not your terminal |
 
 ---

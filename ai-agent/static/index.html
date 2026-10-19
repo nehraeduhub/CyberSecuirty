@@ -240,6 +240,8 @@
     <select id="modelSelect" title="AI model"></select>
     <div class="perf" id="perf"></div>
   </div>
+  <div class="credit hidden" id="signedIn" style="padding-bottom:4px">Signed in as <b id="signedUser"></b> ·
+    <a href="#" id="signOut" style="color:inherit">Sign out</a></div>
   <div class="credit" id="credit"></div>
 </aside>
 
@@ -486,6 +488,10 @@ function toast(msg, ms = 3500) {
   const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
   document.body.appendChild(t); setTimeout(() => t.remove(), ms);
 }
+document.addEventListener("click", async (e) => {
+  if (e.target.id !== "signOut") return;
+  e.preventDefault(); await fetch("/api/logout", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"}); location.reload();
+});
 async function api(path, body) {
   const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
   const ct = r.headers.get("Content-Type") || "";
@@ -522,6 +528,7 @@ $("#menuBtn").onclick = () => $("#sidebar").classList.toggle("open");
 /* ---------- status & settings ---------- */
 function renderStatus(s) {
   status = s;
+  $("#signedIn").classList.toggle("hidden", s.login !== "password"); $("#signedUser").textContent = s.user || "";
   $("#dot").classList.toggle("on", s.online);
   $("#aiState").textContent = s.online ? `AI online · ${s.provider}` : "AI offline";
   $("#aiState").title = s.error || s.base_url;

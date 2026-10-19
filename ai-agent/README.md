@@ -125,6 +125,7 @@ python agent.py scan /var/log/auth.log                    # instant rule-based s
 python agent.py scan access.log --ai --pdf incident.pdf   # + AI assessment + PDF report
 python agent.py scan access.log --json > out.json
 sudo python agent.py audit --pdf audit.pdf --client "ACME" --assessor "SOC team"   # Linux host audit
+python agent.py set-password                              # web login with username + password instead of the token
 python agent.py --port 9000 --model dolphin3 --no-browser
 python scripts/benchmark.py                               # measure each model's speed
 ```
@@ -157,7 +158,9 @@ Rules live in [`detector.py`](detector.py) as plain regexes, so it's easy to add
 - The agent listens on `127.0.0.1` only by default, so other machines can't reach it.
 - **To open it on the host IP:** set `"host": "0.0.0.0"` (or the server's IP) in `config.json`, or run
   `python agent.py --host 0.0.0.0`. Other computers then need the **access token** to sign in.
-  It is generated on first start, printed in the terminal, and stored in `config.json`. Use
+  It is generated on first start, printed in the terminal, and stored in `config.json`.
+  **To sign in with a username and password instead**, run `python3 agent.py set-password` and restart
+  (only a salted hash is stored; `python3 agent.py remove-password` goes back to the token). Use
   this only on a trusted LAN/VPN (plain HTTP). Details: [docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md).
 - Requests from other websites are blocked (Host header + JSON content-type checks), so a
   malicious page can't drive your agent or change its settings.

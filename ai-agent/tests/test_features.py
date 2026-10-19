@@ -1,4 +1,5 @@
 import sys
+import time
 import unittest
 from pathlib import Path
 
@@ -183,6 +184,75 @@ class NetworkAccessTests(unittest.TestCase):
         self.req("/api/config", {"temperature": 0.4}, cookie="tg_token=s3cret")
         saved = self.json.loads(self.tmp.read_text())
         self.assertEqual((saved["host"], saved["access_token"], saved["temperature"]), ("0.0.0.0", "s3cret", 0.4))
+
+
+
+class PasswordLoginTests(NetworkAccessTests):
+    """Username + password replaces the token; only a salted hash is stored."""
+
+    def setUp(self):
+        super().setUp()
+        cfg = agent.Handler.cfg
+        cfg.update(username="admin", password_hash=agent.hash_password("correct horse 9", rounds=1000),
+                   session_secret="x" * 64)
+        agent._FAILS.clear()
+
+    def login(self, user="admin", pw="correct horse 9"):
+        return self.req("/api/login", {"username": user, "password": pw})
+
+    def session(self):
+        code, _, headers = self.login()
+        self.assertEqual(code, 200)
+        cookie = headers["Set-Cookie"].split(";")[0]
+        self.assertTrue(cookie.startswith("tg_session="))
+        self.assertNotIn("correct horse", cookie)
+        return cookie
+
+    def test_login_required(self):
+        code, body, _ = self.req("/")
+        self.assertIn(b"Password", body)
+        self.assertNotIn(b"Access token", body)
+        self.assertEqual(self.req("/api/status")[0], 401)
+
+    def test_login_sets_cookie_and_unlocks(self):
+        cookie = self.session()
+        self.assertEqual(self.req("/api/analyze", {"text": AUTH}, cookie=cookie)[0], 200)
+        st = self.json.loads(self.req("/api/status", cookie=cookie)[1])
+        self.assertEqual((st["login"], st["user"]), ("password", "admin"))
+
+    def test_saving_settings_keeps_host_and_port(self):
+        self.req("/api/config", {"temperature": 0.4}, cookie=self.session())
+        saved = self.json.loads(self.tmp.read_text())
+        self.assertEqual((saved["host"], saved["temperature"]), ("0.0.0.0", 0.4))
+
+    def test_token_and_wrong_password_rejected(self):
+        self.assertEqual(self.req("/api/login", {"token": "s3cret"})[0], 401)
+        self.assertEqual(self.req("/api/status", cookie="tg_token=s3cret")[0], 401)
+        self.assertEqual(self.login(pw="wrong password")[0], 401)
+        self.assertEqual(self.login(user="root")[0], 401)
+
+    def test_forged_expired_and_stale_sessions_rejected(self):
+        cfg = agent.Handler.cfg
+        good = agent.make_session(cfg, "admin")
+        user, exp, sig = good.split("|")
+        self.assertEqual(self.req("/api/status", cookie=f"tg_session=admin|{int(exp) + 999}|{sig}")[0], 401)
+        self.assertIsNone(agent.check_session(cfg, f"admin|{int(time.time()) - 5}|{sig}"))
+        cookie = self.session()
+        cfg["password_hash"] = agent.hash_password("another pass 7", rounds=1000)  # password changed
+        self.assertEqual(self.req("/api/status", cookie=cookie)[0], 401)
+
+    def test_logout_and_lockout(self):
+        code, _, headers = self.req("/api/logout", {})
+        self.assertIn("Max-Age=0", headers["Set-Cookie"])
+        agent._FAILS["127.0.0.1"] = [time.time()] * agent.LOCKOUT[0]
+        self.assertEqual(self.login()[0], 429)        # locked even with the right password
+
+    def test_hash_format(self):
+        h = agent.hash_password("correct horse 9", rounds=1000)
+        self.assertTrue(h.startswith("pbkdf2_sha256$1000$"))
+        self.assertTrue(agent.check_password("correct horse 9", h))
+        self.assertFalse(agent.check_password("correct horse 8", h))
+        self.assertFalse(agent.check_password("x", "garbage"))
 
 
 if __name__ == "__main__":
