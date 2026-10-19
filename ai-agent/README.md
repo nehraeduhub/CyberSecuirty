@@ -100,7 +100,7 @@ Any OpenAI-compatible server works. Open **⚙️ Settings** in the UI → Provi
 | Jan | `http://127.0.0.1:1337/v1` |
 
 Settings are saved to `config.json`. You can also use environment variables:
-`AGENT_PROVIDER`, `AGENT_BASE_URL`, `AGENT_MODEL`, `AGENT_API_KEY`, `AGENT_HOST`, `AGENT_PORT`.
+`AGENT_PROVIDER`, `AGENT_BASE_URL`, `AGENT_MODEL`, `AGENT_API_KEY`, `AGENT_HOST`, `AGENT_PORT`, `AGENT_TOKEN`.
 
 ---
 
@@ -140,9 +140,11 @@ Rules live in [`detector.py`](detector.py) as plain regexes, so it's easy to add
 
 ## 🔒 Security notes
 
-- The agent listens on `127.0.0.1` only, so other machines on the network can't reach it.
-  To expose it on purpose: `AGENT_HOST=0.0.0.0 python agent.py` (anyone on your network
-  can then use it).
+- The agent listens on `127.0.0.1` only by default, so other machines can't reach it.
+- **To open it on the host IP:** set `"host": "0.0.0.0"` (or the server's IP) in `config.json`, or run
+  `python agent.py --host 0.0.0.0`. Other computers then need the **access token** to sign in.
+  It is generated on first start, printed in the terminal, and stored in `config.json`. Use
+  this only on a trusted LAN/VPN (plain HTTP). Details: [docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md).
 - Requests from other websites are blocked (Host header + JSON content-type checks), so a
   malicious page can't drive your agent or change its settings.
 - Log content is always HTML-escaped in the UI, so attacker-controlled log lines can't

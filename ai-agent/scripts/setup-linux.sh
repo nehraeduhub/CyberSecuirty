@@ -4,17 +4,20 @@
 #   ./scripts/setup-linux.sh                     # install + tune + download default model
 #   ./scripts/setup-linux.sh --model qwen3:30b-a3b
 #   ./scripts/setup-linux.sh --service           # also start the agent at boot
+#   ./scripts/setup-linux.sh --host 0.0.0.0      # open the web UI to other computers (token login)
 #
 # Safe to run again: every step checks before it changes anything.
 set -euo pipefail
 
 MODEL="dolphin3"
 INSTALL_SERVICE=0
+AGENT_HOST=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --model) MODEL="$2"; shift 2 ;;
     --service) INSTALL_SERVICE=1; shift ;;
-    -h|--help) sed -n 2,9p "$0"; exit 0 ;;
+    --host) AGENT_HOST="$2"; shift 2 ;;
+    -h|--help) sed -n 2,10p "$0"; exit 0 ;;
     *) echo "Unknown option: $1"; exit 1 ;;
   esac
 done
@@ -83,13 +86,15 @@ say "4/6 Download model: ${MODEL} (one time; large download)"
 ollama pull "$MODEL"
 
 say "5/6 Agent settings (threads = ${CORES} physical cores)"
-python3 - "$AGENT_DIR/config.json" "$MODEL" "$CORES" <<'EOF'
+python3 - "$AGENT_DIR/config.json" "$MODEL" "$CORES" "$AGENT_HOST" <<'EOF'
 import json, sys, os
-path, model, cores = sys.argv[1], sys.argv[2], int(sys.argv[3])
+path, model, cores, host = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]
 cfg = json.load(open(path)) if os.path.exists(path) else {}
 cfg.update({"provider": "ollama", "base_url": "http://127.0.0.1:11434", "model": model,
             "num_thread": cores, "num_ctx": 4096, "num_predict": 1000, "keep_alive": "-1"})
 cfg.setdefault("temperature", 0.2)
+if host:
+    cfg["host"] = host
 json.dump(cfg, open(path, "w"), indent=2)
 print("wrote", path)
 EOF

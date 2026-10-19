@@ -12,11 +12,15 @@ logs never leave your machine.
 """
 import argparse
 import hashlib
+import hmac
 import json
 import os
 import re
+import secrets
+import socket
 import sys
 import threading
+import time
 import webbrowser
 from collections import OrderedDict
 from datetime import datetime
@@ -49,7 +53,8 @@ DEFAULTS = {
     "num_thread": 0,          # CPU threads for the model; 0 = let Ollama decide (physical cores)
     "keep_alive": "-1",       # keep the model loaded in RAM forever (no reload delay)
     "report": {},             # PDF branding overrides, see report_pdf.BRAND
-    "host": "127.0.0.1",
+    "host": "127.0.0.1",      # "0.0.0.0" or this machine's IP to open the UI from other computers
+    "access_token": "",       # required to log in when listening on the network (auto-generated)
     "port": 8787,
 }
 
@@ -82,7 +87,8 @@ def load_config():
         except (OSError, ValueError) as e:
             print(f"[!] Ignoring unreadable {CONFIG_FILE.name}: {e}", file=sys.stderr)
     env = {"provider": "AGENT_PROVIDER", "base_url": "AGENT_BASE_URL", "model": "AGENT_MODEL",
-           "api_key": "AGENT_API_KEY", "host": "AGENT_HOST", "port": "AGENT_PORT"}
+           "api_key": "AGENT_API_KEY", "host": "AGENT_HOST", "port": "AGENT_PORT",
+           "access_token": "AGENT_TOKEN"}
     for key, var in env.items():
         if os.environ.get(var):
             cfg[key] = os.environ[var]
@@ -94,9 +100,41 @@ SAVED_KEYS = ("provider", "base_url", "model", "api_key", "temperature", "num_ct
               "num_thread", "keep_alive", "report")
 
 
-def save_config(cfg):
-    keep = {k: cfg[k] for k in SAVED_KEYS}
-    CONFIG_FILE.write_text(json.dumps(keep, indent=2), encoding="utf-8")
+def save_config(cfg, keys=SAVED_KEYS):
+    """Update only these keys in config.json; anything else in the file (host, port...) is kept."""
+    try:
+        data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        data = {}
+    data.update({k: cfg[k] for k in keys})
+    CONFIG_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    try:
+        os.chmod(CONFIG_FILE, 0o600)  # holds the access token / API key
+    except OSError:
+        pass
+
+
+LOOPBACK = ("127.0.0.1", "localhost", "::1")
+
+
+def is_local_only(cfg):
+    return cfg["host"] in LOOPBACK
+
+
+def lan_addresses():
+    """This machine's IP addresses, for printing the URLs other computers can use."""
+    ips = set()
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("10.255.255.255", 1))  # no packet is sent; picks the default-route address
+            ips.add(s.getsockname()[0])
+    except OSError:
+        pass
+    try:
+        ips.update(a[4][0] for a in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET))
+    except OSError:
+        pass
+    return sorted(ip for ip in ips if not ip.startswith("127."))
 
 
 # ---------------------------------------------------------------- LLM client
@@ -269,6 +307,25 @@ def build_messages(history, analysis=None):
     return msgs
 
 
+LOGIN_PAGE = """<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CyberSec AI Agent - Sign in</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0a111c;color:#e4ebf3;
+font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}form{background:#111a27;border:1px solid #24344a;
+border-radius:14px;padding:28px;width:min(360px,90vw);box-shadow:0 6px 18px rgba(0,0,0,.3)}h1{font-size:18px;margin:0 0 4px}
+p{color:#7d8da1;font-size:13px;margin:0 0 18px}input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;
+border:1px solid #24344a;background:#162232;color:#e4ebf3;font:inherit}button{margin-top:14px;width:100%;padding:10px;
+border:0;border-radius:8px;background:#1E9E4F;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+#e{color:#ff4d6a;font-size:13px;min-height:18px;margin-top:10px}</style></head><body>
+<form id="f"><h1>&#128737; CyberSec AI Agent</h1><p>Enter the access token shown in the agent's terminal
+(or in config.json on the server).</p><input id="t" type="password" placeholder="Access token" autofocus
+autocomplete="current-password"><button>Sign in</button><div id="e"></div></form>
+<script>document.getElementById("f").onsubmit=async(ev)=>{ev.preventDefault();
+const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({token:document.getElementById("t").value})});
+if(r.ok)location.reload();else document.getElementById("e").textContent="Wrong token - try again.";};</script>
+</body></html>"""
+
+
 INVESTIGATE_PROMPT = ("Investigate these findings. Start with a 2-3 sentence executive summary paragraph "
                       "(no heading). Then: ## Attack story (what happened, step by step, with times), "
                       "## Confidence & false positives, ## Top 5 actions now (with commands).")
@@ -297,7 +354,7 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass
 
-    def _send(self, code, body, ctype="application/json"):
+    def _send(self, code, body, ctype="application/json", headers=None):
         if isinstance(body, (dict, list)):
             body = json.dumps(body).encode()
         elif isinstance(body, str):
@@ -307,6 +364,9 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        for k, v in (headers or {}).items():
+            self.send_header(k, v)
         self.end_headers()
         self.wfile.write(body)
 
@@ -316,8 +376,32 @@ class Handler(BaseHTTPRequestHandler):
             raise ValueError(f"Upload too large (max {MAX_BODY // 1024 // 1024} MB)")
         return json.loads(self.rfile.read(length) or b"{}")
 
+    # ---- access control (only active when a token is set, which is automatic on the network)
+    def _authorized(self):
+        token = self.cfg.get("access_token")
+        if not token:
+            return True
+        sent = self.headers.get("X-Agent-Token", "")
+        for part in (self.headers.get("Cookie") or "").split(";"):
+            k, _, v = part.strip().partition("=")
+            if k == "tg_token":
+                sent = sent or v
+        return hmac.compare_digest(sent.encode(), token.encode())
+
+    def _login(self, body):
+        token = self.cfg.get("access_token") or ""
+        if not hmac.compare_digest(str(body.get("token", "")).encode(), token.encode()):
+            time.sleep(1.5)  # slow down guessing
+            return self._send(401, {"error": "wrong access token"})
+        cookie = f"tg_token={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=2592000"
+        return self._send(200, {"ok": True}, headers={"Set-Cookie": cookie})
+
     def do_GET(self):
         path = self.path.split("?", 1)[0]
+        if not self._authorized():
+            if path in ("/", "/index.html"):
+                return self._send(200, LOGIN_PAGE, "text/html; charset=utf-8")
+            return self._send(401, {"error": "login required"})
         if path in ("/", "/index.html"):
             return self._send(200, (STATIC / "index.html").read_bytes(), "text/html; charset=utf-8")
         if path == "/api/status":
@@ -348,8 +432,10 @@ class Handler(BaseHTTPRequestHandler):
         return info
 
     def _trusted(self):
-        """Block other websites from driving the agent (CSRF / DNS rebinding)."""
-        if self.cfg["host"] in ("127.0.0.1", "localhost"):
+        """Block other websites from driving the agent (CSRF / DNS rebinding).
+
+        On the network the access token does this job: a rebinding site never has the cookie."""
+        if is_local_only(self.cfg):
             host = (self.headers.get("Host") or "").rsplit(":", 1)[0]
             if host not in ("127.0.0.1", "localhost"):
                 return False
@@ -366,6 +452,10 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(body, dict):
             return self._send(400, {"error": "expected a JSON object"})
         path = self.path.split("?", 1)[0]
+        if path == "/api/login":
+            return self._login(body)
+        if not self._authorized():
+            return self._send(401, {"error": "login required"})
         if path == "/api/analyze":
             text = body.get("text") or ""
             if not text.strip():
@@ -458,14 +548,28 @@ class Handler(BaseHTTPRequestHandler):
 
 def serve(cfg, open_browser=True):
     Handler.cfg = cfg
-    httpd = ThreadingHTTPServer((cfg["host"], cfg["port"]), Handler)
-    url = f"http://{'127.0.0.1' if cfg['host'] in ('0.0.0.0', '') else cfg['host']}:{cfg['port']}"
+    on_network = not is_local_only(cfg)
+    if on_network and not cfg.get("access_token"):
+        cfg["access_token"] = secrets.token_urlsafe(18)
+        save_config(cfg, ("access_token",))
+    server_cls = ThreadingHTTPServer
+    if ":" in cfg["host"]:  # IPv6 address such as "::"
+        server_cls = type("V6Server", (ThreadingHTTPServer,), {"address_family": socket.AF_INET6})
+    httpd = server_cls((cfg["host"], cfg["port"]), Handler)
+    local = f"http://127.0.0.1:{cfg['port']}"
+    if cfg["host"] in ("0.0.0.0", "", "::"):
+        urls = [local] + [f"http://{ip}:{cfg['port']}" for ip in lan_addresses()]
+    else:
+        urls = [f"http://{cfg['host']}:{cfg['port']}"]
     print(f"\n  CyberSec AI Agent v{VERSION}")
-    print(f"  Web UI : {url}")
+    for u in urls:
+        print(f"  Web UI : {u}")
     print(f"  AI     : {cfg['provider']} @ {cfg['base_url']} (model: {cfg['model'] or 'auto'})")
-    if cfg["host"] not in ("127.0.0.1", "localhost"):
-        print("  [!] Listening on all interfaces - anyone on your network can use this agent.")
+    if on_network:
+        print(f"  Access token: {cfg['access_token']}   (stored in {CONFIG_FILE.name})")
+        print("  [!] Reachable from your network over plain HTTP - use it only on a trusted LAN or VPN.")
     print("  Press Ctrl+C to stop.\n")
+    url = urls[0]
     threading.Thread(target=warmup, args=(cfg,), daemon=True).start()
     if open_browser:
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()

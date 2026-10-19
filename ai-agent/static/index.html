@@ -398,6 +398,7 @@ function toast(msg, ms = 3500) {
 async function api(path, body) {
   const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
   const ct = r.headers.get("Content-Type") || "";
+  if (r.status === 401) { location.reload(); throw new Error("Signed out"); }
   if (!r.ok) { const d = ct.includes("json") ? await r.json() : {}; throw new Error(d.error || r.statusText); }
   return ct.includes("json") ? r.json() : r;
 }
@@ -486,7 +487,9 @@ async function loadFiles(files) {
 $("#samples").onclick = async (e) => {
   const n = e.target.dataset.sample; if (!n) return;
   sourceName = n; $("#fileName").textContent = n;
-  $("#logText").value = await (await fetch("/samples/" + encodeURIComponent(n))).text(); analyze();
+  const r = await fetch("/samples/" + encodeURIComponent(n));
+  if (r.status === 401) return location.reload();
+  $("#logText").value = await r.text(); analyze();
 };
 $("#logText").oninput = () => { sourceName = "pasted log"; $("#fileName").textContent = ""; };
 $("#analyzeBtn").onclick = () => { if (!$("#logText").value.trim()) { $("#pasteBox").open = true; return toast("Drop a file, paste logs or pick a sample"); } analyze(); };
@@ -689,6 +692,7 @@ async function send(text, investigate = false) {
   try {
     const r = await fetch("/api/chat", {method: "POST", headers: {"Content-Type": "application/json"}, signal: controller.signal,
       body: JSON.stringify({messages: chat, investigate, analysis: ($("#useContext").checked || investigate) ? analysis : null})});
+    if (r.status === 401) { location.reload(); return; }
     const reader = r.body.getReader(), dec = new TextDecoder();
     for (;;) {
       const {done, value} = await reader.read(); if (done) break;

@@ -110,6 +110,36 @@ Open **http://127.0.0.1:8787**.
 can only read their data as root: `/etc/shadow`, sudoers, every user's crontab and the
 firewall rules. For a complete audit, use the terminal command with `sudo` shown above.
 
+### Open the agent from other computers (host IP)
+
+By default the agent only answers on `127.0.0.1`, which means this machine only. To use the
+server's IP address instead:
+
+```bash
+cd ~/CyberSecuirty/ai-agent
+hostname -I                     # shows the server's IP, e.g. 192.168.1.50
+nano config.json                # add or change:  "host": "0.0.0.0",
+sudo systemctl restart cybersec-agent      # or: python3 agent.py
+journalctl -u cybersec-agent -n 20         # shows the URL and the access token
+```
+
+- `"host": "0.0.0.0"` listens on every network card. To listen on one network only, put
+  that card's IP instead (e.g. `"192.168.1.50"`). The port is set with `"port": 8787`.
+- On the other computer, open `http://192.168.1.50:8787` and sign in with the **access
+  token**. It is generated automatically the first time the agent listens on the network,
+  printed in the terminal/log, and stored in `config.json` (readable only by its owner). To
+  change it, edit `"access_token"` and restart. All signed-in browsers then have to sign in
+  again.
+- If the firewall is on, allow only your LAN:
+  `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp`
+- **Ollama stays on 127.0.0.1.** Only the agent talks to it, so the AI is never exposed to
+  the network directly.
+- The connection is plain HTTP, so use this only on a trusted LAN or VPN. For access across
+  untrusted networks, keep `127.0.0.1` and use an SSH tunnel instead:
+  `ssh -L 8787:127.0.0.1:8787 user@server`, then open `http://127.0.0.1:8787`.
+- The host audit will now list port 8787 as exposed. That is expected, because you opened it
+  on purpose.
+
 ---
 
 ## 5. Measure and tune speed
@@ -155,13 +185,16 @@ Other speed tips:
 | Answers are slow every time | Run the benchmark; use a smaller model or `qwen3:30b-a3b`; set threads = physical cores |
 | "PDF reports need reportlab" | `sudo apt install python3-reportlab`, then restart the agent |
 | Host audit shows limited results | Run it as root: `sudo python3 agent.py audit --pdf audit.pdf` |
-| Want to use it from another PC | Keep it local and use SSH port forwarding instead: `ssh -L 8787:127.0.0.1:8787 user@server` |
+| Want to use it from another PC | Set `"host": "0.0.0.0"` in `config.json` and sign in with the access token (section 4), or use an SSH tunnel |
+| Can't open `http://SERVER-IP:8787` | Check `"host"` in `config.json`, restart the agent, and open the port: `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp` |
+| Lost the access token | `grep access_token config.json` on the server |
 
 ---
 
 ## 7. Security of the setup
 
-- Ollama and the agent both listen on **127.0.0.1 only**, so nothing is exposed to the network.
+- Ollama and the agent both listen on **127.0.0.1 only** by default. If you open the agent on
+  the host IP, it requires the access token, and Ollama stays local.
   The host audit flags an exposed Ollama port (11434) as a finding.
 - The web UI blocks requests from other websites (CSRF / DNS-rebinding protection), and all
   log content is HTML-escaped.

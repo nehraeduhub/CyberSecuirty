@@ -107,5 +107,62 @@ class PdfTests(unittest.TestCase):
             self.assertGreater(len(pdf), 5000)
 
 
+class NetworkAccessTests(unittest.TestCase):
+    """Running on the host IP: token login required, settings file keeps host/port."""
+
+    def setUp(self):
+        import json
+        import tempfile
+        import threading
+        from http.server import ThreadingHTTPServer
+        self.json = json
+        self.tmp = Path(tempfile.mkdtemp()) / "config.json"
+        self.tmp.write_text(json.dumps({"host": "0.0.0.0", "port": 0, "access_token": "s3cret"}))
+        self._orig = agent.CONFIG_FILE
+        agent.CONFIG_FILE = self.tmp
+        cfg = agent.load_config()
+        cfg["base_url"] = "http://127.0.0.1:9"  # no AI needed for these tests
+        agent.Handler.cfg = cfg
+        self.httpd = ThreadingHTTPServer(("127.0.0.1", 0), agent.Handler)
+        threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
+        self.base = f"http://127.0.0.1:{self.httpd.server_address[1]}"
+
+    def tearDown(self):
+        self.httpd.shutdown()
+        agent.CONFIG_FILE = self._orig
+
+    def req(self, path, body=None, cookie=None):
+        from urllib.error import HTTPError
+        from urllib.request import Request
+        headers = {"Content-Type": "application/json"}
+        if cookie:
+            headers["Cookie"] = cookie
+        data = self.json.dumps(body).encode() if body is not None else None
+        try:
+            with agent._OPENER.open(Request(self.base + path, data=data, headers=headers), timeout=10) as r:
+                return r.status, r.read(), r.headers
+        except HTTPError as e:
+            return e.code, e.read(), e.headers
+
+    def test_login_required(self):
+        code, body, _ = self.req("/")
+        self.assertIn(b"Sign in", body)
+        self.assertEqual(self.req("/api/status")[0], 401)
+        self.assertEqual(self.req("/api/analyze", {"text": "x"})[0], 401)
+
+    def test_login_sets_cookie_and_unlocks(self):
+        code, _, headers = self.req("/api/login", {"token": "s3cret"})
+        self.assertEqual(code, 200)
+        self.assertIn("HttpOnly", headers["Set-Cookie"])
+        code, body, _ = self.req("/api/analyze", {"text": AUTH}, cookie="tg_token=s3cret")
+        self.assertEqual(code, 200)
+        self.assertNotIn(b"s3cret", self.req("/api/status", cookie="tg_token=s3cret")[1])
+
+    def test_saving_settings_keeps_host_and_port(self):
+        self.req("/api/config", {"temperature": 0.4}, cookie="tg_token=s3cret")
+        saved = self.json.loads(self.tmp.read_text())
+        self.assertEqual((saved["host"], saved["access_token"], saved["temperature"]), ("0.0.0.0", "s3cret", 0.4))
+
+
 if __name__ == "__main__":
     unittest.main()
