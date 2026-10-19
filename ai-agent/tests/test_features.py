@@ -107,6 +107,27 @@ class PdfTests(unittest.TestCase):
             self.assertGreater(len(pdf), 5000)
 
 
+class LanAddressTests(unittest.TestCase):
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux only")
+    def test_ip_found_on_offline_server(self):
+        """No default route + hostname mapped to 127.0.1.1 must still list the interface IPs."""
+        import socket
+        normal = agent.lan_addresses()
+
+        class NoRoute(socket.socket):
+            def connect(self, *a):
+                raise OSError(101, "Network is unreachable")
+
+        orig = socket.socket
+        socket.socket = NoRoute
+        try:
+            offline = agent.lan_addresses()
+        finally:
+            socket.socket = orig
+        self.assertEqual(offline, normal)
+        self.assertFalse(any(ip.startswith("127.") for ip in offline))
+
+
 class NetworkAccessTests(unittest.TestCase):
     """Running on the host IP: token login required, settings file keeps host/port."""
 

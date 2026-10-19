@@ -187,7 +187,8 @@ Other speed tips:
 | Host audit shows limited results | Run it as root: `sudo python3 agent.py audit --pdf audit.pdf` |
 | Want to use it from another PC | Set `"host": "0.0.0.0"` in `config.json` and sign in with the access token (section 4), or use an SSH tunnel |
 | Can't open `http://SERVER-IP:8787` | Check `"host"` in `config.json`, restart the agent, and open the port: `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp` |
-| Lost the access token | `grep access_token config.json` on the server |
+| Lost the access token | `python3 agent.py info` on the server |
+| Network IP not printed at start | `git pull` to get the latest version, then `python3 agent.py info`. It shows the config file in use, the host, every URL and the token. As a service, the start-up output goes to `journalctl -u cybersec-agent -n 30`, not your terminal |
 
 ---
 

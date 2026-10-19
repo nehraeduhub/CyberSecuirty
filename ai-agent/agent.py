@@ -85,7 +85,9 @@ def load_config():
         try:
             cfg.update(json.loads(CONFIG_FILE.read_text(encoding="utf-8")))
         except (OSError, ValueError) as e:
-            print(f"[!] Ignoring unreadable {CONFIG_FILE.name}: {e}", file=sys.stderr)
+            print(f"\n  [!] {CONFIG_FILE} has a mistake ({e}).\n"
+                  "      ALL its settings are ignored (host falls back to 127.0.0.1). Check commas and quotes,\n"
+                  "      or test it with:  python3 -m json.tool config.json\n", file=sys.stderr)
     env = {"provider": "AGENT_PROVIDER", "base_url": "AGENT_BASE_URL", "model": "AGENT_MODEL",
            "api_key": "AGENT_API_KEY", "host": "AGENT_HOST", "port": "AGENT_PORT",
            "access_token": "AGENT_TOKEN"}
@@ -117,24 +119,54 @@ def save_config(cfg, keys=SAVED_KEYS):
 LOOPBACK = ("127.0.0.1", "localhost", "::1")
 
 
+def agent_urls(cfg):
+    port = cfg["port"]
+    if cfg["host"] in ("0.0.0.0", "", "::"):
+        return [f"http://127.0.0.1:{port}"] + [f"http://{ip}:{port}" for ip in lan_addresses()]
+    return [f"http://{cfg['host']}:{port}"]
+
+
 def is_local_only(cfg):
     return cfg["host"] in LOOPBACK
 
 
+def _interface_addresses():
+    """IPv4 address of every network interface, read from the kernel (works with no internet/route)."""
+    ips = set()
+    try:
+        import fcntl
+        import struct
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            for _, name in socket.if_nameindex():
+                try:
+                    req = struct.pack("256s", name[:15].encode())
+                    ips.add(socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, req)[20:24]))  # SIOCGIFADDR
+                except OSError:
+                    pass  # interface without an IPv4 address
+    except (ImportError, OSError, AttributeError):
+        pass
+    if not ips:
+        try:  # fallback for systems without the ioctl (e.g. some containers)
+            import subprocess
+            out = subprocess.run(["hostname", "-I"], capture_output=True, text=True, timeout=3).stdout
+            ips.update(x for x in out.split() if "." in x)
+        except (OSError, subprocess.SubprocessError):
+            pass
+    return ips
+
+
 def lan_addresses():
     """This machine's IP addresses, for printing the URLs other computers can use."""
-    ips = set()
+    ips = _interface_addresses()
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.connect(("10.255.255.255", 1))  # no packet is sent; picks the default-route address
             ips.add(s.getsockname()[0])
     except OSError:
-        pass
-    try:
-        ips.update(a[4][0] for a in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET))
-    except OSError:
-        pass
-    return sorted(ip for ip in ips if not ip.startswith("127."))
+        pass  # offline server without a default route - the interface list above covers it
+    bad = ("127.", "169.254.", "0.")
+    return sorted((ip for ip in ips if not ip.startswith(bad)),
+                  key=lambda ip: (ip.startswith("172.17."), ip))  # list Docker's bridge last
 
 
 # ---------------------------------------------------------------- LLM client
@@ -556,14 +588,15 @@ def serve(cfg, open_browser=True):
     if ":" in cfg["host"]:  # IPv6 address such as "::"
         server_cls = type("V6Server", (ThreadingHTTPServer,), {"address_family": socket.AF_INET6})
     httpd = server_cls((cfg["host"], cfg["port"]), Handler)
-    local = f"http://127.0.0.1:{cfg['port']}"
-    if cfg["host"] in ("0.0.0.0", "", "::"):
-        urls = [local] + [f"http://{ip}:{cfg['port']}" for ip in lan_addresses()]
-    else:
-        urls = [f"http://{cfg['host']}:{cfg['port']}"]
+    urls = agent_urls(cfg)
     print(f"\n  CyberSec AI Agent v{VERSION}")
+    print(f"  Config : {CONFIG_FILE}  (host {cfg['host']}, port {cfg['port']})")
     for u in urls:
         print(f"  Web UI : {u}")
+    if not on_network:
+        print(f'  [i] Only this computer can open it. To use the server IP, set "host": "0.0.0.0" in {CONFIG_FILE}')
+    elif cfg["host"] in ("0.0.0.0", "", "::") and len(urls) == 1:
+        print("  [!] No network IP found on this machine - check with:  ip -4 addr")
     print(f"  AI     : {cfg['provider']} @ {cfg['base_url']} (model: {cfg['model'] or 'auto'})")
     if on_network:
         print(f"  Access token: {cfg['access_token']}   (stored in {CONFIG_FILE.name})")
@@ -629,6 +662,18 @@ def cli_report(cfg, args, result, source):
         print(f"\nPDF report saved: {args.pdf}")
 
 
+def cli_info(cfg):
+    print(f"Config file : {CONFIG_FILE} ({'found' if CONFIG_FILE.exists() else 'NOT FOUND - using defaults'})")
+    print(f"Listening on: {cfg['host']}:{cfg['port']}")
+    for u in agent_urls(cfg):
+        print(f"Web UI      : {u}")
+    if is_local_only(cfg):
+        print(f'Only this computer can open it. To use the server IP add  "host": "0.0.0.0",  to {CONFIG_FILE.name}')
+    else:
+        print(f"Access token: {cfg.get('access_token') or '(created on next start)'}")
+    print(f"Network IPs : {', '.join(lan_addresses()) or 'none found'}")
+
+
 def cli_scan(cfg, args):
     result = detector.analyze(Path(args.file).read_text(encoding="utf-8", errors="replace"))
     if args.json:
@@ -654,6 +699,7 @@ def main():
     p.add_argument("--model", help="model name, e.g. dolphin-phi")
     p.add_argument("--no-browser", action="store_true", help="don't open the browser")
     sub = p.add_subparsers(dest="cmd")
+    sub.add_parser("info", help="show the web address, access token and config in use")
     s = sub.add_parser("scan", help="scan a log file from the terminal")
     s.add_argument("file")
     a = sub.add_parser("audit", help="security audit of this Linux machine (use sudo for full results)")
@@ -670,6 +716,8 @@ def main():
     for key in ("host", "port", "model"):
         if getattr(args, key):
             cfg[key] = getattr(args, key)
+    if args.cmd == "info":
+        return cli_info(cfg)
     if args.cmd == "scan":
         cli_scan(cfg, args)
     elif args.cmd == "audit":
