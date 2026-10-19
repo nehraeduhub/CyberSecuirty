@@ -41,6 +41,8 @@
   .btn.ghost { background: transparent; }
   .btn:disabled { opacity: .5; cursor: not-allowed; }
   .hidden { display: none !important; }
+  body.nobrand #brandLogo, body.nobrand #brandName, body.nobrand #credit { display: none !important; }
+  body.nobrand #appName { font-size: 15px; font-weight: 700; color: inherit; }
 
   /* ---------- layout ---------- */
   aside { width: 236px; flex: none; background: var(--surface); border-right: 1px solid var(--border);
@@ -270,7 +272,7 @@
           <textarea id="logText" rows="8" placeholder="Paste log lines here" style="margin-top:8px"></textarea></details>
         <div class="row" style="margin-top:12px">
           <button class="btn primary" id="analyzeBtn">⚡ Analyze</button>
-          <span class="muted">Try a sample:</span><button class="btn sm brand" id="siemSample" title="6 SIEM exports: Windows CSV/XML, firewall JSONL, DNS JSON, IDS CEF, VPN syslog">SIEM dataset (6 sources)</button><span id="samples" class="row"></span>
+          <span class="muted">Try a sample:</span><button class="btn sm brand" id="siemSample" title="7 SIEM exports: Windows CSV/XML, firewall JSONL, DNS JSON, IDS CEF, VPN syslog, web access log">SIEM dataset (7 sources)</button><span id="samples" class="row"></span>
         </div>
       </div>
       <div id="src-host" class="hidden">
@@ -462,6 +464,7 @@
       <div class="form">
         <div><label><input type="checkbox" id="cfgLearn"> Learn UEBA baselines from each analysis</label><div class="muted small">Only accounts not involved in incidents or high findings are learned.</div></div>
         <div><label>Time zone of logs without zone info (hours from UTC)</label><input id="cfgTz" type="number" step="0.5" min="-14" max="14"></div>
+        <div><label><input type="checkbox" id="cfgBrand"> Show branding in the web interface</label><div class="muted small" id="cfgBrandNote">Logo, organisation name and credit line in the sidebar and on the sign-in page. PDF reports always keep their branding.</div></div>
       </div>
       <div class="row" style="margin-top:16px"><button class="btn primary" id="cfgSave">Save settings</button><button class="btn" id="warmBtn">Pre-load model now</button></div>
     </div>
@@ -529,6 +532,10 @@ $("#menuBtn").onclick = () => $("#sidebar").classList.toggle("open");
 function renderStatus(s) {
   status = s;
   $("#signedIn").classList.toggle("hidden", s.login !== "password"); $("#signedUser").textContent = s.user || "";
+  document.body.classList.toggle("nobrand", s.ui_show_branding === false);
+  $('nav button[data-page="branding"]').classList.toggle("hidden", !!s.ui_hide_branding_page);
+  $("#page-branding").classList.toggle("hidden", !!s.ui_hide_branding_page);
+  if (s.ui_hide_branding_page && $("#page-branding").classList.contains("active")) showPage("analyze");
   $("#dot").classList.toggle("on", s.online);
   $("#aiState").textContent = s.online ? `AI online · ${s.provider}` : "AI offline";
   $("#aiState").title = s.error || s.base_url;
@@ -553,6 +560,8 @@ function fillSettings() {
   $("#cfgKey").value = status.has_api_key ? "********" : ""; $("#cfgTemp").value = status.temperature; $("#tempVal").textContent = status.temperature;
   $("#cfgCtx").value = String(status.num_ctx); $("#cfgPredict").value = status.num_predict; $("#cfgThreads").value = status.num_thread;
   $("#cfgLearn").checked = !!status.learn_baseline; $("#cfgTz").value = status.tz_hours || 0;
+  $("#cfgBrand").checked = status.ui_show_branding !== false; $("#cfgBrand").disabled = !!status.ui_hide_branding_page;
+  if (status.ui_hide_branding_page) $("#cfgBrandNote").textContent = "Locked in config.json (\"ui_hide_branding_page\": true). Change \"ui_show_branding\" there and restart.";
 }
 $('nav button[data-page="settings"]').addEventListener("click", fillSettings);
 $("#cfgTemp").oninput = (e) => $("#tempVal").textContent = e.target.value;
@@ -565,6 +574,7 @@ $("#cfgSave").onclick = async () => {
     if ($("#cfgPredict").value) body.num_predict = +$("#cfgPredict").value;
     if ($("#cfgThreads").value !== "") body.num_thread = +$("#cfgThreads").value;
     body.learn_baseline = $("#cfgLearn").checked; body.tz_hours = +$("#cfgTz").value || 0;
+    if (!$("#cfgBrand").disabled) body.ui_show_branding = $("#cfgBrand").checked;
     renderStatus(await api("/api/config", body)); toast(status.online ? "Saved — connected ✔" : "Saved, but the AI server is offline");
   } catch (e) { toast("Error: " + e.message); }
 };
@@ -623,7 +633,7 @@ $("#siemSample").onclick = async () => {
   sourceName = "SIEM sample dataset"; $("#fileName").textContent = sourceName;
   try { setResult(await api("/api/analyze-sample", {name: "siem"}), performance.now() - t0); }
   catch (e) { toast("Error: " + e.message); }
-  btn.disabled = false; btn.textContent = "SIEM dataset (6 sources)";
+  btn.disabled = false; btn.textContent = "SIEM dataset (7 sources)";
 };
 $("#samples").onclick = async (e) => {
   const n = e.target.dataset.sample; if (!n) return;

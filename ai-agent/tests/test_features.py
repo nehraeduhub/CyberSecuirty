@@ -255,5 +255,42 @@ class PasswordLoginTests(NetworkAccessTests):
         self.assertFalse(agent.check_password("x", "garbage"))
 
 
+
+class BrandingVisibilityTests(NetworkAccessTests):
+    """config.json switches: hide branding in the web UI, and hide/lock the Branding page."""
+    TOKEN = "tg_token=s3cret"
+
+    def test_defaults_show_everything(self):
+        st = self.json.loads(self.req("/api/status", cookie=self.TOKEN)[1])
+        self.assertEqual((st["ui_show_branding"], st["ui_hide_branding_page"]), (True, False))
+        self.assertIn(b"/branding/logo", self.req("/")[1])
+        self.assertEqual(self.req("/api/branding", cookie=self.TOKEN)[0], 200)
+
+    def test_hide_branding_in_ui(self):
+        agent.Handler.cfg["ui_show_branding"] = False
+        page = self.req("/")[1]
+        self.assertNotIn(b"/branding/logo", page)                 # sign-in page without logo / organisation
+        self.assertIn(b"Sign in", page)
+        st = self.json.loads(self.req("/api/status", cookie=self.TOKEN)[1])
+        self.assertFalse(st["ui_show_branding"])
+        self.req("/api/config", {"ui_show_branding": True}, cookie=self.TOKEN)   # Settings switch turns it back on
+        self.assertTrue(self.json.loads(self.tmp.read_text())["ui_show_branding"])
+
+    def test_hidden_branding_page_is_locked(self):
+        cfg = agent.Handler.cfg
+        cfg.update(ui_hide_branding_page=True, ui_show_branding=False)
+        self.assertEqual(self.req("/api/branding", cookie=self.TOKEN)[0], 403)
+        self.assertEqual(self.req("/api/branding", {"branding": {"organisation_name": "X"}}, cookie=self.TOKEN)[0], 403)
+        self.assertEqual(self.req("/api/branding/logo", {"data_b64": ""}, cookie=self.TOKEN)[0], 403)
+        st = self.json.loads(self.req("/api/config", {"ui_show_branding": True}, cookie=self.TOKEN)[1])
+        self.assertFalse(st["ui_show_branding"])                     # the switch is locked too
+        self.assertTrue(st["ui_hide_branding_page"])
+
+    def test_config_values_accept_words(self):
+        self.tmp.write_text(self.json.dumps({"ui_show_branding": "no", "ui_hide_branding_page": "yes"}))
+        cfg = agent.load_config()
+        self.assertEqual((cfg["ui_show_branding"], cfg["ui_hide_branding_page"]), (False, True))
+
+
 if __name__ == "__main__":
     unittest.main()

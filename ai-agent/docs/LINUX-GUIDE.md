@@ -145,6 +145,15 @@ journalctl -u cybersec-agent -n 20         # shows the URL and the access token
   - Run `set-password` again to change the password; everyone has to sign in again.
   - `python3 agent.py remove-password` goes back to the access token.
   - Once a password is set, it is required on `127.0.0.1` too.
+- **Hide the branding in the web interface:** add these to `config.json`, then restart:
+  ```json
+  "ui_show_branding": false,
+  "ui_hide_branding_page": true,
+  ```
+  - `ui_show_branding: false` hides the logo, the organisation name and the credit line in the sidebar and on the sign-in page. The application name stays. You can also switch this under **Settings → Show branding in the web interface**.
+  - `ui_hide_branding_page: true` removes the **Branding** page and blocks branding changes from the browser, including the Settings switch. Branding can then only be changed on the server, in `config/branding.json`.
+  - PDF reports always keep the branding.
+  - The environment variables `AGENT_SHOW_BRANDING` and `AGENT_HIDE_BRANDING_PAGE` work too.
 - If the firewall is on, allow only your LAN:
   `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp`
 - **Ollama stays on 127.0.0.1.** Only the agent talks to it, so the AI is never exposed to

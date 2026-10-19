@@ -69,6 +69,8 @@ DEFAULTS = {
     "password_hash": "",      # salted PBKDF2-SHA256 hash, never the password itself
     "session_secret": "",     # signs login cookies (auto-generated)
     "session_hours": 12,      # how long a password login stays valid
+    "ui_show_branding": True,       # false = hide logo, organisation name and credit line in the web UI
+    "ui_hide_branding_page": False,  # true = remove the Branding page and lock branding changes from the web UI
     "port": 8787,
 }
 
@@ -110,15 +112,25 @@ def load_config():
     env = {"provider": "AGENT_PROVIDER", "base_url": "AGENT_BASE_URL", "model": "AGENT_MODEL",
            "api_key": "AGENT_API_KEY", "host": "AGENT_HOST", "port": "AGENT_PORT",
            "access_token": "AGENT_TOKEN"}
+    env.update(ui_show_branding="AGENT_SHOW_BRANDING", ui_hide_branding_page="AGENT_HIDE_BRANDING_PAGE")
     for key, var in env.items():
         if os.environ.get(var):
             cfg[key] = os.environ[var]
     cfg["port"] = int(cfg["port"])
+    for key in ("ui_show_branding", "ui_hide_branding_page"):
+        cfg[key] = _flag(cfg[key])
     return cfg
 
 
+def _flag(v):
+    """true/false from config.json, also accepting "yes"/"no", "1"/"0", "on"/"off"."""
+    if isinstance(v, str):
+        return v.strip().lower() in ("1", "true", "yes", "on", "show")
+    return bool(v)
+
+
 SAVED_KEYS = ("provider", "base_url", "model", "api_key", "temperature", "num_ctx", "num_predict",
-              "num_thread", "keep_alive", "report", "learn_baseline", "tz_hours")
+              "num_thread", "keep_alive", "report", "learn_baseline", "tz_hours", "ui_show_branding")
 
 
 def save_config(cfg, keys=SAVED_KEYS):
@@ -136,6 +148,8 @@ def save_config(cfg, keys=SAVED_KEYS):
 
 
 LOOPBACK = ("127.0.0.1", "localhost", "::1")
+BRANDING_LOCKED = ('Branding settings are disabled in the web interface ("ui_hide_branding_page": true in '
+                   'config.json). Edit config/branding.json on the server, or set it to false and restart.')
 
 # ---------------------------------------------------------------- password login
 PBKDF2_ROUNDS = 600_000
@@ -443,8 +457,8 @@ p{color:#7d8da1;font-size:13px;margin:0 0 18px}input{width:100%;box-sizing:borde
 border:1px solid #24344a;background:#162232;color:#e4ebf3;font:inherit}button{margin-top:14px;width:100%;padding:10px;
 border:0;border-radius:8px;background:#1E9E4F;color:#fff;font:inherit;font-weight:600;cursor:pointer}
 #e{color:#ff4d6a;font-size:13px;min-height:18px;margin-top:10px}</style></head><body>
-<form id="f"><img src="/branding/logo" alt="" style="height:54px;display:block;margin:0 auto 10px">
-<h1 style="text-align:center">{APP}</h1><p style="text-align:center">{ORG}</p>{FIELDS}
+<form id="f">{LOGO}
+<h1 style="text-align:center">{APP}</h1>{ORG}{FIELDS}
 <button>Sign in</button><div id="e"></div></form>
 <script>document.getElementById("f").onsubmit=async(ev)=>{ev.preventDefault();
 const v=(id)=>{const el=document.getElementById(id);return el?el.value:"";};
@@ -622,7 +636,11 @@ class Handler(BaseHTTPRequestHandler):
         if not self._authorized():
             if path in ("/", "/index.html"):
                 b = branding.load()
-                page = LOGIN_PAGE.replace("{APP}", _html(b["application_name"])).replace("{ORG}", _html(b["organisation_name"])) \
+                show = self.cfg.get("ui_show_branding", True)
+                page = LOGIN_PAGE.replace("{APP}", _html(b["application_name"])) \
+                    .replace("{LOGO}", '<img src="/branding/logo" alt="" style="height:54px;display:block;margin:0 auto 10px">'
+                             if show else "") \
+                    .replace("{ORG}", f'<p style="text-align:center">{_html(b["organisation_name"])}</p>' if show else "") \
                     .replace("{FIELDS}", LOGIN_PASSWORD if password_mode(self.cfg) else LOGIN_TOKEN)
                 return self._send(200, page, "text/html; charset=utf-8")
             return self._send(401, {"error": "login required"})
@@ -645,6 +663,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, json.dumps(inv.data, indent=2), "application/json",
                               {"Content-Disposition": 'attachment; filename="trusted_assets.json"'})
         if path == "/api/branding":
+            if self.cfg.get("ui_hide_branding_page"):
+                return self._send(403, {"error": BRANDING_LOCKED})
             return self._send(200, branding.load())
         if path == "/api/audit-log":
             return self._send(200, {"entries": config_store.read_audit(200)})
@@ -665,6 +685,8 @@ class Handler(BaseHTTPRequestHandler):
                 "platform": sys.platform, "branding": _public_branding(),
                 "login": "password" if password_mode(cfg) else "token" if cfg.get("access_token") else "none",
                 "user": self._user() if password_mode(cfg) else None,
+                "ui_show_branding": bool(cfg.get("ui_show_branding", True)),
+                "ui_hide_branding_page": bool(cfg.get("ui_hide_branding_page")),
                 "trust_entries": trust.Inventory.load().enabled_count,
                 "learn_baseline": bool(cfg.get("learn_baseline", True)), "tz_hours": cfg.get("tz_hours", 0),
                 "max_upload_mb": cfg.get("max_upload_mb", 512),
@@ -736,6 +758,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, remember(pipeline.to_json(res)))
         if path.startswith("/api/trust/"):
             return self._trust(path, body)
+        if path in ("/api/branding", "/api/branding/logo") and self.cfg.get("ui_hide_branding_page"):
+            return self._send(403, {"error": BRANDING_LOCKED})
         if path == "/api/branding":
             try:
                 return self._send(200, branding.save(body.get("branding") or {}, self._actor(),
@@ -886,6 +910,8 @@ class Handler(BaseHTTPRequestHandler):
                     cfg[key] = max(0, int(body[key]))
                 except (TypeError, ValueError):
                     return self._send(400, {"error": f"{key} must be a number"})
+        if "ui_show_branding" in body and not cfg.get("ui_hide_branding_page"):  # locked with the page
+            cfg["ui_show_branding"] = bool(body["ui_show_branding"])
         if "learn_baseline" in body:
             cfg["learn_baseline"] = bool(body["learn_baseline"])
         if "tz_hours" in body:

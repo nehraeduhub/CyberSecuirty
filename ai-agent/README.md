@@ -35,7 +35,7 @@ Nothing leaves your machine.
 | 🔗 | **Correlation and incidents**: actor-based linking across sources, ATT&CK kill-chain ordering, an attack timeline with evidence IDs, and a SOAR checklist (recommendations only) |
 | 👤 | **UEBA**: explainable per-account baselines (hours, sources, hosts, privileges, peers), with thin-history detection |
 | 🏢 | **Trusted Networks & Assets**: CIDR/IP inventory with precedence, import/export with preview, and a change history. Trust is context and never suppresses a finding |
-| 🎨 | **Branding**: app and organisation names, logo (validated PNG/JPEG), colours and report labels, all editable in the UI |
+| 🎨 | **Branding**: app and organisation names, logo (validated PNG/JPEG), colours and report labels, all editable in the UI. Hide it from the web UI with `"ui_show_branding": false`, and lock the Branding page with `"ui_hide_branding_page": true` in `config.json` |
 | 📑 | **15-section A4 PDF report**: finding cards that paginate correctly, timeline, UEBA, trust context, ATT&CK, threat intelligence, risk, false positives, remediation, evidence appendix, limitations. Markdown export too |
 | 💬 | Chat with the agent: exploits, hardening, Sigma/Splunk rules, attacker intent, CTFs |
 
