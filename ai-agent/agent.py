@@ -85,6 +85,11 @@ def load_config():
         try:
             cfg.update(json.loads(CONFIG_FILE.read_text(encoding="utf-8")))
         except (OSError, ValueError) as e:
+            raw = CONFIG_FILE.read_text(encoding="utf-8", errors="replace") if CONFIG_FILE.exists() else ""
+            m = re.search(r'"(\w+)"\s*:\s*([0-9]+(?:\.[0-9]+){2,}|[A-Za-z][\w.\-]*)\s*[,}\n]', raw)
+            if m and m.group(2) not in ("true", "false", "null"):
+                print(f'\n  [!] In {CONFIG_FILE.name} the value of "{m.group(1)}" needs double quotes:\n'
+                      f'        "{m.group(1)}": "{m.group(2)}"', file=sys.stderr)
             print(f"\n  [!] {CONFIG_FILE} has a mistake ({e}).\n"
                   "      ALL its settings are ignored (host falls back to 127.0.0.1). Check commas and quotes,\n"
                   "      or test it with:  python3 -m json.tool config.json\n", file=sys.stderr)
@@ -587,7 +592,18 @@ def serve(cfg, open_browser=True):
     server_cls = ThreadingHTTPServer
     if ":" in cfg["host"]:  # IPv6 address such as "::"
         server_cls = type("V6Server", (ThreadingHTTPServer,), {"address_family": socket.AF_INET6})
-    httpd = server_cls((cfg["host"], cfg["port"]), Handler)
+    try:
+        httpd = server_cls((cfg["host"], cfg["port"]), Handler)
+    except OSError as e:
+        if e.errno == 98:  # EADDRINUSE
+            sys.exit(f"\n  [!] Port {cfg['port']} is already in use - the agent is probably already running"
+                     " (e.g. as the cybersec-agent service).\n"
+                     "      Restart it with:  sudo systemctl restart cybersec-agent\n"
+                     "      Show its address and token:  python3 agent.py info\n")
+        if e.errno == 99:  # EADDRNOTAVAIL
+            sys.exit(f"\n  [!] {cfg['host']} is not an IP address of this machine. Its IPs are: "
+                     f"{', '.join(lan_addresses()) or 'none'}\n      Or use \"host\": \"0.0.0.0\" for all of them.\n")
+        raise
     urls = agent_urls(cfg)
     print(f"\n  CyberSec AI Agent v{VERSION}")
     print(f"  Config : {CONFIG_FILE}  (host {cfg['host']}, port {cfg['port']})")

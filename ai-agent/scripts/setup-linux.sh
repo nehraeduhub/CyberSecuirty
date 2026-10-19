@@ -108,7 +108,7 @@ if [ "$INSTALL_SERVICE" = 1 ]; then
   say "6/6 Agent service (starts at boot, runs as ${RUN_USER})"
   $SUDO tee /etc/systemd/system/cybersec-agent.service >/dev/null <<EOF
 [Unit]
-Description=CyberSec AI Agent (web UI on 127.0.0.1:8787)
+Description=CyberSec AI Agent (web UI, see: python3 agent.py info)
 After=network.target ollama.service
 Wants=ollama.service
 
