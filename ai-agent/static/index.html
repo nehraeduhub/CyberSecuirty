@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberSec AI Agent</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+<style>
+  :root {
+    --bg: #0b0f14; --panel: #121821; --panel2: #18202b; --border: #253042;
+    --text: #d7e0ea; --muted: #8796a8; --accent: #00e0b8; --accent2: #2f81f7;
+    --critical: #ff3b5c; --high: #ff7a45; --medium: #f5c542; --low: #4fc3f7; --info: #8796a8;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+         background: var(--bg); color: var(--text); font-size: 14px; }
+  header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; flex-wrap: wrap;
+           background: var(--panel); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+  header h1 { font-size: 17px; margin: 0; color: var(--accent); letter-spacing: .3px; }
+  .spacer { flex: 1; }
+  .status { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--critical); }
+  .dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  select, input, textarea, button { font: inherit; color: var(--text); background: var(--panel2);
+         border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; }
+  textarea { width: 100%; resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #002b22; border-color: var(--accent); font-weight: 600; }
+  button.primary:hover { filter: brightness(1.1); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  nav { display: flex; gap: 4px; padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--border); }
+  nav button { background: none; border: none; border-bottom: 2px solid transparent; border-radius: 0; padding: 10px 14px; color: var(--muted); }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  .tab { display: none; } .tab.active { display: block; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .drop { border: 2px dashed var(--border); border-radius: 10px; padding: 18px; text-align: center; color: var(--muted); margin-bottom: 10px; cursor: pointer; }
+  .drop.over { border-color: var(--accent); color: var(--accent); }
+  .muted { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .stat { background: var(--panel2); border-radius: 8px; padding: 10px; text-align: center; border-top: 3px solid var(--border); }
+  .stat b { display: block; font-size: 24px; }
+  .stat.critical { border-top-color: var(--critical); } .stat.high { border-top-color: var(--high); }
+  .stat.medium { border-top-color: var(--medium); } .stat.low { border-top-color: var(--low); }
+  .risk { font-size: 34px; font-weight: 700; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #111; }
+  .b-critical { background: var(--critical); color: #fff; } .b-high { background: var(--high); }
+  .b-medium { background: var(--medium); } .b-low { background: var(--low); } .b-info, .b-clean { background: var(--info); }
+  .finding { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; background: var(--panel2); }
+  .finding summary { padding: 10px 12px; cursor: pointer; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .finding .body { padding: 0 12px 12px; }
+  pre, code { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
+  pre { background: #070a0e; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin: 6px 0; }
+  .ln { color: var(--muted); user-select: none; }
+  .ips span { display: inline-block; background: #0d2a24; color: var(--accent); border-radius: 4px; padding: 1px 6px; margin: 2px; font-family: monospace; font-size: 12px; }
+  #chatLog { height: calc(100vh - 290px); min-height: 300px; overflow-y: auto; padding: 4px; }
+  .msg { margin: 10px 0; padding: 10px 14px; border-radius: 10px; max-width: 92%; line-height: 1.5; overflow-wrap: anywhere; }
+  .msg.user { background: #12324f; margin-left: auto; white-space: pre-wrap; }
+  .msg.assistant { background: var(--panel2); border: 1px solid var(--border); }
+  .msg.assistant h3, .msg.assistant h4 { margin: 10px 0 4px; color: var(--accent); }
+  .msg.assistant p { margin: 6px 0; } .msg.assistant ul { margin: 4px 0; padding-left: 20px; }
+  .msg.assistant code { background: #070a0e; padding: 1px 4px; border-radius: 4px; }
+  .msg.error { border-color: var(--critical); }
+  .chips button { font-size: 12px; padding: 5px 9px; margin: 2px; }
+  .typing::after { content: "▋"; animation: blink 1s steps(1) infinite; color: var(--accent); }
+  @keyframes blink { 50% { opacity: 0; } }
+  dialog { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 10px; width: min(460px, 92vw); }
+  dialog::backdrop { background: rgba(0,0,0,.6); }
+  dialog label { display: block; margin: 10px 0 4px; color: var(--muted); font-size: 12px; }
+  dialog input, dialog select { width: 100%; }
+  .hidden { display: none !important; }
+  .toast { position: fixed; bottom: 16px; right: 16px; background: var(--panel2); border: 1px solid var(--accent); padding: 10px 14px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ CyberSec AI Agent</h1>
+  <div class="status"><span class="dot" id="dot"></span><span id="statusText">connecting…</span></div>
+  <div class="spacer"></div>
+  <select id="modelSelect" title="Model"></select>
+  <button id="settingsBtn" title="Settings">⚙️ Settings</button>
+</header>
+<nav>
+  <button class="active" data-tab="analyze">🔍 Log Analysis</button>
+  <button data-tab="chat">🤖 AI Chat</button>
+</nav>
+
+<main>
+  <!-- ANALYZE -->
+  <section class="tab active" id="tab-analyze">
+    <div class="card">
+      <div class="drop" id="drop">📂 Drop a log file here or <u>click to browse</u> — auth.log, access.log, syslog, firewall, Windows events…
+        <input type="file" id="fileInput" class="hidden">
+      </div>
+      <textarea id="logText" rows="9" placeholder="…or paste log lines here"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="primary" id="analyzeBtn">⚡ Analyze</button>
+        <span class="muted">Samples:</span><span id="samples" class="row"></span>
+        <div class="spacer"></div>
+        <span class="muted" id="fileName"></span>
+      </div>
+    </div>
+
+    <div id="results" class="hidden">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div class="muted">Risk score</div>
+            <div class="row"><span class="risk" id="riskScore">0</span><span class="badge" id="riskLevel"></span></div>
+            <div class="muted" id="scanMeta"></div>
+          </div>
+          <div class="row">
+            <button class="primary" id="investigateBtn">🤖 AI Investigate</button>
+            <button id="reportBtn">📄 Report (.md)</button>
+            <button id="jsonBtn">{ } JSON</button>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:12px" id="sevGrid"></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Findings</h3>
+        <div id="findings"></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Top IP addresses</h3>
+        <div class="ips" id="topIps"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAT -->
+  <section class="tab" id="tab-chat">
+    <div class="card">
+      <div id="chatLog"></div>
+      <div class="chips row">
+        <button data-q="Explain the most critical finding and how the attack works.">Explain top threat</button>
+        <button data-q="Write iptables and ufw commands to block every malicious IP in the analysis.">Block IPs</button>
+        <button data-q="Give me an incident response checklist for this incident.">IR checklist</button>
+        <button data-q="Write a Sigma rule and a Splunk query to detect this activity.">Detection rules</button>
+        <button data-q="How do I harden this server so this cannot happen again?">Hardening</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <textarea id="chatInput" rows="2" style="flex:1" placeholder="Ask anything about security… (Enter to send, Shift+Enter for newline)"></textarea>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="primary" id="sendBtn">Send</button>
+          <button id="stopBtn" class="hidden">■ Stop</button>
+        </div>
+      </div>
+      <div class="row muted" style="margin-top:6px;font-size:12px">
+        <label><input type="checkbox" id="useContext" checked> Include log analysis context</label>
+        <div class="spacer"></div>
+        <button id="clearChat" style="font-size:12px;padding:4px 8px">Clear chat</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="settings">
+  <h3 style="margin-top:0">AI Settings</h3>
+  <label>Provider</label>
+  <select id="cfgProvider">
+    <option value="ollama">Ollama</option>
+    <option value="openai">OpenAI-compatible (LM Studio, llama.cpp, KoboldCpp, Jan, vLLM)</option>
+  </select>
+  <label>Server URL</label>
+  <input id="cfgUrl" placeholder="http://127.0.0.1:11434">
+  <label>Model (leave blank for auto)</label>
+  <input id="cfgModel" list="modelList"><datalist id="modelList"></datalist>
+  <label>API key (optional)</label>
+  <input id="cfgKey" type="password">
+  <label>Temperature (<span id="tempVal"></span>) — lower = more precise</label>
+  <input id="cfgTemp" type="range" min="0" max="1.5" step="0.05">
+  <div class="row" style="margin-top:16px;justify-content:flex-end">
+    <button id="cfgCancel">Cancel</button>
+    <button class="primary" id="cfgSave">Save</button>
+  </div>
+</dialog>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const SEVS = ["critical", "high", "medium", "low"];
+let status = {}, analysis = null, fileName = "pasted-log", chat = [], controller = null, aiReport = "";
+
+function toast(msg) {
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 3500);
+}
+async function api(path, body) {
+  const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || r.statusText);
+  return data;
+}
+
+/* ---------- status / settings ---------- */
+function renderStatus(s) {
+  status = s;
+  $("#dot").classList.toggle("on", s.online);
+  $("#statusText").textContent = s.online ? `AI online · ${s.provider}` : "AI offline (rules still work)";
+  $("#statusText").title = s.error || s.base_url;
+  const sel = $("#modelSelect");
+  sel.innerHTML = s.models.length ? s.models.map((m) => `<option ${m === s.model ? "selected" : ""}>${esc(m)}</option>`).join("")
+                                  : `<option>${s.online ? "no models installed" : "no AI server"}</option>`;
+  $("#modelList").innerHTML = s.models.map((m) => `<option value="${esc(m)}">`).join("");
+  $("#samples").innerHTML = s.samples.map((n) => `<button data-sample="${esc(n)}">${esc(n)}</button>`).join("");
+}
+async function refreshStatus() {
+  try { renderStatus(await api("/api/status")); } catch (e) { $("#statusText").textContent = "agent unreachable"; }
+}
+$("#modelSelect").onchange = async (e) => { renderStatus(await api("/api/config", {model: e.target.value})); toast("Model: " + e.target.value); };
+$("#settingsBtn").onclick = () => {
+  $("#cfgProvider").value = status.provider; $("#cfgUrl").value = status.base_url;
+  $("#cfgModel").value = status.model || ""; $("#cfgKey").value = status.has_api_key ? "********" : "";
+  $("#cfgTemp").value = status.temperature; $("#tempVal").textContent = status.temperature;
+  $("#settings").showModal();
+};
+$("#cfgTemp").oninput = (e) => $("#tempVal").textContent = e.target.value;
+$("#cfgProvider").onchange = (e) => {
+  $("#cfgUrl").value = e.target.value === "ollama" ? "http://127.0.0.1:11434" : "http://127.0.0.1:1234/v1";
+};
+$("#cfgCancel").onclick = () => $("#settings").close();
+$("#cfgSave").onclick = async () => {
+  try {
+    renderStatus(await api("/api/config", {provider: $("#cfgProvider").value, base_url: $("#cfgUrl").value,
+      model: $("#cfgModel").value, api_key: $("#cfgKey").value, temperature: +$("#cfgTemp").value}));
+    $("#settings").close(); toast(status.online ? "Connected ✔" : "Saved, but AI server is offline");
+  } catch (e) { toast("Error: " + e.message); }
+};
+
+/* ---------- tabs ---------- */
+function showTab(name) {
+  document.querySelectorAll("nav button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.id === "tab-" + name));
+}
+document.querySelectorAll("nav button").forEach((b) => b.onclick = () => showTab(b.dataset.tab));
+
+/* ---------- log input ---------- */
+const drop = $("#drop");
+drop.onclick = () => $("#fileInput").click();
+$("#fileInput").onchange = (e) => e.target.files[0] && loadFile(e.target.files[0]);
+drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("over"); };
+drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("over"); e.dataTransfer.files[0] && loadFile(e.dataTransfer.files[0]); };
+async function loadFile(f) {
+  if (f.size > 25 * 1024 * 1024) return toast("File too large (max 25 MB)");
+  fileName = f.name; $("#fileName").textContent = f.name;
+  $("#logText").value = await f.text(); analyze();
+}
+$("#samples").onclick = async (e) => {
+  const n = e.target.dataset.sample; if (!n) return;
+  fileName = n; $("#fileName").textContent = n;
+  $("#logText").value = await (await fetch("/samples/" + encodeURIComponent(n))).text(); analyze();
+};
+$("#logText").oninput = () => { fileName = "pasted-log"; $("#fileName").textContent = ""; };
+$("#analyzeBtn").onclick = analyze;
+
+async function analyze() {
+  const text = $("#logText").value;
+  if (!text.trim()) return toast("Paste or drop a log first");
+  const t0 = performance.now();
+  try { analysis = await api("/api/analyze", {text}); } catch (e) { return toast("Error: " + e.message); }
+  aiReport = "";
+  renderResults(analysis, performance.now() - t0);
+}
+
+function renderResults(a, ms) {
+  $("#results").classList.remove("hidden");
+  $("#riskScore").textContent = a.risk_score;
+  $("#riskLevel").className = "badge b-" + a.risk_level; $("#riskLevel").textContent = a.risk_level;
+  $("#scanMeta").textContent = `${a.lines.toLocaleString()} lines · ${a.log_types.join(", ")} · ${Math.round(ms)} ms`;
+  $("#sevGrid").innerHTML = SEVS.map((s) => `<div class="stat ${s}"><b>${a.summary[s]}</b>${s}</div>`).join("")
+    + `<div class="stat"><b>${a.findings.reduce((n, f) => n + f.count, 0)}</b>events</div>`;
+  $("#findings").innerHTML = a.findings.length ? a.findings.map((f, i) => `
+    <details class="finding" ${i < 2 ? "open" : ""}>
+      <summary><span class="badge b-${f.severity}">${f.severity}</span><b>${esc(f.title)}</b>
+        <span class="muted">×${f.count} · MITRE ${esc(f.mitre)}</span></summary>
+      <div class="body">
+        ${f.ips.length ? `<div class="ips">${f.ips.map((ip) => `<span>${esc(ip)}</span>`).join("")}</div>` : ""}
+        ${f.samples.map((s) => `<pre><span class="ln">L${s.line} </span>${esc(s.text)}</pre>`).join("")}
+        <button data-explain="${i}" style="font-size:12px">🤖 Ask AI about this</button>
+      </div>
+    </details>`).join("") : `<p class="muted">✅ No threats matched the built-in rules. Try “AI Investigate” for a deeper look.</p>`;
+  $("#topIps").innerHTML = a.top_ips.length ? a.top_ips.map(([ip, n]) => `<span>${esc(ip)} (${n})</span>`).join("") : '<span class="muted">none</span>';
+}
+$("#findings").onclick = (e) => {
+  const i = e.target.dataset.explain; if (i === undefined) return;
+  const f = analysis.findings[+i];
+  showTab("chat");
+  send(`Explain this finding: "${f.title}" (${f.count} events, IPs: ${f.ips.join(", ") || "n/a"}). Sample:\n${f.samples[0].text}\nIs it a real attack? What should I do?`);
+};
+$("#investigateBtn").onclick = () => { showTab("chat"); send(null, true); };
+
+/* ---------- reports ---------- */
+function download(name, content, type) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], {type})); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+$("#jsonBtn").onclick = () => download("analysis.json", JSON.stringify(analysis, null, 2), "application/json");
+$("#reportBtn").onclick = () => {
+  const a = analysis, d = new Date().toISOString().replace("T", " ").slice(0, 19);
+  let md = `# Security Incident Report\n\n**Source:** ${fileName}  \n**Generated:** ${d}  \n**Analyzer:** CyberSec AI Agent${status.model ? " (" + status.model + ")" : ""}\n\n`;
+  md += `## Summary\n\n| Risk score | Level | Lines | Critical | High | Medium | Low |\n|---|---|---|---|---|---|---|\n`;
+  md += `| ${a.risk_score}/100 | ${a.risk_level.toUpperCase()} | ${a.lines} | ${a.summary.critical} | ${a.summary.high} | ${a.summary.medium} | ${a.summary.low} |\n\n`;
+  if (aiReport) md += `## AI Analysis\n\n${aiReport}\n\n`;
+  md += `## Findings\n\n`;
+  a.findings.forEach((f, i) => {
+    md += `### ${i + 1}. [${f.severity.toUpperCase()}] ${f.title}\n\n- **Events:** ${f.count}\n- **MITRE ATT&CK:** ${f.mitre}\n`;
+    if (f.ips.length) md += `- **IPs:** ${f.ips.join(", ")}\n`;
+    md += "\n```\n" + f.samples.map((s) => `L${s.line}: ${s.text}`).join("\n").replace(/```/g, "'''") + "\n```\n\n";
+  });
+  if (!a.findings.length) md += "No threats matched the built-in rules.\n\n";
+  md += `## Top IP addresses\n\n` + a.top_ips.map(([ip, n]) => `- ${ip} — ${n} occurrences`).join("\n") + "\n";
+  download(`security-report-${d.slice(0, 10)}.md`, md, "text/markdown");
+};
+
+/* ---------- chat ---------- */
+function md(src) {  // tiny, safe markdown renderer: escape first, then format
+  const blocks = [];
+  let h = esc(src).replace(/```[\w-]*\n?([\s\S]*?)(```|$)/g, (_, code) => { blocks.push(code); return `\u0000${blocks.length - 1}\u0000`; });
+  h = h.replace(/`([^`\n]+)`/g, "<code>$1</code>")
+       .replace(/\*\*([^*\n]+)\*\*/g, "<b>$1</b>")
+       .replace(/^#{3,6} (.*)$/gm, "<h4>$1</h4>").replace(/^#{1,2} (.*)$/gm, "<h3>$1</h3>")
+       .replace(/^\s*[-*] (.*)$/gm, "<li>$1</li>").replace(/^\s*(\d+)\. (.*)$/gm, "<li>$1. $2</li>")
+       .replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, "<ul>$1</ul>")
+       .replace(/\n{2,}/g, "<p></p>").replace(/\n/g, "<br>")
+       .replace(/<\/(h3|h4|li|ul)><br>/g, "</$1>").replace(/<br><(ul|li|h3|h4)/g, "<$1");
+  return h.replace(/\u0000(\d+)\u0000/g, (_, i) => `<pre>${blocks[i]}</pre>`);
+}
+function addMsg(role, text) {
+  const div = document.createElement("div");
+  div.className = "msg " + role;
+  if (role === "user") div.textContent = text; else div.innerHTML = md(text);
+  $("#chatLog").appendChild(div); $("#chatLog").scrollTop = 1e9;
+  return div;
+}
+function welcome() {
+  $("#chatLog").innerHTML = "";
+  addMsg("assistant", "👋 I'm your **local** cybersecurity agent. Everything runs on your machine — nothing is sent to the cloud.\n\n- Analyze a log in the **Log Analysis** tab, then click **AI Investigate**\n- Or ask me anything: exploits, malware, hardening, detection rules, CTFs…");
+}
+
+async function send(text, investigate = false) {
+  if (controller) return;
+  if (investigate && !analysis) return toast("Analyze a log first");
+  if (!investigate) {
+    text = (text ?? $("#chatInput").value).trim(); if (!text) return;
+    $("#chatInput").value = ""; chat.push({role: "user", content: text}); addMsg("user", text);
+  } else addMsg("user", "🔍 Investigate the current log analysis");
+  const out = addMsg("assistant", ""); out.classList.add("typing");
+  $("#sendBtn").disabled = true; $("#stopBtn").classList.remove("hidden");
+  controller = new AbortController();
+  let reply = "";
+  try {
+    const r = await fetch("/api/chat", {method: "POST", headers: {"Content-Type": "application/json"}, signal: controller.signal,
+      body: JSON.stringify({messages: chat, investigate, analysis: $("#useContext").checked || investigate ? analysis : null})});
+    const reader = r.body.getReader(), dec = new TextDecoder();
+    for (;;) {
+      const {done, value} = await reader.read(); if (done) break;
+      reply += dec.decode(value, {stream: true});
+      out.innerHTML = md(reply); $("#chatLog").scrollTop = 1e9;
+    }
+  } catch (e) { if (e.name !== "AbortError") reply += `\n\n[error] ${e.message}`; }
+  out.classList.remove("typing");
+  if (reply.includes("[error]")) out.classList.add("error");
+  out.innerHTML = md(reply || "(stopped)");
+  if (investigate) { chat.push({role: "user", content: "Investigate the current log analysis."}); aiReport = reply; }
+  chat.push({role: "assistant", content: reply});
+  controller = null; $("#sendBtn").disabled = false; $("#stopBtn").classList.add("hidden");
+}
+$("#sendBtn").onclick = () => send();
+$("#stopBtn").onclick = () => controller && controller.abort();
+$("#chatInput").onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } };
+document.querySelectorAll(".chips button").forEach((b) => b.onclick = () => send(b.dataset.q));
+$("#clearChat").onclick = () => { chat = []; welcome(); };
+
+welcome();
+refreshStatus();
+setInterval(refreshStatus, 30000);
+</script>
+</body>
+</html>

