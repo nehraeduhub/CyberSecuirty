@@ -296,6 +296,8 @@ LEGACY = {
     "web_traversal": ("TG-WEB-003", 65, "Monitoring of known file paths.", "Web access / command logs"),
     "web_log4shell": ("TG-WEB-004", 75, "Security scanners testing for Log4Shell.", "Web/application logs"),
     "web_cmdi": ("TG-WEB-005", 70, "Diagnostic pages that accept host names.", "Web access logs"),
+    "web_shell": ("TG-WEB-009", 85, "Admin tools that legitimately take a command parameter (rare in upload folders).",
+                  "Web access logs"),
     "web_scanner": ("TG-WEB-006", 80, "Your own approved scanner.", "Web access logs with user agent"),
     "web_sensitive": ("TG-WEB-007", 70, "Uptime checks for /server-status.", "Web access logs"),
     "web_enum": ("TG-WEB-008", 75, "Broken links crawled by search engines.", "Web access logs with status"),

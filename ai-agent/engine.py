@@ -223,6 +223,8 @@ class Engine:
         self.priv = defaultdict(list)    # user -> [(ts, ref)]
         self.scan = defaultdict(lambda: defaultdict(set))
         self.scan_ev = {}
+        self.scan_open = defaultdict(dict)    # (src, dst) -> {port: lite event} for ports the device let through
+        self.scan_denied = Counter()
         self.denies = defaultdict(list)
         self.deny_n = Counter()
         self.beacons = {}                # (src, dst, port) -> [array of epoch seconds, first lites, refs]
@@ -355,6 +357,10 @@ class Engine:
             if len(sc) < 5000:
                 sc.add(dport)
             self.scan_ev.setdefault((src, dst), ev)
+            if denied:
+                self.scan_denied[(src, dst)] += 1
+            elif action and len(self.scan_open[(src, dst)]) < 10 and dport not in self.scan_open[(src, dst)]:
+                self.scan_open[(src, dst)][dport] = self._lite(ev)
             if denied:
                 k = (src, dst, dport)
                 self.deny_n[k] += 1
@@ -674,8 +680,12 @@ class Engine:
                     ev = self.scan_ev[(src, dst)]
                     f = self.hit("TG-NET-001", f"{src}>{dst}", ev, f"Port scan: {src} probed {len(ports)} ports on {dst}",
                                  text=f"{src} -> {dst}: {len(ports)} distinct ports e.g. {sorted(ports)[:12]}")
+                    for lite in self.scan_open.get((src, dst), {}).values():  # ports that got through
+                        self.hit("TG-NET-001", f"{src}>{dst}", lite, f"Port scan: {src} probed {len(ports)} ports on {dst}")
                     f.count = len(ports)
-                    f.details.update(distinct_ports=len(ports), sample_ports=sorted(ports)[:30], src=src, target=dst)
+                    f.details.update(distinct_ports=len(ports), sample_ports=sorted(ports)[:30], src=src, target=dst,
+                                     ports_allowed=sorted(self.scan_open.get((src, dst), {}))[:10],
+                                     connections_denied=self.scan_denied.get((src, dst), 0))
                     c = self.cls(src, ev.get("ts"))
                     if c and c.get("trust_class") == "monitoring_scanner":
                         f.notes.append(f"Source is an approved scanner ({c['entry']['name']}). Severity is unchanged; "

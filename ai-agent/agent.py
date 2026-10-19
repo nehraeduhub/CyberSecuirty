@@ -413,7 +413,11 @@ def investigation_markdown(analysis):
     out = [inv["summary"]]
     for i in inv["incidents"][:3]:
         out.append(f"\n### {i['id']} - {i['status']} (risk {i['risk']}/100)")
-        out += [f"- **{s['ts'][11:16] if s['ts'] else '?'} {s['stage']}**: {s['text']} [{', '.join(s['evidence'])}]"
+        src = next((x for x in analysis.get("incidents", []) if x.get("id") == i["id"]), {})
+        if src.get("attack_path"):
+            out.append(f"**Attack path:** {src['attack_path']}")
+        out += [f"- **{s['ts'][11:16] if s['ts'] else '?'} {s['stage']}**: {s['text']}"
+                + (f" → _{s['action']}_ ({s['action_by']})" if s.get("action") else "") + f" [{', '.join(s['evidence'])}]"
                 for s in i["story"][:14]]
         out.append("\n**Hypotheses**")
         out += [f"- ({h['status']}) {h['statement']} [{', '.join(h['evidence'][:3])}]" for h in i["hypotheses"]]

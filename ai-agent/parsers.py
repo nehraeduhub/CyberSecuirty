@@ -12,7 +12,7 @@ Normalised event (keys only present when known):
   ts (datetime, UTC naive), ts_raw, src_ip, dst_ip, src_port, dst_port, protocol, user,
   target_user, host, src_host, event_id, action, outcome, process, parent_process, command,
   url, method, status, domain, query_type, rcode, bytes_out, bytes_in, logon_type, signature,
-  severity, hash, file_path, service, group, user_agent, session_id, pid, message,
+  severity, hash, file_path, device (reporting firewall/sensor), service, group, user_agent, session_id, pid, message,
   source_type, file, line, ref ("file:line" evidence reference), raw (original record),
   text (searchable text used by signature rules)
 """
@@ -56,6 +56,8 @@ DEFAULT_ALIASES = {
     "host": ["host", "hostname", "computer", "computername", "devicename", "dvchost", "dvc", "machine",
              "agenthostname", "hostnamename", "observerhostname", "sourcehost", "reportinghost", "server",
              "workstation", "endpoint", "assetname", "dhost"],
+    "device": ["device", "devname", "fwname", "firewallname", "sensor", "sensorname", "observername", "appliance",
+               "reportingdevice"],
     "src_host": ["workstationname", "shost", "clienthostname", "sourcehostname", "srchost", "callingstation"],
     "event_id": ["eventid", "eventcode", "id", "eventtype", "signatureid", "sid", "ruleid", "winlogeventid",
                  "eventidentifier", "logid", "messageid", "eventname"],
@@ -114,7 +116,7 @@ CEF_RE = re.compile(r"CEF:\s*\d+\|([^|]*)\|([^|]*)\|[^|]*\|([^|]*)\|([^|]*)\|([^
 LEEF_RE = re.compile(r"LEEF:\s*[\d.]+\|([^|]*)\|([^|]*)\|[^|]*\|([^|]*)\|(.*)")
 WEB_RE = re.compile(r'^(\S+) \S+ (\S+) \[([^\]]+)\] "(\S+) (\S+)[^"]*" (\d{3}) (\d+|-)(?: "([^"]*)" "([^"]*)")?')
 SYSLOG_RE = re.compile(r"^(?:<\d+>)?(?:\d\s+)?((?:[A-Z][a-z]{2}\s+\d{1,2} \d\d:\d\d:\d\d)|"
-                       r"(?:\d{4}-\d\d-\d\d[T ]\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:?\d\d)?))\s+(\S+)\s+"
+                       r"(?:\d{4}-\d\d-\d\d[T ]\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:?\d\d)?))\s+([^\s=]+)\s+"
                        r"([\w./\-()]+?)(?:\[(\d+)\])?:?\s+(.*)$")
 SSH_RE = re.compile(r"(Failed|Accepted) (\S+) for (?:invalid user )?(\S+) from (\S+)(?: port (\d+))?")
 SSH_INVALID_RE = re.compile(r"Invalid user (\S+) from (\S+)")

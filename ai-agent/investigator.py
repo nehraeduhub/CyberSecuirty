@@ -34,6 +34,8 @@ deterministic detection engine. Rules you must follow:
 INVESTIGATE_PROMPT = ("Investigate the case. Answer with these sections:\n"
                       "Start with a 2-4 sentence executive summary paragraph (no heading).\n"
                       "## Attack narrative - chronological bullets, each with evidence IDs\n"
+                      "## Attack flow - the path (source > firewall/VPN > server/machine > URL/path or command) and "
+                      "what each device did (allowed, blocked, served, executed), only as logged in the attack flow\n"
                       "## Assessment - per incident: status (suspected/probable), confidence and why\n"
                       "## Benign explanations to rule out\n"
                       "## Evidence gaps and suggested read-only queries\n"
@@ -69,10 +71,20 @@ def case_file(result, budget_chars=7000):
                    f"{', '.join(inc['hosts'][:6])}; findings: {', '.join(inc.get('finding_ids', [])[:20])}")
         if inc.get("targeted_accounts"):
             out.append(f"  accounts targeted (not necessarily compromised): {', '.join(inc['targeted_accounts'][:10])}")
+        if inc.get("attack_path"):
+            out.append(f"  attack path (systems in evidence order): {inc['attack_path'][:300]}")
+        steps = inc.get("flow") or []
+        if steps:
+            out.append("  attack flow (source > device > target | object | ACTION the device logged | evidence):")
+            for x in steps[:16]:
+                hop = " > ".join(v for v in (x.get("from") or ",".join(x.get("users") or []), x.get("via"), x.get("to")) if v)
+                out.append(f"   {x['step']}. {(x.get('first') or '?')[11:]} {x.get('stage') or 'Alert'}: {hop[:110]}"
+                           f" | {x.get('object', '')[:80]} | {x.get('action', '')[:80]} | {','.join(x.get('evidence', [])[:3])}")
         out.append("  timeline (repeated rows collapsed):")
-        for t in _collapse(inc.get("timeline", []))[:24]:
+        for t in _collapse(inc.get("timeline", []))[:8 if steps else 24]:
             out.append(f"   {t['when']} [{t['evidence']}] {t['tactic'] or 'Alert'}: {t['finding'][:70]} | "
-                       f"{t['summary'][:90]}" + (f" (x{t['n']})" if t["n"] > 1 else ""))
+                       f"{t['summary'][:90]}" + (f" | {t['action'][:50]}" if t.get("action") else "")
+                       + (f" (x{t['n']})" if t["n"] > 1 else ""))
     out.append("\nFINDINGS (id rule severity/confidence/risk: title | trust context | evidence):")
     for f in result.get("findings", [])[:30]:
         ctx = "; ".join(sorted({(c.get("name") or c.get("ip") or c.get("host") or "") + " = " + c["label"]
@@ -119,14 +131,22 @@ def investigate(result):
            "method": "deterministic"}
     for inc in incidents:
         members = [by_id[x] for x in inc["findings"] if x in by_id]
-        story, seen = [], set()
+        story, seen = [], {}
         for t in inc.get("timeline", []):
             key = t["tactic"] or "Alert"
-            if (key, t["finding"][:40]) in seen:
+            k = (key, t["finding"][:40])
+            if k in seen:  # same step again: only add what the device did differently
+                st = seen[k]
+                if t.get("action"):
+                    st["_acts"][t["action"]] = st["_acts"].get(t["action"], 0) + 1
                 continue
-            seen.add((key, t["finding"][:40]))
-            story.append({"ts": t["ts"], "stage": key, "text": t["finding"], "detail": t["summary"],
-                          "evidence": [t["evidence"]]})
+            seen[k] = {"ts": t["ts"], "stage": key, "text": t["finding"], "detail": t["summary"],
+                       "action_by": t.get("action_by", ""), "evidence": [t["evidence"]],
+                       "_acts": {t["action"]: 1} if t.get("action") else {}}
+            story.append(seen[k])
+        for st in story:
+            acts = st.pop("_acts")
+            st["action"] = "; ".join(a + (f" x{n}" if n > 1 else "") for a, n in acts.items())
         story = story[:25]
         hyps = _hypotheses(inc, members)
         benign = []

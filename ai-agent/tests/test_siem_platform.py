@@ -79,7 +79,7 @@ class ParserTests(Isolated):
     def test_every_sample_format_parses_without_failures(self):
         expect = {"windows_security.csv": ("csv", "windows"), "firewall.jsonl": ("jsonl", "firewall"),
                   "dns.json": ("json", "dns"), "ids_alerts.cef": ("text", "ids"), "vpn.log": ("text", "vpn"),
-                  "windows_dc.xml": ("winxml", "windows")}
+                  "windows_dc.xml": ("winxml", "windows"), "web_access.log": ("text", "web")}
         for path, name in SAMPLE_FILES:
             evs, s = self.summary(path)
             self.assertEqual(s["parse_failures"], 0, name)
@@ -265,6 +265,52 @@ class PipelineTests(Isolated):
         self.assertTrue(inc["status"].startswith(("Probable", "Suspected")))
         self.assertNotIn("Confirmed", inc["status"])
 
+    def test_action_taken_by_each_device(self):
+        """Every timeline/evidence entry says what the firewall, server or machine did, from the log itself."""
+        reg = {e["ref"]: e for e in self.r["evidence"]}
+        for e in self.r["evidence"]:
+            self.assertTrue(e["action"] and e["action_by"] and e["result"], e)
+        self.assertEqual(reg["windows_dc.xml:1"]["action"], "Logon failed (network)")
+        self.assertEqual(reg["windows_dc.xml:1"]["result"], "failed")
+        self.assertTrue(reg["vpn.log:28"]["action"].startswith("Login accepted"))
+        self.assertIn("192.0.2.200", reg["vpn.log:28"]["action"])
+        ids = next(e for e in self.r["evidence"] if e["source_type"] == "ids")
+        self.assertIn("detection only", ids["action"])                  # an IDS alert never claims a block
+        fw = [e for e in self.r["evidence"] if e["source_type"] == "firewall"]
+        self.assertTrue({"allowed", "blocked", "changed"} <= {e["result"] for e in fw})
+        self.assertTrue(any("GB sent" in e["action"] for e in fw))      # exfiltration volume
+        for t in self.r["incidents"][0]["timeline"]:
+            self.assertIn("action", t)
+        scan = next(f for f in self.r["findings"] if f["rule_id"] == "TG-NET-001" and "203.0.113.50" in f["title"])
+        self.assertEqual(scan["details"]["ports_allowed"], [80, 443])   # what got through the firewall
+        self.assertEqual({a["result"] for a in scan["actions_taken"]}, {"allowed", "blocked"})
+
+    def test_web_exploitation_flow(self):
+        inc = next(i for i in self.r["incidents"] if "203.0.113.50" in i["ips"])
+        self.assertTrue(inc["attack_path"].startswith("203.0.113.50 → WEB01"), inc["attack_path"])
+        steps = inc["flow"]
+        fw = next(s for s in steps if s["via"].startswith("Firewall") and s["result"] == "allowed")
+        self.assertIn("ports 80, 443", fw["to"])
+        probe = next(s for s in steps if "/.env" in s["object"])
+        self.assertEqual(probe["result"], "failed")                     # 403/404 probing merged into one step
+        sqli = next(s for s in steps if "UNION" in s["object"])
+        self.assertIn("exploitation possible", sqli["action"])
+        self.assertNotIn("confirmed", sqli["action"].lower())
+        shell = [s for s in steps if "shell.php?cmd=" in s["object"]]
+        self.assertGreaterEqual(len(shell), 3)
+        self.assertTrue(all(s["to"].startswith("198.51.100.2 (WEB01)") for s in shell))
+        self.assertIn("TG-WEB-009", self.rules)
+        order = [s["step"] for s in (fw, probe, sqli, shell[0])]
+        self.assertEqual(order, sorted(order))
+
+    def test_identity_flow_through_vpn(self):
+        inc = self.r["incidents"][0]
+        self.assertTrue(inc["attack_path"].startswith("203.0.113.77 → vpn01 → 192.0.2.200 → DC01 → WS-BOB"),
+                        inc["attack_path"])
+        lat = next(s for s in inc["flow"] if s["stage"] == "Lateral Movement")
+        self.assertIn(", ", lat["to"])                                  # one source fanning out to several hosts
+        self.assertTrue(all(e.startswith("E-") for s in inc["flow"] for e in s["evidence"]))
+
     def test_no_false_brute_force_from_spread_out_typos(self):
         # dave mistypes once per day; that must not become brute force + compromise
         for f in self.r["findings"]:
@@ -338,6 +384,41 @@ class PipelineTests(Isolated):
 
 
 # ------------------------------------------------------------------ investigation agent
+
+class FlowTests(unittest.TestCase):
+    """Action labels come only from fields in the record; nothing is claimed that the log does not say."""
+
+    def test_action_labels(self):
+        import flow
+        cases = [
+            ({"source_type": "linux_auth", "action": "logon", "outcome": "failure", "protocol": "ssh", "host": "web01"},
+             "SSH login rejected", "failed"),
+            ({"source_type": "web", "url": "/admin", "status": 403, "method": "GET"}, "Denied (HTTP 403)", "blocked"),
+            ({"source_type": "web", "url": "/a.php?cmd=%3Bid", "status": 200}, "exploitation possible", "success"),
+            ({"source_type": "web", "url": "/index.html", "status": 200}, "Served HTTP 200", "success"),
+            ({"source_type": "ids", "action": "drop", "signature": "x"}, "Blocked by sensor", "blocked"),
+            ({"source_type": "dns", "domain": "a.example", "rcode": "REFUSED"}, "Query refused", "blocked"),
+            ({"source_type": "firewall", "action": "drop", "dst_port": 22, "device": "edge1"}, "Blocked (drop) to port 22", "blocked"),
+            ({"source_type": "windows", "event_id": "1102", "host": "DC01"}, "Security audit log cleared", "changed"),
+            ({"source_type": "generic", "message": "something"}, "no action field", "info"),
+        ]
+        for ev, text, res in cases:
+            a = flow.action(ev)
+            self.assertIn(text, a["action"], ev)
+            self.assertEqual(a["result"], res, ev)
+        self.assertEqual(flow.device({"source_type": "firewall", "device": "edge1"}), "Firewall edge1")
+        self.assertEqual(flow.device({"source_type": "ids", "raw": "Oct 18 01:12:00 ids01 CEF:0|x"}), "IDS/IPS ids01")
+
+    def test_flow_handles_sparse_records(self):
+        import flow
+        tl = [{"ts": "2026-01-01 00:00:00", "evidence": "E-1", "tactic": ""},
+              {"ts": None, "evidence": "E-2", "tactic": "Execution"}, {"ts": None, "evidence": "E-9"}]
+        steps = flow.incident_flow(tl, {"E-1": {}, "E-2": {"command": "whoami", "host": "h1"}})
+        self.assertEqual(len(steps), 1)                                  # empty / unknown records are skipped
+        self.assertEqual((steps[0]["to"], steps[0]["result"]), ("h1", "executed"))
+        self.assertEqual(flow.path_summary(steps), "h1")
+        self.assertEqual(flow.path_summary([]), "")
+
 
 class InvestigatorTests(Isolated):
     @classmethod
@@ -467,7 +548,7 @@ class ApiTests(Isolated):
         code, body, _ = self.call("/api/analyze-batch", {"batch": batch})
         r = json.loads(body)
         self.assertEqual(code, 200)
-        self.assertEqual(len(r["ingestion"]), 6)
+        self.assertEqual(len(r["ingestion"]), len(SAMPLE_FILES))
         self.assertTrue(r["analysis_id"])
         self.assertFalse((config_store.UPLOAD_DIR / batch).exists(), "uploads are deleted after analysis")
         code, body, _ = self.call("/api/instant", {"kind": "investigation", "analysis_id": r["analysis_id"]})

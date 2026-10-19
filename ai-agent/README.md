@@ -17,7 +17,7 @@ Nothing leaves your machine.
 
 ![Dashboard](docs/screenshot-dashboard.jpg)
 
-📑 Example report: [docs/sample-report.pdf](docs/sample-report.pdf), generated from the six-source sample incident in `samples/siem/`.
+📑 Example report: [docs/sample-report.pdf](docs/sample-report.pdf), generated from the seven-source sample incident in `samples/siem/`.
 
 | ✅ | Feature |
 |---|---|
@@ -31,6 +31,7 @@ Nothing leaves your machine.
 | 🔎 | Attacker IP profiles, attack timeline, IOC extraction (IPs, URLs, domains, files, accounts) |
 | ⚡ | **Instant local answers** without AI: response plan, firewall block commands (ufw/iptables/nftables/fail2ban/Windows), IOCs, explanations and fixes |
 | 📥 | **SIEM ingestion**: streamed multi-file upload, automatic format and log-source detection, configurable field mapping, timestamp and time-zone normalisation, parse-failure reporting, evidence references to the original `file:line` |
+| 🧭 | **Action taken and attack flow**: every event shows what the firewall, IDS, VPN, server or machine did (allowed, blocked, served HTTP 200, executed…), and every incident gets an attack path and a step-by-step flow (source → firewall → server → URL/path or command → outcome) in the GUI and the PDF |
 | 🔗 | **Correlation and incidents**: actor-based linking across sources, ATT&CK kill-chain ordering, an attack timeline with evidence IDs, and a SOAR checklist (recommendations only) |
 | 👤 | **UEBA**: explainable per-account baselines (hours, sources, hosts, privileges, peers), with thin-history detection |
 | 🏢 | **Trusted Networks & Assets**: CIDR/IP inventory with precedence, import/export with preview, and a change history. Trust is context and never suppresses a finding |
@@ -179,6 +180,7 @@ ai-agent/
 ├── engine.py              # structured rules, UEBA, statistics, threat intel, forensics
 ├── rules.py               # detection rule catalogue (IDs, severity, confidence, ATT&CK, FP guidance)
 ├── pipeline.py            # upload-to-report pipeline: correlation, risk, evidence register, SOAR
+├── flow.py                # action taken per event (firewall/server/machine) and incident attack flow
 ├── investigator.py        # AI investigation agent: case file, deterministic investigation, answer checks
 ├── trust.py               # Trusted Networks & Assets (validation, precedence, import/export, history)
 ├── branding.py            # branding settings and safe logo handling
@@ -189,7 +191,7 @@ ai-agent/
 ├── host_audit.py          # live Linux host security audit
 ├── report_pdf.py          # Tech Guardians branded PDF report (optional: reportlab)
 ├── static/index.html      # the web UI (single file, no build step)
-├── samples/               # example attack logs; samples/siem/ = six-source SIEM incident
+├── samples/               # example attack logs; samples/siem/ = seven-source SIEM incident
 ├── scripts/setup-linux.sh # one-command, speed-tuned Linux install
 ├── scripts/benchmark.py   # tokens/second per model on this machine
 ├── docs/LINUX-GUIDE.md    # guide for CPU-only Linux servers

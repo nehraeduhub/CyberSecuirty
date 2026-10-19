@@ -203,6 +203,7 @@ Thresholds, severity, confidence and on/off can be tuned in `config/detection_ru
 | TG-WEB-006 | Attack tool / scanner detected | medium | 80% | regex signature | T1595 |
 | TG-WEB-007 | Probe for sensitive files | medium | 70% | regex signature | T1595.003 |
 | TG-WEB-008 | Web directory enumeration (many 404s) | medium | 75% | correlation | T1595.003 |
+| TG-WEB-009 | Web shell command execution | critical | 85% | regex signature | T1505.003 |
 | TG-WIN-001 | Failed Windows logon | low | 40% | regex signature | T1110 |
 | TG-WIN-002 | Windows logon brute force (burst within 10 min) | high | 85% | correlation | T1110.003 |
 
@@ -249,7 +250,60 @@ hashes are matched offline. `samples/siem/ioc_feed.csv` is an example feed with 
 (containment, eradication, recovery), with evidence IDs and a "needs authorisation" flag. **Nothing
 is executed.** The platform never blocks IPs, disables accounts or changes systems.
 
-## 6. AI investigation agent
+## 6. Action taken and attack flow
+
+For every event used as evidence, the tool records **what the reporting device did**, using only
+fields present in the log. It shows this in an **Action taken** column in the GUI (incident
+timeline, attack flow, finding details) and in the PDF (Section 4 finding cards, the Section 5
+timeline, and the Section 13 evidence register).
+
+| Source | Example actions |
+|---|---|
+| Firewall | `Allowed to port 443, 2.2 GB sent` · `Blocked (deny) to port 3389` · `Firewall policy changed` |
+| IDS/IPS, EDR | `Alert raised - detection only, traffic not blocked` · `Blocked by sensor (drop)` |
+| VPN | `Login rejected (bad_password)` · `Login accepted, VPN session opened, tunnel IP 192.0.2.200` |
+| Web server | `Denied (HTTP 403)` · `Server error HTTP 500 - payload reached the application` · `Served HTTP 200 to attack payload - exploitation possible, verify` |
+| Windows / Linux | `Logon failed (network)` · `Logon succeeded (RDP)` · `Process executed` · `User account created` · `Security audit log cleared` · `SSH login rejected` |
+| DNS | `Resolved (NOERROR), TXT record` · `Name does not exist (NXDOMAIN)` · `Query refused` |
+
+Each action is coloured by its outcome for the defender:
+- **red:** the attacker's action succeeded or ran
+- **orange:** allowed or changed
+- **amber:** detected only, or a server error
+- **green:** blocked or failed
+
+An IDS "alert" is never reported as a block. An HTTP 200 to an attack payload is reported as
+*exploitation possible*, never as a confirmed compromise: confirm it on the host.
+
+Each correlated incident also gets:
+- **Attack path:** the systems in the order the evidence shows them, e.g.
+  `203.0.113.77 → vpn01 → 192.0.2.200 → DC01 → WS-BOB → 203.0.113.99 → FS01 → DB01 → HR01 → 203.0.113.150`
+- **Attack flow:** numbered steps with these columns:
+  - time
+  - stage (ATT&CK tactic)
+  - *source → device → target*
+  - the URL, path, command or query
+  - the action taken
+  - the evidence IDs
+
+  Repeated events are merged, e.g. 4 failed logons, 404 probing, or one account logging on to several servers.
+  Firewall steps list the ports that were allowed or blocked. When the firewall log shows the attacker
+  reaching a server on a web port, web-log steps name that server.
+  Port-scan findings record which ports the firewall let through (`ports_allowed`).
+
+Configured asset names from **Trusted Networks & Assets** are shown next to IPs, e.g.
+`198.51.100.2 (WEB01)`. The AI case file includes the attack path and flow, and the
+investigation has an *Attack flow* section.
+
+The sample dataset includes a web attack that shows the full chain:
+1. a port scan: most ports denied, 80/443 allowed
+2. directory probing (403/404)
+3. SQL injection (500, then 200)
+4. web-shell commands through `/uploads/shell.php?cmd=` (200), with the IDS reporting `id check returned root`
+
+![Attack flow](screenshot-attack-flow.jpg)
+
+## 7. AI investigation agent
 
 **🤖 AI Investigate** sends the local model a compact *case file*, not the raw logs:
 - the dataset schema and ingestion summary
@@ -279,7 +333,7 @@ Without a model, **⚡ Investigation (no AI)** produces the same structure deter
 The PDF uses this when no AI text exists. No external AI provider is used or contacted unless you
 explicitly configure one in Settings; the default is the local Ollama on 127.0.0.1.
 
-## 7. The report (A4)
+## 8. The report (A4)
 
 The report has 15 sections: Executive Summary, Scope and Methodology, Data Sources and Log
 Processing, **Detailed Findings**, Correlated Events and Attack Timeline, UEBA, Trusted Network
@@ -305,14 +359,14 @@ timelines and many findings. They then measure every character's position in the
 must be A4, no text may be outside the printable width, and every page must be numbered. An example is in
 [`docs/sample-report.pdf`](sample-report.pdf).
 
-## 8. Offline and security
+## 9. Offline and security
 
 - **No external calls during analysis.** A test runs the whole analysis with network connections disabled. Ollama is reached on 127.0.0.1 only, and only if you use the AI.
 - **The web UI is local by default.** On a network IP it requires the access token. Cross-site requests are blocked, and log content is always HTML-escaped.
 - **Restricted files.** Uploads, baselines, the audit trail and config files are owner-only (0600/0700). Upload names are sanitised and kept inside the upload folder.
 - **Safe parsers.** Parsers never execute content: `csv`, `json`, `ElementTree` and regular expressions only.
 
-## 9. Files
+## 10. Files
 
 | File | Purpose |
 |---|---|
@@ -328,7 +382,7 @@ must be A4, no text may be outside the printable width, and every page must be n
 | `config/examples/` | Example `trusted_assets`, `branding`, `field_mappings`, `detection_rules` |
 | `samples/siem/` | Multi-source sample incident + demo inventory + example IoC feed (`scripts/generate_samples.py`) |
 
-## 10. Known limitations
+## 11. Known limitations
 
 - Windows `.evtx` binary files must be exported to XML or CSV first.
 - Typical throughput is about 9,000 events/s per analysis on a 4-core machine. A 1 GB export, roughly 5 million events, takes several minutes. Memory grows with the number of distinct source/destination pairs, about 200 MB for 500,000 flow events.

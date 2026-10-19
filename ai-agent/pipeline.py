@@ -18,6 +18,7 @@ from pathlib import Path
 import config_store
 import detector
 import engine
+import flow
 import knowledge
 import parsers
 import rules as rulebook
@@ -110,7 +111,7 @@ def analyze_files(files, tz_hours=0, learn_baseline=True, inventory=None, iocs=N
         _score(f, ueba_by_user, ti_values)
     for inc in incidents:
         _incident_score(inc, findings)
-    register = _register(findings, incidents, evidence)
+    register = _register(findings, incidents, evidence, _asset_names(inv))
     for inc in incidents:
         inc["checklist"], inc["actions"] = _soar(inc, findings)
     findings.sort(key=lambda f: (-f["risk"]["score"], SEV_RANK[f["severity"]]))
@@ -179,7 +180,10 @@ def _evidence_pass(files, findings, e, aliases, tz_hours):
                                                      "src_host", "src_ip", "dst_ip", "src_port", "dst_port",
                                                      "assigned_ip", "event_id", "logon_type", "process", "command",
                                                      "domain", "url", "action", "bytes_out", "signature",
-                                                     "source_type", "raw") if ev.get(k) not in (None, "")}
+                                                     "source_type", "raw", "outcome", "status", "method",
+                                                     "user_agent", "file_path", "rcode", "query_type", "protocol",
+                                                     "vendor", "group", "session_id", "bytes_in", "device",
+                                                     "parent_process") if ev.get(k) not in (None, "")}
                 if len(got) >= len(need):
                     break
     return got
@@ -458,8 +462,24 @@ def _incident_score(inc, findings):
     inc["confidence"] = round(sum(f["confidence"] for f in members) / len(members))
 
 
-def _register(findings, incidents, evidence):
-    """Assign stable evidence IDs (E-0001...) and attach them to findings and incident timelines."""
+def _asset_names(inv):
+    """ip -> configured asset hostname/name (from Trusted Networks & Assets), cached."""
+    cache = {}
+
+    def name(ip):
+        if ip not in cache:
+            try:
+                e = inv.classify(ip).get("entry") or {}
+            except Exception:  # noqa: BLE001 - naming is cosmetic; never fail the analysis
+                e = {}
+            cache[ip] = e.get("hostname") or (e.get("name") if e.get("asset_type") else None)
+        return cache[ip]
+    return name
+
+
+def _register(findings, incidents, evidence, names=None):
+    """Assign stable evidence IDs (E-0001...) and attach them to findings and incident timelines.
+    Every entry also records what the reporting device did (action) and the event's path."""
     reg, ids = [], {}
 
     def eid(ref):
@@ -473,8 +493,9 @@ def _register(findings, incidents, evidence):
             ev.get("dst_ip") and f"dst={ev['dst_ip']}" + (f":{ev['dst_port']}" if ev.get("dst_port") else ""),
             ev.get("command") and f"cmd={str(ev['command'])[:140]}", ev.get("domain") and f"domain={ev['domain']}",
             ev.get("signature") and f"alert={ev['signature']}") if x)
-        reg.append({"id": ids[ref], "ref": ref, "ts": _fmt(ev.get("ts")), "source_type": ev.get("source_type"),
-                    "summary": summary or str(ev.get("raw", ""))[:160], "raw": str(ev.get("raw", ""))[:700]})
+        reg.append(dict({"id": ids[ref], "ref": ref, "ts": _fmt(ev.get("ts")), "source_type": ev.get("source_type"),
+                         "summary": summary or str(ev.get("raw", ""))[:160], "raw": str(ev.get("raw", ""))[:700]},
+                        **flow.describe(ev, names)))
         return ids[ref]
 
     by_id = {f["id"]: f for f in findings}
@@ -490,7 +511,7 @@ def _register(findings, incidents, evidence):
                     continue
                 tl.append({"ts": _fmt(ev.get("ts")), "finding": f["title"], "rule_id": f["rule_id"],
                            "tactic": next((rulebook.technique(t)["tactic"] for t in f.get("mitre_list", [])), ""),
-                           "summary": _event_line(ev), "evidence": eid(ref)})
+                           "summary": _event_line(ev), "evidence": eid(ref), **flow.describe(ev, names)})
         merged = {}
         for t in sorted(tl, key=lambda x: x["ts"] or "9999"):
             m = merged.get(t["evidence"])
@@ -503,8 +524,18 @@ def _register(findings, incidents, evidence):
         for m in merged.values():
             m["finding"] = " + ".join(m["findings"][:3])
         inc["timeline"] = sorted(merged.values(), key=lambda x: x["ts"] or "9999")[:80]
+        by_eid = {ids[r]: evidence[r] for r in ids}
+        inc["flow"] = flow.incident_flow(inc["timeline"], by_eid, names)
+        inc["attack_path"] = flow.path_summary(inc["flow"])
     for f in findings:
         f["evidence"] = [x for x in (eid(r) for r in f.get("evidence_refs", [])[:25]) if x]
+        acts = Counter()
+        for r in f.get("evidence_refs", [])[:200]:
+            if r in evidence:
+                a = flow.action(evidence[r])
+                acts[(a["by"], a["action"], a["result"])] += 1
+        f["actions_taken"] = [{"by": b, "action": a, "result": res, "count": c}
+                              for (b, a, res), c in acts.most_common(5)]
         for s in f.get("samples", []):
             s["evidence"] = ids.get(s.get("ref"))
     return reg

@@ -183,6 +183,11 @@
   .chain { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
   .chain span { font-size: 11.5px; padding: 2px 8px; border-radius: 6px; background: color-mix(in srgb, var(--brand-hi) 20%, var(--surface2)); border: 1px solid var(--border); }
   .chain span + span::before { content: "→ "; color: var(--muted); }
+  .chain.path span { background: var(--surface3); font-family: ui-monospace, Consolas, monospace; }
+  .act { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 1px 7px; border-radius: 6px; line-height: 1.45;
+         color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
+  .hop { white-space: normal; word-break: break-word; }
+  .hop i { color: var(--muted); font-style: normal; padding: 0 3px; }
   .incident { border: 1px solid var(--border); border-left: 4px solid var(--c); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: var(--surface2); }
   .incident h3 { margin: 0 0 4px; font-size: 14.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .incident table td, .incident table th { font-size: 12.5px; padding: 5px 8px; }
@@ -469,6 +474,10 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const SEVS = ["critical", "high", "medium", "low", "info"];
 const sevVar = (s) => `var(--${s})`;
+/* colour of "what the device did", seen from the defender's side: red = the attacker got through */
+const RESULT_SEV = {success: "critical", executed: "critical", allowed: "high", changed: "high", error: "medium",
+                    detected: "medium", blocked: "clean", failed: "clean", info: "info"};
+const actPill = (action, result, by) => action ? `<span class="act" style="--c:${sevVar(RESULT_SEV[result] || "info")}" title="${esc(result || "")}">${esc(action)}</span>${by ? `<br><span class="muted">${esc(by)}</span>` : ""}` : '<span class="muted">-</span>';
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } },
                 set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 let status = {}, analysis = null, sourceName = "", chat = [], controller = null, aiReport = "", sevFilter = "all", query = "";
@@ -733,6 +742,7 @@ function renderFindings() {
           ${f.fp ? `<dt>False positives</dt><dd>${esc(f.fp)}</dd>` : ""}
           ${f.limitation ? `<dt>Limitations</dt><dd>${esc(f.limitation)}</dd>` : ""}
           ${f.risk?.factors ? `<dt>Risk factors</dt><dd class="small">${f.risk.factors.map((x) => `${esc(x.factor)} (${x.points >= 0 ? "+" : ""}${x.points})`).join(" · ")}</dd>` : ""}
+          ${f.actions_taken?.length ? `<dt>Action taken</dt><dd class="small">${f.actions_taken.map((x) => `${actPill(x.action + (x.count > 1 ? ` ×${x.count}` : ""), x.result)} <span class="muted">${esc(x.by)}</span>`).join("<br>")}</dd>` : ""}
           ${f.evidence?.length ? `<dt>Evidence</dt><dd class="small">${f.evidence.slice(0, 20).map(esc).join(", ")}${(f.evidence_refs || []).length > 20 ? " …" : ""}</dd>` : ""}
           ${f.first_seen && f.last_seen !== f.first_seen ? `<dt>Window</dt><dd>${esc(f.first_seen)} → ${esc(f.last_seen)}</dd>` : ""}
           ${f.references?.length ? `<dt>References</dt><dd>${f.references.map((r) => /^https?:/.test(r) ? `<a href="${esc(r)}" target="_blank" rel="noopener">${esc(r.replace(/^https?:\/\//, ""))}</a>` : esc(r)).join(" · ")}</dd>` : ""}
@@ -764,9 +774,18 @@ function renderIncidents(a) {
     <div class="small">${esc(i.title)}</div>
     <div class="chain">${i.tactics.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
     <div class="small muted">${esc(i.first_seen || "?")} → ${esc(i.last_seen || "?")} · actors: <b>${esc(i.users.join(", ") || "-")}</b> · hosts: ${esc(i.hosts.join(", ") || "-")} · sources: ${esc(i.source_types.join(", "))} · findings: ${esc((i.finding_ids || []).join(", "))}</div>
-    <details ${n === 0 ? "open" : ""}><summary class="small" style="cursor:pointer;margin-top:8px">Attack timeline (${i.timeline.length} steps)</summary>
-      <div style="overflow-x:auto;max-height:360px"><table><thead><tr><th>Time (UTC)</th><th>Evidence</th><th>Stage</th><th>Event / detection</th></tr></thead><tbody>
-      ${i.timeline.map((t) => `<tr><td class="muted">${esc(t.ts || "-")}</td><td><span class="tag">${esc(t.evidence || "-")}</span></td><td>${esc(t.tactic || "Alert")}</td><td>${esc(t.finding)}<br><span class="muted">${esc(t.summary)}</span></td></tr>`).join("")}
+    ${i.attack_path ? `<div class="small muted" style="margin-top:6px">Attack path (systems in the order the evidence shows them):</div><div class="chain path">${i.attack_path.split(" → ").map((x) => `<span>${esc(x)}</span>`).join("")}</div>` : ""}
+    ${(i.flow || []).length ? `<details ${n === 0 ? "open" : ""}><summary class="small" style="cursor:pointer;margin-top:8px">Attack flow — what each device did (${i.flow.length} steps)</summary>
+      <div style="overflow-x:auto;max-height:560px"><table><thead><tr><th>#</th><th>Time (UTC)</th><th>Stage</th><th>Flow: source → device → target</th><th>URL / path / command</th><th>Action taken</th><th>Evidence</th></tr></thead><tbody>
+      ${i.flow.map((s) => `<tr><td class="muted">${s.step}</td><td class="muted">${esc(s.first || "-")}${s.last && s.last !== s.first ? `<br>→ ${esc(s.last.slice(11))}` : ""}</td><td>${esc(s.stage || "Alert")}</td>
+        <td class="hop">${[s.from || (s.users || []).join(", "), s.via, s.to].filter(Boolean).map(esc).join("<i>→</i>")}${s.users?.length && s.from ? `<br><span class="muted">account: ${esc(s.users.join(", "))}</span>` : ""}</td>
+        <td class="hop small">${esc(s.object || "")}</td><td>${actPill(s.action, s.result, s.action_by)}</td>
+        <td class="small">${(s.evidence || []).map((e) => `<span class="tag">${esc(e)}</span>`).join(" ")}</td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="small muted" style="margin-top:4px">Colours show the outcome for the defender: <span class="act" style="--c:var(--critical)">attacker succeeded / ran</span> <span class="act" style="--c:var(--high)">allowed / changed</span> <span class="act" style="--c:var(--medium)">detected only / error</span> <span class="act" style="--c:var(--clean)">blocked / failed</span>. "Exploitation possible" means the server answered an attack request; confirm on the host.</div></details>` : ""}
+    <details><summary class="small" style="cursor:pointer;margin-top:8px">Attack timeline (${i.timeline.length} events)</summary>
+      <div style="overflow-x:auto;max-height:360px"><table><thead><tr><th>Time (UTC)</th><th>Evidence</th><th>Stage</th><th>Event / detection</th><th>Action taken</th></tr></thead><tbody>
+      ${i.timeline.map((t) => `<tr><td class="muted">${esc(t.ts || "-")}</td><td><span class="tag">${esc(t.evidence || "-")}</span></td><td>${esc(t.tactic || "Alert")}</td><td>${esc(t.finding)}<br><span class="muted">${esc(t.path || t.summary)}</span></td><td>${actPill(t.action, t.result, t.action_by)}</td></tr>`).join("")}
       </tbody></table></div></details>
     <details><summary class="small" style="cursor:pointer;margin-top:6px">Response checklist (recommendations only — nothing is executed)</summary>
       <ul class="small">${i.checklist.map((c) => `<li><b>${esc(c.phase)}:</b> ${esc(c.step)}</li>`).join("")}${i.actions.map((c) => `<li><b>${esc(c.phase)}:</b> ${esc(c.action)}${c.requires_authorisation ? ' <span class="pill" style="--c:var(--medium)">needs authorisation</span>' : ""} <span class="muted">${esc((c.evidence || []).join(", "))}</span></li>`).join("")}</ul></details>

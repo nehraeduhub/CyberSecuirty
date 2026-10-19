@@ -46,6 +46,13 @@ KB = {
                  "Command injection gives the attacker a shell on the server with the web server's privileges.",
                  "Never pass user input to a shell; use safe APIs with argument lists; validate input strictly; review responses (200) for signs of success.",
                  ["OWASP A03:2021 Injection", "CWE-78"]),
+    "web_shell": ("Web Attack", "A script in an upload or static folder was called with a command parameter "
+                                "(e.g. /uploads/shell.php?cmd=id), the typical use of an uploaded web shell.",
+                  "If the server answered 200, the attacker can likely run commands on the web server with its privileges.",
+                  "Take the site offline or block the source, preserve the file and logs, remove the shell, find the upload "
+                  "path (vulnerable form or plugin) and fix it, rotate credentials stored on the server, and check for "
+                  "outbound connections and new files.",
+                  ["OWASP A04:2021 Insecure Design", "CWE-434", "T1505.003"]),
     "web_scanner": ("Reconnaissance", "User-Agent or request patterns match automated attack tools (sqlmap, nikto, gobuster, nuclei…).",
                     "Scanning usually precedes exploitation; the attacker is mapping weaknesses.",
                     "Rate-limit and block the source IPs, enable a WAF bot-protection rule set, and verify nothing the scanner found is actually exposed.",

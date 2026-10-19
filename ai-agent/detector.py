@@ -43,6 +43,10 @@ LINE_RULES = [
      r"\$\{jndi:"),
     ("web_cmdi", "Command injection attempt", "critical", "T1059",
      r"(?:;|\||`|\$\()\s*(?:id|whoami|uname|cat\s|wget\s|curl\s)|cmd\.exe\s*/c"),
+    ("web_shell", "Web shell command execution", "critical", "T1505.003",
+     r"/(?:uploads?|images?|img|tmp|files|media|static|assets|wp-content)/[^\s?\"]+\.(?:php\d?|phtml|jspx?|aspx?|ashx|cgi)\?"
+     r"[^\s\"]*\b(?:cmd|exec|command|execute|shell)="
+     r"|/(?:c99|r57|wso|b374k|alfa|shell|cmd)\.(?:php|jsp|aspx?)\?[^\s\"]*="),
     ("web_scanner", "Attack tool / scanner detected", "medium", "T1595",
      r"sqlmap|nikto|nmap|masscan|zgrab|gobuster|dirbuster|feroxbuster|wpscan|nuclei|acunetix|hydra"),
     ("web_sensitive", "Probe for sensitive files", "medium", "T1595.003",

@@ -219,6 +219,19 @@ class _Report:
     def _cell(self, text, style="TGCell", limit=CELL_MAX):
         return Paragraph(_esc(text, limit), self.st[style])
 
+    RESULT_SEV = {"success": "critical", "executed": "critical", "allowed": "high", "changed": "high",
+                  "error": "medium", "detected": "medium", "blocked": "clean", "failed": "clean", "info": "info"}
+
+    def _act(self, action, result=None, by=None):
+        """'Action taken' cell: what the firewall/server/machine did, coloured by outcome for the defender."""
+        if not action:
+            return self._cell("-")
+        col = self.SEV.get(self.RESULT_SEV.get(result or "info", "info"))
+        txt = f"<font color='{col.hexval().replace('0x', '#')}'><b>{_esc(action, 160)}</b></font>"
+        if by:
+            txt += f"<br/><font color='#5a6470'>{_esc(by, 60)}</font>"
+        return Paragraph(txt, self.st["TGCell"])
+
     def _table(self, header, rows, fractions, font_small=False, zebra=True):
         """Table whose columns are fractions of the usable width; wraps cells; repeats header."""
         widths = [self.W * f for f in fractions]
@@ -576,6 +589,12 @@ class _Report:
             rows.append(("Accounts", ", ".join(f["users"][:10])))
         if f.get("ips"):
             rows.append(("IP addresses", ", ".join(f["ips"][:15])))
+        acts = f.get("actions_taken") or []
+        if acts:
+            rows.append(("Action taken", Paragraph("<br/>".join(
+                f"<font color='{self.SEV.get(self.RESULT_SEV.get(a['result'], 'info')).hexval().replace('0x', '#')}'>"
+                f"<b>{_esc(a['action'], 140)}</b></font>" + (f" x{a['count']}" if a["count"] > 1 else "")
+                + f" <font color='#5a6470'>({_esc(a['by'], 60)})</font>" for a in acts), self.st["TGCell"])))
         ctx = f.get("trust_context") or []
         if ctx:
             rows.append(("Trust context", "; ".join(
@@ -643,11 +662,33 @@ class _Report:
                                ("Accounts targeted", ", ".join(inc.get("targeted_accounts", [])[:15]) or "-"),
                                ("Log sources", ", ".join(inc["source_types"])), ("Findings", ", ".join(inc.get("finding_ids", [])))],
                               key_frac=0.22)]
-            flow.append(Paragraph("Chronological sequence", self.st["TGH3"]))
-            flow.append(self._table(["Time (UTC)", "Evidence", "Stage", "Event / detection"], [
+            if inc.get("attack_path"):
+                flow += [Paragraph("Attack path", self.st["TGH3"]),
+                         Paragraph(_esc(inc["attack_path"], 900), self.st["TGCode"])]
+            steps = inc.get("flow") or []
+            if steps:
+                flow += [CondPageBreak(45 * mm), Paragraph("Attack flow - what each firewall, server and machine did", self.st["TGH3"])]
+                flow.append(self._table(["#", "Time (UTC)", "Flow: source → device → target", "URL / path / command",
+                                         "Action taken", "Evidence"], [
+                    [str(x["step"]), (x.get("first") or "-") + (f" → {x['last'][11:]}" if x.get("last") and x["last"] != x.get("first") else ""),
+                     Paragraph(_esc(" → ".join(v for v in (x.get("from") or ", ".join(x.get("users") or []), x.get("via"), x.get("to")) if v), 300)
+                               + (f"<br/><font color='#5a6470'>{_esc(x.get('stage') or 'Alert')}"
+                                  + (f" · account {_esc(', '.join(x['users']))}" if x.get("users") and x.get("from") else "") + "</font>"),
+                               self.st["TGCell"]),
+                     Paragraph(_esc(x.get("object") or "", 300), self.st["TGCodeCell"]),
+                     self._act(x.get("action"), x.get("result"), x.get("action_by")),
+                     ", ".join(x.get("evidence") or [])[:60]] for x in steps],
+                    [0.05, 0.13, 0.27, 0.23, 0.21, 0.11]))
+                flow.append(Paragraph("Action colours show the outcome for the defender: red = the attacker's action "
+                                      "succeeded or ran, orange = allowed or changed, amber = detected only or server "
+                                      "error, green = blocked or failed. \"Exploitation possible\" means the server "
+                                      "answered an attack request; it must be confirmed on the host.", self.st["TGSmall"]))
+            flow += [CondPageBreak(45 * mm), Paragraph("Chronological sequence", self.st["TGH3"])]
+            flow.append(self._table(["Time (UTC)", "Evidence", "Stage", "Event / detection", "Action taken"], [
                 [t["ts"] or "-", t["evidence"] or "-", t["tactic"] or "Alert",
-                 f"{t['finding']} - {t['summary']}"] for t in inc.get("timeline", [])[:60]],
-                [0.17, 0.1, 0.17, 0.56]))
+                 f"{t['finding']} - {t.get('path') or t['summary']}",
+                 self._act(t.get("action"), t.get("result"), t.get("action_by"))] for t in inc.get("timeline", [])[:60]],
+                [0.14, 0.09, 0.14, 0.42, 0.21]))
         return flow
 
     def _s6_ueba(self):
@@ -793,9 +834,10 @@ class _Report:
             flow.append(Paragraph("Evidence register", self.st["TGH2"]))
             flow.append(self._p("Original records referenced by findings and timelines (file:line). Raw text is "
                                 "shortened; the original files are the authoritative source."))
-            flow.append(self._table(["ID", "Time (UTC)", "Reference", "Summary"], [
-                [e["id"], e["ts"] or "-", Paragraph(_esc(e["ref"]), self.st["TGCodeCell"]), e["summary"]]
-                for e in reg[:400]], [0.09, 0.17, 0.24, 0.5]))
+            flow.append(self._table(["ID", "Time (UTC)", "Reference", "Summary", "Action taken"], [
+                [e["id"], e["ts"] or "-", Paragraph(_esc(e["ref"]), self.st["TGCodeCell"]), e.get("path") or e["summary"],
+                 self._act(e.get("action"), e.get("result"), e.get("action_by"))]
+                for e in reg[:400]], [0.08, 0.14, 0.2, 0.36, 0.22]))
             flow.append(Paragraph("Raw record excerpts (first 40)", self.st["TGH2"]))
             for e in reg[:40]:
                 flow.append(Paragraph(f"<b>{_esc(e['id'])} {_esc(e['ref'])}</b>  {_esc(e['raw'], 600)}", self.st["TGCode"]))
