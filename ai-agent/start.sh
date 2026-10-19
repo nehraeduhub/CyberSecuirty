@@ -21,4 +21,7 @@ else
   echo "    The log analyzer still works without AI."
 fi
 
+"$PY" -c "import reportlab" 2>/dev/null || \
+  echo "[i] PDF reports need reportlab: sudo apt install python3-reportlab  (or: pip install reportlab)"
+
 exec "$PY" agent.py "$@"

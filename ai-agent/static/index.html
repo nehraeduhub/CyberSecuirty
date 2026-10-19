@@ -4,377 +4,761 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CyberSec AI Agent</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2240 50 170 230%22><path d=%22M120,58 L200,74 L200,150 C200,208 168,244 120,270 C72,244 40,208 40,150 L40,74 Z%22 fill=%22%23123E6B%22/><rect x=%2274%22 y=%2292%22 width=%2296%22 height=%2222%22 fill=%22%23F59E1E%22/><rect x=%22112%22 y=%22112%22 width=%2220%22 height=%2266%22 fill=%22%23F59E1E%22/></svg>">
 <style>
   :root {
-    --bg: #0b0f14; --panel: #121821; --panel2: #18202b; --border: #253042;
-    --text: #d7e0ea; --muted: #8796a8; --accent: #00e0b8; --accent2: #2f81f7;
-    --critical: #ff3b5c; --high: #ff7a45; --medium: #f5c542; --low: #4fc3f7; --info: #8796a8;
+    --bg: #0a111c; --surface: #111a27; --surface2: #162232; --surface3: #1c2a3d; --border: #24344a;
+    --ink: #e4ebf3; --ink2: #b3c0cf; --muted: #7d8da1;
+    --brand: #123E6B; --brand-hi: #2f6db0; --green: #1E9E4F; --green-hi: #2bc06a; --orange: #F59E1E;
+    --accent: var(--green-hi); --link: #6aa8ff;
+    --critical: #ff4d6a; --high: #ff8a3d; --medium: #f2c14e; --low: #5b9cf0; --info: #8b98a9; --clean: #2bc06a;
+    --code-bg: #070c14; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.25);
+    --radius: 12px;
+  }
+  :root[data-theme="light"] {
+    --bg: #eef2f7; --surface: #ffffff; --surface2: #f6f8fb; --surface3: #edf1f7; --border: #d9e1eb;
+    --ink: #16202e; --ink2: #3c4a5c; --muted: #6a7889;
+    --accent: var(--green); --link: #1d5fb0;
+    --critical: #c4122f; --high: #d4561b; --medium: #b58400; --low: #2f6db0; --info: #5a6470; --clean: #1E9E4F;
+    --code-bg: #f1f4f8; --shadow: 0 1px 2px rgba(16,32,48,.06), 0 6px 18px rgba(16,32,48,.06);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-         background: var(--bg); color: var(--text); font-size: 14px; }
-  header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; flex-wrap: wrap;
-           background: var(--panel); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
-  header h1 { font-size: 17px; margin: 0; color: var(--accent); letter-spacing: .3px; }
+  html, body { margin: 0; height: 100%; }
+  body { font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg);
+         color: var(--ink); font-size: 14px; line-height: 1.45; display: flex; }
+  a { color: var(--link); }
+  button, input, select, textarea { font: inherit; color: var(--ink); }
+  input, select, textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand-hi); outline-offset: -1px; }
+  textarea { width: 100%; resize: vertical; font-family: ui-monospace, "JetBrains Mono", Consolas, monospace; font-size: 12.5px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 8px; padding: 8px 14px;
+         border: 1px solid var(--border); background: var(--surface2); font-weight: 500; white-space: nowrap; }
+  .btn:hover { border-color: var(--brand-hi); }
+  .btn.primary { background: var(--green); border-color: var(--green); color: #fff; }
+  .btn.primary:hover { background: var(--green-hi); }
+  .btn.brand { background: var(--brand); border-color: var(--brand-hi); color: #fff; }
+  .btn.sm { padding: 5px 10px; font-size: 12.5px; }
+  .btn.ghost { background: transparent; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .hidden { display: none !important; }
+
+  /* ---------- layout ---------- */
+  aside { width: 236px; flex: none; background: var(--surface); border-right: 1px solid var(--border);
+          display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
+  .logo { display: flex; align-items: center; gap: 10px; padding: 18px 18px 14px; border-bottom: 1px solid var(--border); }
+  .logo svg { width: 34px; height: 42px; flex: none; }
+  .logo b { display: block; font-size: 15px; letter-spacing: .2px; }
+  .logo small { color: var(--muted); font-size: 11.5px; }
+  nav { padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+  nav button { display: flex; align-items: center; gap: 10px; background: none; border: 0; border-radius: 8px; padding: 9px 12px;
+               color: var(--ink2); cursor: pointer; text-align: left; font-weight: 500; }
+  nav button svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  nav button:hover { background: var(--surface2); color: var(--ink); }
+  nav button.active { background: color-mix(in srgb, var(--green) 16%, transparent); color: var(--accent); }
+  .ai-card { margin: auto 12px 12px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface2); }
+  .ai-card .row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--critical); flex: none; }
+  .dot.on { background: var(--green-hi); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green-hi) 25%, transparent); }
+  .ai-card select { width: 100%; margin-top: 8px; font-size: 12.5px; padding: 6px 8px; }
+  .ai-card .perf { color: var(--muted); font-size: 11.5px; margin-top: 6px; min-height: 16px; }
+  .credit { font-size: 10.5px; color: var(--muted); padding: 0 14px 12px; }
+
+  main { flex: 1; min-width: 0; height: 100vh; overflow-y: auto; }
+  .topbar { position: sticky; top: 0; z-index: 4; display: flex; align-items: center; gap: 12px; padding: 14px 28px;
+            background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+  .topbar h1 { font-size: 18px; margin: 0; }
+  .topbar .sub { color: var(--muted); font-size: 12.5px; }
   .spacer { flex: 1; }
-  .status { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--critical); }
-  .dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-  select, input, textarea, button { font: inherit; color: var(--text); background: var(--panel2);
-         border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; }
-  textarea { width: 100%; resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
-  button { cursor: pointer; }
-  button:hover { border-color: var(--accent); }
-  button.primary { background: var(--accent); color: #002b22; border-color: var(--accent); font-weight: 600; }
-  button.primary:hover { filter: brightness(1.1); }
-  button:disabled { opacity: .5; cursor: not-allowed; }
-  nav { display: flex; gap: 4px; padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--border); }
-  nav button { background: none; border: none; border-bottom: 2px solid transparent; border-radius: 0; padding: 10px 14px; color: var(--muted); }
-  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
-  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
-  .tab { display: none; } .tab.active { display: block; }
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
-  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .drop { border: 2px dashed var(--border); border-radius: 10px; padding: 18px; text-align: center; color: var(--muted); margin-bottom: 10px; cursor: pointer; }
-  .drop.over { border-color: var(--accent); color: var(--accent); }
+  .menu-btn { display: none; }
+  .page { display: none; padding: 22px 28px 40px; max-width: 1320px; }
+  .page.active { display: block; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; margin-bottom: 18px; }
+  .card h2 { font-size: 15px; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+  .card h2 .count { color: var(--muted); font-weight: 500; font-size: 13px; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .muted { color: var(--muted); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
-  .stat { background: var(--panel2); border-radius: 8px; padding: 10px; text-align: center; border-top: 3px solid var(--border); }
-  .stat b { display: block; font-size: 24px; }
-  .stat.critical { border-top-color: var(--critical); } .stat.high { border-top-color: var(--high); }
-  .stat.medium { border-top-color: var(--medium); } .stat.low { border-top-color: var(--low); }
-  .risk { font-size: 34px; font-weight: 700; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #111; }
-  .b-critical { background: var(--critical); color: #fff; } .b-high { background: var(--high); }
-  .b-medium { background: var(--medium); } .b-low { background: var(--low); } .b-info, .b-clean { background: var(--info); }
-  .finding { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; background: var(--panel2); }
-  .finding summary { padding: 10px 12px; cursor: pointer; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .finding .body { padding: 0 12px 12px; }
-  pre, code { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
-  pre { background: #070a0e; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin: 6px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1.6fr; gap: 18px; }
+  .seg { display: inline-flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 3px; gap: 2px; }
+  .seg button { background: none; border: 0; padding: 7px 14px; border-radius: 7px; cursor: pointer; color: var(--ink2); font-weight: 500; }
+  .seg button.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+
+  .drop { border: 1.5px dashed var(--border); border-radius: 10px; padding: 22px; text-align: center; color: var(--muted); cursor: pointer;
+          margin: 14px 0 10px; transition: .15s; }
+  .drop:hover, .drop.over { border-color: var(--green-hi); color: var(--ink); background: color-mix(in srgb, var(--green) 6%, transparent); }
+  .drop b { color: var(--ink); }
+  .audit-box { margin-top: 14px; padding: 16px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); }
+  .audit-box ul { margin: 8px 0 0; padding-left: 18px; color: var(--ink2); columns: 2; font-size: 13px; }
+
+  /* ---------- KPIs ---------- */
+  .kpis { display: grid; grid-template-columns: 1.3fr repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .kpi .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+  .kpi .value { font-size: 28px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .kpi .hint { color: var(--muted); font-size: 12px; }
+  .kpi.sev::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
+  .risk { display: flex; align-items: center; gap: 14px; }
+  .risk svg { width: 84px; height: 84px; flex: none; }
+  .grade { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 8px; color: #fff; font-weight: 800; font-size: 18px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: .3px; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent);
+          border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); }
+  .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+
+  /* ---------- charts ---------- */
+  .sevbars .bar { display: grid; grid-template-columns: 96px 1fr 32px; align-items: center; gap: 10px; margin: 9px 0; font-size: 13px; }
+  .sevbars .track { height: 10px; background: var(--surface3); border-radius: 5px; overflow: hidden; }
+  .sevbars .fill { height: 100%; border-radius: 5px; background: var(--c); }
+  .sevbars .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink2); }
+  #timeline { width: 100%; height: 190px; display: block; }
+  #timeline .b { fill: var(--brand-hi); }
+  #timeline .b:hover, #timeline .b.hot { fill: var(--orange); }
+  #timeline text { fill: var(--muted); font-size: 10.5px; }
+  #timeline line { stroke: var(--border); }
+  .tip { position: fixed; z-index: 30; pointer-events: none; background: var(--surface3); border: 1px solid var(--border); color: var(--ink);
+         padding: 6px 10px; border-radius: 8px; font-size: 12.5px; box-shadow: var(--shadow); }
+
+  /* ---------- findings ---------- */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .chip { cursor: pointer; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface2); font-size: 12.5px; color: var(--ink2); }
+  .chip.active { border-color: var(--green-hi); color: var(--ink); background: color-mix(in srgb, var(--green) 14%, transparent); }
+  .filters input { flex: 1; min-width: 180px; padding: 6px 10px; }
+  .finding { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; background: var(--surface2); overflow: hidden; }
+  .finding > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; }
+  .finding > summary::-webkit-details-marker { display: none; }
+  .finding > summary:hover { background: var(--surface3); }
+  .finding .t { font-weight: 600; }
+  .finding > summary .pill { justify-self: start; }
+  .finding .meta { color: var(--muted); font-size: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .finding .body { padding: 4px 16px 16px; border-top: 1px solid var(--border); }
+  .kv { display: grid; grid-template-columns: 120px 1fr; gap: 6px 14px; margin: 12px 0; font-size: 13.5px; }
+  .kv dt { color: var(--muted); font-weight: 600; } .kv dd { margin: 0; }
+  pre, code { font-family: ui-monospace, "JetBrains Mono", Consolas, monospace; font-size: 12.3px; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin: 6px 0; }
   .ln { color: var(--muted); user-select: none; }
-  .ips span { display: inline-block; background: #0d2a24; color: var(--accent); border-radius: 4px; padding: 1px 6px; margin: 2px; font-family: monospace; font-size: 12px; }
-  #chatLog { height: calc(100vh - 290px); min-height: 300px; overflow-y: auto; padding: 4px; }
-  .msg { margin: 10px 0; padding: 10px 14px; border-radius: 10px; max-width: 92%; line-height: 1.5; overflow-wrap: anywhere; }
-  .msg.user { background: #12324f; margin-left: auto; white-space: pre-wrap; }
-  .msg.assistant { background: var(--panel2); border: 1px solid var(--border); }
-  .msg.assistant h3, .msg.assistant h4 { margin: 10px 0 4px; color: var(--accent); }
-  .msg.assistant p { margin: 6px 0; } .msg.assistant ul { margin: 4px 0; padding-left: 20px; }
-  .msg.assistant code { background: #070a0e; padding: 1px 4px; border-radius: 4px; }
-  .msg.error { border-color: var(--critical); }
-  .chips button { font-size: 12px; padding: 5px 9px; margin: 2px; }
+  .tag { display: inline-block; font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--surface3); border: 1px solid var(--border);
+         border-radius: 6px; padding: 1px 7px; margin: 2px 3px 2px 0; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  .ioc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .ioc-grid h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); margin: 0 0 6px; }
+  .empty { text-align: center; color: var(--muted); padding: 34px 10px; }
+  .empty svg { width: 46px; height: 46px; stroke: var(--muted); fill: none; stroke-width: 1.5; margin-bottom: 8px; }
+
+  /* ---------- chat ---------- */
+  .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 130px); min-height: 420px; padding: 0; }
+  #chatLog { flex: 1; overflow-y: auto; padding: 18px 20px; }
+  .msg { display: flex; gap: 12px; margin: 0 0 18px; max-width: 920px; }
+  .msg .av { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex: none; font-size: 15px; background: var(--surface3); }
+  .msg.assistant .av { background: var(--brand); }
+  .msg .content { min-width: 0; flex: 1; line-height: 1.55; overflow-wrap: anywhere; }
+  .msg.user { margin-left: auto; flex-direction: row-reverse; max-width: 760px; }
+  .msg.user .content { background: color-mix(in srgb, var(--brand-hi) 20%, var(--surface)); padding: 10px 14px; border-radius: 12px; white-space: pre-wrap; flex: initial; }
+  .msg .content h3, .msg .content h4 { margin: 12px 0 4px; font-size: 14.5px; color: var(--accent); }
+  .msg .content p { margin: 6px 0; }
+  .msg .content ul { margin: 4px 0; padding-left: 20px; }
+  .msg .content code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  .msg .stamp { color: var(--muted); font-size: 11.5px; margin-top: 4px; }
+  .msg.error .content { color: var(--critical); }
   .typing::after { content: "▋"; animation: blink 1s steps(1) infinite; color: var(--accent); }
   @keyframes blink { 50% { opacity: 0; } }
-  dialog { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 10px; width: min(460px, 92vw); }
-  dialog::backdrop { background: rgba(0,0,0,.6); }
-  dialog label { display: block; margin: 10px 0 4px; color: var(--muted); font-size: 12px; }
-  dialog input, dialog select { width: 100%; }
-  .hidden { display: none !important; }
-  .toast { position: fixed; bottom: 16px; right: 16px; background: var(--panel2); border: 1px solid var(--accent); padding: 10px 14px; border-radius: 8px; }
+  .composer { border-top: 1px solid var(--border); padding: 12px 16px; }
+  .quick { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .quick .chip b { color: var(--orange); font-weight: 700; }
+  .composer textarea { font-family: inherit; font-size: 14px; }
+
+  /* ---------- forms ---------- */
+  .form { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 18px; }
+  .form label { display: block; font-size: 12.5px; color: var(--muted); font-weight: 600; margin-bottom: 5px; }
+  .form input, .form select, .form textarea { width: 100%; }
+  .note { padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--orange) 12%, transparent);
+          border: 1px solid color-mix(in srgb, var(--orange) 35%, transparent); font-size: 13px; margin-top: 12px; }
+  .toast { position: fixed; bottom: 18px; right: 18px; z-index: 40; background: var(--surface3); border: 1px solid var(--border);
+           border-left: 4px solid var(--green-hi); padding: 11px 15px; border-radius: 8px; box-shadow: var(--shadow); max-width: 380px; }
+  .spin { width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: sp .7s linear infinite; display: inline-block; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } .grid2 { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) {
+    aside { position: fixed; z-index: 20; left: -250px; transition: left .2s; } aside.open { left: 0; }
+    .menu-btn { display: inline-flex; } .page, .topbar { padding-left: 16px; padding-right: 16px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); } .kpis .kpi:first-child { grid-column: span 2; }
+    .finding > summary { grid-template-columns: 1fr; }
+    .audit-box ul { columns: 1; } .kv { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>🛡️ CyberSec AI Agent</h1>
-  <div class="status"><span class="dot" id="dot"></span><span id="statusText">connecting…</span></div>
-  <div class="spacer"></div>
-  <select id="modelSelect" title="Model"></select>
-  <button id="settingsBtn" title="Settings">⚙️ Settings</button>
-</header>
-<nav>
-  <button class="active" data-tab="analyze">🔍 Log Analysis</button>
-  <button data-tab="chat">🤖 AI Chat</button>
-</nav>
+<aside id="sidebar">
+  <div class="logo">
+    <svg viewBox="40 50 170 230" aria-hidden="true">
+      <path d="M120,58 L200,74 L200,150 C200,208 168,244 120,270 C72,244 40,208 40,150 L40,74 Z" fill="#123E6B" stroke="#2f6db0" stroke-width="4"/>
+      <circle cx="122" cy="196" r="48" fill="#1E9E4F"/><circle cx="122" cy="196" r="27" fill="#123E6B"/>
+      <rect x="122" y="184" width="68" height="24" fill="#123E6B"/><rect x="148" y="193" width="32" height="13" fill="#1E9E4F"/>
+      <rect x="167" y="193" width="13" height="23" fill="#1E9E4F"/><rect x="74" y="92" width="96" height="22" fill="#F59E1E"/>
+      <rect x="112" y="112" width="20" height="66" fill="#F59E1E"/>
+    </svg>
+    <div><b id="brandName">Tech Guardians</b><small>CyberSec AI Agent</small></div>
+  </div>
+  <nav>
+    <button class="active" data-page="analyze"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Threat Analysis</button>
+    <button data-page="chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg>AI Analyst</button>
+    <button data-page="report"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>Reports</button>
+    <button data-page="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>Settings</button>
+  </nav>
+  <div class="ai-card">
+    <div class="row"><span class="dot" id="dot"></span><b id="aiState">Connecting…</b></div>
+    <select id="modelSelect" title="AI model"></select>
+    <div class="perf" id="perf"></div>
+  </div>
+  <div class="credit" id="credit"></div>
+</aside>
 
 <main>
-  <!-- ANALYZE -->
-  <section class="tab active" id="tab-analyze">
+  <div class="topbar">
+    <button class="btn sm ghost menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    <div><h1 id="pageTitle">Threat Analysis</h1><div class="sub" id="pageSub">Analyse logs or audit this machine — fully offline</div></div>
+    <div class="spacer"></div>
+    <button class="btn sm ghost" id="themeBtn" title="Toggle light / dark">🌓 Theme</button>
+  </div>
+
+  <!-- ================= ANALYZE ================= -->
+  <section class="page active" id="page-analyze">
     <div class="card">
-      <div class="drop" id="drop">📂 Drop a log file here or <u>click to browse</u> — auth.log, access.log, syslog, firewall, Windows events…
-        <input type="file" id="fileInput" class="hidden">
-      </div>
-      <textarea id="logText" rows="9" placeholder="…or paste log lines here"></textarea>
-      <div class="row" style="margin-top:10px">
-        <button class="primary" id="analyzeBtn">⚡ Analyze</button>
-        <span class="muted">Samples:</span><span id="samples" class="row"></span>
+      <div class="row">
+        <div class="seg" id="srcSeg"><button class="active" data-src="logs">📄 Log files</button><button data-src="host">🖥️ This machine</button></div>
         <div class="spacer"></div>
         <span class="muted" id="fileName"></span>
       </div>
+      <div id="src-logs">
+        <div class="drop" id="drop"><b>Drop log files here</b> or click to browse<br>
+          <span style="font-size:12.5px">auth.log · secure · syslog · nginx/apache access · ufw · Windows event exports · shell history — up to 25 MB</span>
+          <input type="file" id="fileInput" class="hidden" multiple></div>
+        <details id="pasteBox"><summary class="muted" style="cursor:pointer">…or paste log lines</summary>
+          <textarea id="logText" rows="8" placeholder="Paste log lines here" style="margin-top:8px"></textarea></details>
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="analyzeBtn">⚡ Analyze</button>
+          <span class="muted">Try a sample:</span><span id="samples" class="row"></span>
+        </div>
+      </div>
+      <div id="src-host" class="hidden">
+        <div class="audit-box">
+          <b>Live security audit of this Linux machine</b> <span class="muted">— read-only, takes ~1 second</span>
+          <ul>
+            <li>SSH configuration &amp; authorised keys</li><li>Accounts: UID 0, empty passwords, sudo</li>
+            <li>Exposed services (DB, Redis, Docker, Ollama…)</li><li>Firewall status</li>
+            <li>Kernel hardening (sysctl)</li><li>SUID binaries &amp; file permissions</li>
+            <li>Malware: temp executables, rogue processes</li><li>Cron / systemd backdoors</li>
+            <li>Suspicious outbound connections</li><li>Pending security updates</li>
+            <li>fail2ban / auditd presence</li><li>Automatic scan of system logs</li>
+          </ul>
+          <div class="note hidden" id="rootNote">Running as a standard user — some checks (shadow, sudoers, firewall, other users' crontabs) are limited. For a full audit start the agent with <code>sudo</code>.</div>
+          <div class="row" style="margin-top:12px"><button class="btn primary" id="auditBtn">🛡️ Run host audit</button>
+            <label class="muted"><input type="checkbox" id="auditLogs" checked> include system logs</label></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="emptyState" class="card empty">
+      <svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div><b>No analysis yet</b></div><div>Load a log file or run a host audit to see threats, attackers and a response plan.</div>
     </div>
 
     <div id="results" class="hidden">
-      <div class="card">
-        <div class="row" style="justify-content:space-between">
-          <div>
-            <div class="muted">Risk score</div>
-            <div class="row"><span class="risk" id="riskScore">0</span><span class="badge" id="riskLevel"></span></div>
-            <div class="muted" id="scanMeta"></div>
-          </div>
-          <div class="row">
-            <button class="primary" id="investigateBtn">🤖 AI Investigate</button>
-            <button id="reportBtn">📄 Report (.md)</button>
-            <button id="jsonBtn">{ } JSON</button>
-          </div>
-        </div>
-        <div class="grid" style="margin-top:12px" id="sevGrid"></div>
+      <div class="kpis" id="kpis"></div>
+      <div class="actions">
+        <button class="btn primary" id="investigateBtn">🤖 AI Investigate</button>
+        <button class="btn brand" id="pdfBtn">📄 PDF Report</button>
+        <button class="btn" data-instant="playbook">⚡ Response plan</button>
+        <button class="btn" data-instant="block">⚡ Block attackers</button>
+        <button class="btn" data-instant="iocs">⚡ IOCs</button>
+        <button class="btn ghost" id="jsonBtn">{ } JSON</button>
+      </div>
+      <div class="grid2">
+        <div class="card"><h2>Severity distribution</h2><div class="sevbars" id="sevBars"></div></div>
+        <div class="card"><h2>Suspicious activity over time <span class="count" id="tlBucket"></span></h2><svg id="timeline" role="img" aria-label="Suspicious events over time"></svg><div id="tlEmpty" class="muted hidden">No timestamps found in these records.</div></div>
       </div>
       <div class="card">
-        <h3 style="margin-top:0">Findings</h3>
+        <h2>Findings <span class="count" id="findCount"></span></h2>
+        <div class="filters" id="filters"></div>
         <div id="findings"></div>
       </div>
-      <div class="card">
-        <h3 style="margin-top:0">Top IP addresses</h3>
-        <div class="ips" id="topIps"></div>
+      <div class="card" id="actorsCard">
+        <h2>Attacker profiles <span class="count" id="actorCount"></span></h2>
+        <div style="overflow-x:auto"><table><thead><tr><th>Source IP</th><th>Verdict</th><th>Events</th><th>Activity</th><th>First seen</th><th>Last seen</th></tr></thead><tbody id="actors"></tbody></table></div>
+      </div>
+      <div class="card" id="iocCard">
+        <h2>Indicators of compromise <button class="btn sm ghost" id="copyIocs" style="margin-left:auto">Copy all</button></h2>
+        <div class="ioc-grid" id="iocs"></div>
+      </div>
+      <div class="card hidden" id="hostCard"><h2>Host details</h2><dl class="kv" id="hostInfo"></dl></div>
+    </div>
+  </section>
+
+  <!-- ================= CHAT ================= -->
+  <section class="page" id="page-chat">
+    <div class="card chat-wrap">
+      <div id="chatLog"></div>
+      <div class="composer">
+        <div class="quick" id="quick">
+          <button class="chip" data-instant="playbook"><b>⚡</b> Response plan</button>
+          <button class="chip" data-instant="block"><b>⚡</b> Block IPs</button>
+          <button class="chip" data-instant="iocs"><b>⚡</b> IOCs</button>
+          <button class="chip" data-investigate="1">🤖 Investigate</button>
+          <button class="chip" data-q="Write Sigma rules and a Splunk query that detect the attacks in this analysis.">🤖 Detection rules</button>
+          <button class="chip" data-q="Give me a hardening checklist (commands) so these attacks cannot succeed again.">🤖 Hardening</button>
+          <button class="chip" data-q="What is the attacker's most likely goal and what will they do next?">🤖 Attacker intent</button>
+        </div>
+        <div class="row" style="align-items:flex-end;flex-wrap:nowrap">
+          <textarea id="chatInput" rows="2" placeholder="Ask about threats, exploits, malware, hardening, CTFs…  (Enter = send, Shift+Enter = new line)"></textarea>
+          <button class="btn primary" id="sendBtn">Send</button>
+          <button class="btn hidden" id="stopBtn">■ Stop</button>
+        </div>
+        <div class="row muted" style="margin-top:8px;font-size:12px">
+          <label><input type="checkbox" id="useContext" checked> Use current analysis as context</label>
+          <span>⚡ = instant local answer · 🤖 = local AI</span>
+          <div class="spacer"></div><button class="btn sm ghost" id="clearChat">Clear</button>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- CHAT -->
-  <section class="tab" id="tab-chat">
+  <!-- ================= REPORT ================= -->
+  <section class="page" id="page-report">
     <div class="card">
-      <div id="chatLog"></div>
-      <div class="chips row">
-        <button data-q="Explain the most critical finding and how the attack works.">Explain top threat</button>
-        <button data-q="Write iptables and ufw commands to block every malicious IP in the analysis.">Block IPs</button>
-        <button data-q="Give me an incident response checklist for this incident.">IR checklist</button>
-        <button data-q="Write a Sigma rule and a Splunk query to detect this activity.">Detection rules</button>
-        <button data-q="How do I harden this server so this cannot happen again?">Hardening</button>
+      <h2>Report details</h2>
+      <div class="form">
+        <div><label>Client / organisation</label><input id="rClient" placeholder="e.g. ACME Pvt Ltd"></div>
+        <div><label>Analyst / assessor</label><input id="rAssessor" placeholder="Your name or team"></div>
+        <div><label>Reference (auto if blank)</label><input id="rRef" placeholder="TG-IR-2026…"></div>
+        <div><label>Source name</label><input id="rSource" placeholder="auth.log"></div>
       </div>
-      <div class="row" style="margin-top:8px">
-        <textarea id="chatInput" rows="2" style="flex:1" placeholder="Ask anything about security… (Enter to send, Shift+Enter for newline)"></textarea>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <button class="primary" id="sendBtn">Send</button>
-          <button id="stopBtn" class="hidden">■ Stop</button>
-        </div>
+      <div class="form" style="margin-top:14px"><div style="grid-column:1/-1"><label>Scope note (optional)</label><textarea id="rScope" rows="2" style="font-family:inherit"></textarea></div></div>
+      <div class="row" style="margin-top:14px">
+        <label><input type="checkbox" id="rAi" checked> Include AI analyst assessment</label>
+        <span class="muted" id="rAiState"></span>
       </div>
-      <div class="row muted" style="margin-top:6px;font-size:12px">
-        <label><input type="checkbox" id="useContext" checked> Include log analysis context</label>
-        <div class="spacer"></div>
-        <button id="clearChat" style="font-size:12px;padding:4px 8px">Clear chat</button>
+      <div class="row" style="margin-top:16px">
+        <button class="btn brand" id="pdfBtn2">📄 Download PDF report</button>
+        <button class="btn" id="mdBtn">⬇ Markdown</button>
+        <button class="btn ghost" id="genAiBtn">🤖 Generate AI assessment first</button>
       </div>
+      <div class="note hidden" id="pdfNote">PDF export needs one small library. Install it once with <code>pip install reportlab</code> (or run <code>scripts/setup-linux.sh</code>), then restart the agent. Markdown export works without it.</div>
+    </div>
+    <div class="card">
+      <h2>What's in the PDF</h2>
+      <div class="muted">Cover with risk rating &amp; grade · Document control · Executive summary with risk gauge and severity chart · Scope &amp; methodology (MITRE ATT&amp;CK, NIST SP 800-61, CIS, CERT-In) · Findings summary table · Detailed findings with evidence and remediation · Attack timeline &amp; attacker profiles · Indicators of compromise · Remediation roadmap · MITRE ATT&amp;CK mapping · AI analyst assessment · Appendices.</div>
+    </div>
+  </section>
+
+  <!-- ================= SETTINGS ================= -->
+  <section class="page" id="page-settings">
+    <div class="card">
+      <h2>AI engine</h2>
+      <div class="form">
+        <div><label>Provider</label><select id="cfgProvider"><option value="ollama">Ollama</option><option value="openai">OpenAI-compatible (LM Studio, llama.cpp, KoboldCpp, Jan)</option></select></div>
+        <div><label>Server URL</label><input id="cfgUrl"></div>
+        <div><label>Model (blank = first available)</label><input id="cfgModel" list="modelList"><datalist id="modelList"></datalist></div>
+        <div><label>API key (optional)</label><input id="cfgKey" type="password"></div>
+      </div>
+      <h2 style="margin-top:22px">Speed</h2>
+      <div class="form">
+        <div><label>Temperature — <span id="tempVal"></span></label><input id="cfgTemp" type="range" min="0" max="1.2" step="0.05"></div>
+        <div><label>Context window (num_ctx)</label><select id="cfgCtx"><option>2048</option><option>4096</option><option>8192</option><option>16384</option></select></div>
+        <div><label>Max reply tokens (num_predict)</label><input id="cfgPredict" type="number" min="128" step="64"></div>
+        <div><label>CPU threads (0 = auto)</label><input id="cfgThreads" type="number" min="0" step="1"></div>
+      </div>
+      <div class="muted" style="margin-top:12px;font-size:12.5px">Fastest on CPU: a small or MoE model, context 4096, threads = number of physical cores. See <b>docs/LINUX-GUIDE.md</b>.</div>
+      <div class="row" style="margin-top:16px"><button class="btn primary" id="cfgSave">Save settings</button><button class="btn" id="warmBtn">Pre-load model now</button></div>
     </div>
   </section>
 </main>
-
-<dialog id="settings">
-  <h3 style="margin-top:0">AI Settings</h3>
-  <label>Provider</label>
-  <select id="cfgProvider">
-    <option value="ollama">Ollama</option>
-    <option value="openai">OpenAI-compatible (LM Studio, llama.cpp, KoboldCpp, Jan, vLLM)</option>
-  </select>
-  <label>Server URL</label>
-  <input id="cfgUrl" placeholder="http://127.0.0.1:11434">
-  <label>Model (leave blank for auto)</label>
-  <input id="cfgModel" list="modelList"><datalist id="modelList"></datalist>
-  <label>API key (optional)</label>
-  <input id="cfgKey" type="password">
-  <label>Temperature (<span id="tempVal"></span>) — lower = more precise</label>
-  <input id="cfgTemp" type="range" min="0" max="1.5" step="0.05">
-  <div class="row" style="margin-top:16px;justify-content:flex-end">
-    <button id="cfgCancel">Cancel</button>
-    <button class="primary" id="cfgSave">Save</button>
-  </div>
-</dialog>
+<div class="tip hidden" id="tip"></div>
 
 <script>
-const $ = (s) => document.querySelector(s);
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const SEVS = ["critical", "high", "medium", "low"];
-let status = {}, analysis = null, fileName = "pasted-log", chat = [], controller = null, aiReport = "";
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const SEVS = ["critical", "high", "medium", "low", "info"];
+const sevVar = (s) => `var(--${s})`;
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+                set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+let status = {}, analysis = null, sourceName = "", chat = [], controller = null, aiReport = "", sevFilter = "all", query = "";
 
-function toast(msg) {
+function toast(msg, ms = 3500) {
   const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
-  document.body.appendChild(t); setTimeout(() => t.remove(), 3500);
+  document.body.appendChild(t); setTimeout(() => t.remove(), ms);
 }
 async function api(path, body) {
   const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
-  const data = await r.json();
-  if (!r.ok) throw new Error(data.error || r.statusText);
-  return data;
+  const ct = r.headers.get("Content-Type") || "";
+  if (!r.ok) { const d = ct.includes("json") ? await r.json() : {}; throw new Error(d.error || r.statusText); }
+  return ct.includes("json") ? r.json() : r;
 }
 
-/* ---------- status / settings ---------- */
+/* ---------- theme & navigation ---------- */
+const theme = store.get("theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+document.documentElement.dataset.theme = theme;
+$("#themeBtn").onclick = () => {
+  const t = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+  document.documentElement.dataset.theme = t; store.set("theme", t); if (analysis) drawTimeline(analysis);
+};
+const PAGES = { analyze: ["Threat Analysis", "Analyse logs or audit this machine — fully offline"],
+  chat: ["AI Analyst", "Local, uncensored AI — nothing leaves this machine"],
+  report: ["Reports", "Branded PDF incident / audit report"], settings: ["Settings", "AI engine and performance"] };
+function showPage(p) {
+  $$("nav button").forEach((b) => b.classList.toggle("active", b.dataset.page === p));
+  $$(".page").forEach((s) => s.classList.toggle("active", s.id === "page-" + p));
+  $("#pageTitle").textContent = PAGES[p][0]; $("#pageSub").textContent = PAGES[p][1];
+  $("#sidebar").classList.remove("open");
+  if (p === "report") refreshReportPage();
+  if (p === "chat") $("#chatInput").focus();
+}
+$$("nav button").forEach((b) => b.onclick = () => showPage(b.dataset.page));
+$("#menuBtn").onclick = () => $("#sidebar").classList.toggle("open");
+
+/* ---------- status & settings ---------- */
 function renderStatus(s) {
   status = s;
   $("#dot").classList.toggle("on", s.online);
-  $("#statusText").textContent = s.online ? `AI online · ${s.provider}` : "AI offline (rules still work)";
-  $("#statusText").title = s.error || s.base_url;
-  const sel = $("#modelSelect");
-  sel.innerHTML = s.models.length ? s.models.map((m) => `<option ${m === s.model ? "selected" : ""}>${esc(m)}</option>`).join("")
-                                  : `<option>${s.online ? "no models installed" : "no AI server"}</option>`;
+  $("#aiState").textContent = s.online ? `AI online · ${s.provider}` : "AI offline";
+  $("#aiState").title = s.error || s.base_url;
+  $("#modelSelect").innerHTML = s.models.length ? s.models.map((m) => `<option ${m === s.model ? "selected" : ""}>${esc(m)}</option>`).join("")
+    : `<option>${s.online ? "no models — ollama pull …" : "start Ollama / LM Studio"}</option>`;
   $("#modelList").innerHTML = s.models.map((m) => `<option value="${esc(m)}">`).join("");
-  $("#samples").innerHTML = s.samples.map((n) => `<button data-sample="${esc(n)}">${esc(n)}</button>`).join("");
+  $("#samples").innerHTML = s.samples.map((n) => `<button class="btn sm" data-sample="${esc(n)}">${esc(n)}</button>`).join("");
+  $("#rootNote").classList.toggle("hidden", !!s.is_root);
+  if (s.brand) { $("#brandName").textContent = s.brand.brand_name; $("#credit").textContent = s.brand.author_mark; }
+  if (!s.online) $("#perf").textContent = "Rules, audit and reports still work offline.";
 }
 async function refreshStatus() {
-  try { renderStatus(await api("/api/status")); } catch (e) { $("#statusText").textContent = "agent unreachable"; }
+  try { renderStatus(await api("/api/status")); } catch { $("#aiState").textContent = "Agent unreachable"; }
 }
-$("#modelSelect").onchange = async (e) => { renderStatus(await api("/api/config", {model: e.target.value})); toast("Model: " + e.target.value); };
-$("#settingsBtn").onclick = () => {
-  $("#cfgProvider").value = status.provider; $("#cfgUrl").value = status.base_url;
-  $("#cfgModel").value = status.model || ""; $("#cfgKey").value = status.has_api_key ? "********" : "";
-  $("#cfgTemp").value = status.temperature; $("#tempVal").textContent = status.temperature;
-  $("#settings").showModal();
+$("#modelSelect").onchange = async (e) => {
+  renderStatus(await api("/api/config", {model: e.target.value}));
+  $("#perf").textContent = "Loading model into RAM…"; toast("Switched to " + e.target.value + " — pre-loading…");
 };
+function fillSettings() {
+  $("#cfgProvider").value = status.provider; $("#cfgUrl").value = status.base_url; $("#cfgModel").value = status.model || "";
+  $("#cfgKey").value = status.has_api_key ? "********" : ""; $("#cfgTemp").value = status.temperature; $("#tempVal").textContent = status.temperature;
+  $("#cfgCtx").value = String(status.num_ctx); $("#cfgPredict").value = status.num_predict; $("#cfgThreads").value = status.num_thread;
+}
+$('nav button[data-page="settings"]').addEventListener("click", fillSettings);
 $("#cfgTemp").oninput = (e) => $("#tempVal").textContent = e.target.value;
-$("#cfgProvider").onchange = (e) => {
-  $("#cfgUrl").value = e.target.value === "ollama" ? "http://127.0.0.1:11434" : "http://127.0.0.1:1234/v1";
-};
-$("#cfgCancel").onclick = () => $("#settings").close();
+$("#cfgProvider").onchange = (e) => $("#cfgUrl").value = e.target.value === "ollama" ? "http://127.0.0.1:11434" : "http://127.0.0.1:1234/v1";
 $("#cfgSave").onclick = async () => {
   try {
-    renderStatus(await api("/api/config", {provider: $("#cfgProvider").value, base_url: $("#cfgUrl").value,
-      model: $("#cfgModel").value, api_key: $("#cfgKey").value, temperature: +$("#cfgTemp").value}));
-    $("#settings").close(); toast(status.online ? "Connected ✔" : "Saved, but AI server is offline");
+    const body = {provider: $("#cfgProvider").value, base_url: $("#cfgUrl").value, model: $("#cfgModel").value,
+      api_key: $("#cfgKey").value, temperature: +$("#cfgTemp").value};
+    if ($("#cfgCtx").value) body.num_ctx = +$("#cfgCtx").value;
+    if ($("#cfgPredict").value) body.num_predict = +$("#cfgPredict").value;
+    if ($("#cfgThreads").value !== "") body.num_thread = +$("#cfgThreads").value;
+    renderStatus(await api("/api/config", body)); toast(status.online ? "Saved — connected ✔" : "Saved, but the AI server is offline");
   } catch (e) { toast("Error: " + e.message); }
 };
+$("#warmBtn").onclick = async () => { await api("/api/warmup", {}); toast("Loading model into RAM in the background…"); };
 
-/* ---------- tabs ---------- */
-function showTab(name) {
-  document.querySelectorAll("nav button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
-  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.id === "tab-" + name));
-}
-document.querySelectorAll("nav button").forEach((b) => b.onclick = () => showTab(b.dataset.tab));
-
-/* ---------- log input ---------- */
+/* ---------- inputs ---------- */
+$$("#srcSeg button").forEach((b) => b.onclick = () => {
+  $$("#srcSeg button").forEach((x) => x.classList.toggle("active", x === b));
+  $("#src-logs").classList.toggle("hidden", b.dataset.src !== "logs");
+  $("#src-host").classList.toggle("hidden", b.dataset.src !== "host");
+});
 const drop = $("#drop");
 drop.onclick = () => $("#fileInput").click();
-$("#fileInput").onchange = (e) => e.target.files[0] && loadFile(e.target.files[0]);
+$("#fileInput").onchange = (e) => e.target.files.length && loadFiles(e.target.files);
 drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("over"); };
 drop.ondragleave = () => drop.classList.remove("over");
-drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("over"); e.dataTransfer.files[0] && loadFile(e.dataTransfer.files[0]); };
-async function loadFile(f) {
-  if (f.size > 25 * 1024 * 1024) return toast("File too large (max 25 MB)");
-  fileName = f.name; $("#fileName").textContent = f.name;
-  $("#logText").value = await f.text(); analyze();
+drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("over"); e.dataTransfer.files.length && loadFiles(e.dataTransfer.files); };
+async function loadFiles(files) {
+  const list = [...files], total = list.reduce((n, f) => n + f.size, 0);
+  if (total > 25 * 1024 * 1024) return toast("Too large (max 25 MB in total)");
+  sourceName = list.map((f) => f.name).join(", "); $("#fileName").textContent = sourceName;
+  $("#logText").value = (await Promise.all(list.map((f) => f.text()))).join("\n");
+  analyze();
 }
 $("#samples").onclick = async (e) => {
   const n = e.target.dataset.sample; if (!n) return;
-  fileName = n; $("#fileName").textContent = n;
+  sourceName = n; $("#fileName").textContent = n;
   $("#logText").value = await (await fetch("/samples/" + encodeURIComponent(n))).text(); analyze();
 };
-$("#logText").oninput = () => { fileName = "pasted-log"; $("#fileName").textContent = ""; };
-$("#analyzeBtn").onclick = analyze;
+$("#logText").oninput = () => { sourceName = "pasted log"; $("#fileName").textContent = ""; };
+$("#analyzeBtn").onclick = () => { if (!$("#logText").value.trim()) { $("#pasteBox").open = true; return toast("Drop a file, paste logs or pick a sample"); } analyze(); };
 
 async function analyze() {
-  const text = $("#logText").value;
-  if (!text.trim()) return toast("Paste or drop a log first");
-  const t0 = performance.now();
-  try { analysis = await api("/api/analyze", {text}); } catch (e) { return toast("Error: " + e.message); }
-  aiReport = "";
-  renderResults(analysis, performance.now() - t0);
+  const btn = $("#analyzeBtn"), t0 = performance.now();
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Analyzing';
+  try { setResult(await api("/api/analyze", {text: $("#logText").value}), performance.now() - t0); }
+  catch (e) { toast("Error: " + e.message); }
+  btn.disabled = false; btn.textContent = "⚡ Analyze";
 }
+$("#auditBtn").onclick = async () => {
+  const btn = $("#auditBtn"), t0 = performance.now();
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Auditing';
+  try { sourceName = "Live host audit"; $("#fileName").textContent = ""; setResult(await api("/api/audit", {include_logs: $("#auditLogs").checked}), performance.now() - t0); }
+  catch (e) { toast("Error: " + e.message); }
+  btn.disabled = false; btn.textContent = "🛡️ Run host audit";
+};
 
-function renderResults(a, ms) {
-  $("#results").classList.remove("hidden");
-  $("#riskScore").textContent = a.risk_score;
-  $("#riskLevel").className = "badge b-" + a.risk_level; $("#riskLevel").textContent = a.risk_level;
-  $("#scanMeta").textContent = `${a.lines.toLocaleString()} lines · ${a.log_types.join(", ")} · ${Math.round(ms)} ms`;
-  $("#sevGrid").innerHTML = SEVS.map((s) => `<div class="stat ${s}"><b>${a.summary[s]}</b>${s}</div>`).join("")
-    + `<div class="stat"><b>${a.findings.reduce((n, f) => n + f.count, 0)}</b>events</div>`;
-  $("#findings").innerHTML = a.findings.length ? a.findings.map((f, i) => `
-    <details class="finding" ${i < 2 ? "open" : ""}>
-      <summary><span class="badge b-${f.severity}">${f.severity}</span><b>${esc(f.title)}</b>
-        <span class="muted">×${f.count} · MITRE ${esc(f.mitre)}</span></summary>
+/* ---------- results ---------- */
+function setResult(a, ms) {
+  analysis = a; aiReport = ""; sevFilter = "all"; query = "";
+  $("#emptyState").classList.add("hidden"); $("#results").classList.remove("hidden");
+  renderKpis(a, ms); renderSevBars(a); drawTimeline(a); renderFilters(a); renderFindings();
+  renderActors(a); renderIocs(a); renderHost(a);
+  $("#results").scrollIntoView({behavior: "smooth", block: "start"});
+}
+const GRADE_COL = {A: "#1E9E4F", B: "#5aa84b", C: "#b58400", D: "#d4561b", E: "#d1391c", F: "#c4122f"};
+function ring(score, level) {
+  const c = 2 * Math.PI * 34, off = c * (1 - score / 100), col = sevVar(level === "clean" ? "clean" : level);
+  return `<svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" fill="none" stroke="var(--surface3)" stroke-width="9"/>
+    <circle cx="42" cy="42" r="34" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 42 42)"/>
+    <text x="42" y="47" text-anchor="middle" font-size="20" font-weight="700" fill="var(--ink)">${score}</text></svg>`;
+}
+function renderKpis(a, ms) {
+  const sub = a.kind === "host" ? `${esc(a.host?.hostname)} · ${a.checks_run?.length || 0} checks · ${Math.round(ms)} ms`
+    : `${a.lines.toLocaleString()} lines · ${Math.round(ms)} ms`;
+  const events = a.findings.reduce((n, f) => n + (f.count || 1), 0);
+  $("#kpis").innerHTML = `
+    <div class="kpi"><div class="label">Overall risk</div><div class="risk">${ring(a.risk_score, a.risk_level)}
+      <div><span class="pill" style="--c:${sevVar(a.risk_level)}">${esc(a.risk_level)}</span>
+      <div class="hint" style="margin-top:6px">Grade <span class="grade" style="background:${GRADE_COL[a.grade] || "#5a6470"};width:26px;height:26px;font-size:14px">${esc(a.grade)}</span></div>
+      <div class="hint" style="margin-top:4px">${sub}</div></div></div></div>` +
+    ["critical", "high", "medium", "low"].map((s) => `<div class="kpi sev" style="--c:${sevVar(s)}"><div class="label">${s}</div><div class="value">${a.summary[s]}</div><div class="hint">finding${a.summary[s] === 1 ? "" : "s"}</div></div>`).join("") +
+    `<div class="kpi"><div class="label">${a.kind === "host" ? "Total events" : "Suspicious events"}</div><div class="value">${events.toLocaleString()}</div>
+      <div class="hint">${(a.ip_profiles || []).filter((p) => p.verdict !== "Noisy").length} hostile source(s)</div></div>`;
+}
+function renderSevBars(a) {
+  const max = Math.max(1, ...SEVS.map((s) => a.summary[s]));
+  $("#sevBars").innerHTML = SEVS.map((s) => `<div class="bar"><span><span class="pill" style="--c:${sevVar(s)}">${s}</span></span>
+    <div class="track"><div class="fill" style="--c:${sevVar(s)};width:${a.summary[s] / max * 100}%"></div></div><span class="n">${a.summary[s]}</span></div>`).join("");
+}
+function drawTimeline(a) {
+  const svg = $("#timeline"), data = (a.timeline || []).slice(-60);
+  $("#tlEmpty").classList.toggle("hidden", data.length > 0); svg.classList.toggle("hidden", !data.length);
+  $("#tlBucket").textContent = data.length ? `per ${a.timeline_bucket}` : "";
+  if (!data.length) return;
+  const W = svg.clientWidth || 700, H = 190, L = 34, B = 26, T = 10, max = Math.max(...data.map((d) => d[1]));
+  const bw = (W - L - 6) / data.length, gap = Math.min(4, bw * .25);
+  let out = "";
+  for (let i = 0; i <= 3; i++) {
+    const y = T + (H - T - B) * (1 - i / 3), v = Math.round(max * i / 3);
+    out += `<line x1="${L}" x2="${W}" y1="${y}" y2="${y}" stroke-dasharray="${i ? "2 4" : ""}"/><text x="${L - 6}" y="${y + 4}" text-anchor="end">${v}</text>`;
+  }
+  const every = Math.ceil(data.length / Math.max(1, Math.floor(W / 90)));
+  data.forEach(([k, v], i) => {
+    const h = (H - T - B) * v / max, x = L + i * bw + gap / 2, y = H - B - h;
+    out += `<rect class="b" data-i="${i}" x="${x}" y="${y}" width="${Math.max(1, bw - gap)}" height="${Math.max(h, 1)}" rx="3"/>`;
+    if (i % every === 0) out += `<text x="${x + (bw - gap) / 2}" y="${H - 8}" text-anchor="middle">${esc(k.length > 10 ? k.slice(11) || k.slice(5) : k.slice(5))}</text>`;
+  });
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = out;
+  const tip = $("#tip");
+  svg.onmousemove = (e) => {
+    const r = e.target.closest(".b"); if (!r) { tip.classList.add("hidden"); return; }
+    const [k, v] = data[+r.dataset.i];
+    tip.innerHTML = `<b>${esc(k)}</b><br>${v} suspicious event${v === 1 ? "" : "s"}`;
+    tip.style.left = e.clientX + 12 + "px"; tip.style.top = e.clientY - 40 + "px"; tip.classList.remove("hidden");
+  };
+  svg.onmouseleave = () => tip.classList.add("hidden");
+}
+addEventListener("resize", () => analysis && drawTimeline(analysis));
+
+function renderFilters(a) {
+  $("#filters").innerHTML = `<button class="chip active" data-sev="all">All (${a.findings.length})</button>` +
+    SEVS.filter((s) => a.summary[s]).map((s) => `<button class="chip" data-sev="${s}">${s} (${a.summary[s]})</button>`).join("") +
+    `<input id="findSearch" placeholder="Search findings, IPs, MITRE…">`;
+  $("#findSearch").oninput = (e) => { query = e.target.value.toLowerCase(); renderFindings(); };
+}
+$("#filters").onclick = (e) => {
+  const s = e.target.dataset.sev; if (!s) return;
+  sevFilter = s; $$("#filters .chip").forEach((c) => c.classList.toggle("active", c.dataset.sev === s)); renderFindings();
+};
+function renderFindings() {
+  const list = analysis.findings.map((f, i) => [f, i]).filter(([f]) => (sevFilter === "all" || f.severity === sevFilter) &&
+    (!query || JSON.stringify([f.title, f.ips, f.mitre, f.category, f.samples]).toLowerCase().includes(query)));
+  $("#findCount").textContent = `${list.length} of ${analysis.findings.length}`;
+  $("#findings").innerHTML = list.length ? list.map(([f, i], n) => `
+    <details class="finding" ${n < 2 && f.severity !== "info" ? "open" : ""}>
+      <summary><span class="pill" style="--c:${sevVar(f.severity)}">${f.severity}</span>
+        <div><div class="t">${esc(f.title)}</div><div class="meta"><span>${esc(f.category || "")}</span><span>MITRE ${esc(f.mitre)} ${esc(f.mitre_name || "")}</span>
+          ${f.first_seen ? `<span>🕑 ${esc(f.first_seen)}</span>` : ""}</div></div>
+        <span class="muted">×${f.count}</span></summary>
       <div class="body">
-        ${f.ips.length ? `<div class="ips">${f.ips.map((ip) => `<span>${esc(ip)}</span>`).join("")}</div>` : ""}
-        ${f.samples.map((s) => `<pre><span class="ln">L${s.line} </span>${esc(s.text)}</pre>`).join("")}
-        <button data-explain="${i}" style="font-size:12px">🤖 Ask AI about this</button>
+        <dl class="kv">
+          ${f.description ? `<dt>What</dt><dd>${esc(f.description)}</dd>` : ""}
+          ${f.impact ? `<dt>Impact</dt><dd>${esc(f.impact)}</dd>` : ""}
+          ${f.recommendation ? `<dt>Fix</dt><dd>${esc(f.recommendation)}</dd>` : ""}
+          ${f.ips?.length ? `<dt>Sources</dt><dd>${f.ips.map((ip) => `<span class="tag">${esc(ip)}</span>`).join("")}</dd>` : ""}
+          ${f.first_seen && f.last_seen !== f.first_seen ? `<dt>Window</dt><dd>${esc(f.first_seen)} → ${esc(f.last_seen)}</dd>` : ""}
+          ${f.references?.length ? `<dt>References</dt><dd>${f.references.map((r) => /^https?:/.test(r) ? `<a href="${esc(r)}" target="_blank" rel="noopener">${esc(r.replace(/^https?:\/\//, ""))}</a>` : esc(r)).join(" · ")}</dd>` : ""}
+        </dl>
+        ${f.samples.map((s) => `<pre>${s.line ? `<span class="ln">L${s.line} </span>` : ""}${esc(s.text)}</pre>`).join("")}
+        <div class="row" style="margin-top:8px"><button class="btn sm" data-ask="${i}">🤖 Ask AI about this</button></div>
       </div>
-    </details>`).join("") : `<p class="muted">✅ No threats matched the built-in rules. Try “AI Investigate” for a deeper look.</p>`;
-  $("#topIps").innerHTML = a.top_ips.length ? a.top_ips.map(([ip, n]) => `<span>${esc(ip)} (${n})</span>`).join("") : '<span class="muted">none</span>';
+    </details>`).join("") : `<div class="empty">✅ Nothing matches — ${analysis.findings.length ? "change the filter" : "no threats matched the built-in rules. Try AI Investigate for a second opinion."}</div>`;
 }
 $("#findings").onclick = (e) => {
-  const i = e.target.dataset.explain; if (i === undefined) return;
-  const f = analysis.findings[+i];
-  showTab("chat");
-  send(`Explain this finding: "${f.title}" (${f.count} events, IPs: ${f.ips.join(", ") || "n/a"}). Sample:\n${f.samples[0].text}\nIs it a real attack? What should I do?`);
+  const i = e.target.dataset.ask; if (i === undefined) return;
+  const f = analysis.findings[+i]; showPage("chat");
+  send(`Analyse this finding in context: "${f.title}" (${f.count} events, sources: ${f.ips.join(", ") || "n/a"}).\nEvidence:\n${f.samples[0]?.text || ""}\nIs it a real attack, what was the attacker trying to do, and what exactly should I check next?`);
 };
-$("#investigateBtn").onclick = () => { showTab("chat"); send(null, true); };
-
-/* ---------- reports ---------- */
-function download(name, content, type) {
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([content], {type})); a.download = name; a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+function renderActors(a) {
+  const p = a.ip_profiles || [];
+  $("#actorsCard").classList.toggle("hidden", !p.length); $("#actorCount").textContent = p.length ? `${p.length}` : "";
+  const vc = {Malicious: "critical", Suspicious: "medium", Noisy: "info"};
+  $("#actors").innerHTML = p.slice(0, 30).map((x) => `<tr><td><span class="tag">${esc(x.ip)}</span>${x.public ? "" : ' <span class="muted">internal</span>'}</td>
+    <td><span class="pill" style="--c:${sevVar(vc[x.verdict])}">${x.verdict}</span></td><td>${x.events}</td>
+    <td>${x.activity.map(esc).join("<br>")}</td><td class="muted">${esc(x.first_seen || "—")}</td><td class="muted">${esc(x.last_seen || "—")}</td></tr>`).join("");
+}
+function renderIocs(a) {
+  const i = a.iocs || {}, groups = [["ips", "IP addresses"], ["domains", "Domains"], ["urls", "URLs"], ["files", "Files"], ["users", "Accounts"]];
+  const has = groups.some(([k]) => i[k]?.length);
+  $("#iocCard").classList.toggle("hidden", !has);
+  $("#iocs").innerHTML = groups.filter(([k]) => i[k]?.length).map(([k, t]) => `<div><h3>${t} (${i[k].length})</h3>${i[k].map((v) => `<span class="tag">${esc(v)}</span>`).join("")}</div>`).join("");
+}
+$("#copyIocs").onclick = () => {
+  const i = analysis.iocs || {}; const txt = Object.entries(i).filter(([, v]) => v.length).map(([k, v]) => `# ${k}\n${v.join("\n")}`).join("\n\n");
+  navigator.clipboard?.writeText(txt).then(() => toast("IOCs copied"), () => toast("Copy failed"));
+};
+function renderHost(a) {
+  $("#hostCard").classList.toggle("hidden", a.kind !== "host"); if (a.kind !== "host") return;
+  const h = a.host || {};
+  $("#hostInfo").innerHTML = [["Host", h.hostname], ["OS", h.os], ["Kernel", `${h.kernel} (${h.arch})`], ["Hardware", `${h.cpus} CPUs · ${h.ram_gb} GB RAM`],
+    ["Uptime", `${h.uptime_days} days`], ["Audited as", h.audited_as], ["Logs scanned", (a.log_sources || []).join(", ") || "none readable"],
+    ["Checks", (a.checks_run || []).join(" · ")]].map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
 }
 $("#jsonBtn").onclick = () => download("analysis.json", JSON.stringify(analysis, null, 2), "application/json");
-$("#reportBtn").onclick = () => {
-  const a = analysis, d = new Date().toISOString().replace("T", " ").slice(0, 19);
-  let md = `# Security Incident Report\n\n**Source:** ${fileName}  \n**Generated:** ${d}  \n**Analyzer:** CyberSec AI Agent${status.model ? " (" + status.model + ")" : ""}\n\n`;
-  md += `## Summary\n\n| Risk score | Level | Lines | Critical | High | Medium | Low |\n|---|---|---|---|---|---|---|\n`;
-  md += `| ${a.risk_score}/100 | ${a.risk_level.toUpperCase()} | ${a.lines} | ${a.summary.critical} | ${a.summary.high} | ${a.summary.medium} | ${a.summary.low} |\n\n`;
-  if (aiReport) md += `## AI Analysis\n\n${aiReport}\n\n`;
-  md += `## Findings\n\n`;
-  a.findings.forEach((f, i) => {
-    md += `### ${i + 1}. [${f.severity.toUpperCase()}] ${f.title}\n\n- **Events:** ${f.count}\n- **MITRE ATT&CK:** ${f.mitre}\n`;
-    if (f.ips.length) md += `- **IPs:** ${f.ips.join(", ")}\n`;
-    md += "\n```\n" + f.samples.map((s) => `L${s.line}: ${s.text}`).join("\n").replace(/```/g, "'''") + "\n```\n\n";
-  });
-  if (!a.findings.length) md += "No threats matched the built-in rules.\n\n";
-  md += `## Top IP addresses\n\n` + a.top_ips.map(([ip, n]) => `- ${ip} — ${n} occurrences`).join("\n") + "\n";
-  download(`security-report-${d.slice(0, 10)}.md`, md, "text/markdown");
-};
+$("#investigateBtn").onclick = () => { showPage("chat"); send(null, true); };
+$$("[data-instant]").forEach((b) => b.onclick = () => instant(b.dataset.instant, b.textContent.replace(/[⚡\s]+/, "")));
 
-/* ---------- chat ---------- */
-function md(src) {  // tiny, safe markdown renderer: escape first, then format
+/* ---------- AI analyst ---------- */
+function md(src) {  // small, safe markdown renderer: escape first, then format
   const blocks = [];
   let h = esc(src).replace(/```[\w-]*\n?([\s\S]*?)(```|$)/g, (_, code) => { blocks.push(code); return `\u0000${blocks.length - 1}\u0000`; });
-  h = h.replace(/`([^`\n]+)`/g, "<code>$1</code>")
-       .replace(/\*\*([^*\n]+)\*\*/g, "<b>$1</b>")
+  h = h.replace(/`([^`\n]+)`/g, "<code>$1</code>").replace(/\*\*([^*\n]+)\*\*/g, "<b>$1</b>")
        .replace(/^#{3,6} (.*)$/gm, "<h4>$1</h4>").replace(/^#{1,2} (.*)$/gm, "<h3>$1</h3>")
-       .replace(/^\s*[-*] (.*)$/gm, "<li>$1</li>").replace(/^\s*(\d+)\. (.*)$/gm, "<li>$1. $2</li>")
+       .replace(/^\s*[-*] (.*)$/gm, "<li>$1</li>").replace(/^\s*(\d+)[.)] (.*)$/gm, "<li>$1. $2</li>")
        .replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, "<ul>$1</ul>")
        .replace(/\n{2,}/g, "<p></p>").replace(/\n/g, "<br>")
        .replace(/<\/(h3|h4|li|ul)><br>/g, "</$1>").replace(/<br><(ul|li|h3|h4)/g, "<$1");
   return h.replace(/\u0000(\d+)\u0000/g, (_, i) => `<pre>${blocks[i]}</pre>`);
 }
-function addMsg(role, text) {
+function addMsg(role, text, opts = {}) {
   const div = document.createElement("div");
   div.className = "msg " + role;
-  if (role === "user") div.textContent = text; else div.innerHTML = md(text);
+  div.innerHTML = `<div class="av">${role === "user" ? "👤" : "🛡️"}</div><div><div class="content"></div><div class="stamp"></div></div>`;
+  const c = $(".content", div);
+  if (role === "user") c.textContent = text; else c.innerHTML = md(text);
+  if (opts.stamp) $(".stamp", div).textContent = opts.stamp;
   $("#chatLog").appendChild(div); $("#chatLog").scrollTop = 1e9;
   return div;
 }
 function welcome() {
   $("#chatLog").innerHTML = "";
-  addMsg("assistant", "👋 I'm your **local** cybersecurity agent. Everything runs on your machine — nothing is sent to the cloud.\n\n- Analyze a log in the **Log Analysis** tab, then click **AI Investigate**\n- Or ask me anything: exploits, malware, hardening, detection rules, CTFs…");
+  addMsg("assistant", "I'm your **offline** security analyst. Nothing you share leaves this machine.\n\n- **⚡ buttons** answer instantly from the local engine (response plan, firewall commands, IOCs)\n- **🤖 buttons** use the local AI model for reasoning, attack stories and detection rules\n- Ask anything: exploits, malware, hardening, forensics, CTFs");
 }
-
+async function instant(kind, label) {
+  if (!analysis) { showPage("analyze"); return toast("Run an analysis first"); }
+  showPage("chat");
+  addMsg("user", `⚡ ${label}`);
+  const t0 = performance.now();
+  try {
+    const r = await api("/api/instant", {kind, analysis});
+    addMsg("assistant", r.markdown, {stamp: `⚡ local engine · ${Math.round(performance.now() - t0)} ms`});
+    chat.push({role: "user", content: label}, {role: "assistant", content: r.markdown});
+  } catch (e) { addMsg("assistant", "[error] " + e.message).classList.add("error"); }
+}
 async function send(text, investigate = false) {
   if (controller) return;
-  if (investigate && !analysis) return toast("Analyze a log first");
+  if (investigate && !analysis) { showPage("analyze"); return toast("Run an analysis first"); }
   if (!investigate) {
     text = (text ?? $("#chatInput").value).trim(); if (!text) return;
     $("#chatInput").value = ""; chat.push({role: "user", content: text}); addMsg("user", text);
-  } else addMsg("user", "🔍 Investigate the current log analysis");
-  const out = addMsg("assistant", ""); out.classList.add("typing");
-  $("#sendBtn").disabled = true; $("#stopBtn").classList.remove("hidden");
+  } else addMsg("user", "🔍 Investigate the current analysis");
+  const msg = addMsg("assistant", ""), out = $(".content", msg), stamp = $(".stamp", msg);
+  out.classList.add("typing"); stamp.textContent = `thinking… (${status.model || "model"})`;
+  $("#sendBtn").classList.add("hidden"); $("#stopBtn").classList.remove("hidden");
   controller = new AbortController();
-  let reply = "";
+  let reply = "", t0 = performance.now(), tFirst = 0;
   try {
     const r = await fetch("/api/chat", {method: "POST", headers: {"Content-Type": "application/json"}, signal: controller.signal,
-      body: JSON.stringify({messages: chat, investigate, analysis: $("#useContext").checked || investigate ? analysis : null})});
+      body: JSON.stringify({messages: chat, investigate, analysis: ($("#useContext").checked || investigate) ? analysis : null})});
     const reader = r.body.getReader(), dec = new TextDecoder();
     for (;;) {
       const {done, value} = await reader.read(); if (done) break;
+      if (!tFirst) tFirst = performance.now();
       reply += dec.decode(value, {stream: true});
       out.innerHTML = md(reply); $("#chatLog").scrollTop = 1e9;
     }
   } catch (e) { if (e.name !== "AbortError") reply += `\n\n[error] ${e.message}`; }
   out.classList.remove("typing");
-  if (reply.includes("[error]")) out.classList.add("error");
+  if (reply.includes("[error]")) msg.classList.add("error");
   out.innerHTML = md(reply || "(stopped)");
-  if (investigate) { chat.push({role: "user", content: "Investigate the current log analysis."}); aiReport = reply; }
+  const secs = (performance.now() - t0) / 1000, gen = tFirst ? (performance.now() - tFirst) / 1000 : 0;
+  const tps = gen > 0.3 ? ` · ~${Math.round(reply.length / 4 / gen)} tok/s` : "";
+  stamp.textContent = `🤖 ${status.model || "AI"} · first token ${tFirst ? ((tFirst - t0) / 1000).toFixed(1) : "–"} s · total ${secs.toFixed(1)} s${tps}`;
+  if (tFirst) $("#perf").textContent = `Last reply: ${((tFirst - t0) / 1000).toFixed(1)} s to start${tps}`;
+  if (investigate) { chat.push({role: "user", content: "Investigate the current analysis."}); aiReport = reply.includes("[error]") ? "" : reply; }
   chat.push({role: "assistant", content: reply});
-  controller = null; $("#sendBtn").disabled = false; $("#stopBtn").classList.add("hidden");
+  controller = null; $("#sendBtn").classList.remove("hidden"); $("#stopBtn").classList.add("hidden");
 }
 $("#sendBtn").onclick = () => send();
 $("#stopBtn").onclick = () => controller && controller.abort();
 $("#chatInput").onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } };
-document.querySelectorAll(".chips button").forEach((b) => b.onclick = () => send(b.dataset.q));
+$("#quick").onclick = (e) => {
+  const b = e.target.closest("button"); if (!b || b.dataset.instant) return;
+  if (b.dataset.investigate) send(null, true); else send(b.dataset.q);
+};
 $("#clearChat").onclick = () => { chat = []; welcome(); };
+
+/* ---------- reports ---------- */
+function download(name, content, type) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(content instanceof Blob ? content : new Blob([content], {type})); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function refreshReportPage() {
+  $("#pdfNote").classList.toggle("hidden", status.pdf !== false);
+  $("#rSource").placeholder = sourceName || "auth.log";
+  $("#rAiState").textContent = aiReport ? "✔ AI assessment ready" : "No AI assessment yet — click “Generate” or the report will use the local engine only.";
+  $("#genAiBtn").classList.toggle("hidden", !!aiReport);
+}
+async function pdf() {
+  if (!analysis) { showPage("analyze"); return toast("Run an analysis first"); }
+  if (status.pdf === false) { showPage("report"); return toast("Install reportlab for PDF export (see note)"); }
+  const meta = {client: $("#rClient").value, assessor: $("#rAssessor").value, ref: $("#rRef").value, scope_note: $("#rScope").value,
+    source: $("#rSource").value || sourceName};
+  if (!meta.ref) delete meta.ref;
+  toast("Building PDF…", 1500);
+  try {
+    const r = await api("/api/report/pdf", {analysis, meta, ai_text: $("#rAi").checked ? aiReport : ""});
+    download(`security-report-${new Date().toISOString().slice(0, 10)}.pdf`, await r.blob());
+  } catch (e) { toast("PDF error: " + e.message); }
+}
+$("#pdfBtn").onclick = pdf; $("#pdfBtn2").onclick = pdf;
+$("#genAiBtn").onclick = () => { if (!analysis) return toast("Run an analysis first"); showPage("chat"); send(null, true); };
+$("#mdBtn").onclick = () => {
+  if (!analysis) return toast("Run an analysis first");
+  const a = analysis, d = new Date().toISOString().replace("T", " ").slice(0, 19);
+  let m = `# ${status.brand?.brand_name || "Security"} — ${a.kind === "host" ? "Host Audit" : "Incident"} Report\n\n**Source:** ${$("#rSource").value || sourceName}  \n**Client:** ${$("#rClient").value || "-"}  \n**Generated:** ${d}\n\n`;
+  m += `| Risk | Level | Grade | Critical | High | Medium | Low |\n|---|---|---|---|---|---|---|\n| ${a.risk_score}/100 | ${a.risk_level.toUpperCase()} | ${a.grade} | ${a.summary.critical} | ${a.summary.high} | ${a.summary.medium} | ${a.summary.low} |\n\n`;
+  if (aiReport && $("#rAi").checked) m += `## AI Analyst Assessment\n\n${aiReport}\n\n`;
+  m += "## Findings\n\n";
+  a.findings.forEach((f, i) => {
+    m += `### F-${String(i + 1).padStart(2, "0")} [${f.severity.toUpperCase()}] ${f.title}\n\n- **MITRE:** ${f.mitre} ${f.mitre_name || ""}\n- **Events:** ${f.count}\n`;
+    if (f.ips.length) m += `- **Sources:** ${f.ips.join(", ")}\n`;
+    if (f.description) m += `- **What:** ${f.description}\n- **Impact:** ${f.impact}\n- **Fix:** ${f.recommendation}\n`;
+    m += "\n```\n" + f.samples.map((s) => (s.line ? `L${s.line}: ` : "") + s.text).join("\n").replace(/```/g, "'''") + "\n```\n\n";
+  });
+  if (a.ip_profiles?.length) m += "## Attacker profiles\n\n| IP | Verdict | Events | Activity |\n|---|---|---|---|\n" + a.ip_profiles.map((p) => `| ${p.ip} | ${p.verdict} | ${p.events} | ${p.activity.join("; ")} |`).join("\n") + "\n";
+  download(`security-report-${d.slice(0, 10)}.md`, m, "text/markdown");
+};
 
 welcome();
 refreshStatus();

@@ -9,7 +9,10 @@ shell/command history.
 """
 import re
 from collections import Counter, defaultdict
-from urllib.parse import unquote_plus
+from datetime import datetime
+from urllib.parse import unquote_plus, urlparse
+
+import knowledge
 
 SEVERITIES = ["critical", "high", "medium", "low", "info"]
 SEV_RANK = {s: i for i, s in enumerate(SEVERITIES)}
@@ -100,26 +103,61 @@ def _clip(text):
     return text if len(text) <= MAX_SAMPLE_LEN else text[:MAX_SAMPLE_LEN] + "..."
 
 
+# Timestamps are only parsed for suspicious lines, so they cost nothing on clean logs
+_MONTHS = {m: i for i, m in enumerate(
+    ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+TS_ISO = re.compile(r"(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})")
+TS_WEB = re.compile(r"\[(\d{2})/(\w{3})/(\d{4}):(\d{2}):(\d{2}):(\d{2})")
+TS_SYSLOG = re.compile(r"^(\w{3})\s+(\d{1,2}) (\d{2}):(\d{2}):(\d{2})")
+URL_RE = re.compile(r"\b(?:https?|ldap|ldaps|rmi|ftp)://[^\s\"'|;)<>]+", re.I)
+FILE_RE = re.compile(r"(?<![\w/])/(?:tmp|dev/shm|var/tmp)/[\w.\-]+|[A-Za-z]:\\(?:Users\\Public|Windows\\Temp|ProgramData)\\[\w.\-]+")
+ACCOUNT_RE = re.compile(r"(?:New Account|Account|Member|new user: name)=([\w.$-]+)")
+
+
+def parse_ts(line):
+    try:
+        if m := TS_ISO.search(line):
+            return datetime(*map(int, m.groups()))
+        if m := TS_WEB.search(line):
+            d, mon, y, hh, mm, ss = m.groups()
+            return datetime(int(y), _MONTHS[mon.lower()], int(d), int(hh), int(mm), int(ss))
+        if m := TS_SYSLOG.match(line):
+            mon, d, hh, mm, ss = m.groups()
+            return datetime(datetime.now().year, _MONTHS[mon.lower()], int(d), int(hh), int(mm), int(ss))
+    except (KeyError, ValueError):
+        pass
+    return None
+
+
+def _fmt(ts):
+    return ts.strftime("%Y-%m-%d %H:%M:%S") if ts else None
+
+
 class _Finding:
     def __init__(self, rid, title, severity, mitre):
         self.id, self.title, self.severity, self.mitre = rid, title, severity, mitre
         self.count = 0
         self.ips = Counter()
         self.samples = []
+        self.first = self.last = None
 
-    def add(self, lineno, text, ips=()):
+    def add(self, lineno, text, ips=(), ts=None):
         self.count += 1
         self.ips.update(ips)
+        if ts:
+            self.first = min(self.first or ts, ts)
+            self.last = max(self.last or ts, ts)
         if len(self.samples) < MAX_SAMPLES:
             self.samples.append({"line": lineno, "text": _clip(text)})
 
     def to_dict(self):
-        return {
+        return knowledge.enrich({
             "id": self.id, "title": self.title, "severity": self.severity,
             "mitre": self.mitre, "count": self.count,
             "ips": [ip for ip, _ in self.ips.most_common(10)],
+            "first_seen": _fmt(self.first), "last_seen": _fmt(self.last),
             "samples": self.samples,
-        }
+        })
 
 
 def analyze(text):
@@ -134,13 +172,37 @@ def analyze(text):
     fw_first_line = {}
     win_fail_by_ip = defaultdict(list)
     win_ok_by_ip = defaultdict(list)
+    targeted_users = Counter()
+
+    # Enrichment, only for suspicious lines
+    ts_cache = {}                            # lineno -> datetime
+    suspicious = {}                          # lineno -> line
+    profiles = defaultdict(lambda: {"lines": set(), "rules": set(), "sev": 9, "first": None, "last": None})
+
+    def ts_of(lineno, line):
+        if lineno not in ts_cache:
+            ts_cache[lineno] = parse_ts(line)
+        return ts_cache[lineno]
+
+    def record(f, lineno, line, ips):
+        ts = ts_of(lineno, line)
+        f.add(lineno, line, ips, ts)
+        suspicious[lineno] = line
+        for ip in set(ips):
+            p = profiles[ip]
+            p["lines"].add(lineno)
+            p["rules"].add(f.title)
+            p["sev"] = min(p["sev"], SEV_RANK[f.severity])
+            if ts:
+                p["first"] = min(p["first"] or ts, ts)
+                p["last"] = max(p["last"] or ts, ts)
 
     def hit(rule, lineno, line, ips):
         rid, title, sev, mitre = rule
         f = findings.get(rid)
         if f is None:
             f = findings[rid] = _Finding(rid, title, sev, mitre)
-        f.add(lineno, line, ips)
+        record(f, lineno, line, ips)
 
     lines = text.splitlines()
     for lineno, line in enumerate(lines, 1):
@@ -166,6 +228,7 @@ def analyze(text):
         if m := SSH_FAIL_RE.search(line):
             log_types.add("auth")
             ssh_fail_by_ip[m.group(2)].append((lineno, line))
+            targeted_users[m.group(1)] += 1
         if m := SSH_OK_RE.search(line):
             log_types.add("auth")
             ssh_ok_by_ip[m.group(2)].append((lineno, line))
@@ -188,7 +251,7 @@ def analyze(text):
         if f is None:
             f = findings[rid] = _Finding(rid, title, sev, mitre)
         for lineno, line in entries:
-            f.add(lineno, line, [ip])
+            record(f, lineno, line, [ip])
 
     for ip, fails in ssh_fail_by_ip.items():
         if len(fails) >= BRUTE_FORCE_MIN:
@@ -213,7 +276,7 @@ def analyze(text):
         if len(ports) >= PORT_SCAN_MIN_PORTS:
             f = findings.setdefault("port_scan", _Finding("port_scan", "Port scan", "medium", "T1046"))
             lineno, line = fw_first_line[ip]
-            f.add(lineno, f"{ip} probed {len(ports)} ports, e.g. {line}", [ip])
+            record(f, lineno, f"{ip} probed {len(ports)} ports, e.g. {line}", [ip])
             f.count += len(ports) - 1
 
     if any(r in findings for r in ("download_exec", "reverse_shell", "persistence", "tmp_exec")):
@@ -221,36 +284,116 @@ def analyze(text):
 
     result = sorted((f.to_dict() for f in findings.values()),
                     key=lambda f: (SEV_RANK[f["severity"]], -f["count"]))
-    summary = {s: 0 for s in SEVERITIES}
-    for f in result:
-        summary[f["severity"]] += 1
-    risk = min(100, sum(SEV_WEIGHT[f["severity"]] for f in result))
-
-    return {
+    out = score(result)
+    out.update({
+        "kind": "logs",
         "lines": len(lines),
         "log_types": sorted(log_types) or ["generic"],
-        "risk_score": risk,
-        "risk_level": ("critical" if risk >= 70 else "high" if risk >= 40
-                       else "medium" if risk >= 8 else "low" if risk > 0 else "clean"),
-        "summary": summary,
-        "findings": result,
-        "top_ips": ip_counter.most_common(10),
+        "top_ips": [(ip, n) for ip, n in ip_counter.most_common(30) if knowledge.valid_ip(ip)][:10],
+        "suspicious_lines": len(suspicious),
+    })
+    out.update(_enrichment(suspicious, ts_cache, profiles, targeted_users, lines))
+    return out
+
+
+def score(findings):
+    """Severity counts, 0-100 risk score, risk level and A-F grade for a list of findings."""
+    summary = {s: 0 for s in SEVERITIES}
+    for f in findings:
+        summary[f["severity"]] += 1
+    risk = min(100, sum(SEV_WEIGHT[f["severity"]] for f in findings))
+    level = ("critical" if risk >= 70 else "high" if risk >= 40
+             else "medium" if risk >= 8 else "low" if risk > 0 else "clean")
+    grade = "A" if risk == 0 else "B" if risk < 8 else "C" if risk < 25 else "D" if risk < 40 \
+        else "E" if risk < 70 else "F"
+    return {"findings": findings, "summary": summary, "risk_score": risk,
+            "risk_level": level, "grade": grade}
+
+
+def _enrichment(suspicious, ts_cache, profiles, targeted_users, lines):
+    # Attacker profiles
+    ip_profiles = []
+    for ip, p in profiles.items():
+        if not knowledge.valid_ip(ip):
+            continue
+        sev = SEVERITIES[p["sev"]] if p["sev"] < len(SEVERITIES) else "info"
+        verdict = ("Malicious" if sev in ("critical", "high") else
+                   "Suspicious" if sev == "medium" else "Noisy")
+        ip_profiles.append({
+            "ip": ip, "public": knowledge.is_public_ip(ip), "events": len(p["lines"]),
+            "severity": sev, "verdict": verdict, "activity": sorted(p["rules"]),
+            "first_seen": _fmt(p["first"]), "last_seen": _fmt(p["last"]),
+        })
+    ip_profiles.sort(key=lambda x: (SEV_RANK[x["severity"]], -x["events"]))
+
+    # Timeline of suspicious events (hourly, or daily for long ranges)
+    stamps = [t for ln, t in ts_cache.items() if t and ln in suspicious]
+    timeline, bucket = [], "hour"
+    if stamps:
+        span_h = (max(stamps) - min(stamps)).total_seconds() / 3600
+        if span_h <= 3:
+            bucket = "5 min"
+            keys = (t.replace(minute=t.minute - t.minute % 5).strftime("%Y-%m-%d %H:%M") for t in stamps)
+        elif span_h <= 72:
+            bucket, keys = "hour", (t.strftime("%Y-%m-%d %H:00") for t in stamps)
+        else:
+            bucket, keys = "day", (t.strftime("%Y-%m-%d") for t in stamps)
+        timeline = sorted(Counter(keys).items())
+    first_ts = next((t for t in (parse_ts(x) for x in lines[:50]) if t), None)
+    last_ts = next((t for t in (parse_ts(x) for x in reversed(lines[-50:])) if t), None)
+
+    # Indicators of compromise from suspicious lines only
+    urls, files, users = set(), set(), Counter(targeted_users)
+    for line in suspicious.values():
+        urls.update(u.rstrip(".,}") for u in URL_RE.findall(line))
+        files.update(FILE_RE.findall(line))
+        users.update(ACCOUNT_RE.findall(line))
+    domains = sorted({urlparse(u).hostname for u in urls if urlparse(u).hostname
+                      and not knowledge.valid_ip(urlparse(u).hostname)})
+    bad_ips = [p["ip"] for p in ip_profiles if p["verdict"] in ("Malicious", "Suspicious")]
+    return {
+        "time_range": {"start": _fmt(first_ts), "end": _fmt(last_ts)},
+        "timeline": timeline, "timeline_bucket": bucket,
+        "ip_profiles": ip_profiles[:50],
+        "targeted_users": users.most_common(15),
+        "iocs": {"ips": bad_ips, "urls": sorted(urls)[:50], "domains": domains[:50],
+                 "files": sorted(files)[:50], "users": [u for u, _ in users.most_common(15)]},
     }
 
 
-def ai_context(result, max_findings=15):
-    """Compact text version of the analysis for the AI prompt (keeps replies fast)."""
-    out = [
-        f"Lines scanned: {result['lines']} | Log types: {', '.join(result['log_types'])}",
-        f"Risk score: {result['risk_score']}/100 ({result['risk_level']})",
-        "Top IPs: " + ", ".join(f"{ip} ({n})" for ip, n in result["top_ips"][:5]),
-        "Findings:",
-    ]
+def ai_context(result, max_findings=12):
+    """Compact text version of the analysis for the AI prompt (keeps replies fast).
+
+    Explanations and fixes are already computed locally, so only facts are sent;
+    fewer prompt tokens means the model starts answering sooner.
+    """
+    kind = result.get("kind", "logs")
+    out = []
+    if kind == "host":
+        h = result.get("host", {})
+        out.append(f"Live host audit of {h.get('hostname')} ({h.get('os')}, kernel {h.get('kernel')})")
+    else:
+        tr = result.get("time_range") or {}
+        out.append(f"Log scan: {result.get('lines')} lines, types: {', '.join(result.get('log_types', []))}, "
+                   f"time {tr.get('start') or '?'} to {tr.get('end') or '?'}")
+    out.append(f"Risk {result['risk_score']}/100 ({result['risk_level']}), grade {result.get('grade', '-')}")
+    out.append("Findings:")
     for f in result["findings"][:max_findings]:
-        out.append(f"- [{f['severity'].upper()}] {f['title']} (MITRE {f['mitre']}) "
-                   f"x{f['count']}; IPs: {', '.join(f['ips'][:5]) or 'n/a'}")
-        for s in f["samples"][:2]:
-            out.append(f"    line {s['line']}: {s['text'][:200]}")
+        where = f", IPs {', '.join(f['ips'][:4])}" if f.get("ips") else ""
+        when = ""
+        if f.get("first_seen"):
+            when = f", at {f['first_seen']}" if f["first_seen"] == f["last_seen"] \
+                else f", {f['first_seen']}..{f['last_seen']}"
+        out.append(f"- [{f['severity'].upper()}] {f['title']} ({f.get('mitre', '-')}) x{f.get('count', 1)}{where}{when}")
+        if f.get("samples"):
+            out.append(f"    e.g. {f['samples'][0]['text'][:160]}")
     if not result["findings"]:
         out.append("- No rule matched. Look for anything unusual the rules may have missed.")
+    profiles = result.get("ip_profiles") or []
+    if profiles:
+        out.append("Attacker IPs:")
+        for p in profiles[:5]:
+            out.append(f"- {p['ip']} {p['verdict']} ({p['events']} events): {'; '.join(p['activity'][:4])}")
+    if result.get("targeted_users"):
+        out.append("Accounts involved: " + ", ".join(u for u, _ in result["targeted_users"][:8]))
     return "\n".join(out)

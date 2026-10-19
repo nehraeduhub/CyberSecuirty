@@ -1,24 +1,35 @@
 # 🛡️ CyberSec AI Agent
 
-A **portable, lightweight, fully offline** AI cybersecurity agent with a web UI.
-It analyzes security logs, detects suspicious activity, and writes incident
-reports using an **uncensored open-source AI model running on your own machine**.
-Your logs are never sent to the cloud.
+A **portable, lightweight, fully offline** AI cybersecurity agent with a professional web UI.
+It analyzes security logs, audits the Linux machine it runs on, detects suspicious activity,
+and writes **Tech Guardians branded PDF reports**, using an **uncensored open-source AI model
+running on your own machine**. Your data is never sent to the cloud.
+
+![Dashboard](docs/screenshot-dashboard.jpg)
+
+📑 Example report: [docs/sample-report.pdf](docs/sample-report.pdf)
+
+> 🐧 **CPU-only Linux server (e.g. 64 GB RAM, no GPU, HDD)?** Follow
+> **[docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md)**: a one-command setup tuned for maximum speed.
 
 | ✅ | Feature |
 |---|---|
 | 🖥️ | Runs a local, uncensored AI (Ollama, LM Studio, llama.cpp, KoboldCpp, Jan…) |
 | 🦙 | Works with any open-source model: Dolphin, Llama, Qwen, Mistral, Phi… |
 | ⚙️ | Talks to the local AI's API server (Ollama or OpenAI-compatible) |
-| 🐍 | **Pure Python, zero dependencies**: no `pip install`, nothing to build |
+| 🐍 | **Pure Python standard library**: nothing to build. Only the PDF export uses one optional library (`reportlab`) |
 | 📄 | Analyzes Linux auth/syslog, Apache/Nginx, UFW/iptables, Windows events, shell history |
 | 🛡️ | Detects ~30 attack patterns instantly (brute force, SQLi, Log4Shell, reverse shells, mimikatz…) mapped to MITRE ATT&CK |
-| 💡 | AI investigation + one-click Markdown incident reports |
-| 💬 | Chat with the agent: exploits, hardening, Sigma/Splunk rules, firewall commands, CTFs |
+| 🖥️ | **Live Linux host audit**: SSH, accounts, sudo, exposed services, firewall, kernel hardening, SUID, malware processes, cron backdoors, updates, plus the system's own logs |
+| 🔎 | Attacker IP profiles, attack timeline, IOC extraction (IPs, URLs, domains, files, accounts) |
+| ⚡ | **Instant local answers** without AI: response plan, firewall block commands (ufw/iptables/nftables/fail2ban/Windows), IOCs, explanations and fixes |
+| 📑 | **PDF report in the Tech Guardians VAPT format**: cover, document control, executive summary with gauge and grade, findings, timeline, IOCs, roadmap, MITRE mapping, AI assessment. Markdown export too |
+| 💬 | Chat with the agent: exploits, hardening, Sigma/Splunk rules, attacker intent, CTFs |
 
-**Why it's fast:** a built-in rule engine scans about 30,000 log lines per second with
-no AI at all. The AI only receives a compact summary of the findings, not the
-whole log, so even small models on a laptop CPU reply quickly.
+**Why it's fast:** the rule engine scans about 30,000 log lines per second and explains
+every finding from an offline knowledge base, all without AI. The AI only receives a
+compact summary (1–2 KB), the model stays loaded in RAM, repeated questions come from a
+cache, and "thinking" models answer directly. Even CPU-only machines reply quickly.
 
 ---
 
@@ -57,6 +68,9 @@ press **⚡ Analyze**, then **🤖 AI Investigate**.
 Only **Python 3.8+** is required. It's preinstalled on Linux and macOS; on Windows get it
 from [python.org](https://www.python.org/downloads/) and tick "Add to PATH".
 
+For **PDF reports**, install one library: `sudo apt install python3-reportlab` (Ubuntu/Debian)
+or `pip install reportlab`. Everything else works without it.
+
 ---
 
 ## 🦙 Recommended models
@@ -68,8 +82,9 @@ from [python.org](https://www.python.org/downloads/) and tick "Add to PATH".
 | `dolphin3` | 8B | ~6 GB | Uncensored (Llama 3.1 based), **best quality/speed balance** |
 | `llama2-uncensored` | 7B | ~6 GB | Classic uncensored model |
 | `qwen2.5:3b` / `llama3.2:3b` | 3B | ~3 GB | Not uncensored, but fast and strong at analysis |
+| `qwen3:30b-a3b` | 30B MoE (3B active) | ~19 GB | Best quality at high speed on CPU machines with 32 GB+ RAM |
 
-Switch models any time from the drop-down in the top bar. Everything you've pulled
+Switch models any time from the drop-down in the sidebar. Everything you've pulled
 with `ollama pull` appears there automatically.
 
 ## 🔌 Using LM Studio, llama.cpp, KoboldCpp, Jan, vLLM…
@@ -92,11 +107,16 @@ Settings are saved to `config.json`. You can also use environment variables:
 ## 💻 Command-line mode
 
 ```bash
-python agent.py scan /var/log/auth.log          # instant rule-based scan
-python agent.py scan access.log --ai            # + AI-written assessment
+python agent.py scan /var/log/auth.log                    # instant rule-based scan
+python agent.py scan access.log --ai --pdf incident.pdf   # + AI assessment + PDF report
 python agent.py scan access.log --json > out.json
+sudo python agent.py audit --pdf audit.pdf --client "ACME" --assessor "SOC team"   # Linux host audit
 python agent.py --port 9000 --model dolphin3 --no-browser
+python scripts/benchmark.py                               # measure each model's speed
 ```
+
+PDF branding (name, tagline, author line, colours) can be changed under `"report"` in
+`config.json`. See `BRAND` in [`report_pdf.py`](report_pdf.py) for the keys.
 
 ## 🔍 What it detects
 
@@ -139,11 +159,17 @@ python -m unittest discover -s tests -v
 
 ```
 ai-agent/
-├── agent.py          # web server, local AI client, CLI (stdlib only)
-├── detector.py       # rule engine + correlation (brute force, scans, enumeration)
-├── static/index.html # the web UI (single file, no build step)
-├── samples/          # example attack logs: auth, web, firewall, Windows
-├── tests/            # unit tests
-├── start.sh          # Linux/macOS launcher
-└── start.bat         # Windows launcher
+├── agent.py               # web server, local AI client (cache, warm-up), CLI
+├── detector.py            # log rule engine, correlation, timeline, attacker profiles, IOCs
+├── knowledge.py           # offline knowledge base + instant answers (fixes, block commands)
+├── host_audit.py          # live Linux host security audit
+├── report_pdf.py          # Tech Guardians branded PDF report (optional: reportlab)
+├── static/index.html      # the web UI (single file, no build step)
+├── samples/               # example attack logs: auth, web, firewall, Windows
+├── scripts/setup-linux.sh # one-command, speed-tuned Linux install
+├── scripts/benchmark.py   # tokens/second per model on this machine
+├── docs/LINUX-GUIDE.md    # guide for CPU-only Linux servers
+├── tests/                 # unit tests
+├── start.sh               # Linux/macOS launcher
+└── start.bat              # Windows launcher
 ```
