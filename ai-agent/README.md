@@ -188,6 +188,11 @@ Rules live in [`detector.py`](detector.py) as plain regexes, so it's easy to add
   [docs/SECURITY-VAPT-REPORT.md](docs/SECURITY-VAPT-REPORT.md).
 - Use the agent only on systems you own or are authorised to assess.
 
+## 🎞️ Presentation
+
+[docs/CyberSec-AI-Agent.pptx](docs/CyberSec-AI-Agent.pptx): 18 slides on the working process, features,
+architecture (behind and in front of the agent), framework, security results and roadmap.
+
 ## 🧪 Tests
 
 ```bash
