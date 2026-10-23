@@ -244,6 +244,7 @@
     <button class="active" data-page="analyze"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Threat Analysis</button>
     <button data-page="chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg>AI Analyst</button>
     <button data-page="report"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>Reports</button>
+    <button id="liveBtn" title="Opens in a separate window"><svg viewBox="0 0 24 24"><path d="M2 12h4l3-7 4 14 3-7h6"/><circle cx="20" cy="5" r="2"/></svg>Live analysis ↗<span class="tag" id="liveBadge" style="margin-left:auto;display:none"></span></button>
     <button data-page="forensics"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l6 6M8 10.5h5M10.5 8v5"/></svg>Forensics</button>
     <button data-page="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/></svg>History</button>
     <button data-page="trust"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8 12h8M12 8v8"/></svg>Trusted Networks</button>
@@ -346,9 +347,9 @@
         <div class="ioc-grid" id="iocs"></div>
       </div>
       <div class="card hidden" id="repCard">
-        <h2>Reputation — AbuseIPDB / VirusTotal <span class="count" id="repMeta"></span><button class="btn sm" id="repAll" style="margin-left:auto">🌐 Check all</button></h2>
+        <h2>Threat intelligence — OTX · AbuseIPDB · VirusTotal · abuse.ch · PhishTank · CVE <span class="count" id="repMeta"></span><button class="btn sm" id="repAll" style="margin-left:auto">🌐 Check all</button></h2>
         <p class="muted small" style="margin-top:0" id="repNote">Only the IP, domain or URL is sent, and only when you click. Internal, private and your own (Trusted Networks) addresses are never sent. Reputation is context: it never changes a finding's severity.</p>
-        <div style="overflow-x:auto;max-height:420px"><table><thead><tr><th>Indicator</th><th>Seen as</th><th>AbuseIPDB</th><th>VirusTotal</th><th>Verdict</th><th></th></tr></thead><tbody id="repRows"></tbody></table></div>
+        <div style="overflow-x:auto;max-height:420px"><table><thead><tr><th>Indicator</th><th>Seen as</th><th>Sources</th><th>Verdict</th><th></th></tr></thead><tbody id="repRows"></tbody></table></div>
       </div>
       <div class="card hidden" id="hostCard"><h2>Host details</h2><dl class="kv" id="hostInfo"></dl></div>
     </div>
@@ -519,11 +520,15 @@
         <div><label><input type="checkbox" id="cfgLearnData"> Learn from verdicts, reputation and earlier analyses</label><div class="muted small">See History → What the agent has learned.</div></div>
         <div><label><input type="checkbox" id="cfgBrand"> Show branding in the web interface</label><div class="muted small" id="cfgBrandNote">Logo, organisation name and credit line in the sidebar and on the sign-in page. PDF reports always keep their branding.</div></div>
       </div>
-      <h2 style="margin-top:22px">Reputation look-ups (online, optional)</h2>
+      <h2 style="margin-top:22px">Threat intelligence look-ups (online, optional)</h2>
       <p class="muted small" style="margin-top:0">The only feature that contacts the internet. Only the indicator (public IP, domain or URL) is sent — never log lines, never internal or Trusted-Network addresses — and only when you click <b>Check</b>, unless you switch on automatic look-ups. URLs are looked up, never submitted. Free keys: <b>abuseipdb.com</b> (1,000/day) and <b>virustotal.com</b> (4/minute, 500/day).</p>
       <div class="form">
+        <div><label>AlienVault OTX API key <span class="tag">high priority</span></label><input id="cfgOtx" type="password" autocomplete="off" placeholder="not set"><div class="muted small">IPs, domains, URLs, hashes — otx.alienvault.com</div></div>
+        <div><label>abuse.ch Auth-Key (URLhaus · ThreatFox · MalwareBazaar)</label><input id="cfgAbusech" type="password" autocomplete="off" placeholder="not set"><div class="muted small">Malware URLs, malware IOCs, file hashes — free key at auth.abuse.ch</div></div>
         <div><label>AbuseIPDB API key</label><input id="cfgAbuse" type="password" autocomplete="off" placeholder="not set"></div>
         <div><label>VirusTotal API key</label><input id="cfgVt" type="password" autocomplete="off" placeholder="not set"></div>
+        <div><label><input type="checkbox" id="cfgPhish"> PhishTank phishing-URL check</label><input id="cfgPhishKey" type="password" autocomplete="off" placeholder="optional application key" style="margin-top:6px"></div>
+        <div><label><input type="checkbox" id="cfgCircl"> CVE details from cve.circl.lu</label><div class="muted small">No key; sends only CVE ids found in the logs and findings.</div></div>
         <div><label><input type="checkbox" id="cfgRepAuto"> Look up public IPs and URLs automatically after each analysis</label><div class="muted small" id="cfgRepQuota"></div></div>
       </div>
       <div class="row" style="margin-top:16px"><button class="btn primary" id="cfgSave">Save settings</button><button class="btn" id="warmBtn">Pre-load model now</button></div>
@@ -589,7 +594,19 @@ function showPage(p) {
   if (p === "forensics") loadForensics();
   if (p === "chat") $("#chatInput").focus();
 }
-$$("nav button").forEach((b) => b.onclick = () => showPage(b.dataset.page));
+$$("nav button[data-page]").forEach((b) => b.onclick = () => showPage(b.dataset.page));
+$("#liveBtn").onclick = () => { const w = window.open("/live", "cybersec-live", "width=1440,height=920"); if (w) w.focus(); else location.href = "/live"; };
+window.name = window.name || "cybersec-main";
+(async () => {  // opened from the Live window or a link: /?analysis=<id>[&page=forensics]
+  const q = new URLSearchParams(location.search), id = q.get("analysis");
+  if (!id) return;
+  try {
+    const t0 = performance.now(), a = await api("/api/history/open", {id});
+    sourceName = "stored analysis"; $("#fileName").textContent = sourceName;
+    setResult(a, performance.now() - t0); showPage(q.get("page") || "analyze");
+    history.replaceState(null, "", "/");
+  } catch (e) { toast("Could not open the analysis: " + e.message); }
+})();
 $("#menuBtn").onclick = () => $("#sidebar").classList.toggle("open");
 
 /* ---------- status & settings ---------- */
@@ -628,6 +645,9 @@ function fillSettings() {
   $("#cfgHistDays").value = status.history_max_days || 0; $("#cfgLearnData").checked = status.learn_from_data !== false;
   $("#cfgAbuse").value = status.has_abuseipdb_key ? "********" : ""; $("#cfgVt").value = status.has_virustotal_key ? "********" : "";
   $("#cfgRepAuto").checked = !!status.reputation_auto;
+  $("#cfgOtx").value = status.has_otx_key ? "********" : ""; $("#cfgAbusech").value = status.has_abusech_key ? "********" : "";
+  $("#cfgPhishKey").value = status.has_phishtank_key ? "********" : ""; $("#cfgPhish").checked = !!status.phishtank_enabled;
+  $("#cfgCircl").checked = !!status.circl_enabled;
   $("#cfgRepQuota").textContent = Object.keys(status.reputation_quota || {}).length ? "Used today: " + Object.entries(status.reputation_quota).map(([k, v]) => `${k} ${v}`).join(", ") : "";
   $("#cfgBrand").checked = status.ui_show_branding !== false; $("#cfgBrand").disabled = !!status.ui_hide_branding_page;
   if (status.ui_hide_branding_page) $("#cfgBrandNote").textContent = "Locked in config.json (\"ui_hide_branding_page\": true). Change \"ui_show_branding\" there and restart.";
@@ -646,7 +666,9 @@ $("#cfgSave").onclick = async () => {
     if (!$("#cfgBrand").disabled) body.ui_show_branding = $("#cfgBrand").checked;
     Object.assign(body, {history_enabled: $("#cfgHist").checked, store_logs: $("#cfgStoreLogs").checked,
       history_max_days: +$("#cfgHistDays").value || 0, learn_from_data: $("#cfgLearnData").checked,
-      abuseipdb_key: $("#cfgAbuse").value, virustotal_key: $("#cfgVt").value, reputation_auto: $("#cfgRepAuto").checked});
+      abuseipdb_key: $("#cfgAbuse").value, virustotal_key: $("#cfgVt").value, reputation_auto: $("#cfgRepAuto").checked,
+      otx_key: $("#cfgOtx").value, abusech_key: $("#cfgAbusech").value, phishtank_key: $("#cfgPhishKey").value,
+      phishtank_enabled: $("#cfgPhish").checked, circl_enabled: $("#cfgCircl").checked});
     renderStatus(await api("/api/config", body)); toast(status.online ? "Saved — connected ✔" : "Saved, but the AI server is offline");
   } catch (e) { toast("Error: " + e.message); }
 };
@@ -948,7 +970,15 @@ $("#investigateBtn").onclick = () => { showPage("chat"); send(null, true); };
 $$("[data-instant]").forEach((b) => b.onclick = () => instant(b.dataset.instant, b.textContent.replace(/[⚡\s]+/, "")));
 
 /* ---------- reputation (AbuseIPDB / VirusTotal) ---------- */
-const REP_SEV = {malicious: "critical", suspicious: "medium", "no known abuse": "clean", unknown: "info"};
+const REP_SEV = {malicious: "critical", suspicious: "medium", "no known abuse": "clean", unknown: "info",
+  "vulnerability (critical)": "critical", "vulnerability (high)": "high", "vulnerability (medium)": "medium", "vulnerability (low)": "low"};
+const SRC_SEV = {malicious: "critical", suspicious: "medium", clean: "clean", unknown: "info", error: "info", vulnerability: "high"};
+function srcChips(r) {
+  if (!r) return '<span class="muted">not checked</span>';
+  const list = r.sources || ["abuseipdb", "virustotal"].filter((p) => r[p]).map((p) => ({label: p === "abuseipdb" ? "AbuseIPDB" : "VirusTotal",
+    level: r[p].error ? "error" : "unknown", text: r[p].error || "", link: r[p].link}));
+  return list.map((x) => `<div style="margin:2px 0"><span class="act" style="--c:${sevVar(SRC_SEV[x.level] || "info")}">${esc(x.label)}</span> <span class="small">${esc(x.text)}</span>${x.link ? ` <a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">↗</a>` : ""}</div>`).join("");
+}
 let repCands = [];
 function repCell(r, p) {
   const x = r && r[p]; if (!x) return '<span class="muted">-</span>';
@@ -967,12 +997,11 @@ async function renderReputation(a) {
   const ok = d.providers.length > 0;
   $("#repAll").disabled = !ok || !repCands.length;
   $("#repMeta").textContent = ok ? `${repCands.length} public indicator(s) · ${d.providers.join(" + ")}` : "no API key configured";
-  if (!ok) $("#repNote").innerHTML = 'Add a free AbuseIPDB and/or VirusTotal API key in <b>Settings → Reputation look-ups</b> to check these public indicators. Only the indicator value is sent, and only when you click.';
+  if (!ok) $("#repNote").innerHTML = 'Add free API keys (AlienVault OTX, AbuseIPDB, VirusTotal, abuse.ch) or enable PhishTank / CVE look-ups in <b>Settings → Threat intelligence</b> to check these indicators. Only the indicator value is sent, and only when you click.';
   const rows = repCands.map((c) => ({...c, res: d.done[c.value]}));
   Object.values(d.done).forEach((r) => { if (!rows.some((x) => x.value === r.value)) rows.push({value: r.value, type: r.type, context: "", res: r}); });
   $("#repRows").innerHTML = rows.map((c) => `<tr data-v="${esc(c.value)}"><td><span class="tag">${esc(c.value)}</span><br><span class="muted small">${esc(c.type)}</span></td>
-    <td class="small">${esc(c.context)}</td><td class="small" data-p="abuseipdb">${c.type === "ip" ? repCell(c.res, "abuseipdb") : '<span class="muted">IPs only</span>'}</td>
-    <td class="small" data-p="virustotal">${repCell(c.res, "virustotal")}</td>
+    <td class="small">${esc(c.context)}</td><td class="small">${srcChips(c.res)}</td>
     <td data-p="verdict">${c.res ? `<span class="pill" style="--c:${sevVar(REP_SEV[c.res.verdict] || "info")}">${esc(c.res.verdict)}</span>${c.res.cached ? '<br><span class="muted small">cached</span>' : ""}` : '<span class="muted">not checked</span>'}</td>
     <td><button class="btn sm" data-rep="${esc(c.value)}" ${ok ? "" : "disabled"}>${c.res ? "↻" : "Check"}</button></td></tr>`).join("");
   if (ok && status?.reputation_auto && !a._repAuto && repCands.some((c) => !d.done[c.value])) { a._repAuto = true; checkAll(); }
@@ -1105,7 +1134,7 @@ $("#forPdf").onclick = () => $("#pdfBtn").click();
 
 /* ---------- history & learning ---------- */
 const fmtBytes = (n) => n > 1 << 30 ? (n / (1 << 30)).toFixed(1) + " GB" : n > 1 << 20 ? (n / (1 << 20)).toFixed(1) + " MB" : n > 1024 ? Math.round(n / 1024) + " KB" : n + " B";
-const KIND = {upload: "Uploaded files", paste: "Pasted log", sample: "Sample data", host: "Host audit"};
+const KIND = {upload: "Uploaded files", paste: "Pasted log", sample: "Sample data", host: "Host audit", live: "Live snapshot"};
 async function loadHistory() {
   let h; try { h = await api("/api/history"); } catch (e) { toast("Error: " + e.message); return; }
   $("#histUsage").textContent = `${h.usage.analyses} analys${h.usage.analyses === 1 ? "is" : "es"} · ${h.usage.log_files} log files · ${fmtBytes(h.usage.bytes)}`;

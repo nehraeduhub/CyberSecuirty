@@ -213,6 +213,7 @@ Other speed tips:
 | Can't open `http://SERVER-IP:8787` | Check `"host"` in `config.json`, restart the agent, and open the port: `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp` |
 | Reputation says "cannot reach the service" | The server needs outbound HTTPS to api.abuseipdb.com and www.virustotal.com (set `HTTPS_PROXY` if you use a proxy) |
 | Disk filling up | History keeps every analysis with its logs. Delete old ones on the History page, or set `"history_max_days"` / `"history_max_gb"` in `config.json` |
+| SIEM cannot send to the Live window | Set `"host": "0.0.0.0"`, restart, and allow only the SIEM: `sudo ufw allow from <SIEM-IP> to any port 8787 proto tcp` (and the syslog port, e.g. `5514`, if you use it). The token is shown in the Live window → Receiver setup |
 | Lost the access token | `python3 agent.py info` on the server |
 | Forgot the password | On the server: `python3 agent.py set-password` (sets a new one), then restart the agent |
 | "Too many failed sign-ins" | Wait 15 minutes, or restart the agent |

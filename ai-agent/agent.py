@@ -39,6 +39,7 @@ import history
 import host_audit
 import investigator
 import knowledge
+import live
 import memory
 import pipeline
 import report_pdf
@@ -81,11 +82,24 @@ DEFAULTS = {
     "learn_from_data": True,  # use analyst verdicts, learned indicators and earlier sightings
     "abuseipdb_key": "",      # reputation look-ups (optional, sent only when you ask): abuseipdb.com
     "virustotal_key": "",     # virustotal.com (free key: 4 look-ups/minute, 500/day)
+    "otx_key": "",            # AlienVault OTX (otx.alienvault.com, free key) - shown first
+    "abusech_key": "",        # one abuse.ch Auth-Key for URLhaus, ThreatFox and MalwareBazaar (auth.abuse.ch)
+    "phishtank_enabled": False,  # PhishTank phishing-URL check (works without a key, rate-limited)
+    "phishtank_key": "",      # optional PhishTank application key
+    "circl_enabled": False,   # CVE details from cve.circl.lu (no key; sends only the CVE id)
     "reputation_auto": False,  # look up public IPs/URLs automatically after each analysis
     "reputation_cache_hours": 24,
     "virustotal_per_min": 4,
     "virustotal_daily_limit": 500,
     "abuseipdb_daily_limit": 1000,
+    "live_enabled": False,    # live analysis of logs forwarded by your SIEM (separate window: /live)
+    "live_token": "",         # ingest token for POST /api/live/ingest (auto-generated when live is enabled)
+    "live_syslog_port": 0,    # also receive syslog (UDP + TCP) on this port, e.g. 5514 (0 = off)
+    "live_syslog_host": "0.0.0.0",
+    "live_allowed_sources": [],  # accept syslog only from these IPs / CIDRs (empty = any)
+    "live_window_minutes": 60,   # analyse the events received in the last N minutes
+    "live_interval_s": 20,    # re-analyse at most this often when new events arrive
+    "live_keep_days": 7,      # keep the raw live spool (data/live) this many days
     "ui_show_branding": True,       # false = hide logo, organisation name and credit line in the web UI
     "ui_hide_branding_page": False,  # true = remove the Branding page and lock branding changes from the web UI
     "port": 8787,
@@ -130,13 +144,14 @@ def load_config():
            "api_key": "AGENT_API_KEY", "host": "AGENT_HOST", "port": "AGENT_PORT",
            "access_token": "AGENT_TOKEN"}
     env.update(ui_show_branding="AGENT_SHOW_BRANDING", ui_hide_branding_page="AGENT_HIDE_BRANDING_PAGE",
-               abuseipdb_key="AGENT_ABUSEIPDB_KEY", virustotal_key="AGENT_VIRUSTOTAL_KEY")
+               abuseipdb_key="AGENT_ABUSEIPDB_KEY", virustotal_key="AGENT_VIRUSTOTAL_KEY", otx_key="AGENT_OTX_KEY",
+               abusech_key="AGENT_ABUSECH_KEY", phishtank_key="AGENT_PHISHTANK_KEY")
     for key, var in env.items():
         if os.environ.get(var):
             cfg[key] = os.environ[var]
     cfg["port"] = int(cfg["port"])
-    for key in ("ui_show_branding", "ui_hide_branding_page", "history_enabled", "store_logs", "learn_from_data",
-                "reputation_auto"):
+    for key in ("live_enabled", "ui_show_branding", "ui_hide_branding_page", "history_enabled", "store_logs", "learn_from_data",
+                "reputation_auto", "phishtank_enabled", "circl_enabled"):
         cfg[key] = _flag(cfg[key])
     return cfg
 
@@ -151,7 +166,8 @@ def _flag(v):
 SAVED_KEYS = ("provider", "base_url", "model", "api_key", "temperature", "num_ctx", "num_predict",
               "num_thread", "keep_alive", "report", "learn_baseline", "tz_hours", "ui_show_branding",
               "history_enabled", "store_logs", "history_max_days", "learn_from_data", "abuseipdb_key",
-              "virustotal_key", "reputation_auto")
+              "virustotal_key", "reputation_auto", "otx_key", "abusech_key", "phishtank_enabled",
+              "phishtank_key", "circl_enabled")
 
 
 def save_config(cfg, keys=SAVED_KEYS):
@@ -601,6 +617,21 @@ def finish(cfg, result, kind, name, files=(), move=False, actor="", samples=()):
     return result
 
 
+_LIVE = {}
+
+
+def live_engine(cfg):
+    """The live-analysis engine (one per server)."""
+    eng = _LIVE.get("engine")
+    if eng is None or eng.cfg is not cfg:
+        def analyse(files):
+            return pipeline.to_json(pipeline.analyze_files(files, tz_hours=float(cfg.get("tz_hours") or 0),
+                                                           learn_baseline=False, extra_ioc_paths=learned_feeds(cfg)))
+        eng = _LIVE["engine"] = live.LiveEngine(
+            cfg, analyse, memory.annotate if cfg.get("learn_from_data", True) else None)
+    return eng
+
+
 def learned_feeds(cfg):
     return memory.learned_feed_paths() if cfg.get("learn_from_data", True) else None
 
@@ -700,6 +731,8 @@ class Handler(BaseHTTPRequestHandler):
             data, ctype = branding.logo_bytes(branding.load())
             return self._send(200, data, ctype) if data else self._send(200, DEFAULT_LOGO_SVG, "image/svg+xml")
         if not self._authorized():
+            if path == "/live":
+                path = "/"   # sign in first; the login page reloads /live afterwards
             if path in ("/", "/index.html"):
                 b = branding.load()
                 show = self.cfg.get("ui_show_branding", True)
@@ -712,6 +745,17 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(401, {"error": "login required"})
         if path in ("/", "/index.html"):
             return self._send(200, (STATIC / "index.html").read_bytes(), "text/html; charset=utf-8")
+        if path == "/live":
+            return self._send(200, (STATIC / "live.html").read_bytes(), "text/html; charset=utf-8")
+        if path == "/api/live/state":
+            q = parse_qs(urlparse(self.path).query)
+            try:
+                since = int((q.get("since") or ["0"])[0])
+            except ValueError:
+                since = 0
+            st = live_engine(self.cfg).state(since)
+            st["setup"] = self._live_setup()
+            return self._send(200, st)
         if path == "/api/status":
             return self._send(200, self._status())
         if path == "/api/trust":
@@ -777,6 +821,9 @@ class Handler(BaseHTTPRequestHandler):
                 "history_max_days": cfg.get("history_max_days") or 0, "learn_from_data": bool(cfg.get("learn_from_data", True)),
                 "reputation_providers": reputation.providers(cfg), "reputation_auto": bool(cfg.get("reputation_auto")),
                 "has_abuseipdb_key": bool(cfg.get("abuseipdb_key")), "has_virustotal_key": bool(cfg.get("virustotal_key")),
+                "has_otx_key": bool(cfg.get("otx_key")), "has_abusech_key": bool(cfg.get("abusech_key")),
+                "has_phishtank_key": bool(cfg.get("phishtank_key")), "phishtank_enabled": bool(cfg.get("phishtank_enabled")),
+                "circl_enabled": bool(cfg.get("circl_enabled")),
                 "reputation_quota": reputation.quota_used(),
                 "ui_hide_branding_page": bool(cfg.get("ui_hide_branding_page")),
                 "trust_entries": trust.Inventory.load().enabled_count,
@@ -813,6 +860,8 @@ class Handler(BaseHTTPRequestHandler):
         return f"{'local-user' if who == 'local' else who}@{self.client_address[0]}"
 
     def do_POST(self):
+        if self.path.split("?", 1)[0] == "/api/live/ingest":   # SIEM -> agent; token-authenticated, no cookies
+            return self._live_ingest()
         if not self._trusted():
             return self._send(403, {"error": "forbidden"})
         if self.path.startswith("/api/upload"):
@@ -881,6 +930,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(400, {"error": "run an analysis first"})
             return self._send(200, dict(forensics.view(a), analysis_id=a.get("analysis_id"),
                                         name=(history.meta(a["analysis_id"]) or {}).get("name") if history.exists(a.get("analysis_id")) else None))
+        if path == "/api/live/control":
+            return self._live_control(body)
         if path == "/api/memory/learn-history":
             if memory.JOB["running"]:
                 return self._send(409, {"error": "Already learning from the history", "job": memory.JOB})
@@ -993,6 +1044,100 @@ class Handler(BaseHTTPRequestHandler):
                 except OSError:
                     pass
         return self._send(200, stored)
+
+    # ------------------------------------------------------------ live analysis
+    def _live_ingest(self):
+        eng = live_engine(self.cfg)
+        ip = self.client_address[0]
+        if not eng.enabled:
+            return self._send(403, {"error": "live analysis is disabled (enable it in the Live window or set "
+                                             "\"live_enabled\": true)"})
+        if _locked_out(ip):
+            return self._send(429, {"error": "too many failed attempts"})
+        token = str(self.cfg.get("live_token") or "")
+        auth = self.headers.get("Authorization") or ""
+        sent = self.headers.get("X-Ingest-Token") or (auth.split(" ", 1)[1].strip() if " " in auth else "") or \
+            (parse_qs(urlparse(self.path).query).get("token") or [""])[0]
+        if not token or not hmac.compare_digest(sent.encode(), token.encode()):
+            _record_fail(ip)
+            return self._send(401, {"error": "missing or wrong ingest token"})
+        length = int(self.headers.get("Content-Length") or 0)
+        if length > 10 * 1024 * 1024:
+            return self._send(413, {"error": "batch larger than 10 MB - send smaller batches"})
+        try:
+            n = eng.ingest_http(self.rfile.read(length), self.headers.get("Content-Type"), ip)
+        except ValueError as e:
+            return self._send(400, {"error": str(e)})
+        return self._send(200, {"accepted": n, "seq": eng.seq})
+
+    def _live_setup(self):
+        hosts = agent_urls(self.cfg)
+        base = next((u for u in hosts if "127.0.0.1" not in u and "localhost" not in u), hosts[0] if hosts else "")
+        return {"enabled": bool(self.cfg.get("live_enabled")), "token": self.cfg.get("live_token") or "",
+                "ingest_url": f"{base}/api/live/ingest", "listening_on_network": not is_local_only(self.cfg),
+                "syslog_port": int(self.cfg.get("live_syslog_port") or 0),
+                "window_minutes": self.cfg.get("live_window_minutes"), "interval_s": self.cfg.get("live_interval_s")}
+
+    def _live_control(self, body):
+        eng = live_engine(self.cfg)
+        act = str(body.get("action") or "")
+        actor = self._actor()
+        if act in ("enable", "disable"):
+            self.cfg["live_enabled"] = act == "enable"
+            if act == "enable" and not self.cfg.get("live_token"):
+                self.cfg["live_token"] = secrets.token_urlsafe(24)
+            save_config(self.cfg, ("live_enabled", "live_token"))
+            if act == "enable" and not eng._servers:
+                eng.start_syslog()
+            config_store.audit(actor, "live", act, "", None, None)
+        elif act == "token":
+            self.cfg["live_token"] = secrets.token_urlsafe(24)
+            save_config(self.cfg, ("live_token",))
+            config_store.audit(actor, "live", "new_token", "", None, None)
+        elif act == "settings":
+            try:
+                self.cfg["live_window_minutes"] = max(1, min(1440, float(body.get("window_minutes") or 60)))
+                self.cfg["live_interval_s"] = max(5, min(3600, float(body.get("interval_s") or 20)))
+            except (TypeError, ValueError):
+                return self._send(400, {"error": "window and interval must be numbers"})
+            save_config(self.cfg, ("live_window_minutes", "live_interval_s"))
+        elif act in ("pause", "resume"):
+            eng.paused = act == "pause"
+        elif act == "analyse":
+            try:
+                eng.analyse()
+            except Exception as e:  # noqa: BLE001
+                return self._send(500, {"error": f"analysis failed: {e}"})
+        elif act == "clear":
+            eng.clear()
+        elif act == "ack":
+            eng.ack(str(body.get("key")))
+        elif act == "ack_all":
+            eng.ack_all()
+        elif act == "snapshot":
+            rows = eng.window()
+            if not rows:
+                return self._send(400, {"error": "no events in the live window"})
+            tmp = config_store.UPLOAD_DIR / f"livesnap-{secrets.token_hex(6)}"
+            try:
+                files, _ = eng.write_window(tmp, rows)
+                res = pipeline.to_json(pipeline.analyze_files(files, tz_hours=float(self.cfg.get("tz_hours") or 0),
+                                                              learn_baseline=False, extra_ioc_paths=learned_feeds(self.cfg)))
+                name = f"Live snapshot {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC ({len(rows)} events)"
+                out = finish(self.cfg, res, "live", name, files, move=True, actor=actor)
+            finally:
+                for p in tmp.glob("*") if tmp.exists() else []:
+                    p.unlink(missing_ok=True)
+                try:
+                    tmp.rmdir()
+                except OSError:
+                    pass
+            return self._send(200, {"analysis_id": out["analysis_id"], "stored": out.get("stored")})
+        else:
+            return self._send(400, {"error": "unknown action"})
+        st = eng.state(int(body.get("since") or 0))
+        st["setup"] = self._live_setup()
+        return self._send(200, st)
 
     # ------------------------------------------------------------ history, reputation, learning
     def _history(self, path, body):
@@ -1143,7 +1288,8 @@ class Handler(BaseHTTPRequestHandler):
                     cfg[key] = max(0, int(body[key]))
                 except (TypeError, ValueError):
                     return self._send(400, {"error": f"{key} must be a number"})
-        for key in ("history_enabled", "store_logs", "learn_from_data", "reputation_auto"):
+        for key in ("history_enabled", "store_logs", "learn_from_data", "reputation_auto", "phishtank_enabled",
+                    "circl_enabled"):
             if key in body:
                 cfg[key] = bool(body[key])
         if "history_max_days" in body:
@@ -1151,7 +1297,7 @@ class Handler(BaseHTTPRequestHandler):
                 cfg["history_max_days"] = max(0, int(body["history_max_days"] or 0))
             except (TypeError, ValueError):
                 return self._send(400, {"error": "history_max_days must be a number"})
-        for key in ("abuseipdb_key", "virustotal_key"):
+        for key in ("abuseipdb_key", "virustotal_key", "otx_key", "abusech_key", "phishtank_key"):
             if isinstance(body.get(key), str) and body[key] != "********":
                 if body[key].strip() and not re.fullmatch(r"[A-Za-z0-9_\-]{16,128}", body[key].strip()):
                     return self._send(400, {"error": f"{key} does not look like an API key"})
@@ -1254,6 +1400,14 @@ def serve(cfg, open_browser=True):
     if on_network:
         print("  [!] Reachable from your network over plain HTTP - use it only on a trusted LAN or VPN.")
     print("  Press Ctrl+C to stop.\n")
+    if cfg.get("live_enabled") and not cfg.get("live_token"):
+        cfg["live_token"] = secrets.token_urlsafe(24)
+        save_config(cfg, ("live_token",))
+    eng = live_engine(cfg)
+    eng.start()
+    if cfg.get("live_enabled"):
+        print(f"  Live   : {urls[0]}/live  ·  SIEM -> POST {urls[-1]}/api/live/ingest (header X-Ingest-Token)"
+              + (f"  ·  syslog {eng.syslog_status}" if cfg.get("live_syslog_port") else ""))
     url = urls[0]
     threading.Thread(target=warmup, args=(cfg,), daemon=True).start()
     if open_browser:

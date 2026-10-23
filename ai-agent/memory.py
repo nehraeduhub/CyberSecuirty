@@ -376,7 +376,7 @@ def learn_from_history(analyse_logs=None, actor=""):
                 r = history.load(m["id"])
                 if r and r.get("findings") is not None:
                     record_sightings(r, m.get("name", ""), m.get("time"))
-                if analyse_logs and m["id"] not in _load(BASELINED, {}) and m.get("kind") in ("upload", "paste"):
+                if analyse_logs and m["id"] not in _load(BASELINED, {}) and m.get("kind") in ("upload", "paste", "live"):
                     files = history.log_files(m["id"])
                     if files and not history.verify(m["id"]):
                         analyse_logs(files)

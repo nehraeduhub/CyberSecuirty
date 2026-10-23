@@ -12,7 +12,7 @@ IDS, proxy, DNS, EDR, web) and it will:
 - produce a **branded 15-section A4 PDF report**
 
 Nothing leaves your machine. The one exception is the optional reputation look-up, which sends
-only public IPs, domains or URLs to AbuseIPDB or VirusTotal, and only when you ask.
+only public indicators (IPs, domains, URLs, hashes, CVE IDs) to the threat-intelligence sources you enable, and only when you ask.
 
 📘 **Full guide: [docs/SIEM-ANALYSIS-GUIDE.md](docs/SIEM-ANALYSIS-GUIDE.md)** · 🐧 CPU-only Linux setup: [docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md)
 
@@ -38,7 +38,8 @@ only public IPs, domains or URLs to AbuseIPDB or VirusTotal, and only when you a
 | 🏢 | **Trusted Networks & Assets**: CIDR/IP inventory with precedence, import/export with preview, and a change history. Trust is context and never suppresses a finding |
 | 🎨 | **Branding**: app and organisation names, logo (validated PNG/JPEG), colours and report labels, all editable in the UI. Hide it from the web UI with `"ui_show_branding": false`, and lock the Branding page with `"ui_hide_branding_page": true` in `config.json` |
 | 🗂️ | **History**: every analysis is stored with its original logs (SHA-256), so you can open it again, re-analyse it with the current rules, download the logs or delete it. Retention by age or size |
-| 🌐 | **Reputation**: AbuseIPDB and VirusTotal look-ups for public IPs, domains and URLs. Optional and only on request; internal and your own addresses are never sent |
+| 🌐 | **Threat intelligence**: AlienVault OTX, AbuseIPDB, VirusTotal, abuse.ch URLhaus / ThreatFox / MalwareBazaar, PhishTank and CVE details from cve.circl.lu, for IPs, domains, URLs, file hashes and CVEs. Optional and only on request; internal and your own addresses are never sent |
+| 📡 | **Live analysis window**: your SIEM forwards suspicious logs (HTTP webhook with token, or syslog UDP/TCP) and they are analysed continuously, with live alerts, action taken, a flagged event stream, incidents and snapshots to the History |
 | 🔬 | **Forensics page**: one tab per attack type (type of attack, actions taken by devices, recommendations, further suggestions, ordered forensic steps, read-only collection commands) and a **visual attack diagram** per incident: attacker → gateway → server → URL/path → C2/exfiltration, coloured by outcome. Also in the PDF |
 | 🟢 | **Trusted always green**: your networks, ISP addresses and assets are never shown as malicious, never listed as IOCs and never block targets. Their findings are still reported |
 | 🧠 | **Learns from your data**: your true/false-positive verdicts, confirmed and reputation-malicious indicators (a local IoC feed) and earlier sightings feed into every new analysis and the AI's case file. Reviewable and removable; nothing is ever hidden |
@@ -189,6 +190,7 @@ ai-agent/
 ├── engine.py              # structured rules, UEBA, statistics, threat intel, forensics
 ├── rules.py               # detection rule catalogue (IDs, severity, confidence, ATT&CK, FP guidance)
 ├── forensics.py           # forensic view per attack type (steps, read-only commands, suggestions)
+├── live.py                # live analysis of SIEM-forwarded logs (HTTP ingest, syslog, rolling window, alerts)
 ├── history.py             # stored analyses + original logs (open, re-analyse, download, delete, retention)
 ├── reputation.py          # AbuseIPDB / VirusTotal look-ups (opt-in, public indicators only, cached)
 ├── memory.py              # learning: analyst verdicts, learned IoC feed, sightings across analyses
@@ -204,6 +206,7 @@ ai-agent/
 ├── host_audit.py          # live Linux host security audit
 ├── report_pdf.py          # Tech Guardians branded PDF report (optional: reportlab)
 ├── static/index.html      # the web UI (single file, no build step)
+├── static/live.html       # the separate Live analysis window
 ├── samples/               # example attack logs; samples/siem/ = seven-source SIEM incident
 ├── scripts/setup-linux.sh # one-command, speed-tuned Linux install
 ├── scripts/benchmark.py   # tokens/second per model on this machine

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live SIEM Analysis</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><circle cx=%2212%22 cy=%2212%22 r=%2210%22 fill=%22%231E9E4F%22/><path d=%22M5 12h3l2-5 4 10 2-5h3%22 stroke=%22white%22 stroke-width=%222%22 fill=%22none%22/></svg>">
+<style>
+  :root {
+    --bg: #0a111c; --surface: #111a27; --surface2: #162232; --surface3: #1c2a3d; --border: #24344a;
+    --ink: #e4ebf3; --muted: #7d8da1; --brand: #123E6B; --brand-hi: #2f6db0; --green: #1E9E4F; --green-hi: #2bc06a;
+    --link: #6aa8ff; --critical: #ff4d6a; --high: #ff8a3d; --medium: #f2c14e; --low: #5b9cf0; --info: #8b98a9; --clean: #2bc06a;
+    --code-bg: #070c14; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.25); --radius: 12px;
+  }
+  :root[data-theme="light"] {
+    --bg: #eef2f7; --surface: #ffffff; --surface2: #f6f8fb; --surface3: #edf1f7; --border: #d9e1eb;
+    --ink: #16202e; --muted: #6a7889; --link: #1d5fb0;
+    --critical: #c4122f; --high: #d4561b; --medium: #b58400; --low: #2f6db0; --info: #5a6470; --clean: #1E9E4F;
+    --code-bg: #f1f4f8; --shadow: 0 1px 2px rgba(16,32,48,.06), 0 6px 18px rgba(16,32,48,.06);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg);
+         color: var(--ink); font-size: 14px; line-height: 1.45; }
+  a { color: var(--link); }
+  button, input, select { font: inherit; color: var(--ink); }
+  input, select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; }
+  header { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+           padding: 12px 20px; background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: var(--shadow); }
+  header h1 { margin: 0; font-size: 17px; display: flex; align-items: center; gap: 9px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--info); display: inline-block; }
+  .dot.on { background: var(--clean); box-shadow: 0 0 0 0 var(--clean); animation: pulse 1.6s infinite; }
+  .dot.warn { background: var(--medium); }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--clean) 60%, transparent); } 100% { box-shadow: 0 0 0 9px transparent; } }
+  .spacer { flex: 1; }
+  main { padding: 18px 20px; max-width: 1600px; margin: 0 auto; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 8px; padding: 7px 12px;
+         border: 1px solid var(--border); background: var(--surface2); font-weight: 500; white-space: nowrap; }
+  .btn:hover { border-color: var(--brand-hi); } .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.primary { background: var(--green); border-color: var(--green); color: #fff; }
+  .btn.brand { background: var(--brand); border-color: var(--brand-hi); color: #fff; }
+  .btn.sm { padding: 4px 9px; font-size: 12.5px; } .btn.ghost { background: transparent; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 16px; }
+  .card h2 { margin: 0 0 10px; font-size: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .count { color: var(--muted); font-weight: 500; font-size: 12.5px; }
+  .kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .kpi .label { color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+  .kpi .value { font-size: 24px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .kpi .hint { color: var(--muted); font-size: 12px; }
+  .kpi.sev::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
+  .grid2 { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: .3px; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent);
+          border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); white-space: nowrap; }
+  .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+  .tag { display: inline-block; font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--surface3); border: 1px solid var(--border);
+         border-radius: 6px; padding: 1px 7px; margin: 2px 3px 2px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .4px; padding: 7px 8px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); }
+  td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr.new td { background: color-mix(in srgb, var(--critical) 7%, transparent); }
+  tr.inactive td { opacity: .55; }
+  .muted { color: var(--muted); } .small { font-size: 12.5px; }
+  .stream { font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--code-bg); border: 1px solid var(--border);
+            border-radius: 10px; height: 420px; overflow: auto; padding: 6px 0; }
+  .ln { padding: 2px 10px; white-space: pre-wrap; word-break: break-all; border-left: 3px solid transparent; }
+  .ln.hit { border-left-color: var(--critical); background: color-mix(in srgb, var(--critical) 8%, transparent); }
+  .ln .t { color: var(--muted); margin-right: 8px; } .ln .s { color: var(--link); margin-right: 8px; }
+  .ln .r { color: var(--critical); font-weight: 600; margin-left: 6px; }
+  .cmd { font-family: ui-monospace, Consolas, monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; background: var(--surface3);
+         border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
+  .chain { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+  .chain span { font-size: 12px; padding: 2px 8px; border-radius: 6px; background: var(--surface3); border: 1px solid var(--border); font-family: ui-monospace, Consolas, monospace; }
+  .chain span + span::before { content: "→ "; color: var(--muted); }
+  .bars { display: flex; align-items: flex-end; gap: 2px; height: 46px; }
+  .bars i { flex: 1; background: color-mix(in srgb, var(--brand-hi) 70%, transparent); border-radius: 2px 2px 0 0; min-height: 1px; }
+  .toast { position: fixed; right: 18px; bottom: 18px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--green);
+           padding: 10px 14px; border-radius: 10px; box-shadow: var(--shadow); max-width: 420px; z-index: 9; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  details summary { cursor: pointer; }
+  .spin { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; display: inline-block; animation: sp .8s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  @media (max-width: 1100px) { .grid2 { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(3, 1fr); } }
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="dot" id="dot"></span> Live SIEM analysis</h1>
+  <span class="muted small" id="statusText">connecting…</span>
+  <div class="spacer"></div>
+  <button class="btn sm" id="pauseBtn">⏸ Pause</button>
+  <button class="btn sm" id="analyseBtn">⚡ Analyse now</button>
+  <button class="btn sm brand" id="snapBtn" title="Store the current window (logs + analysis) in the History and open it in the main window">💾 Snapshot → main window</button>
+  <button class="btn sm ghost" id="clearBtn">Clear</button>
+  <button class="btn sm ghost" id="themeBtn">◐</button>
+</header>
+<main>
+  <div class="card" id="setupCard">
+    <details id="setupDetails">
+      <summary><b>Receiver setup</b> <span class="muted small" id="setupSummary"></span></summary>
+      <div id="setup" style="margin-top:12px"></div>
+    </details>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>Live alerts <span class="count" id="alertCount"></span>
+      <span class="spacer" style="flex:1"></span>
+      <label class="small"><input type="checkbox" id="showInactive"> show alerts that left the window</label>
+      <button class="btn sm ghost" id="ackAll">✔ Acknowledge all</button></h2>
+    <div style="overflow:auto;max-height:440px"><table><thead><tr><th>Status</th><th>Severity</th><th>Alert</th><th>Entities</th><th>Action taken</th><th>Events</th><th>First / last alerted (UTC)</th><th></th></tr></thead>
+      <tbody id="alerts"></tbody></table></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Live event stream <span class="count" id="streamMeta"></span>
+        <span class="spacer" style="flex:1"></span>
+        <input id="filter" placeholder="filter…" style="width:180px"> <label class="small"><input type="checkbox" id="onlyHits"> only flagged</label>
+        <label class="small"><input type="checkbox" id="follow" checked> follow</label></h2>
+      <div class="stream" id="stream"></div>
+      <div class="muted small" style="margin-top:6px">Lines marked red were used as evidence by an alert. Log text is shown as plain text (never executed).</div>
+    </div>
+    <div>
+      <div class="card"><h2>Events per minute <span class="count">last 60 minutes</span></h2><div class="bars" id="bars"></div></div>
+      <div class="card"><h2>Correlated incidents in the window</h2><div id="incidents" class="small"></div></div>
+      <div class="card"><h2>Hostile sources in the window</h2><div id="sources" class="small"></div></div>
+    </div>
+  </div>
+</main>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const sevVar = (s) => `var(--${s || "info"})`;
+const RESULT_SEV = {success: "critical", executed: "critical", allowed: "high", changed: "high", error: "medium", detected: "medium", blocked: "clean", failed: "clean", info: "info"};
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+document.documentElement.dataset.theme = store.get("theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+$("#themeBtn").onclick = () => { const t = document.documentElement.dataset.theme === "light" ? "dark" : "light"; document.documentElement.dataset.theme = t; store.set("theme", t); };
+let since = 0, state = null, lines = [], knownNew = new Set(), first = true;
+function toast(m) { const d = document.createElement("div"); d.className = "toast"; d.textContent = m; document.body.appendChild(d); setTimeout(() => d.remove(), 4200); }
+async function api(path, body) {
+  const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
+  if (r.status === 401) { location.reload(); throw new Error("signed out"); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+async function control(action, extra) {
+  try { const s = await api("/api/live/control", Object.assign({action, since}, extra || {})); apply(s, true); return s; }
+  catch (e) { toast("Error: " + e.message); }
+}
+async function poll() {
+  try { apply(await api("/api/live/state?since=" + since)); } catch (e) { $("#statusText").textContent = "Agent unreachable — retrying…"; $("#dot").className = "dot warn"; }
+  setTimeout(poll, document.hidden ? 6000 : 2000);
+}
+function apply(s, partial) {
+  state = s;
+  if (s.stream.length) { lines = lines.concat(s.stream).slice(-1500); since = s.seq; }
+  // re-flag lines already shown (flags arrive after each analysis)
+  const flagged = new Map(); s.stream.forEach((l) => flagged.set(l.seq, l.rules));
+  lines.forEach((l) => { if (flagged.has(l.seq)) l.rules = flagged.get(l.seq); });
+  const age = s.last_event ? (Date.now() - Date.parse(s.last_event.replace(" ", "T") + "Z")) / 1000 : 1e9;
+  $("#dot").className = "dot " + (!s.enabled ? "" : s.paused ? "warn" : age < 120 ? "on" : "");
+  $("#statusText").textContent = !s.enabled ? "Live analysis is off — enable it in Receiver setup"
+    : `${s.paused ? "Paused · " : ""}last event ${s.last_event || "—"} · analysed ${s.last_run || "not yet"}${s.run_ms ? ` (${(s.run_ms / 1000).toFixed(1)} s)` : ""}${s.pending && !s.paused ? " · new events waiting" : ""}`;
+  $("#pauseBtn").textContent = s.paused ? "▶ Resume" : "⏸ Pause";
+  document.title = (s.new_alerts ? `(${s.new_alerts}) ` : "") + "Live SIEM Analysis";
+  renderSetup(s.setup, s); renderKpis(s); renderAlerts(s); renderStream(); renderSide(s);
+  const fresh = s.alerts.filter((a) => a.status === "new" && !knownNew.has(a.key));
+  fresh.forEach((a) => knownNew.add(a.key));
+  if (!first && fresh.length) toast(`🚨 ${fresh.length} new alert(s): ${fresh[0].title}`);
+  first = false;
+}
+let setupKey = "";
+function renderSetup(st, s) {
+  const key = JSON.stringify([st, s.syslog, s.errors]);
+  if (key === setupKey) return;   // don't re-render while someone is typing in the inputs
+  setupKey = key;
+  const curlUrl = st.ingest_url;
+  $("#setupSummary").innerHTML = st.enabled ? `· HTTP ingest ${st.listening_on_network ? "ready" : "<b style='color:var(--medium)'>only from this machine</b>"} · syslog: ${esc(s.syslog)}` : "· <b>off</b>";
+  if (!st.enabled && !$("#setupDetails").open && first) $("#setupDetails").open = true;
+  $("#setup").innerHTML = `<div class="row" style="margin-bottom:10px">
+      ${st.enabled ? '<button class="btn sm" data-c="disable">⏻ Turn live analysis off</button>' : '<button class="btn sm primary" data-c="enable">⏻ Turn live analysis on</button>'}
+      ${st.enabled ? '<button class="btn sm ghost" data-c="token">↻ New ingest token</button>' : ""}
+      <span class="small muted">Window <input id="winMin" type="number" min="1" max="1440" value="${st.window_minutes}" style="width:70px"> min · analyse every <input id="intS" type="number" min="5" max="3600" value="${st.interval_s}" style="width:70px"> s</span>
+      <button class="btn sm" data-c="settings">Save</button></div>
+    ${st.enabled ? `<div class="small"><b>HTTP (webhook / log shipper):</b> POST events to <span class="tag">${esc(curlUrl)}</span> with header <span class="tag">X-Ingest-Token: ${esc(st.token)}</span>
+      <div class="cmd">curl -X POST '${esc(curlUrl)}' -H 'X-Ingest-Token: ${esc(st.token)}' -H 'Content-Type: application/json' \\\n  -d '[{"timestamp":"2026-10-23T10:00:00Z","src_ip":"203.0.113.9","user":"admin","action":"logon","outcome":"failure","host":"WEB01"}]'</div>
+      Accepted: JSON object or array, <code>{"events":[...]}</code>, Splunk alert webhook (<code>{"result":{...}}</code>), NDJSON, or plain text lines (<code>Content-Type: text/plain</code>).
+      ${st.listening_on_network ? "" : `<div style="color:var(--medium);margin-top:6px">The agent only listens on 127.0.0.1, so a SIEM on another machine cannot reach it. Set <code>"host": "0.0.0.0"</code> in config.json and restart.</div>`}
+      <p><b>Syslog:</b> ${st.syslog_port ? `${esc(s.syslog)} — point the SIEM / rsyslog forwarder at this server, port ${st.syslog_port} (UDP or TCP).` : `off. Set <code>"live_syslog_port": 5514</code> in config.json (optionally <code>"live_allowed_sources": ["10.0.0.5"]</code>) and restart.`}</p>
+      <details><summary class="small">Examples: Splunk, Wazuh, Graylog, rsyslog, Elastic</summary>
+        <p class="small"><b>Splunk</b> — alert action <i>Webhook</i>: URL <code>${esc(curlUrl)}?token=${esc(st.token)}</code> (Splunk webhooks cannot set headers; the token in the URL may appear in proxy logs).</p>
+        <p class="small"><b>Wazuh</b> — integration block in ossec.conf: <code>&lt;integration&gt;&lt;name&gt;custom-cybersec&lt;/name&gt;&lt;hook_url&gt;${esc(curlUrl)}?token=…&lt;/hook_url&gt;&lt;level&gt;7&lt;/level&gt;&lt;alert_format&gt;json&lt;/alert_format&gt;&lt;/integration&gt;</code> or forward syslog to port ${st.syslog_port || 5514}.</p>
+        <p class="small"><b>Graylog</b> — Output / HTTP notification with header <code>X-Ingest-Token</code>, or a Syslog output to this server.</p>
+        <p class="small"><b>rsyslog</b> — <code>*.* @@this-server:${st.syslog_port || 5514}</code> (TCP) or <code>@this-server:${st.syslog_port || 5514}</code> (UDP).</p>
+        <p class="small"><b>Elastic / Logstash</b> — <code>output { http { url =&gt; "${esc(curlUrl)}" http_method =&gt; "post" format =&gt; "json_batch" headers =&gt; {"X-Ingest-Token" =&gt; "${esc(st.token)}"} } }</code></p>
+      </details></div>` : '<p class="small muted">When on, the agent accepts logs from your SIEM over HTTP (token-protected) and optionally syslog, and analyses them continuously with the same rules, trusted inventory and learned indicators as uploaded files. Nothing is executed or blocked.</p>'}
+    ${s.errors.length ? `<div class="small" style="color:var(--high);margin-top:8px">${s.errors.map(esc).join("<br>")}</div>` : ""}`;
+}
+$("#setup").addEventListener("click", (e) => {
+  const c = e.target.dataset.c; if (!c) return;
+  if (c === "settings") return control("settings", {window_minutes: +$("#winMin").value, interval_s: +$("#intS").value}).then(() => toast("Saved"));
+  if (c === "token" && !confirm("Create a new ingest token? The SIEM must be updated with it.")) return;
+  control(c);
+});
+function renderKpis(s) {
+  const sm = s.summary, rcv = s.received;
+  const k = (label, value, hint, c) => `<div class="kpi ${c ? "sev" : ""}" style="--c:${sevVar(c)}"><div class="label">${label}</div><div class="value">${value}</div><div class="hint">${hint}</div></div>`;
+  const perMin = s.rate.slice(-5).reduce((a, b) => a + b, 0) / 5;
+  $("#kpis").innerHTML = k("Live risk", sm.risk_score, esc(sm.risk_level), sm.risk_level === "clean" ? "clean" : sm.risk_level) +
+    k("New alerts", s.new_alerts, `${s.alerts.length} total`, s.new_alerts ? "critical" : "") +
+    k("Findings in window", sm.findings, `${sm.incidents.length} incident(s)`) +
+    k("Events in window", s.window_events.toLocaleString(), `last ${s.window_minutes} min`) +
+    k("Events / min", perMin.toFixed(1), "5-minute average") +
+    k("Received", (rcv.http + rcv.syslog).toLocaleString(), `HTTP ${rcv.http} · syslog ${rcv.syslog}${rcv.dropped ? ` · dropped ${rcv.dropped}` : ""}`);
+  const max = Math.max(1, ...s.rate);
+  $("#bars").innerHTML = s.rate.map((v, i) => `<i style="height:${Math.round(v / max * 100)}%" title="${60 - i} min ago: ${v}"></i>`).join("");
+}
+function renderAlerts(s) {
+  const show = s.alerts.filter((a) => $("#showInactive").checked || a.status !== "inactive");
+  $("#alertCount").textContent = `${s.new_alerts} new · ${show.length} shown`;
+  const ST = {new: ["critical", "new"], acknowledged: ["info", "ack"], inactive: ["info", "gone"]};
+  $("#alerts").innerHTML = show.length ? show.map((a) => `<tr class="${a.status}">
+    <td><span class="pill" style="--c:${sevVar(ST[a.status][0])}">${ST[a.status][1]}</span></td>
+    <td><span class="pill" style="--c:${sevVar(a.severity)}">${esc(a.severity)}</span><br><span class="muted small">risk ${a.risk ?? "-"}</span></td>
+    <td><b>${esc(a.title)}</b><br><span class="muted small">${esc(a.rule_id)} · ${esc(a.mitre || "")}${a.incident ? " · " + esc(a.incident) : ""}${a.verdict ? " · analyst: " + esc(a.verdict) : ""}</span>
+      ${a.sample ? `<div class="small muted" style="font-family:ui-monospace,monospace;margin-top:3px">${esc(a.sample.slice(0, 220))}</div>` : ""}
+      ${a.recommendation ? `<details class="small"><summary>What to do</summary>${esc(a.recommendation)}</details>` : ""}</td>
+    <td class="small">${[...a.ips, ...a.users, ...a.hosts].slice(0, 6).map((x) => `<span class="tag">${esc(x)}</span>`).join("")}</td>
+    <td class="small">${(a.actions || []).map((x) => `<div><span style="color:${sevVar(RESULT_SEV[x.result])};font-weight:600">${esc(x.action)}</span> <span class="muted">${esc(x.by)}</span></div>`).join("") || '<span class="muted">-</span>'}</td>
+    <td>${a.count}</td><td class="small muted">${esc(a.first)}<br>${esc(a.last)}</td>
+    <td>${a.status === "new" ? `<button class="btn sm ghost" data-ack="${esc(a.key)}">✔</button>` : ""}</td></tr>`).join("")
+    : `<tr><td colspan="8" class="muted">${s.enabled ? "No alerts yet. Events are analysed every " + s.interval_s + " s while they arrive." : "Live analysis is off."}</td></tr>`;
+}
+$("#alerts").onclick = (e) => { const k = e.target.dataset.ack; if (k) control("ack", {key: k}); };
+$("#ackAll").onclick = () => control("ack_all");
+$("#showInactive").onchange = () => state && renderAlerts(state);
+function renderStream() {
+  const f = $("#filter").value.toLowerCase(), only = $("#onlyHits").checked;
+  const show = lines.filter((l) => (!only || l.rules?.length) && (!f || l.text.toLowerCase().includes(f) || l.source.includes(f))).slice(-500);
+  $("#streamMeta").textContent = `${lines.length} recent line(s) shown of ${state?.seq ?? 0} received`;
+  const box = $("#stream"), atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
+  box.innerHTML = show.map((l) => `<div class="ln ${l.rules?.length ? "hit" : ""}"><span class="t">${esc(l.time.slice(11))}</span><span class="s">${esc(l.source)}</span>${esc(l.text)}${l.rules?.length ? `<span class="r">⚑ ${esc([...new Set(l.rules)].join(", "))}</span>` : ""}</div>`).join("")
+    || '<div class="ln muted">Waiting for events…</div>';
+  if ($("#follow").checked && (atEnd || first)) box.scrollTop = box.scrollHeight;
+}
+["#filter", "#onlyHits"].forEach((s) => $(s).addEventListener("input", renderStream));
+function renderSide(s) {
+  const inc = s.summary.incidents;
+  $("#incidents").innerHTML = inc.length ? inc.map((i) => `<div style="margin-bottom:10px"><span class="pill" style="--c:${sevVar(i.severity)}">${esc(i.severity)}</span> <b>${esc(i.id)}</b> · ${esc(i.status || "")}
+    <div class="muted">${esc(i.title)}</div>${i.attack_path ? `<div class="chain">${i.attack_path.split(" → ").map((x) => `<span>${esc(x)}</span>`).join("")}</div>` : ""}</div>`).join("")
+    + '<div class="muted">Use <b>Snapshot → main window</b> for the attack diagram, Forensics tabs, AI investigation and PDF report.</div>'
+    : '<span class="muted">No correlated incident in the current window.</span>';
+  $("#sources").innerHTML = s.summary.ip_profiles.length ? s.summary.ip_profiles.map((p) => `<div style="margin:4px 0"><span class="tag">${esc(p.ip)}</span> <span class="pill" style="--c:${sevVar(p.verdict === "Malicious" ? "critical" : "medium")}">${esc(p.verdict)}</span> <span class="muted">${esc((p.activity || [])[0] || "")}</span></div>`).join("")
+    : '<span class="muted">None. Your trusted addresses are never listed here.</span>';
+}
+$("#pauseBtn").onclick = () => control(state?.paused ? "resume" : "pause");
+$("#analyseBtn").onclick = async () => { $("#analyseBtn").disabled = true; await control("analyse"); $("#analyseBtn").disabled = false; };
+$("#clearBtn").onclick = () => confirm("Clear the live window and alerts? The raw spool on disk is kept.") && control("clear").then(() => { lines = []; renderStream(); });
+$("#snapBtn").onclick = async () => {
+  $("#snapBtn").disabled = true;
+  try {
+    const r = await api("/api/live/control", {action: "snapshot"});
+    toast("Snapshot stored in the History");
+    const w = window.open("/?analysis=" + encodeURIComponent(r.analysis_id), "cybersec-main");
+    if (!w) toast("Pop-up blocked: open the main window → History to see the snapshot");
+  } catch (e) { toast("Error: " + e.message); }
+  $("#snapBtn").disabled = false;
+};
+poll();
+</script>
+</body>
+</html>

@@ -392,27 +392,48 @@ Every analysis is stored until you delete it: uploaded files, pasted logs, the s
 | `history_max_days` | `0` | delete analyses older than N days (0 = keep until deleted) |
 | `history_max_gb` | `20` | delete the oldest analyses when the history grows beyond this |
 
-### Reputation (AbuseIPDB / VirusTotal)
-The **Reputation** card lists the public IPs, domains and full URLs of an analysis. **Check** or
-**Check all** asks AbuseIPDB (IPs) and VirusTotal (IPs, domains, URLs) for their reputation and
-shows a verdict for each:
-- `malicious`: AbuseIPDB ≥ 75% or at least 3 VirusTotal engines
-- `suspicious`
-- `no known abuse`
-- `unknown`
+### Threat intelligence (OTX, AbuseIPDB, VirusTotal, abuse.ch, PhishTank, CVE)
+The **Threat intelligence** card lists the public IPs, domains, full URLs, file hashes and CVE IDs
+of an analysis. CVE IDs are taken from finding references, IDS signatures and log lines.
+**Check** or **Check all** asks every configured source that supports the indicator type.
 
-The results are saved with the analysis, included in PDF Section 9 and given to the AI.
+| Source | Indicators | `config.json` / Settings | Notes |
+|---|---|---|---|
+| **AlienVault OTX** (shown first) | IP, domain, URL, hash | `otx_key` | pulses, malware families, tags |
+| AbuseIPDB | IP | `abuseipdb_key` | abuse confidence, reports, ISP, Tor |
+| VirusTotal | IP, domain, URL, hash | `virustotal_key` | engine detections; URLs/files looked up, never submitted |
+| abuse.ch **URLhaus** | URL, host, payload hash | `abusech_key` | malware-distribution URLs, online/offline |
+| abuse.ch **ThreatFox** | IP, domain, URL, hash | `abusech_key` | malware IOCs (C2, botnets) with confidence |
+| abuse.ch **MalwareBazaar** | file hash | `abusech_key` | malware family / signature, file type |
+| **PhishTank** | URL | `phishtank_enabled` (+ optional `phishtank_key`) | verified phishing sites |
+| **CIRCL** cve.circl.lu | CVE ID | `circl_enabled` | CVSS, severity, affected products, references |
 
-This is the only feature that contacts the internet, so it is limited:
-- **Off by default.** It works only once you add a key in **Settings → Reputation look-ups**, or set `abuseipdb_key` / `virustotal_key` in `config.json` or `AGENT_ABUSEIPDB_KEY` / `AGENT_VIRUSTOTAL_KEY` in the environment.
+The free abuse.ch key (auth.abuse.ch) covers URLhaus, ThreatFox and MalwareBazaar. Keys can also be
+set with `AGENT_OTX_KEY`, `AGENT_ABUSEIPDB_KEY`, `AGENT_VIRUSTOTAL_KEY`, `AGENT_ABUSECH_KEY` and
+`AGENT_PHISHTANK_KEY`.
+
+**Verdicts.** A source counts as `malicious` when:
+- OTX has ≥ 3 pulses
+- AbuseIPDB ≥ 75%
+- ≥ 3 VirusTotal engines flag it
+- it is listed by URLhaus, ThreatFox or MalwareBazaar
+- PhishTank verified it
+
+The overall verdict is the most serious one from any source (`malicious`, `suspicious`, `no known abuse`, `unknown`).
+CVE IDs get `vulnerability (critical/high/…)` from their CVSS score. Each source is shown as a
+coloured chip with its own result and a link to the source's page. Results are saved with the
+analysis, included in PDF Section 9 and given to the AI. Malicious indicators join the local IoC
+feed (see Learning).
+
+Apart from live forwarding, which you set up yourself, this is the only feature that contacts the internet, so it is limited:
+- **Off by default.** Nothing is contacted until you add a key or enable a source.
 - **Runs only on request.** A look-up happens when you click, unless you switch on `reputation_auto`.
-- **Only the indicator is sent.** Log lines are never sent.
-- **Some indicators are never sent:** private, reserved and documentation addresses, internal names (`.local`, `.corp`…) and anything listed in Trusted Networks & Assets. The server refuses them.
-- **URLs are only looked up.** They are never submitted for scanning, because a submission would make them public.
-- **Cached and rate-limited.** Results are cached for 24 hours (`reputation_cache_hours`). Requests are throttled to the free-tier limits: VirusTotal 4 per minute and 500 per day (`virustotal_per_min`, `virustotal_daily_limit`), AbuseIPDB 1,000 per day (`abuseipdb_daily_limit`).
-- **Logged.** Every look-up is recorded in the change history.
-- **Never changes findings.** Reputation is context: it doesn't change severity, and a clean result doesn't clear a finding.
-- **Network access.** The server needs outbound HTTPS to `api.abuseipdb.com` and `www.virustotal.com`. The standard `HTTPS_PROXY` variable is honoured.
+- **Only the indicator value is sent.** Log lines are never sent.
+- **Some indicators are never sent:** private, reserved and documentation addresses, internal names (`.local`, `.corp`…) and anything in Trusted Networks & Assets. The server refuses them.
+- **Look-ups only.** Nothing is ever submitted for scanning. The abuse.ch and PhishTank APIs use POST for their *query* endpoints, which are still look-ups.
+- **Cached and rate-limited.** Results are cached for 24 hours (`reputation_cache_hours`). Every source is throttled and has a daily quota, for example VirusTotal 4 per minute and 500 per day (`<source>_per_min`, `virustotal_daily_limit`, `otx_daily_limit`, `abusech_daily_limit`…).
+- **Logged and context only.** Every look-up is recorded in the change history. Results never change severity, and a clean result never clears a finding.
+- **Network access.** The server needs outbound HTTPS to the sources you enable: otx.alienvault.com, api.abuseipdb.com, www.virustotal.com, urlhaus-api.abuse.ch, threatfox-api.abuse.ch, mb-api.abuse.ch, checkurl.phishtank.com and cve.circl.lu. `HTTPS_PROXY` is honoured.
 
 ### Learning from your data
 The local model's weights are **not** re-trained. On a CPU-only server that is impractical, and
@@ -442,7 +463,45 @@ The AI case file gets an **ORGANISATION MEMORY** section with the relevant verdi
 and reputation, so the local model answers with what your team already knows. Set
 `"learn_from_data": false` to switch learning off.
 
-## 10. Forensics page
+## 10. Live analysis (logs forwarded by your SIEM)
+
+**📡 Live analysis ↗** in the sidebar opens a **separate window** (`/live`). The rest of the
+interface is unchanged. Your SIEM forwards suspicious logs, and the agent analyses them
+continuously with the same rules, correlation, UEBA, trusted inventory and learned indicators as
+uploaded files.
+
+**Turn it on** in the Live window under **Receiver setup**, or set `"live_enabled": true` in `config.json`.
+An ingest token is created automatically. The SIEM must be able to reach the agent, so set
+`"host": "0.0.0.0"` and open the port on the firewall for the SIEM only.
+
+| Receiver | How |
+|---|---|
+| HTTP / webhook | `POST /api/live/ingest` with header `X-Ingest-Token: <token>` (or `Authorization: Bearer <token>`, or `?token=` for tools that cannot set headers). Body: a JSON object or array, `{"events": [...]}`, a Splunk alert webhook (`{"result": {...}}`, `_raw` used when present), NDJSON, or plain text lines. Up to 10 MB per request |
+| Syslog | `"live_syslog_port": 5514` (UDP + TCP, RFC 3164/5424, octet-counted or newline framing). Optional `"live_allowed_sources": ["10.0.0.5", "10.1.0.0/24"]` |
+
+The Live window shows examples for Splunk, Wazuh, Graylog, rsyslog and Logstash.
+
+```bash
+curl -X POST http://SERVER:8787/api/live/ingest -H 'X-Ingest-Token: TOKEN' -H 'Content-Type: application/json' \
+     -d '[{"timestamp":"2026-10-23T10:00:00Z","src_ip":"203.0.113.9","user":"admin","action":"logon","outcome":"failure"}]'
+```
+
+**How it works**
+- **The window:** events received in the last `live_window_minutes` (default 60) are analysed when new events arrive, at most every `live_interval_s` (default 20 s).
+- **Alerts:** each finding becomes an alert keyed by rule and entity:
+  - **new** alerts are highlighted, raise a notification and appear in the window title as a count
+  - repeats only update the count
+  - **✔** acknowledges an alert
+  - alerts whose events have left the window are greyed out
+- **Each alert shows** severity and risk, the evidence line, the entities, the **action taken** by the firewall, VPN or server, and "What to do".
+- **The event stream** is the latest lines (plain text, never executed). Lines used as evidence are marked red with the rule ID. You can filter it and pause following.
+- **The side panels** show events per minute, the correlated incidents with their attack path, and hostile sources. Your trusted addresses never appear there.
+- **💾 Snapshot → main window** stores the window's logs and analysis in the **History** (type "Live snapshot") and opens it in the main window. There you get the attack diagram, the Forensics tabs, AI investigation, threat-intel look-ups and the PDF report. Snapshots also feed **Learn from stored logs**.
+- **Raw events** are kept in `data/live/` (owner-only) for `live_keep_days` (default 7). After a restart the last window is reloaded. Nothing is blocked or executed. Turning live analysis on or off and new tokens are recorded in the change history.
+
+![Live window](screenshot-live.jpg)
+
+## 11. Forensics page
 
 **Forensics** in the sidebar shows the current analysis, or one opened from History, split by attack type. One tab per type:
 - web attacks
@@ -490,14 +549,14 @@ and **⬇ Forensic guide** downloads it all as Markdown.
 
 ![Forensics page](screenshot-forensics.jpg)
 
-## 11. Offline and security
+## 12. Offline and security
 
-- **No external calls during analysis.** A test runs the whole analysis with network connections disabled. Ollama is reached on 127.0.0.1 only, and only if you use the AI. The only optional online feature is the reputation look-up (section 9): it is off until you add a key, it runs only on request, and it sends only public indicator values.
+- **No external calls during analysis.** A test runs the whole analysis with network connections disabled. Ollama is reached on 127.0.0.1 only, and only if you use the AI. The optional online features are the threat-intelligence look-ups (section 9), which are off until you add a key, run only on request and send only indicator values, and the live receiver (section 10), which only accepts data you forward to it.
 - **The web UI is local by default.** On a network IP it requires the access token. Cross-site requests are blocked, and log content is always HTML-escaped.
 - **Restricted files.** Uploads, baselines, the audit trail and config files are owner-only (0600/0700). Upload names are sanitised and kept inside the upload folder.
 - **Safe parsers.** Parsers never execute content: `csv`, `json`, `ElementTree` and regular expressions only.
 
-## 12. Files
+## 13. Files
 
 | File | Purpose |
 |---|---|
@@ -513,7 +572,7 @@ and **⬇ Forensic guide** downloads it all as Markdown.
 | `config/examples/` | Example `trusted_assets`, `branding`, `field_mappings`, `detection_rules` |
 | `samples/siem/` | Multi-source sample incident + demo inventory + example IoC feed (`scripts/generate_samples.py`) |
 
-## 13. Known limitations
+## 14. Known limitations
 
 - Windows `.evtx` binary files must be exported to XML or CSV first.
 - Typical throughput is about 9,000 events/s per analysis on a 4-core machine. A 1 GB export, roughly 5 million events, takes several minutes. Memory grows with the number of distinct source/destination pairs, about 200 MB for 500,000 flow events.
