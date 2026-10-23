@@ -154,11 +154,24 @@ journalctl -u cybersec-agent -n 20         # shows the URL and the access token
   - `ui_hide_branding_page: true` removes the **Branding** page and blocks branding changes from the browser, including the Settings switch. Branding can then only be changed on the server, in `config/branding.json`.
   - PDF reports always keep the branding.
   - The environment variables `AGENT_SHOW_BRANDING` and `AGENT_HIDE_BRANDING_PAGE` work too.
+- **HTTPS on port 443 (recommended on a network):**
+  ```bash
+  python3 agent.py make-cert --port 443            # self-signed certificate for this machine's names and IPs
+  nano config.json                                 # optional: "http_redirect_port": 80  (http:// -> https://)
+  sudo systemctl restart cybersec-agent
+  ```
+  Then open `https://SERVER-IP`. The browser warns once, because the certificate is
+  self-signed. Compare the SHA-256 fingerprint printed by `make-cert` and accept it, or import
+  `config/tls/agent.crt` into your PCs' trusted certificates.
+  - **Your own certificate** (company CA or Let's Encrypt): put the paths in `config.json` instead, as `"tls_cert": "/path/fullchain.pem", "tls_key": "/path/privkey.pem"`. The service user must be able to read both.
+  - **Port 443 without root:** ports below 1024 are privileged. The service created by `setup-linux.sh --service` already has `AmbientCapabilities=CAP_NET_BIND_SERVICE`. For an older install, run `sudo systemctl edit cybersec-agent`, add `[Service]` and `AmbientCapabilities=CAP_NET_BIND_SERVICE`, and restart. Never run the agent as root.
+  - With HTTPS on, login cookies are marked *Secure*, TLS 1.2+ is required, and the Live-window ingest URL becomes `https://SERVER-IP/api/live/ingest`. SIEMs must trust the certificate, or use your own CA certificate.
+  - Firewall: `sudo ufw allow from 192.168.1.0/24 to any port 443 proto tcp`, plus `80` if you use the redirect.
 - If the firewall is on, allow only your LAN:
   `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp`
 - **Ollama stays on 127.0.0.1.** Only the agent talks to it, so the AI is never exposed to
   the network directly.
-- The connection is plain HTTP, so use this only on a trusted LAN or VPN. For access across
+- Without HTTPS the connection is plain HTTP, so use it only on a trusted LAN or VPN, or turn on HTTPS (below). For access across
   untrusted networks, keep `127.0.0.1` and use an SSH tunnel instead:
   `ssh -L 8787:127.0.0.1:8787 user@server`, then open `http://127.0.0.1:8787`.
 - The host audit will now list port 8787 as exposed. That is expected, because you opened it
@@ -214,6 +227,8 @@ Other speed tips:
 | Reputation says "cannot reach the service" | The server needs outbound HTTPS to api.abuseipdb.com and www.virustotal.com (set `HTTPS_PROXY` if you use a proxy) |
 | Disk filling up | History keeps every analysis with its logs. Delete old ones on the History page, or set `"history_max_days"` / `"history_max_gb"` in `config.json` |
 | SIEM cannot send to the Live window | Set `"host": "0.0.0.0"`, restart, and allow only the SIEM: `sudo ufw allow from <SIEM-IP> to any port 8787 proto tcp` (and the syslog port, e.g. `5514`, if you use it). The token is shown in the Live window → Receiver setup |
+| "Port 443 needs permission to bind" | Add `AmbientCapabilities=CAP_NET_BIND_SERVICE` to the service (`sudo systemctl edit cybersec-agent`) and restart |
+| Browser says the certificate is not trusted | Expected with `make-cert` (self-signed): check the fingerprint and accept it, or use your own CA / Let's Encrypt certificate via `tls_cert` / `tls_key` |
 | Lost the access token | `python3 agent.py info` on the server |
 | Forgot the password | On the server: `python3 agent.py set-password` (sets a new one), then restart the agent |
 | "Too many failed sign-ins" | Wait 15 minutes, or restart the agent |

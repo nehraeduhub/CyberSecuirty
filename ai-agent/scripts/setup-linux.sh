@@ -117,6 +117,9 @@ User=${RUN_USER}
 WorkingDirectory=${AGENT_DIR}
 ExecStart=$(command -v python3) ${AGENT_DIR}/agent.py --no-browser
 Restart=on-failure
+# lets the agent use port 443 / 80 (HTTPS) without running as root
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
 
 [Install]
 WantedBy=multi-user.target

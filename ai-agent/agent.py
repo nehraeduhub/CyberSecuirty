@@ -19,6 +19,8 @@ import re
 import secrets
 import shutil
 import socket
+import ssl
+import subprocess
 import sys
 import threading
 import time
@@ -103,6 +105,9 @@ DEFAULTS = {
     "ui_show_branding": True,       # false = hide logo, organisation name and credit line in the web UI
     "ui_hide_branding_page": False,  # true = remove the Branding page and lock branding changes from the web UI
     "port": 8787,
+    "tls_cert": "",           # HTTPS: certificate file (PEM, full chain). Create one with: python3 agent.py make-cert
+    "tls_key": "",            # HTTPS: private key file (PEM)
+    "http_redirect_port": 0,  # with HTTPS: also listen on this port (e.g. 80) and redirect browsers to https://
 }
 
 SYSTEM_PROMPT = """You are CyberSec AI Agent, an expert SOC analyst, incident responder and \
@@ -255,11 +260,68 @@ def _record_fail(ip):
         _FAILS.setdefault(ip, []).append(time.time())
 
 
+def tls_enabled(cfg):
+    return bool(cfg.get("tls_cert") and cfg.get("tls_key"))
+
+
 def agent_urls(cfg):
-    port = cfg["port"]
+    port = int(cfg["port"])
+    scheme = "https" if tls_enabled(cfg) else "http"
+    suffix = "" if (scheme, port) in (("https", 443), ("http", 80)) else f":{port}"
     if cfg["host"] in ("0.0.0.0", "", "::"):
-        return [f"http://127.0.0.1:{port}"] + [f"http://{ip}:{port}" for ip in lan_addresses()]
-    return [f"http://{cfg['host']}:{port}"]
+        return [f"{scheme}://127.0.0.1{suffix}"] + [f"{scheme}://{ip}{suffix}" for ip in lan_addresses()]
+    return [f"{scheme}://{cfg['host']}{suffix}"]
+
+
+def tls_context(cfg):
+    """Server TLS context (TLS 1.2+, the library's secure defaults). Raises SystemExit with a clear message."""
+    cert, key = Path(cfg["tls_cert"]).expanduser(), Path(cfg["tls_key"]).expanduser()
+    for f, what in ((cert, "certificate"), (key, "private key")):
+        if not f.is_file():
+            sys.exit(f"\n  [!] HTTPS {what} not found: {f}\n      Create one with:  python3 agent.py make-cert\n"
+                     "      or set \"tls_cert\" / \"tls_key\" in config.json to your own files.\n")
+    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+    try:
+        ctx.load_cert_chain(str(cert), str(key))
+    except (ssl.SSLError, OSError) as e:
+        sys.exit(f"\n  [!] Cannot load the HTTPS certificate/key ({e}).\n      Check that the key matches the "
+                 "certificate and that this user can read both files.\n")
+    return ctx
+
+
+class _TLSServerMixin:
+    """Wrap accepted sockets; the TLS handshake runs in the request thread, not the accept loop."""
+    tls_ctx = None
+
+    def get_request(self):
+        sock, addr = super().get_request()
+        return self.tls_ctx.wrap_socket(sock, server_side=True, do_handshake_on_connect=False), addr
+
+    def handle_error(self, request, client_address):
+        if isinstance(sys.exc_info()[1], (ssl.SSLError, ConnectionError, TimeoutError)):
+            return  # plain HTTP to the HTTPS port, scanners, aborted handshakes: not worth a traceback
+        super().handle_error(request, client_address)
+
+
+class _Redirect(BaseHTTPRequestHandler):
+    """Port 80 -> https:// on the same host name."""
+    https_port = 443
+
+    def log_message(self, fmt, *args):
+        pass
+
+    def do_GET(self):
+        host = (self.headers.get("Host") or "").rsplit(":", 1)[0].strip("[]") or "localhost"
+        if not re.fullmatch(r"[A-Za-z0-9.\-:]{1,253}", host):
+            host = "localhost"
+        port = "" if self.https_port == 443 else f":{self.https_port}"
+        self.send_response(301)
+        self.send_header("Location", f"https://{host}{port}{self.path if self.path.startswith('/') else '/'}")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+    do_HEAD = do_POST = do_GET
 
 
 def is_local_only(cfg):
@@ -711,18 +773,21 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(401, {"error": "Wrong username or password."})
             config_store.audit(f"{self.cfg['username']}@{ip}", "login", "sign_in", "", {}, {})
             cookie = (f"tg_session={make_session(self.cfg, self.cfg['username'])}; HttpOnly; SameSite=Strict; Path=/; "
-                      f"Max-Age={int(float(self.cfg.get('session_hours') or 12) * 3600)}")
+                      f"Max-Age={int(float(self.cfg.get('session_hours') or 12) * 3600)}{self._secure()}")
             return self._send(200, {"ok": True}, headers={"Set-Cookie": cookie})
         token = self.cfg.get("access_token") or ""
         if not token or not hmac.compare_digest(str(body.get("token", "")).encode(), token.encode()):
             _record_fail(ip)
             time.sleep(1.5)  # slow down guessing
             return self._send(401, {"error": "Wrong token - try again."})
-        cookie = f"tg_token={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=2592000"
+        cookie = f"tg_token={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=2592000{self._secure()}"
         return self._send(200, {"ok": True}, headers={"Set-Cookie": cookie})
 
+    def _secure(self):
+        return "; Secure" if tls_enabled(self.cfg) else ""
+
     def _logout(self):
-        expired = "; HttpOnly; SameSite=Strict; Path=/; Max-Age=0"
+        expired = f"; HttpOnly; SameSite=Strict; Path=/; Max-Age=0{self._secure()}"
         return self._send(200, {"ok": True}, headers={"Set-Cookie": "tg_session=" + expired})
 
     def do_GET(self):
@@ -1370,9 +1435,17 @@ def serve(cfg, open_browser=True):
     server_cls = ThreadingHTTPServer
     if ":" in cfg["host"]:  # IPv6 address such as "::"
         server_cls = type("V6Server", (ThreadingHTTPServer,), {"address_family": socket.AF_INET6})
+    if tls_enabled(cfg):
+        server_cls = type("TLSServer", (_TLSServerMixin, server_cls), {"tls_ctx": tls_context(cfg)})
     try:
         httpd = server_cls((cfg["host"], cfg["port"]), Handler)
     except OSError as e:
+        if e.errno == 13 and int(cfg["port"]) < 1024:  # EACCES: privileged port
+            sys.exit(f"\n  [!] Port {cfg['port']} needs permission to bind (ports below 1024 are privileged).\n"
+                     "      As a service:  sudo systemctl edit cybersec-agent   and add\n"
+                     "          [Service]\n          AmbientCapabilities=CAP_NET_BIND_SERVICE\n"
+                     "      then:  sudo systemctl restart cybersec-agent\n"
+                     "      (or run ./scripts/setup-linux.sh --service again). Don't run the agent as root.\n")
         if e.errno == 98:  # EADDRINUSE
             sys.exit(f"\n  [!] Port {cfg['port']} is already in use - the agent is probably already running"
                      " (e.g. as the cybersec-agent service).\n"
@@ -1397,8 +1470,21 @@ def serve(cfg, open_browser=True):
     elif on_network:
         print(f"  Access token: {cfg['access_token']}   (stored in {CONFIG_FILE.name})")
         print("  [i] Prefer a password? Run:  python3 agent.py set-password")
-    if on_network:
-        print("  [!] Reachable from your network over plain HTTP - use it only on a trusted LAN or VPN.")
+    if tls_enabled(cfg):
+        print(f"  HTTPS  : on (certificate {cfg['tls_cert']})")
+        rport = int(cfg.get("http_redirect_port") or 0)
+        if rport:
+            red = type("R", (_Redirect,), {"https_port": int(cfg["port"])})
+            try:
+                rsrv = type("RS", (ThreadingHTTPServer,), {"address_family": server_cls.address_family,
+                                                           "daemon_threads": True})((cfg["host"], rport), red)
+                threading.Thread(target=rsrv.serve_forever, daemon=True).start()
+                print(f"  Redirect: http://...:{rport} -> https")
+            except OSError as e:
+                print(f"  [!] HTTP redirect port {rport} not available ({e.strerror or e})")
+    elif on_network:
+        print("  [!] Reachable from your network over plain HTTP - use it only on a trusted LAN or VPN.\n"
+              "      For HTTPS:  python3 agent.py make-cert   (then restart)")
     print("  Press Ctrl+C to stop.\n")
     if cfg.get("live_enabled") and not cfg.get("live_token"):
         cfg["live_token"] = secrets.token_urlsafe(24)
@@ -1535,6 +1621,51 @@ def cli_remove_password(cfg):
           "(shown by: python3 agent.py info).")
 
 
+def cli_make_cert(cfg, args):
+    """Self-signed certificate for HTTPS (valid for this machine's names and IPs), then enable it in config.json."""
+    names = {socket.gethostname(), socket.getfqdn(), "localhost"}
+    ips = set(lan_addresses()) | {"127.0.0.1"}
+    for x in args.name or []:
+        try:
+            import ipaddress
+            ipaddress.ip_address(x)
+            ips.add(x)
+        except ValueError:
+            names.add(x)
+    names = {n for n in names if n and re.fullmatch(r"[A-Za-z0-9.\-*]{1,253}", n)}
+    d = Path(__file__).resolve().parent / "config" / "tls"
+    d.mkdir(parents=True, exist_ok=True)
+    os.chmod(d, 0o700)
+    crt, key = d / "agent.crt", d / "agent.key"
+    if crt.exists() and not args.force:
+        sys.exit(f"{crt} already exists. Use --force to replace it.")
+    san = ",".join([f"DNS:{n}" for n in sorted(names)] + [f"IP:{i}" for i in sorted(ips)])
+    cmd = ["openssl", "req", "-x509", "-newkey", "rsa:3072", "-sha256", "-nodes", "-days", str(args.days),
+           "-keyout", str(key), "-out", str(crt), "-subj", f"/CN={args.name[0] if args.name else socket.gethostname()}",
+           "-addext", f"subjectAltName={san}", "-addext", "extendedKeyUsage=serverAuth"]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    except FileNotFoundError:
+        sys.exit("openssl is not installed:  sudo apt install openssl   (or set tls_cert / tls_key to your own files)")
+    if r.returncode != 0:
+        sys.exit("openssl failed: " + (r.stderr or r.stdout)[-500:])
+    os.chmod(key, 0o600)
+    os.chmod(crt, 0o644)
+    cfg.update(tls_cert=str(crt), tls_key=str(key))
+    if args.port:
+        cfg["port"] = args.port
+    save_config(cfg, ("tls_cert", "tls_key") + (("port",) if args.port else ()))
+    print(f"Self-signed certificate created ({args.days} days) for: {', '.join(sorted(names) + sorted(ips))}\n"
+          f"  {crt}\n  {key}  (private key, owner-only)\n"
+          f"HTTPS is now enabled in {CONFIG_FILE.name}{f' on port {args.port}' if args.port else ''}. Restart the agent:\n"
+          "  sudo systemctl restart cybersec-agent      (or stop and start python3 agent.py)\n"
+          "Browsers will warn once because the certificate is self-signed: check the fingerprint below and accept it,\n"
+          "or import agent.crt into the clients' trusted certificates.")
+    fp = subprocess.run(["openssl", "x509", "-in", str(crt), "-noout", "-fingerprint", "-sha256"],
+                        capture_output=True, text=True)
+    print("  " + fp.stdout.strip())
+
+
 def cli_scan(cfg, args):
     files = [(Path(f), Path(f).name) for f in args.files]
     for p, _ in files:
@@ -1574,6 +1705,11 @@ def main():
     sp_pw = sub.add_parser("set-password", help="use a username + password for the web login instead of the token")
     sp_pw.add_argument("--user", help="login name (default: current one, or admin)")
     sub.add_parser("remove-password", help="remove the password login and go back to the access token")
+    mc = sub.add_parser("make-cert", help="create a self-signed HTTPS certificate and enable HTTPS")
+    mc.add_argument("--name", action="append", help="extra DNS name or IP for the certificate (repeatable)")
+    mc.add_argument("--days", type=int, default=825, help="validity in days (default 825)")
+    mc.add_argument("--port", type=int, help="also set the port, e.g. 443")
+    mc.add_argument("--force", action="store_true", help="replace an existing certificate")
     s = sub.add_parser("scan", help="analyse SIEM exports / log files from the terminal")
     s.add_argument("files", nargs="+", help="CSV, JSON, JSONL, XML, CEF, syslog or text logs (.gz ok)")
     s.add_argument("--trust", metavar="JSON", help="use this trusted-assets file instead of config/trusted_assets.json")
@@ -1599,6 +1735,8 @@ def main():
         return cli_set_password(cfg, args)
     if args.cmd == "remove-password":
         return cli_remove_password(cfg)
+    if args.cmd == "make-cert":
+        return cli_make_cert(cfg, args)
     if args.cmd == "scan":
         cli_scan(cfg, args)
     elif args.cmd == "audit":

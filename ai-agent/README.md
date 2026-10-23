@@ -133,6 +133,7 @@ python agent.py scan access.log --ai --pdf incident.pdf   # + AI assessment + PD
 python agent.py scan access.log --json > out.json
 sudo python agent.py audit --pdf audit.pdf --client "ACME" --assessor "SOC team"   # Linux host audit
 python agent.py set-password                              # web login with username + password instead of the token
+python agent.py make-cert --port 443                      # HTTPS on port 443 with a self-signed certificate
 python agent.py --port 9000 --model dolphin3 --no-browser
 python scripts/benchmark.py                               # measure each model's speed
 ```
@@ -168,7 +169,8 @@ Rules live in [`detector.py`](detector.py) as plain regexes, so it's easy to add
   It is generated on first start, printed in the terminal, and stored in `config.json`.
   **To sign in with a username and password instead**, run `python3 agent.py set-password` and restart
   (only a salted hash is stored; `python3 agent.py remove-password` goes back to the token). Use
-  this only on a trusted LAN/VPN (plain HTTP). Details: [docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md).
+  this only on a trusted LAN/VPN, or turn on **HTTPS**: `python agent.py make-cert --port 443` (or your own
+  certificate via `"tls_cert"` / `"tls_key"`). Details: [docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md).
 - Requests from other websites are blocked (Host header + JSON content-type checks), so a
   malicious page can't drive your agent or change its settings.
 - Log content is always HTML-escaped in the UI, so attacker-controlled log lines can't

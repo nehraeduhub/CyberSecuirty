@@ -3,6 +3,7 @@ config.json
 config/*.json
 !config/examples/*.json
 config/ioc/
+config/tls/
 # runtime data: uploads, UEBA baselines, audit trail (may contain sensitive evidence)
 data/
 # uploaded logos
