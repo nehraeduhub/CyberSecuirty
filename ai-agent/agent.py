@@ -31,7 +31,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, urlparse
-from urllib.request import ProxyHandler, Request, build_opener
+from urllib.request import (HTTPDefaultErrorHandler, HTTPErrorProcessor, HTTPHandler, HTTPRedirectHandler,
+                            HTTPSHandler, OpenerDirector, ProxyHandler, Request, UnknownHandler, build_opener)
 
 import branding
 import config_store
@@ -124,7 +125,36 @@ engine and shown to the user. Do not repeat them: add correlation, reasoning, at
 intent and priorities instead.
 - Be concise. Use short headings, bullet points and code blocks."""
 
-_OPENER = build_opener(ProxyHandler({}))  # local AI: never route through a system proxy
+def _http_only_opener():
+    """urllib opener for the local AI server: http/https only (no file:, ftp:, data:), no system proxy."""
+    op = OpenerDirector()
+    for h in (ProxyHandler({}), HTTPHandler(), HTTPSHandler(), HTTPDefaultErrorHandler(), HTTPRedirectHandler(),
+              HTTPErrorProcessor(), UnknownHandler()):   # UnknownHandler: other schemes raise URLError
+        op.add_handler(h)
+    return op
+
+
+_OPENER = _http_only_opener()  # local AI: never route through a system proxy
+
+
+def validate_ai_url(url):
+    """The AI server URL: http(s) only, no credentials / query / fragment, never link-local (cloud metadata)."""
+    import ipaddress
+    u = urlparse(str(url or "").strip())
+    if u.scheme not in ("http", "https") or not u.hostname:
+        raise ValueError("Server URL must start with http:// or https://")
+    if u.username or u.password or u.query or u.fragment or u.params:
+        raise ValueError("Server URL must not contain credentials, a query or a fragment")
+    try:
+        a = ipaddress.ip_address(u.hostname)
+        if a.is_link_local or a.is_multicast or a.is_unspecified or str(a).startswith("169.254."):
+            raise ValueError("Server URL may not point to a link-local / metadata address")
+    except ValueError as e:
+        if "Server URL" in str(e):
+            raise
+    if u.hostname.lower() in ("metadata.google.internal", "metadata"):
+        raise ValueError("Server URL may not point to a cloud metadata service")
+    return f"{u.scheme}://{u.netloc}{u.path}".rstrip("/")
 
 
 class LLMError(Exception):
@@ -175,18 +205,33 @@ SAVED_KEYS = ("provider", "base_url", "model", "api_key", "temperature", "num_ct
               "phishtank_key", "circl_enabled")
 
 
+_CONFIG_LOCK = threading.Lock()
+
+
 def save_config(cfg, keys=SAVED_KEYS):
-    """Update only these keys in config.json; anything else in the file (host, port...) is kept."""
-    try:
-        data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        data = {}
-    data.update({k: cfg[k] for k in keys})
-    CONFIG_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
-    try:
-        os.chmod(CONFIG_FILE, 0o600)  # holds the access token / API key
-    except OSError:
-        pass
+    """Update only these keys in config.json; anything else in the file (host, port...) is kept.
+    Locked (no lost updates), written to a 0600 temp file and renamed (never half-written or briefly readable)."""
+    with _CONFIG_LOCK:
+        try:
+            data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            data = {}
+        except (OSError, ValueError):
+            # never overwrite a file we could not read (it would silently drop the password, keys...)
+            bad = CONFIG_FILE.with_name(CONFIG_FILE.name + f".broken-{int(time.time())}")
+            try:
+                os.replace(CONFIG_FILE, bad)
+                os.chmod(bad, 0o600)
+            except OSError:
+                pass
+            data = {}
+        data.update({k: cfg[k] for k in keys if k in cfg})
+        tmp = CONFIG_FILE.with_name(f".{CONFIG_FILE.name}.{os.getpid()}.tmp")
+        fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(data, fh, indent=2)
+        os.chmod(tmp, 0o600)
+        os.replace(tmp, CONFIG_FILE)
 
 
 LOOPBACK = ("127.0.0.1", "localhost", "::1")
@@ -220,8 +265,14 @@ def password_mode(cfg):
 
 
 def _session_key(cfg):
-    # bound to the password hash: changing or removing the password signs everyone out
-    return (str(cfg.get("session_secret")) + "|" + str(cfg.get("password_hash"))).encode()
+    # bound to the password hash (or access token) and the session epoch: changing the password / token or
+    # "sign out everywhere" invalidates every existing session
+    return "|".join(str(cfg.get(k) or "") for k in ("session_secret", "password_hash", "access_token",
+                                                     "session_epoch")).encode()
+
+
+def _session_user(cfg):
+    return cfg.get("username") if password_mode(cfg) else "token-user"
 
 
 def make_session(cfg, user):
@@ -240,7 +291,7 @@ def check_session(cfg, value):
     except ValueError:
         return None
     good = hmac.new(_session_key(cfg), f"{user}|{exp}".encode(), hashlib.sha256).hexdigest()
-    return user if hmac.compare_digest(sig, good) and user == cfg.get("username") else None
+    return user if hmac.compare_digest(sig, good) and user == _session_user(cfg) else None
 
 
 _FAILS = {}            # client ip -> [failure times]; slows down password guessing
@@ -248,16 +299,56 @@ _FAILS_LOCK = threading.Lock()
 LOCKOUT = (10, 900)    # 10 failures within 15 minutes locks that address out for the rest of the window
 
 
-def _locked_out(ip):
+_HASH_SLOTS = threading.BoundedSemaphore(4)   # at most 4 password hashes at once (PBKDF2 is deliberately slow)
+
+
+def _prune_fails(now):
+    if len(_FAILS) > 5000:
+        for k in [k for k, v in _FAILS.items() if not v or v[-1] < now - LOCKOUT[1]]:
+            _FAILS.pop(k, None)
+        while len(_FAILS) > 5000:          # still flooded (many source addresses): drop the oldest entries
+            _FAILS.pop(next(iter(_FAILS)))
+
+
+def _locked_out(key):
     with _FAILS_LOCK:
-        recent = [t for t in _FAILS.get(ip, []) if t > time.time() - LOCKOUT[1]]
-        _FAILS[ip] = recent
+        now = time.time()
+        recent = [t for t in _FAILS.get(key, []) if t > now - LOCKOUT[1]]
+        if recent:
+            _FAILS[key] = recent
+        else:
+            _FAILS.pop(key, None)
         return len(recent) >= LOCKOUT[0]
 
 
-def _record_fail(ip):
+def _begin_attempt(key):
+    """Count the attempt *before* checking it, atomically: parallel bursts can't exceed the limit.
+    Returns a ticket to pass to _attempt_ok on success, or None when the key is locked out."""
     with _FAILS_LOCK:
-        _FAILS.setdefault(ip, []).append(time.time())
+        now = time.time()
+        recent = [t for t in _FAILS.get(key, []) if t > now - LOCKOUT[1]]
+        if len(recent) >= LOCKOUT[0]:
+            _FAILS[key] = recent
+            return None
+        recent.append(now)
+        _FAILS[key] = recent
+        _prune_fails(now)
+        return now
+
+
+def _attempt_ok(key, ticket):
+    with _FAILS_LOCK:
+        lst = _FAILS.get(key) or []
+        if ticket in lst:
+            lst.remove(ticket)
+        if not lst:
+            _FAILS.pop(key, None)
+
+
+def _record_fail(key):
+    with _FAILS_LOCK:
+        _FAILS.setdefault(key, []).append(time.time())
+        _prune_fails(time.time())
 
 
 def tls_enabled(cfg):
@@ -290,6 +381,38 @@ def tls_context(cfg):
     return ctx
 
 
+class _BoundedThreads:
+    """At most max_threads requests in flight; further connections are closed at once (thread exhaustion)."""
+    max_threads = 256
+    daemon_threads = True
+    request_queue_size = 128   # listen backlog: bursts queue instead of being reset
+
+    def __init__(self, *a, **kw):
+        self._slots = threading.BoundedSemaphore(self.max_threads)
+        super().__init__(*a, **kw)
+
+    def process_request(self, request, client_address):
+        if not self._slots.acquire(blocking=False):
+            self.shutdown_request(request)
+            return
+        try:
+            super().process_request(request, client_address)
+        except Exception:
+            self._slots.release()
+            raise
+
+    def process_request_thread(self, request, client_address):
+        try:
+            super().process_request_thread(request, client_address)
+        finally:
+            self._slots.release()
+
+    def handle_error(self, request, client_address):
+        if isinstance(sys.exc_info()[1], (ConnectionError, TimeoutError, ssl.SSLError)):
+            return   # client went away / slow client timed out: not an error of ours
+        super().handle_error(request, client_address)
+
+
 class _TLSServerMixin:
     """Wrap accepted sockets; the TLS handshake runs in the request thread, not the accept loop."""
     tls_ctx = None
@@ -307,6 +430,9 @@ class _TLSServerMixin:
 class _Redirect(BaseHTTPRequestHandler):
     """Port 80 -> https:// on the same host name."""
     https_port = 443
+    timeout = 15
+    server_version = "CyberSecAIAgent"
+    sys_version = ""
 
     def log_message(self, fmt, *args):
         pass
@@ -635,7 +761,9 @@ def remember(result):
     return result
 
 
-def recall(body):
+def recall(body, allow_client_copy=True):
+    """The analysis named by analysis_id (memory, then History). Read-only helpers may fall back to an analysis
+    object sent by the client; anything that writes or learns passes allow_client_copy=False."""
     aid = str(body.get("analysis_id") or "")
     a = _ANALYSES.get(aid)
     if a is None and history.exists(aid):  # older analysis: load it back from the history
@@ -644,12 +772,14 @@ def recall(body):
             _ANALYSES[aid] = a
             while len(_ANALYSES) > _ANALYSES_MAX:
                 _ANALYSES.popitem(last=False)
-    return a if a is not None else body.get("analysis")
+    return a if a is not None else (body.get("analysis") if allow_client_copy else None)
 
 
 def persist(analysis):
-    """Save later additions (AI text, reputation, verdicts) to the stored analysis, if it is stored."""
-    if isinstance(analysis, dict) and history.exists(analysis.get("analysis_id")):
+    """Save later additions (AI text, reputation, verdicts) to the stored analysis, if it is stored.
+    Only the server's own copy is ever written: an analysis object sent by a client is never persisted."""
+    if isinstance(analysis, dict) and _ANALYSES.get(analysis.get("analysis_id")) is analysis and \
+            history.exists(analysis.get("analysis_id")):
         try:
             history.update_result(analysis)
         except OSError:
@@ -668,7 +798,8 @@ def finish(cfg, result, kind, name, files=(), move=False, actor="", samples=()):
         try:
             history.save(result, kind, name, files if cfg.get("store_logs", True) else (), move=move,
                          actor=actor, samples=samples)
-            history.enforce_retention(cfg.get("history_max_days") or 0, cfg.get("history_max_gb") or 0)
+            for gone in history.enforce_retention(cfg.get("history_max_days") or 0, cfg.get("history_max_gb") or 0):
+                _ANALYSES.pop(gone, None)
             if cfg.get("learn_from_data", True):
                 memory.record_sightings(result, name)
                 if kind in ("upload", "paste") and cfg.get("learn_baseline", True):
@@ -709,7 +840,10 @@ def safe_filename(name):
 # ---------------------------------------------------------------- web server
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = f"CyberSecAIAgent/{VERSION}"
+    server_version = "CyberSecAIAgent"   # no version numbers in headers
+    sys_version = ""
+    timeout = 60                          # per-connection socket timeout: slow / idle clients can't hold threads
+    protocol_version = "HTTP/1.0"
     cfg = None  # set in serve()
 
     def log_message(self, fmt, *args):
@@ -723,19 +857,45 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
-        self.send_header("X-Content-Type-Options", "nosniff")
-        self.send_header("X-Frame-Options", "DENY")
+        self._security_headers(ctype, (headers or {}).get("_nonce"))
         for k, v in (headers or {}).items():
-            self.send_header(k, v)
+            if not k.startswith("_"):
+                self.send_header(k, v)
         self.end_headers()
         self.wfile.write(body)
 
-    def _json_body(self):
-        length = int(self.headers.get("Content-Length") or 0)
-        if length > MAX_BODY:
-            raise ValueError(f"Upload too large (max {MAX_BODY // 1024 // 1024} MB)")
-        return json.loads(self.rfile.read(length) or b"{}")
+    def _security_headers(self, ctype="application/json", nonce=None):
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+        self.send_header("Cross-Origin-Resource-Policy", "same-origin")
+        self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()")
+        if nonce:   # our pages: only our own script (nonce) may run; no plugins, no framing, no foreign forms
+            csp = (f"default-src 'self'; script-src 'nonce-{nonce}'; style-src 'self' 'unsafe-inline'; "
+                   "img-src 'self' data: blob:; connect-src 'self'; font-src 'self' data:; object-src 'none'; "
+                   "base-uri 'none'; form-action 'self'; frame-ancestors 'none'")
+        else:
+            csp = "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; frame-ancestors 'none'; sandbox"
+        self.send_header("Content-Security-Policy", csp)
+        if tls_enabled(self.cfg or {}):
+            self.send_header("Strict-Transport-Security", "max-age=31536000")
+
+    def _page(self, html, code=200):
+        """HTML with a fresh CSP nonce on its <script> tags."""
+        nonce = secrets.token_urlsafe(16)
+        if isinstance(html, bytes):
+            html = html.decode("utf-8")
+        html = html.replace("<script>", f'<script nonce="{nonce}">')
+        return self._send(code, html, "text/html; charset=utf-8", {"_nonce": nonce})
+
+    def _json_body(self, cap=MAX_BODY):
+        length = self._length(cap)
+        try:
+            return json.loads(self.rfile.read(length) or b"{}")
+        except (ValueError, RecursionError):
+            raise ValueError("invalid JSON") from None
 
     # ---- access control
     # Password set (python3 agent.py set-password): username + password, on every address, token not accepted.
@@ -754,44 +914,65 @@ class Handler(BaseHTTPRequestHandler):
         token = self.cfg.get("access_token")
         if not token:
             return "local"
-        sent = self.headers.get("X-Agent-Token", "") or self._cookie("tg_token")
-        return "token-user" if hmac.compare_digest(sent.encode(), token.encode()) else None
+        sent = self.headers.get("X-Agent-Token", "")      # scripts / API clients
+        if sent:
+            return "token-user" if hmac.compare_digest(sent.encode(), token.encode()) else None
+        return check_session(self.cfg, self._cookie("tg_session"))   # browsers: signed session, never the raw token
 
     def _authorized(self):
         return self._user() is not None
 
     def _login(self, body):
         ip = self.client_address[0]
-        if _locked_out(ip):
+        key = "login:" + ip
+        ticket = _begin_attempt(key)
+        if ticket is None:
             return self._send(429, {"error": "Too many failed sign-ins. Wait 15 minutes and try again."})
         if password_mode(self.cfg):
-            ok = (hmac.compare_digest(str(body.get("username", "")).strip().encode(), str(self.cfg.get("username")).encode())
-                  & check_password(str(body.get("password", "")), self.cfg["password_hash"]))
-            if not ok:
-                _record_fail(ip)
-                time.sleep(1.5)  # slow down guessing
-                return self._send(401, {"error": "Wrong username or password."})
-            config_store.audit(f"{self.cfg['username']}@{ip}", "login", "sign_in", "", {}, {})
-            cookie = (f"tg_session={make_session(self.cfg, self.cfg['username'])}; HttpOnly; SameSite=Strict; Path=/; "
-                      f"Max-Age={int(float(self.cfg.get('session_hours') or 12) * 3600)}{self._secure()}")
-            return self._send(200, {"ok": True}, headers={"Set-Cookie": cookie})
-        token = self.cfg.get("access_token") or ""
-        if not token or not hmac.compare_digest(str(body.get("token", "")).encode(), token.encode()):
-            _record_fail(ip)
-            time.sleep(1.5)  # slow down guessing
-            return self._send(401, {"error": "Wrong token - try again."})
-        cookie = f"tg_token={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=2592000{self._secure()}"
+            with _HASH_SLOTS:
+                ok = (hmac.compare_digest(str(body.get("username", "")).strip().encode(),
+                                          str(self.cfg.get("username")).encode())
+                      & check_password(str(body.get("password", ""))[:1024], self.cfg["password_hash"]))
+            who = self.cfg.get("username")
+        else:
+            token = self.cfg.get("access_token") or ""
+            ok = bool(token) and hmac.compare_digest(str(body.get("token", "")).encode(), token.encode())
+            who = "token-user"
+        if not ok:
+            time.sleep(1.5)  # slow down guessing (the attempt is already counted)
+            return self._send(401, {"error": "Wrong username or password." if password_mode(self.cfg)
+                                    else "Wrong token - try again."})
+        _attempt_ok(key, ticket)
+        config_store.audit(f"{who}@{ip}", "login", "sign_in", "", {}, {})
+        hours = float(self.cfg.get("session_hours") or 12)
+        cookie = (f"tg_session={make_session(self.cfg, _session_user(self.cfg))}; HttpOnly; SameSite=Strict; Path=/; "
+                  f"Max-Age={int(hours * 3600)}{self._secure()}")
         return self._send(200, {"ok": True}, headers={"Set-Cookie": cookie})
 
     def _secure(self):
         return "; Secure" if tls_enabled(self.cfg) else ""
 
-    def _logout(self):
+    def _logout(self, everywhere=False):
+        if everywhere and self._authorized():   # invalidate every session on every browser
+            self.cfg["session_epoch"] = secrets.token_hex(8)
+            save_config(self.cfg, ("session_epoch",))
+            config_store.audit(self._actor(), "login", "sign_out_everywhere", "", None, None)
         expired = f"; HttpOnly; SameSite=Strict; Path=/; Max-Age=0{self._secure()}"
-        return self._send(200, {"ok": True}, headers={"Set-Cookie": "tg_session=" + expired})
+        # two Set-Cookie headers: also clear the legacy raw-token cookie of older versions
+        self.send_response(200)
+        body = b'{"ok": true}'
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Set-Cookie", "tg_session=" + expired)
+        self.send_header("Set-Cookie", "tg_token=" + expired)
+        self._security_headers()
+        self.end_headers()
+        self.wfile.write(body)
 
     def do_GET(self):
         path = self.path.split("?", 1)[0]
+        if not self._host_ok() and path != "/branding/logo":
+            return self._send(403, {"error": "forbidden"})
         if path == "/branding/logo":
             data, ctype = branding.logo_bytes(branding.load())
             return self._send(200, data, ctype) if data else self._send(200, DEFAULT_LOGO_SVG, "image/svg+xml")
@@ -801,17 +982,19 @@ class Handler(BaseHTTPRequestHandler):
             if path in ("/", "/index.html"):
                 b = branding.load()
                 show = self.cfg.get("ui_show_branding", True)
-                page = LOGIN_PAGE.replace("{APP}", _html(b["application_name"])) \
-                    .replace("{LOGO}", '<img src="/branding/logo" alt="" style="height:54px;display:block;margin:0 auto 10px">'
-                             if show else "") \
-                    .replace("{ORG}", f'<p style="text-align:center">{_html(b["organisation_name"])}</p>' if show else "") \
-                    .replace("{FIELDS}", LOGIN_PASSWORD if password_mode(self.cfg) else LOGIN_TOKEN)
-                return self._send(200, page, "text/html; charset=utf-8")
+                parts = {"APP": _html(b["application_name"]),
+                         "LOGO": '<img src="/branding/logo" alt="" style="height:54px;display:block;margin:0 auto 10px">'
+                                 if show else "",
+                         "ORG": f'<p style="text-align:center">{_html(b["organisation_name"])}</p>' if show else "",
+                         "FIELDS": LOGIN_PASSWORD if password_mode(self.cfg) else LOGIN_TOKEN}
+                # single pass: text from branding can never be re-expanded as a placeholder
+                page = re.sub(r"\{(APP|LOGO|ORG|FIELDS)\}", lambda m: parts[m.group(1)], LOGIN_PAGE)
+                return self._page(page)
             return self._send(401, {"error": "login required"})
         if path in ("/", "/index.html"):
-            return self._send(200, (STATIC / "index.html").read_bytes(), "text/html; charset=utf-8")
+            return self._page((STATIC / "index.html").read_bytes())
         if path == "/live":
-            return self._send(200, (STATIC / "live.html").read_bytes(), "text/html; charset=utf-8")
+            return self._page((STATIC / "live.html").read_bytes())
         if path == "/api/live/state":
             q = parse_qs(urlparse(self.path).query)
             try:
@@ -855,7 +1038,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/octet-stream")
             self.send_header("Content-Length", str(fp.stat().st_size))
             self.send_header("Content-Disposition", f'attachment; filename="{safe_filename(name)}"')
-            self.send_header("X-Content-Type-Options", "nosniff")
+            self._security_headers()
             self.end_headers()
             with open(fp, "rb") as fh:
                 shutil.copyfileobj(fh, self.wfile, 1 << 20)
@@ -907,14 +1090,34 @@ class Handler(BaseHTTPRequestHandler):
             info.update(online=False, models=[], error=str(e))
         return info
 
+    def _host_ok(self):
+        """DNS rebinding: when bound to loopback, only requests addressed to a loopback name are served
+        (a rebinding site sends its own name in Host). On the network a login is required instead."""
+        if not is_local_only(self.cfg):
+            return True
+        host = (self.headers.get("Host") or "").strip()
+        if host.startswith("["):
+            host = host[1:host.find("]")] if "]" in host else ""
+        elif host.count(":") == 1:
+            host = host.rsplit(":", 1)[0]
+        return host.lower() in ("127.0.0.1", "localhost", "::1")
+
+    def _length(self, cap):
+        """Content-Length as a non-negative int no larger than cap; ValueError otherwise."""
+        raw = self.headers.get("Content-Length") or "0"
+        if not raw.isdigit():
+            raise ValueError("invalid Content-Length")
+        n = int(raw)
+        if n > cap:
+            raise ValueError(f"Request too large (max {cap // 1024 // 1024 or 1} MB)")
+        return n
+
     def _trusted(self):
         """Block other websites from driving the agent (CSRF / DNS rebinding).
 
         On the network the access token does this job: a rebinding site never has the cookie."""
-        if is_local_only(self.cfg):
-            host = (self.headers.get("Host") or "").rsplit(":", 1)[0]
-            if host not in ("127.0.0.1", "localhost"):
-                return False
+        if not self._host_ok():
+            return False
         # Forces a CORS preflight for cross-origin requests, which we never approve.
         ctype = (self.headers.get("Content-Type") or "")
         return ctype.startswith("application/json") or (
@@ -925,27 +1128,28 @@ class Handler(BaseHTTPRequestHandler):
         return f"{'local-user' if who == 'local' else who}@{self.client_address[0]}"
 
     def do_POST(self):
-        if self.path.split("?", 1)[0] == "/api/live/ingest":   # SIEM -> agent; token-authenticated, no cookies
+        path = self.path.split("?", 1)[0]
+        if path == "/api/live/ingest":   # SIEM -> agent; token-authenticated, no cookies
+            if not self._host_ok():
+                return self._send(403, {"error": "forbidden"})
             return self._live_ingest()
         if not self._trusted():
             return self._send(403, {"error": "forbidden"})
-        if self.path.startswith("/api/upload"):
-            if not self._authorized():
-                return self._send(401, {"error": "login required"})
+        public = path in ("/api/login", "/api/logout")
+        if not public and not self._authorized():   # nothing is read from an unauthenticated client
+            return self._send(401, {"error": "login required"})
+        if path == "/api/upload":
             return self._upload()
         try:
-            body = self._json_body()
+            body = self._json_body(64 * 1024 if public else MAX_BODY)
         except ValueError as e:
             return self._send(400, {"error": str(e)})
         if not isinstance(body, dict):
             return self._send(400, {"error": "expected a JSON object"})
-        path = self.path.split("?", 1)[0]
         if path == "/api/login":
             return self._login(body)
         if path == "/api/logout":
-            return self._logout()
-        if not self._authorized():
-            return self._send(401, {"error": "login required"})
+            return self._logout(bool(body.get("everywhere")))
         if path == "/api/analyze":
             text = body.get("text") or ""
             if not text.strip():
@@ -1057,12 +1261,13 @@ class Handler(BaseHTTPRequestHandler):
         if not re.fullmatch(r"[a-f0-9]{16}", batch):
             return self._send(400, {"error": "bad batch id"})
         name = safe_filename(self.headers.get("X-Filename") or (q.get("name") or ["upload.log"])[0])
-        length = int(self.headers.get("Content-Length") or 0)
         limit = int(self.cfg.get("max_upload_mb", 512)) * 1024 * 1024
+        try:
+            length = self._length(limit)
+        except ValueError as e:
+            return self._send(413 if "too large" in str(e) else 400, {"error": str(e)})
         if length <= 0:
             return self._send(400, {"error": "empty upload"})
-        if length > limit:
-            return self._send(413, {"error": f"file larger than {limit // 1024 // 1024} MB"})
         config_store.ensure_dirs()
         d = config_store.UPLOAD_DIR / batch
         d.mkdir(mode=0o700, exist_ok=True)
@@ -1117,20 +1322,23 @@ class Handler(BaseHTTPRequestHandler):
         if not eng.enabled:
             return self._send(403, {"error": "live analysis is disabled (enable it in the Live window or set "
                                              "\"live_enabled\": true)"})
-        if _locked_out(ip):
+        if _locked_out("ingest:" + ip):   # own table: a misconfigured SIEM can't lock anyone out of the web login
             return self._send(429, {"error": "too many failed attempts"})
         token = str(self.cfg.get("live_token") or "")
         auth = self.headers.get("Authorization") or ""
         sent = self.headers.get("X-Ingest-Token") or (auth.split(" ", 1)[1].strip() if " " in auth else "") or \
             (parse_qs(urlparse(self.path).query).get("token") or [""])[0]
         if not token or not hmac.compare_digest(sent.encode(), token.encode()):
-            _record_fail(ip)
+            _record_fail("ingest:" + ip)
             return self._send(401, {"error": "missing or wrong ingest token"})
-        length = int(self.headers.get("Content-Length") or 0)
-        if length > 10 * 1024 * 1024:
-            return self._send(413, {"error": "batch larger than 10 MB - send smaller batches"})
+        try:
+            length = self._length(10 * 1024 * 1024)
+        except ValueError as e:
+            return self._send(413 if "too large" in str(e) else 400, {"error": str(e)})
         try:
             n = eng.ingest_http(self.rfile.read(length), self.headers.get("Content-Type"), ip)
+        except PermissionError as e:
+            return self._send(403, {"error": str(e)})
         except ValueError as e:
             return self._send(400, {"error": str(e)})
         return self._send(200, {"accepted": n, "seq": eng.seq})
@@ -1210,14 +1418,13 @@ class Handler(BaseHTTPRequestHandler):
         aid = str(body.get("id") or "")
         if path == "/api/history/delete":
             if body.get("all"):
-                for m in history.list_all():
-                    memory.forget_analysis(m["id"])
-                return self._send(200, {"deleted": history.delete_all(actor)})
+                n = history.delete_all(actor)
+                _ANALYSES.clear()
+                return self._send(200, {"deleted": n})
             ids = body.get("ids") or [aid]
             n = 0
             for i in ids:
                 if history.valid_id(i) and history.delete(i, actor):
-                    memory.forget_analysis(i)
                     _ANALYSES.pop(i, None)
                     n += 1
             return self._send(200 if n else 404, {"deleted": n} if n else {"error": "not found"})
@@ -1252,7 +1459,7 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(404, {"error": "not found"})
 
     def _reputation(self, body):
-        analysis = recall(body) if body.get("analysis_id") else None
+        analysis = recall(body, allow_client_copy=False) if body.get("analysis_id") else None
         try:
             res = reputation.lookup(self.cfg, body.get("value"), trust.Inventory.load(), force=bool(body.get("force")))
         except reputation.RefusedError as e:
@@ -1270,7 +1477,7 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(200, res)
 
     def _feedback(self, body):
-        analysis = recall(body)
+        analysis = recall(body, allow_client_copy=False)
         if not isinstance(analysis, dict):
             return self._send(400, {"error": "analysis not found"})
         f = next((x for x in analysis.get("findings") or [] if x.get("fid") == body.get("fid")), None)
@@ -1338,15 +1545,25 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/pdf")
         self.send_header("Content-Length", str(len(pdf)))
         self.send_header("Content-Disposition", f'attachment; filename="{b["filename_prefix"]}-{datetime.now():%Y%m%d-%H%M}.pdf"')
+        self._security_headers()
         self.end_headers()
         self.wfile.write(pdf)
 
     def _update_config(self, body):
         cfg = self.cfg
         old_model = cfg["model"]
-        for key in ("provider", "base_url", "model"):
+        if isinstance(body.get("base_url"), str) and body["base_url"].strip() != cfg.get("base_url"):
+            try:
+                new = validate_ai_url(body["base_url"])
+            except ValueError as e:
+                return self._send(400, {"error": str(e)})
+            if urlparse(new).netloc != urlparse(str(cfg.get("base_url") or "")).netloc and \
+                    not (isinstance(body.get("api_key"), str) and body["api_key"] not in ("", "********")):
+                cfg["api_key"] = ""   # never send the stored key to a different server
+            cfg["base_url"] = new
+        for key in ("provider", "model"):
             if isinstance(body.get(key), str):
-                cfg[key] = body[key].strip()
+                cfg[key] = body[key].strip()[:200]
         for key in ("num_ctx", "num_predict", "num_thread"):
             if key in body:
                 try:
@@ -1401,8 +1618,8 @@ class Handler(BaseHTTPRequestHandler):
         # Plain streaming response; the connection closes when the reply is done.
         self.send_response(200)
         self.send_header("Content-Type", "text/plain; charset=utf-8")
-        self.send_header("Cache-Control", "no-store")
         self.send_header("X-Accel-Buffering", "no")
+        self._security_headers("text/plain")
         self.end_headers()
         try:
             for chunk in stream_chat(self.cfg, messages):
@@ -1432,9 +1649,9 @@ def serve(cfg, open_browser=True):
     if on_network and not password_mode(cfg) and not cfg.get("access_token"):
         cfg["access_token"] = secrets.token_urlsafe(18)
         save_config(cfg, ("access_token",))
-    server_cls = ThreadingHTTPServer
+    server_cls = type("AgentServer", (_BoundedThreads, ThreadingHTTPServer), {})
     if ":" in cfg["host"]:  # IPv6 address such as "::"
-        server_cls = type("V6Server", (ThreadingHTTPServer,), {"address_family": socket.AF_INET6})
+        server_cls = type("V6Server", (server_cls,), {"address_family": socket.AF_INET6})
     if tls_enabled(cfg):
         server_cls = type("TLSServer", (_TLSServerMixin, server_cls), {"tls_ctx": tls_context(cfg)})
     try:
@@ -1476,7 +1693,7 @@ def serve(cfg, open_browser=True):
         if rport:
             red = type("R", (_Redirect,), {"https_port": int(cfg["port"])})
             try:
-                rsrv = type("RS", (ThreadingHTTPServer,), {"address_family": server_cls.address_family,
+                rsrv = type("RS", (_BoundedThreads, ThreadingHTTPServer), {"address_family": server_cls.address_family,
                                                            "daemon_threads": True})((cfg["host"], rport), red)
                 threading.Thread(target=rsrv.serve_forever, daemon=True).start()
                 print(f"  Redirect: http://...:{rport} -> https")

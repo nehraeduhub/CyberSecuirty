@@ -101,7 +101,8 @@ def _indicators(f, result=None):
         refs = set(f.get("evidence") or [])
         text += " " + " ".join(str(e.get("raw", "")) for e in result.get("evidence") or [] if e.get("id") in refs)
         i = result.get("iocs") or {}
-        for k, t in (("urls", "url"), ("domains", "domain"), ("hashes", "hash")):
+        # URLs and hashes only: a bare domain is too easy to plant in a log line (e.g. "office365.com")
+        for k, t in (("urls", "url"), ("hashes", "hash")):
             out += [(t, v) for v in (i.get(k) or []) if v and v in text]
     seen, uniq = set(), []
     for t, v in out:
@@ -158,8 +159,26 @@ def learned_indicators():
     # removes it from the feed, a newer true-positive verdict puts it back
     latest = {}
     for fb in sorted(_load(FEEDBACK, {}).values(), key=lambda v: v.get("time", "")):
-        latest[(fb.get("entity") or "").lower()] = fb.get("verdict")
-    return [r for k, r in rows.items() if latest.get(k[1]) in (None, "true_positive")]
+        ent = (fb.get("entity") or "").lower()
+        if _public(ent):                  # verdicts only override learned *IP* indicators (type-matched)
+            latest[("ip", ent)] = fb.get("verdict")
+    try:
+        inv = trust.Inventory.load()
+    except Exception:  # noqa: BLE001 - the feed still works without the inventory
+        inv = None
+    out = []
+    for k, r in rows.items():
+        if latest.get(k) not in (None, "true_positive"):
+            continue
+        if inv is not None and r["type"] == "ip":   # never learn your own addresses as malicious
+            try:
+                if inv.classify(r["value"])["category"] in ("configured_internal", "approved_asset", "configured_isp",
+                                                            "known_external_service"):
+                    continue
+            except (ValueError, KeyError):
+                pass
+        out.append(r)
+    return out
 
 
 def _write_learned():
@@ -172,10 +191,12 @@ def _write_learned():
         w.writerow({k: ("'" + v if isinstance(v, str) and v[:1] in "=+-@" else v) for k, v in r.items()})
     config_store.ensure_dirs()
     p = _path(LEARNED)
-    tmp = p.with_suffix(".tmp")
-    tmp.write_text(buf.getvalue(), encoding="utf-8")
-    tmp.chmod(0o600)
-    tmp.replace(p)
+    import os
+    import tempfile
+    fd, tmp = tempfile.mkstemp(dir=p.parent, prefix=".learned-", suffix=".tmp")   # 0600, never a followed symlink
+    with os.fdopen(fd, "w", encoding="utf-8") as fh:
+        fh.write(buf.getvalue())
+    os.replace(tmp, p)
 
 
 def learned_feed_paths():
@@ -376,7 +397,7 @@ def learn_from_history(analyse_logs=None, actor=""):
                 r = history.load(m["id"])
                 if r and r.get("findings") is not None:
                     record_sightings(r, m.get("name", ""), m.get("time"))
-                if analyse_logs and m["id"] not in _load(BASELINED, {}) and m.get("kind") in ("upload", "paste", "live"):
+                if analyse_logs and m["id"] not in _load(BASELINED, {}) and m.get("kind") in ("upload", "paste"):
                     files = history.log_files(m["id"])
                     if files and not history.verify(m["id"]):
                         analyse_logs(files)

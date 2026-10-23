@@ -100,6 +100,13 @@ def save(changes, actor, confirm_replace=False):
 
 def _image_info(data):
     """(kind, width, height) from the file header, or raise ValueError. PNG and JPEG only."""
+    try:
+        return _image_header(data)
+    except struct.error:   # truncated header
+        raise ValueError("the image file is truncated or damaged") from None
+
+
+def _image_header(data):
     if data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR":
         w, h = struct.unpack(">II", data[16:24])
         return "png", w, h

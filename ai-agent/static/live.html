@@ -133,7 +133,7 @@
 "use strict";
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
-const sevVar = (s) => `var(--${s || "info"})`;
+const sevVar = (s) => `var(--${/^[a-z]{1,12}$/.test(String(s)) ? s : "info"})`;
 const RESULT_SEV = {success: "critical", executed: "critical", allowed: "high", changed: "high", error: "medium", detected: "medium", blocked: "clean", failed: "clean", info: "info"};
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 document.documentElement.dataset.theme = store.get("theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");

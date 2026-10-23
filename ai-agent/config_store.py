@@ -25,7 +25,7 @@ _lock = threading.Lock()
 def ensure_dirs():
     for d in (CONFIG_DIR, DATA_DIR, UPLOAD_DIR, CONFIG_DIR / "ioc"):
         d.mkdir(parents=True, exist_ok=True)
-    for d in (DATA_DIR, UPLOAD_DIR):
+    for d in (CONFIG_DIR, DATA_DIR, UPLOAD_DIR, CONFIG_DIR / "ioc"):   # secrets / evidence: owner only
         try:
             os.chmod(d, 0o700)
         except OSError:
@@ -38,8 +38,9 @@ def live_path(name):
     path = CONFIG_DIR / name
     example = EXAMPLES_DIR / (Path(name).stem + ".example" + Path(name).suffix)
     if not path.exists() and example.exists():
-        shutil.copyfile(example, path)
-        _restrict(path)
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)   # created 0600, never briefly readable
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(example.read_bytes())
     return path
 
 

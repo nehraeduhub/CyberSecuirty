@@ -543,7 +543,8 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const SEVS = ["critical", "high", "medium", "low", "info"];
-const sevVar = (s) => `var(--${s})`;
+const sevVar = (s) => `var(--${/^[a-z]{1,12}$/.test(String(s)) ? s : "info"})`;
+const safeUrl = (u) => /^https?:\/\//i.test(String(u || "")) ? String(u) : "";
 /* colour of "what the device did", seen from the defender's side: red = the attacker got through */
 const RESULT_SEV = {success: "critical", executed: "critical", allowed: "high", changed: "high", error: "medium",
                     detected: "medium", blocked: "clean", failed: "clean", info: "info"};
@@ -977,17 +978,9 @@ function srcChips(r) {
   if (!r) return '<span class="muted">not checked</span>';
   const list = r.sources || ["abuseipdb", "virustotal"].filter((p) => r[p]).map((p) => ({label: p === "abuseipdb" ? "AbuseIPDB" : "VirusTotal",
     level: r[p].error ? "error" : "unknown", text: r[p].error || "", link: r[p].link}));
-  return list.map((x) => `<div style="margin:2px 0"><span class="act" style="--c:${sevVar(SRC_SEV[x.level] || "info")}">${esc(x.label)}</span> <span class="small">${esc(x.text)}</span>${x.link ? ` <a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">↗</a>` : ""}</div>`).join("");
+  return list.map((x) => `<div style="margin:2px 0"><span class="act" style="--c:${sevVar(SRC_SEV[x.level] || "info")}">${esc(x.label)}</span> <span class="small">${esc(x.text)}</span>${safeUrl(x.link) ? ` <a href="${esc(safeUrl(x.link))}" target="_blank" rel="noopener noreferrer">↗</a>` : ""}</div>`).join("");
 }
 let repCands = [];
-function repCell(r, p) {
-  const x = r && r[p]; if (!x) return '<span class="muted">-</span>';
-  if (x.error) return `<span class="muted">${esc(x.error)}</span>`;
-  const link = x.link ? ` <a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">↗</a>` : "";
-  if (p === "abuseipdb") return `<b>${x.score ?? "?"}%</b> · ${x.reports || 0} reports${link}<br><span class="muted small">${esc([x.country, x.isp, x.usage].filter(Boolean).join(" · "))}${x.tor ? " · Tor" : ""}</span>`;
-  if (x.found === false) return `<span class="muted">not known${link}</span>`;
-  return `<b>${x.malicious}/${x.engines}</b> malicious${x.suspicious ? `, ${x.suspicious} suspicious` : ""}${link}<br><span class="muted small">${esc([x.country, x.owner, ...(x.categories || [])].filter(Boolean).join(" · "))}</span>`;
-}
 async function renderReputation(a) {
   const card = $("#repCard");
   if (!a.analysis_id || a.kind === "host") { card.classList.add("hidden"); return; }
@@ -1082,7 +1075,7 @@ function drawDiagram(d) {
   d.nodes.forEach((n) => {
     const p = pos[n.id], [c, role] = ROLE[n.role] || ROLE.internal;
     const det = n.details || [];
-    svg += `<g><title>${esc(n.label)}${n.ip ? " (" + esc(n.ip) + ")" : ""} — ${role}${det.length ? "\n" + det.map((x) => "• " + x.text).join("\n") : ""}</title>
+    svg += `<g><title>${esc(n.label)}${n.ip ? " (" + esc(n.ip) + ")" : ""} — ${role}${det.length ? "\n" + det.map((x) => "• " + esc(x.text)).join("\n") : ""}</title>
       <rect x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="10" fill="color-mix(in srgb, var(--${c}) 14%, var(--surface))" stroke="var(--${c})" stroke-width="1.6"/>
       <text x="${p.x + 10}" y="${p.y + 21}" font-size="13" font-weight="700" fill="var(--ink)">${svgText(n.label, 22)}</text>
       <text x="${p.x + 10}" y="${p.y + 39}" font-size="10.5" fill="var(--${c})">${esc(role)}${n.ip ? " · " + esc(n.ip) : ""}</text>

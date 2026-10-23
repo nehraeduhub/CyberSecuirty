@@ -26,7 +26,8 @@ import time
 from datetime import datetime, timezone
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode, urlparse
-from urllib.request import ProxyHandler, Request, build_opener
+from urllib.request import (HTTPDefaultErrorHandler, HTTPErrorProcessor, HTTPHandler, HTTPRedirectHandler,
+                            HTTPSHandler, OpenerDirector, ProxyHandler, Request, UnknownHandler)
 
 import config_store
 import trust
@@ -88,6 +89,8 @@ def classify(value, inv=None, allow_documentation=False):
         if u.scheme not in ("http", "https") or not u.hostname:
             raise RefusedError("only http(s) URLs can be looked up")
         _check_host(u.hostname, inv, allow_documentation)
+        if u.username or u.password:   # never send credentials embedded in a URL to a third party
+            v = u._replace(netloc=u.netloc.rsplit("@", 1)[-1]).geturl()
         return "url", v
     try:
         ip = ipaddress.ip_address(v.strip("[]"))
@@ -120,6 +123,9 @@ def _check_host(host, inv, allow_documentation):
 
 
 def _check_ip(ip, inv, allow_documentation):
+    inner = trust.embedded_ipv4(ip)
+    if inner is not None:          # ::ffff:10.0.0.1, 64:ff9b::a00:1, 2002:a00:1:: carry an internal IPv4 inside
+        _check_ip(inner, inv, allow_documentation)
     if any(ip in n for n in DOC_NETS):
         if not allow_documentation:
             raise RefusedError(f"{ip} is a documentation (example) address - not sent")
@@ -194,9 +200,30 @@ def _throttle(provider, per_min):
 
 # ------------------------------------------------------------------ providers
 
+MAX_RESPONSE = 2 * 1024 * 1024   # threat-intel answers are small; a bigger body is refused
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    """Never follow redirects: urllib would copy the API-key headers to the new host."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise HTTPError(req.full_url, code, f"redirect to {newurl} refused", headers, fp)
+
+
 def _opener(url):
     host = urlparse(url).hostname or ""
-    return build_opener(ProxyHandler({})) if host in ("127.0.0.1", "localhost", "::1") else build_opener()
+    proxy = ProxyHandler({}) if host in ("127.0.0.1", "localhost", "::1") else ProxyHandler()
+    op = OpenerDirector()   # http(s) only; no file:, ftp:, data:
+    for h in (proxy, HTTPHandler(), HTTPSHandler(), HTTPDefaultErrorHandler(), _NoRedirect(), HTTPErrorProcessor(),
+              UnknownHandler()):
+        op.add_handler(h)
+    return op
+
+
+def _read_capped(resp):
+    data = resp.read(MAX_RESPONSE + 1)
+    if len(data) > MAX_RESPONSE:
+        raise ValueError("response too large")
+    return data
 
 
 def _request(url, headers, data=None, timeout=20):
@@ -208,15 +235,15 @@ def _request(url, headers, data=None, timeout=20):
     req = Request(url, data=data, headers=h)
     try:
         with _opener(url).open(req, timeout=timeout) as r:
-            raw = r.read().decode("utf-8", "replace")
+            raw = _read_capped(r).decode("utf-8", "replace")
             try:
                 return r.status, json.loads(raw or "{}")
-            except ValueError:
+            except (ValueError, RecursionError):
                 return r.status, {"_raw": raw[:500]}
     except HTTPError as e:
         try:
-            body = json.loads(e.read().decode("utf-8") or "{}")
-        except ValueError:
+            body = json.loads(_read_capped(e).decode("utf-8") or "{}") if e.fp else {}
+        except (ValueError, OSError, AttributeError):
             body = {}
         return e.code, body
     except (URLError, OSError, ValueError) as e:
@@ -537,6 +564,9 @@ def lookup(cfg, value, inv=None, force=False):
             res[p] = {"error": f"{SOURCES[p][0]}: {e}", "level": "error"}
     if not reachable:
         raise ValueError(next(iter(r["error"] for r in (res[p] for p in usable))))
+    for p in usable:   # links come from remote JSON: only http(s) links are kept
+        if res[p].get("link") and urlparse(str(res[p]["link"])).scheme not in ("http", "https"):
+            res[p]["link"] = None
     res["sources"] = [{"name": p, "label": SOURCES[p][0], "level": res[p].get("level") or "unknown",
                        "text": res[p].get("error") or res[p].get("text") or "", "link": res[p].get("link")}
                       for p in usable]

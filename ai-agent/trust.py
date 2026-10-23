@@ -80,7 +80,23 @@ def is_private_ip(ip):
     return any(a in n for n in PRIVATE_NETS if n.version == a.version)
 
 
-MIN_PREFIX = {4: 8, 6: 16}   # never trust anything broader than a /8 (IPv4) or /16 (IPv6)
+MIN_PREFIX = {4: 8, 6: 32}   # never trust anything broader than a /8 (IPv4) or /32 (IPv6)
+# IPv6 ranges that embed the whole IPv4 internet: trusting one would trust every IPv4 address
+TRANSLATION_NETS = [ipaddress.ip_network(n) for n in ("::ffff:0:0/96", "64:ff9b::/96", "64:ff9b:1::/48", "2002::/16",
+                                                      "::/96")]
+
+
+def embedded_ipv4(addr):
+    """IPv4 address carried inside an IPv6 one (mapped, NAT64, 6to4), else None."""
+    if addr.version != 6:
+        return None
+    if addr.ipv4_mapped:
+        return addr.ipv4_mapped
+    if addr in TRANSLATION_NETS[1]:
+        return ipaddress.IPv4Address(int(addr) & 0xFFFFFFFF)
+    if addr.sixtofour:
+        return addr.sixtofour
+    return None
 TEXT_FIELDS = ("id", "name", "asset_id", "hostname", "asset_type", "zone", "owner", "criticality",
                "environment", "description", "classification", "valid_from", "valid_until", "notes",
                "isp", "domain", "reason", "username")
@@ -111,6 +127,9 @@ def _network(value, section):
         except ValueError:
             raise ValueError(f"'{s}' is not a valid IP address or CIDR")
         raise ValueError(f"'{s}' has host bits set; did you mean {loose}? (refused so a typo can't trust a wider range)")
+    if section != "suspicious_indicators" and net.version == 6 and any(net.overlaps(t) for t in TRANSLATION_NETS):
+        raise ValueError(f"'{s}' overlaps an IPv4-translation range (::ffff:0:0/96, 64:ff9b::/96, 2002::/16); "
+                         "add the IPv4 network itself instead")
     if section != "suspicious_indicators" and net.prefixlen < MIN_PREFIX[net.version]:
         raise ValueError(f"'{s}' is too broad (/{net.prefixlen}); the widest allowed is "
                          f"/{MIN_PREFIX[net.version]} so an import can never trust an entire network")
@@ -266,6 +285,9 @@ class Inventory:
         except ValueError:
             res.update(category="invalid", label=CATEGORY_LABELS["invalid"])
             return res
+        v4 = embedded_ipv4(addr)
+        if v4 is not None:   # ::ffff:8.8.8.8 is 8.8.8.8 - classify the real address
+            addr = v4
 
         def active(e):
             return (not e.get("valid_from") or e["valid_from"] <= day) and \

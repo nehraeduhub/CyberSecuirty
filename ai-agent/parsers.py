@@ -568,7 +568,7 @@ def _iter_records(path, fmt, stats):
         with open_text(path) as fh:
             n = 0
             try:
-                for _, el in ET.iterparse(fh, events=("end",)):
+                for _, el in ET.iterparse(_NoDTD(fh), events=("end",)):
                     if el.tag.rsplit("}", 1)[-1] != "Event":
                         continue
                     n += 1
@@ -590,12 +590,35 @@ def _iter_records(path, fmt, stats):
                     yield n, rec, raw
             except ET.ParseError as e:
                 stats["failures"].append((n, f"XML error: {e}"))
+            except _UnsafeXML as e:
+                stats["failures"].append((n, str(e)))
     else:
         with open_text(path) as fh:
             for n, line in enumerate(fh, 1):
                 line = line.rstrip("\r\n")
                 if line.strip():
                     yield n, None, line
+
+
+class _UnsafeXML(Exception):
+    pass
+
+
+class _NoDTD:
+    """File wrapper for the XML parser: Windows event exports never contain a DTD, so any <!DOCTYPE / <!ENTITY is
+    refused before the parser sees it (no external entities, no entity-expansion "billion laughs")."""
+    BAD = re.compile(r"<!\s*(DOCTYPE|ENTITY)", re.I)
+
+    def __init__(self, fh):
+        self.fh, self.tail = fh, ""
+
+    def read(self, n=-1):
+        chunk = self.fh.read(n)
+        if self.BAD.search(self.tail + chunk):
+            raise _UnsafeXML("XML with a DTD / entity declarations refused (not a Windows event export; "
+                             "possible XXE or entity-expansion attack)")
+        self.tail = chunk[-16:]
+        return chunk
 
 
 def iter_events(path, display_name=None, tz_hours=0, aliases=None, stats=None):

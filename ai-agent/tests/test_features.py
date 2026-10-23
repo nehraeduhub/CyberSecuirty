@@ -179,16 +179,26 @@ class NetworkAccessTests(unittest.TestCase):
         self.assertEqual(self.req("/api/status")[0], 401)
         self.assertEqual(self.req("/api/analyze", {"text": "x"})[0], 401)
 
+    def token_session(self):
+        agent._FAILS.clear()
+        code, _, headers = self.req("/api/login", {"token": "s3cret"})
+        self.assertEqual(code, 200)
+        return headers["Set-Cookie"].split(";")[0]
+
     def test_login_sets_cookie_and_unlocks(self):
         code, _, headers = self.req("/api/login", {"token": "s3cret"})
         self.assertEqual(code, 200)
         self.assertIn("HttpOnly", headers["Set-Cookie"])
-        code, body, _ = self.req("/api/analyze", {"text": AUTH}, cookie="tg_token=s3cret")
+        self.assertTrue(headers["Set-Cookie"].startswith("tg_session="))
+        self.assertNotIn("s3cret", headers["Set-Cookie"])           # the cookie never carries the raw token
+        self.assertEqual(self.req("/api/status", cookie="tg_token=s3cret")[0], 401)   # raw-token cookies refused
+        cookie = headers["Set-Cookie"].split(";")[0]
+        code, body, _ = self.req("/api/analyze", {"text": AUTH}, cookie=cookie)
         self.assertEqual(code, 200)
-        self.assertNotIn(b"s3cret", self.req("/api/status", cookie="tg_token=s3cret")[1])
+        self.assertNotIn(b"s3cret", self.req("/api/status", cookie=cookie)[1])
 
     def test_saving_settings_keeps_host_and_port(self):
-        self.req("/api/config", {"temperature": 0.4}, cookie="tg_token=s3cret")
+        self.req("/api/config", {"temperature": 0.4}, cookie=self.token_session())
         saved = self.json.loads(self.tmp.read_text())
         self.assertEqual((saved["host"], saved["access_token"], saved["temperature"]), ("0.0.0.0", "s3cret", 0.4))
 
@@ -251,7 +261,7 @@ class PasswordLoginTests(NetworkAccessTests):
     def test_logout_and_lockout(self):
         code, _, headers = self.req("/api/logout", {})
         self.assertIn("Max-Age=0", headers["Set-Cookie"])
-        agent._FAILS["127.0.0.1"] = [time.time()] * agent.LOCKOUT[0]
+        agent._FAILS["login:127.0.0.1"] = [time.time()] * agent.LOCKOUT[0]
         self.assertEqual(self.login()[0], 429)        # locked even with the right password
 
     def test_hash_format(self):
@@ -265,7 +275,9 @@ class PasswordLoginTests(NetworkAccessTests):
 
 class BrandingVisibilityTests(NetworkAccessTests):
     """config.json switches: hide branding in the web UI, and hide/lock the Branding page."""
-    TOKEN = "tg_token=s3cret"
+    def setUp(self):
+        super().setUp()
+        self.TOKEN = self.token_session()
 
     def test_defaults_show_everything(self):
         st = self.json.loads(self.req("/api/status", cookie=self.TOKEN)[1])

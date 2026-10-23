@@ -186,6 +186,13 @@ def delete(aid, actor=""):
         if not m:
             return False
         shutil.rmtree(d, ignore_errors=True)
+        if d.exists():   # partly undeletable (permissions): report it instead of claiming success
+            raise OSError(f"could not delete every file of analysis {aid}")
+    try:
+        import memory
+        memory.forget_analysis(aid)   # sightings and rule statistics learned from it
+    except (ImportError, OSError):
+        pass
     config_store.audit(actor, "history", "delete", aid, {"name": m.get("name"), "files": [f["name"] for f in m.get("files", [])]}, None)
     return True
 

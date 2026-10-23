@@ -333,11 +333,21 @@ def load():
         if rid not in rules or not isinstance(ov, dict):
             errors.append(f"detection_rules.json: unknown rule {rid}")
             continue
-        for k in ("enabled", "severity", "confidence"):
-            if k in ov:
-                rules[rid][k] = ov[k]
+        if "enabled" in ov:
+            rules[rid]["enabled"] = bool(ov["enabled"])
+        if "severity" in ov:
+            if ov["severity"] in ("critical", "high", "medium", "low", "info"):
+                rules[rid]["severity"] = ov["severity"]
+            else:
+                errors.append(f"detection_rules.json: {rid}: severity must be critical, high, medium, low or info")
+        if "confidence" in ov:
+            try:
+                rules[rid]["confidence"] = max(0, min(100, int(ov["confidence"])))
+            except (TypeError, ValueError):
+                errors.append(f"detection_rules.json: {rid}: confidence must be a number 0-100")
         if isinstance(ov.get("threshold"), dict):
-            rules[rid]["threshold"].update(ov["threshold"])
+            rules[rid]["threshold"].update({k: v for k, v in ov["threshold"].items()
+                                            if k in rules[rid]["threshold"] and isinstance(v, (int, float))})
     return rules, errors
 
 

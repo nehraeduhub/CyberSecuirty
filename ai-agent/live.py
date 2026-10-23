@@ -28,7 +28,10 @@ from pathlib import Path
 
 import config_store
 
-MAX_LINE = 64 * 1024
+MAX_LINE = 16 * 1024             # longer lines are cut (log lines are far shorter; bounds memory and regex cost)
+MAX_TCP_CLIENTS = 64             # concurrent syslog TCP connections
+TCP_IDLE_S = 120                 # idle syslog TCP connections are closed
+OCTET_COUNT = re.compile(rb"(\d{1,6}) ")
 SEV_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}
 
 
@@ -48,6 +51,11 @@ class LiveEngine:
         self.annotate = annotate
         self.lock = threading.RLock()
         self.events = deque(maxlen=int(cfg.get("live_max_events") or 50000))   # (seq, t, source, kind, text)
+        self.bytes = 0                                                          # text held in memory
+        self._spool_checks = 0
+        self._spool_full = False
+        self._tcp_slots = threading.BoundedSemaphore(MAX_TCP_CLIENTS)
+        self._last_prune = 0
         self.seq = 0
         self.flags = {}            # seq -> [rule ids] for events used as evidence
         self.alerts = {}
@@ -90,33 +98,47 @@ class LiveEngine:
         if not (self.enabled and port):
             self.syslog_status = "off (set live_syslog_port)" if self.enabled else "off"
             return
-        host = str(self.cfg.get("live_syslog_host") or "0.0.0.0")
+        # same interface as the web UI unless set explicitly (never every interface by surprise)
+        host = str(self.cfg.get("live_syslog_host") or self.cfg.get("host") or "127.0.0.1")
         eng = self
 
         class UDP(socketserver.BaseRequestHandler):
             def handle(self):
-                data = self.request[0]
-                eng.ingest_syslog(data, self.client_address[0])
+                eng.ingest_syslog(self.request[0][:MAX_LINE * 4], self.client_address[0])
 
-        class TCP(socketserver.StreamRequestHandler):
+        class TCP(socketserver.BaseRequestHandler):
             def handle(self):
-                buf = b""
-                while True:
-                    chunk = self.request.recv(65536)
-                    if not chunk:
-                        break
-                    buf += chunk
-                    buf = eng._tcp_frames(buf, self.client_address[0])
-                    if len(buf) > MAX_LINE * 4:   # unframed garbage
-                        buf = b""
-                if buf.strip():
-                    eng.ingest_syslog(buf, self.client_address[0])
+                if not eng._tcp_slots.acquire(blocking=False):
+                    return                                    # too many connections: drop this one
+                try:
+                    if not eng.allowed_source(self.client_address[0]):
+                        with eng.lock:
+                            eng.received["dropped"] += 1
+                        return
+                    self.request.settimeout(TCP_IDLE_S)
+                    buf = b""
+                    while True:
+                        try:
+                            chunk = self.request.recv(65536)
+                        except (socket.timeout, OSError):
+                            break
+                        if not chunk:
+                            break
+                        buf = eng._tcp_frames(buf + chunk, self.client_address[0])
+                        if len(buf) > MAX_LINE * 4:   # unframed garbage
+                            buf = b""
+                    if buf.strip():
+                        eng.ingest_syslog(buf, self.client_address[0])
+                finally:
+                    eng._tcp_slots.release()
 
         try:
             fam = socket.AF_INET6 if ":" in host else socket.AF_INET
-            udp = type("U", (socketserver.ThreadingUDPServer,), {"address_family": fam, "allow_reuse_address": True})((host, port), UDP)
+            # UDP: one receiving thread (a datagram flood can't create threads); TCP: bounded, idle timeout
+            udp = type("U", (socketserver.UDPServer,), {"address_family": fam, "allow_reuse_address": True})((host, port), UDP)
             tcp = type("T", (socketserver.ThreadingTCPServer,), {"address_family": fam, "allow_reuse_address": True,
-                                                                  "daemon_threads": True})((host, port), TCP)
+                                                                  "daemon_threads": True,
+                                                                  "request_queue_size": 64})((host, port), TCP)
         except OSError as e:
             self.syslog_status = f"error: cannot listen on {host}:{port} ({e.strerror or e})"
             return
@@ -126,22 +148,26 @@ class LiveEngine:
         self.syslog_status = f"listening on {host}:{port} (UDP + TCP)"
 
     def _tcp_frames(self, buf, src):
-        """RFC 6587: octet counting ("123 <34>...") or newline-delimited frames. Returns the unconsumed rest."""
-        while buf:
-            m = re.match(rb"(\d{1,6}) ", buf)
+        """RFC 6587: octet counting ("123 <34>...") or newline-delimited frames. Returns the unconsumed rest.
+        Linear time (an offset walks the buffer) and one ingest call per chunk."""
+        pos, frames, n_buf = 0, [], len(buf)
+        while pos < n_buf:
+            m = OCTET_COUNT.match(buf, pos)
             if m and buf[m.end():m.end() + 1] == b"<":
                 n = int(m.group(1))
-                if len(buf) < m.end() + n:
-                    return buf
-                self.ingest_syslog(buf[m.end():m.end() + n], src)
-                buf = buf[m.end() + n:]
+                if n_buf < m.end() + n:
+                    break
+                frames.append(buf[m.end():m.end() + n])
+                pos = m.end() + n
                 continue
-            i = buf.find(b"\n")
+            i = buf.find(b"\n", pos)
             if i < 0:
-                return buf
-            self.ingest_syslog(buf[:i], src)
-            buf = buf[i + 1:]
-        return buf
+                break
+            frames.append(buf[pos:i])
+            pos = i + 1
+        if frames:
+            self.ingest_syslog(b"\n".join(frames), src)
+        return buf[pos:]
 
     def allowed_source(self, ip):
         allow = self.cfg.get("live_allowed_sources") or []
@@ -167,6 +193,10 @@ class LiveEngine:
 
     def ingest_http(self, body, content_type, src):
         """Returns the number of events accepted. Raises ValueError for a body that can't be read."""
+        if not self.allowed_source(src):
+            with self.lock:
+                self.received["dropped"] += 1
+            raise PermissionError("this address is not in live_allowed_sources")
         text = body.decode("utf-8", "replace") if isinstance(body, bytes) else str(body)
         items = []
         ct = (content_type or "").lower()
@@ -174,11 +204,15 @@ class LiveEngine:
         if "json" in ct or stripped[:1] in ("{", "["):
             try:
                 items = self._json_items(json.loads(text))
+            except RecursionError:
+                raise ValueError("JSON nested too deeply") from None
             except ValueError:
                 lines = [ln for ln in text.splitlines() if ln.strip()]
                 try:   # NDJSON
                     for ln in lines:
                         items += self._json_items(json.loads(ln))
+                except RecursionError:
+                    raise ValueError("JSON nested too deeply") from None
                 except ValueError:
                     if "json" in ct:
                         raise ValueError("body is not valid JSON / NDJSON") from None
@@ -210,12 +244,18 @@ class LiveEngine:
             return 0
         t = _now()
         rows = []
+        max_bytes = float(self.cfg.get("live_max_mb") or 256) * 1024 * 1024
         with self.lock:
             for kind, txt in items:
                 txt = str(txt)[:MAX_LINE].replace("\r", " ").replace("\n", " ")
                 self.seq += 1
                 row = (self.seq, t, source, kind, txt)
+                if len(self.events) == self.events.maxlen:
+                    self.bytes -= len(self.events[0][4])
                 self.events.append(row)
+                self.bytes += len(txt)
+                while self.bytes > max_bytes and self.events:   # memory budget: drop the oldest events
+                    self.bytes -= len(self.events.popleft()[4])
                 rows.append(row)
             self.received[channel] += len(rows)
             self.last_event = t
@@ -226,11 +266,31 @@ class LiveEngine:
     def _spool_dir(self):
         return config_store.DATA_DIR / "live"
 
+    def _spool_budget_ok(self, d):
+        """Disk budget for the raw spool (live_spool_max_mb, default 1024): oldest days go first; if today alone is
+        over the budget, spooling pauses (analysis continues in memory)."""
+        cap = float(self.cfg.get("live_spool_max_mb") or 1024) * 1024 * 1024
+        files = sorted(d.glob("*.jsonl"))
+        total = sum(f.stat().st_size for f in files)
+        while total > cap and len(files) > 1:
+            total -= files[0].stat().st_size
+            files.pop(0).unlink(missing_ok=True)
+        return total <= cap
+
     def _spool(self, rows):
         try:
             d = self._spool_dir()
             d.mkdir(parents=True, exist_ok=True)
             os.chmod(d, 0o700)
+            self._spool_checks += 1
+            if self._spool_checks % 50 == 1:           # re-measure the disk budget every 50 writes
+                full = not self._spool_budget_ok(d)
+                if full and not self._spool_full:
+                    self.errors.append(f"{_iso(_now())} spool budget (live_spool_max_mb) reached - raw events "
+                                       "not kept on disk until space is freed")
+                self._spool_full = full
+            if self._spool_full:
+                return
             p = d / f"{datetime.now(timezone.utc):%Y-%m-%d}.jsonl"
             new = not p.exists()
             with open(p, "a", encoding="utf-8") as fh:
@@ -255,7 +315,7 @@ class LiveEngine:
     def _reload_spool(self):
         """Put the last window back in memory after a restart."""
         horizon = _now() - self._window_s()
-        rows = []
+        rows = deque(maxlen=self.events.maxlen)   # streamed: a huge spool can't exhaust memory on restart
         for p in sorted(self._spool_dir().glob("*.jsonl"))[-2:] if self._spool_dir().exists() else []:
             try:
                 with open(p, encoding="utf-8", errors="replace") as fh:
@@ -269,9 +329,11 @@ class LiveEngine:
             except OSError:
                 continue
         with self.lock:
-            for r in rows[-self.events.maxlen:]:
+            for r in rows:
                 self.seq += 1
-                self.events.append((self.seq, r["t"], r.get("s", "spool"), r.get("k", "text"), r.get("d", "")))
+                txt = str(r.get("d", ""))[:MAX_LINE]
+                self.events.append((self.seq, r["t"], r.get("s", "spool"), r.get("k", "text"), txt))
+                self.bytes += len(txt)
             if rows:
                 self.last_event = rows[-1]["t"]
 
@@ -288,6 +350,10 @@ class LiveEngine:
 
     def _loop(self):
         while not self._stop.wait(1.0):
+            if _now() - self._last_prune > 3600 and self._spool_dir().exists():   # retention runs hourly
+                self._last_prune = _now()
+                self._prune_spool()
+                self._spool_budget_ok(self._spool_dir())
             interval = float(self.cfg.get("live_interval_s") or 20)
             if (self.enabled and not self.paused and self.seq != self.last_run_seq
                     and (self.last_run is None or _now() - self.last_run >= interval)):
@@ -323,7 +389,9 @@ class LiveEngine:
                 self.result, self.last_run, self.last_run_seq = None, _now(), seq_at
             return None
         t0 = _now()
-        tmp = config_store.UPLOAD_DIR / f"live-{os.getpid()}"
+        import tempfile
+        config_store.ensure_dirs()
+        tmp = Path(tempfile.mkdtemp(prefix="live-", dir=config_store.UPLOAD_DIR))   # unique, 0700
         try:
             files, refmap = self.write_window(tmp, rows)
             res = self.analyse_files(files)
@@ -397,6 +465,7 @@ class LiveEngine:
     def clear(self):
         with self.lock:
             self.events.clear()
+            self.bytes = 0
             self.alerts.clear()
             self.flags.clear()
             self.result = None
