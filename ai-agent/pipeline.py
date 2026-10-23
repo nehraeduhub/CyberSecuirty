@@ -9,7 +9,9 @@ Trust context is attached to findings but NEVER lowers severity or removes a fin
 Severity, confidence, UEBA score, incident risk and asset trust are separate fields.
 """
 import json
+import os
 import re
+import sys
 import time
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
@@ -31,6 +33,22 @@ CORRELATION_IDS = {"ssh_bruteforce", "bruteforce_success", "win_bruteforce", "we
 BASELINE_FILE = config_store.DATA_DIR / "baselines.json"
 MAX_EVIDENCE = 1500
 LINK_WINDOW = timedelta(hours=2)
+ANALYSIS_MAX_MB = 8192    # memory one analysis may add before ingestion stops (config: analysis_max_mb)
+
+
+def _rss_mb():
+    """Current resident memory in MB (Linux), peak elsewhere; None where it cannot be measured."""
+    try:
+        with open("/proc/self/statm") as fh:
+            return int(fh.read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 2 ** 20
+    except (OSError, ValueError, IndexError, AttributeError):
+        pass
+    try:
+        import resource
+        peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return peak / 2 ** 20 if sys.platform == "darwin" else peak / 1024
+    except (ImportError, OSError):
+        return None
 
 
 def _fmt(ts):
@@ -83,14 +101,19 @@ def analyze_files(files, tz_hours=0, learn_baseline=True, inventory=None, iocs=N
     det = detector.LogAnalyzer()
     eng = engine.Engine(rules, inv, iocs)
     aliases = parsers.load_aliases()
-    ingestion, n = [], 0
+    ingestion, n, stopped = [], 0, None
+    base_mb = _rss_mb()
     for path, name in files:
         st = {}
-        for ev in parsers.iter_events(path, name, tz_hours, aliases, st):
-            n += 1
-            det.feed(ev["text"], n, ev["ref"], ev["ts"])
-            eng.observe(ev)
-        ingestion.append(parsers.summarise(st))
+        if not stopped:
+            for ev in parsers.iter_events(path, name, tz_hours, aliases, st):
+                n += 1
+                det.feed(ev["text"], n, ev["ref"], ev["ts"])
+                eng.observe(ev)
+                if base_mb is not None and n % 20000 == 0 and (_rss_mb() or 0) - base_mb > ANALYSIS_MAX_MB:
+                    stopped = f"{name}:{ev['line']}"
+                    break
+        ingestion.append(parsers.summarise(st or {"file": name, "failures": [(0, "not analysed (memory limit)")]}))
     d = det.result()
     e = eng.finish(baselines if isinstance(baselines, dict) else {})
 
@@ -144,6 +167,11 @@ def analyze_files(files, tz_hours=0, learn_baseline=True, inventory=None, iocs=N
     out["timeline"], out["timeline_bucket"] = _timeline(evidence, findings)
     out["attack_mapping"] = _attack_map(findings)
     out["limitations"] = _limitations(out, e, ingestion, inv, iocs)
+    if stopped:
+        out["limitations"].insert(0, {"area": "Resource limit", "detail": f"Ingestion stopped at {stopped} after "
+                                      f"{n} events: the analysis used more than {ANALYSIS_MAX_MB} MB of memory "
+                                      "(analysis_max_mb).", "impact": "Later events and files were not analysed. "
+                                      "Split the data into smaller uploads or raise analysis_max_mb."})
     out["coverage"] = _coverage(e["telemetry"])
     if learn_baseline:
         _update_baselines(baselines if isinstance(baselines, dict) else {}, e["ueba"]["history"], incidents, findings)
@@ -740,6 +768,9 @@ def _limitations(out, e, ingestion, inv, iocs):
         if i["parse_failures"]:
             lim.append({"area": "Parsing", "detail": f"{i['file']}: {i['parse_failures']} record(s) could not be parsed.",
                         "impact": "Events in those records were not analysed."})
+        if i.get("cut_lines"):
+            lim.append({"area": "Parsing", "detail": f"{i['file']}: {i['cut_lines']} line(s) longer than "
+                        f"{parsers.MAX_LINE // 1024} KB were cut.", "impact": "Text after the cut was not matched."})
         if i["no_timestamp"]:
             lim.append({"area": "Timestamps", "detail": f"{i['file']}: {i['no_timestamp']} event(s) without a usable timestamp.",
                         "impact": "They are excluded from time-window correlation and timelines."})

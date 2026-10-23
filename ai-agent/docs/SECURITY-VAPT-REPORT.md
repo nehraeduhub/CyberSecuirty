@@ -43,7 +43,17 @@ file storage, threat-intelligence client, live SIEM receiver (HTTP and syslog), 
 | 23 | Low | Live | **Deeply nested JSON** crashed ingest with a RecursionError; the HTTP ingest ignored the source allow-list | Clean 400; the allow-list applies to HTTP too | `test_nested_json_and_long_lines`, `test_allow_list_applies_to_http` |
 | 24 | Info | Server | The login template filled placeholders twice; IPv6 loopback Host (`[::1]`) was refused | Single-pass template; IPv6 Host parsed correctly | covered in `LocalModeTests` |
 
-PARSER_FINDINGS
+| 25 | **Critical** | Parsers | **Exponential ReDoS in the SQL-injection rule:** `union(\s\|/\*.*?\*/)+` doubled its run time every 4 bytes. One 198-byte web log line (or one forwarded SIEM event) kept a CPU core busy for hours | Comment matching rewritten as `/\*[^*]{0,100}\*/` with bounded repetition; `UNION/**/ALL/**/SELECT` still detected | `test_patterns_are_linear`, `test_hostile_lines_end_to_end_and_detection_kept` |
+| 26 | High | Parsers | **Polynomial ReDoS in 14 patterns:** CEF extensions, sudo, firewall, web shell, account creation, the engine's command-line rules and the attack-flow hints. 100 KB lines took 3–20 s each; uploaded files had no line-length cap | Every `.*` gap is bounded; CEF extensions are split in linear time. Lines and fields are cut at 16 KB before matching (the cut is reported as a limitation) | `test_patterns_are_linear` (each < 0.6 s on 100 KB) |
+| 27 | High | Parsers | **One hostile record aborted the whole analysis:** `1e999` numbers (OverflowError), deeply nested JSON/XML (RecursionError), broken JSON objects, oversized CSV fields, corrupt `.gz` | Each record is normalised in isolation; a bad record or stream becomes a parse failure, the rest is analysed. XML deeper than 64 levels is refused | `test_never_abort`, fuzzing 3,000 random files |
+| 28 | High | Parsers | **Gzip decompression bomb:** a 204 KB `.gz` holding one 200 MB line took 130 s and 615 MB of memory | Decompressed size capped (4 GB); over-long lines are skipped while streaming, never read whole | `test_gzip_bomb_and_long_lines` (now 0.4 s, 15 MB) |
+| 29 | Medium | Resources | **Memory grew without limit** with the number of distinct IPs/users: about 3.4 KB per event, so a 512 MB file could need about 6 GB | Memory budget per analysis (`analysis_max_mb`, default 8192). At the limit, ingestion stops and the report says where | `test_memory_budget_stops_ingestion` |
+| 30 | Medium | Parsers | **JSON arrays were re-decoded quadratically,** with no item size limit (100 MB item: 7 s, 416 MB) | Items capped at 1 MB; reads grow geometrically | `test_json_item_cap` |
+| 31 | Medium | Report | **Mis-nested AI markdown** (``**a `b** c` ``), which log content can steer through prompt injection, made the PDF report fail | Code spans are split out before bold, so the markup always nests correctly | `test_pdf_survives_misnested_ai_markdown` |
+| 32 | Low | Report | Any PDF bullet starting with `<b>` was passed through unescaped | Only bullets built from escaped parts (`_Markup`) skip escaping | `test_pdf_markup_injection` |
+| 33 | Low | Parsers | Quadratic host-name parsing in the attack flow; finished XML events were kept in memory | Names capped at 256 characters; the XML root is cleared after each event | code review + `test_gzip_streams` |
+
+**Totals:** 33 findings: 1 Critical, 7 High, 14 Medium, 10 Low, 1 Info. All are fixed and covered by tests.
 
 ## Controls in place
 
@@ -69,7 +79,13 @@ PARSER_FINDINGS
 - **Outbound:**
   - the local AI only on http(s) with no metadata hosts
   - threat intelligence opt-in and on request; only indicator values sent, never internal or trusted addresses; responses capped; no redirects
-- **Parsers:** streaming, line-length caps, no DTD / entities, no code execution (no `eval`, no `shell=True`).
+- **Parsers:**
+  - streaming with 16 KB line, 1 MB record and 4 GB decompression caps
+  - only bounded (linear-time) patterns
+  - XML: no DTD or entities, at most 64 levels deep
+  - every record is isolated, so one bad record never aborts the analysis
+  - a per-analysis memory budget
+  - no code execution (no `eval`, no `shell=True`)
 - **Safety by design:** the agent and its AI never block, disable or execute anything; trust never suppresses a finding.
 
 ## Residual risks and recommendations
@@ -78,5 +94,9 @@ PARSER_FINDINGS
 - **UDP syslog is not authenticated:** sender addresses can be forged. Prefer the HTTPS ingest, or restrict sources with `live_allowed_sources` and the firewall.
 - **Ingest token in the URL:** `?token=` is accepted for SIEMs that cannot set headers, but proxies may log it. Prefer the `X-Ingest-Token` header.
 - **Prompt injection:** log text is attacker-controlled and reaches the local model. The model has no tools or actions, and its answer is checked against the evidence register. Still, treat AI text as advice.
+- **Very long lines:** detection reads the first 16 KB of a line. Padding a payload past that hides it from the
+  patterns; the cut is listed under *Limitations* in every report.
+- **Memory budget:** an analysis that reaches `analysis_max_mb` stops ingesting, and its report says so. For very
+  large exports, split the upload or raise the budget on machines with more RAM.
 - **One role:** all signed-in users are administrators. Multi-user roles are on the roadmap.
 - **Re-test:** after every release, run `python3 -m unittest discover -s tests` and a fresh assessment.

@@ -20,12 +20,13 @@ SEV_WEIGHT = {"critical": 40, "high": 20, "medium": 8, "low": 2, "info": 0}
 
 MAX_SAMPLES = 5
 MAX_SAMPLE_LEN = 300
+MAX_LINE = 16 * 1024
 
 IP_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 WEB_RE = re.compile(r'^(\S+) \S+ \S+ \[[^\]]+\] "(?:\S+) (\S+)[^"]*" (\d{3})')
 SSH_FAIL_RE = re.compile(r"Failed (?:password|publickey) for (?:invalid user )?(\S+) from (\S+)")
 SSH_OK_RE = re.compile(r"Accepted \S+ for (\S+) from (\S+)")
-FW_RE = re.compile(r"SRC=(\S+).*?DPT=(\d+)")
+FW_RE = re.compile(r"SRC=(\S+)[^\n]{0,400}?DPT=(\d+)")
 WIN_FAIL_RE = re.compile(r"(?:eventid|event id|event_id)\D{0,3}4625")  # matched on lowercased lines
 WIN_OK_RE = re.compile(r"(?:eventid|event id|event_id)\D{0,3}4624")
 
@@ -33,7 +34,7 @@ WIN_OK_RE = re.compile(r"(?:eventid|event id|event_id)\D{0,3}4624")
 LINE_RULES = [
     # --- Web attacks ---
     ("web_sqli", "SQL injection attempt", "high", "T1190",
-     r"union(?:\s|\+|/\*.*?\*/)+(?:all\s+)?select|'\s*or\s*'?1'?\s*=\s*'?1|\bor\s+1=1\b"
+     r"union(?:\s|\+|/\*[^*]{0,100}\*/){1,20}(?:all(?:\s|\+|/\*[^*]{0,100}\*/){1,20})?select|'\s*or\s*'?1'?\s*=\s*'?1|\bor\s+1=1\b"
      r"|sleep\(\d+\)|benchmark\(|information_schema|xp_cmdshell"),
     ("web_xss", "Cross-site scripting (XSS) attempt", "medium", "T1059.007",
      r"<script|javascript:|onerror\s*=|onload\s*=|alert\("),
@@ -44,9 +45,9 @@ LINE_RULES = [
     ("web_cmdi", "Command injection attempt", "critical", "T1059",
      r"(?:;|\||`|\$\()\s*(?:id|whoami|uname|cat\s|wget\s|curl\s)|cmd\.exe\s*/c"),
     ("web_shell", "Web shell command execution", "critical", "T1505.003",
-     r"/(?:uploads?|images?|img|tmp|files|media|static|assets|wp-content)/[^\s?\"]+\.(?:php\d?|phtml|jspx?|aspx?|ashx|cgi)\?"
-     r"[^\s\"]*\b(?:cmd|exec|command|execute|shell)="
-     r"|/(?:c99|r57|wso|b374k|alfa|shell|cmd)\.(?:php|jsp|aspx?)\?[^\s\"]*="),
+     r"/(?:uploads?|images?|img|tmp|files|media|static|assets|wp-content)/[^\s?\"]{1,200}\.(?:php\d?|phtml|jspx?|aspx?|ashx|cgi)\?"
+     r"[^\s\"]{0,300}\b(?:cmd|exec|command|execute|shell)="
+     r"|/(?:c99|r57|wso|b374k|alfa|shell|cmd)\.(?:php|jsp|aspx?)\?[^\s\"]{0,300}="),
     ("web_scanner", "Attack tool / scanner detected", "medium", "T1595",
      r"sqlmap|nikto|nmap|masscan|zgrab|gobuster|dirbuster|feroxbuster|wpscan|nuclei|acunetix|hydra"),
     ("web_sensitive", "Probe for sensitive files", "medium", "T1595.003",
@@ -58,9 +59,9 @@ LINE_RULES = [
     ("ssh_root_ok", "Successful root login over SSH", "high", "T1078.003",
      r"Accepted \S+ for root from"),
     ("sudo_fail", "Failed / unauthorized sudo", "medium", "T1548.003",
-     r"sudo:.*(?:authentication failure|incorrect password attempts|NOT in sudoers)"),
+     r"sudo:.{0,300}?(?:authentication failure|incorrect password attempts|NOT in sudoers)"),
     ("account_create", "User account created / privileged group change", "medium", "T1136",
-     r"\buseradd\b|new user: name=|usermod\s.*-a?G\s*\S*(?:sudo|wheel|admin)"
+     r"\buseradd\b|new user: name=|usermod\s.{0,300}?-a?G\s*\S{0,64}?(?:sudo|wheel|admin)"
      r"|(?:EventID|Event ID)\D{0,3}4720"),
     ("win_admin_group", "User added to privileged group (Windows)", "high", "T1098",
      r"(?:EventID|Event ID|event_id)\D{0,3}(?:4728|4732|4756)"),
@@ -69,21 +70,21 @@ LINE_RULES = [
     ("win_logon_fail", "Failed Windows logon", "low", "T1110", WIN_FAIL_RE.pattern),
     # --- Malicious commands / malware ---
     ("download_exec", "Download piped to shell", "critical", "T1105",
-     r"(?:wget|curl)\s[^|;\n]*\|\s*(?:sudo\s+)?(?:ba)?sh"),
+     r"(?:wget|curl)\s[^|;\n]{0,500}\|\s*(?:sudo\s+)?(?:ba)?sh"),
     ("reverse_shell", "Reverse shell", "critical", "T1059.004",
-     r"\bnc(?:at)?\s+(?:-\S+\s+)*-e\s|/dev/tcp/|bash\s+-i\s*>&|socat\s.*exec"
+     r"\bnc(?:at)?\s+(?:-\S+\s+)*-e\s|/dev/tcp/|bash\s+-i\s*>&|socat\s.{0,300}?exec"
      r"|python[23]?\s+-c\s+['\"]import\s+socket"),
     ("encoded_powershell", "Encoded PowerShell command", "high", "T1059.001",
-     r"powershell(?:\.exe)?\s.*-(?:e|enc|encodedcommand)\s"),
+     r"powershell(?:\.exe)?\s.{0,300}?-(?:e|enc|encodedcommand)\s"),
     ("cred_dump", "Credential dumping tool", "critical", "T1003",
-     r"mimikatz|sekurlsa|lsass\.dmp|procdump.*lsass|hashdump"),
+     r"mimikatz|sekurlsa|lsass\.dmp|procdump.{0,300}?lsass|hashdump"),
     ("persistence", "Persistence mechanism (cron/service/run key)", "medium", "T1053",
      r"crontab\s+-[er]\b|\|\s*crontab|>>?\s*/etc/cron|authorized_keys|systemctl\s+enable|schtasks\s+/create"
      r"|CurrentVersion\\Run"),
     ("tmp_exec", "Executable dropped in temp directory", "high", "T1059",
      r"chmod\s+\+?[0-7]*x\s+/(?:tmp|dev/shm|var/tmp)|[\s(]/(?:tmp|dev/shm)/\.\w+"),
     ("log_tamper", "Log tampering / anti-forensics", "high", "T1070",
-     r"rm\s+(?:-\S+\s+)*/var/log|history\s+-c|unset\s+HISTFILE|shred\s.*log|wevtutil\s+cl"),
+     r"rm\s+(?:-\S+\s+)*/var/log|history\s+-c|unset\s+HISTFILE|shred\s.{0,300}?log|wevtutil\s+cl"),
     ("crypto_miner", "Cryptocurrency miner", "high", "T1496",
      r"xmrig|stratum\+tcp|minerd|cryptonight"),
 ]
@@ -239,6 +240,7 @@ class LogAnalyzer:
     def feed(self, line, lineno=None, ref=None, ts=None):
         self.lines += 1
         lineno = lineno or self.lines
+        line = line[:MAX_LINE]  # every pattern below is bounded; the cap keeps the per-line cost bounded too
         if not line.strip():
             return
         self._cur = (lineno, ts)

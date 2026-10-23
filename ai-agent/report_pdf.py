@@ -91,6 +91,10 @@ def _clean(text):
     return s.encode("cp1252", errors="ignore").decode("cp1252")
 
 
+class _Markup(str):
+    """Paragraph markup built from already-escaped parts; _bullets passes only these through unescaped."""
+
+
 def _esc(text, limit=None):
     s = _clean(text)
     if limit and len(s) > limit:
@@ -264,7 +268,7 @@ class _Report:
         items = [i for i in items if i]
         if not items:
             return []
-        return [ListFlowable([ListItem(Paragraph(i if isinstance(i, str) and i.startswith("<b>") else _esc(i),
+        return [ListFlowable([ListItem(Paragraph(i if isinstance(i, _Markup) else _esc(i),
                                                  self.st[style]), leftIndent=8) for i in items],
                              bulletType="bullet", leftIndent=10, bulletFontSize=7)]
 
@@ -543,8 +547,8 @@ class _Report:
                 [0.1, 0.2, 0.08, 0.27, 0.35]))
         flow.append(Paragraph("Key Risk Themes", self.st["TGH2"]))
         top = [f for f in self.findings if f["severity"] in ("critical", "high")][:7]
-        flow += self._bullets([f"<b>{_esc(f['fid'])} {_esc(f['title'], 120)}</b> - "
-                               f"{_esc(f.get('impact') or f.get('description', ''), 220)}" for f in top]) or \
+        flow += self._bullets([_Markup(f"<b>{_esc(f['fid'])} {_esc(f['title'], 120)}</b> - "
+                                       f"{_esc(f.get('impact') or f.get('description', ''), 220)}") for f in top]) or \
             [self._p("No critical or high-risk issues were identified.")]
         return flow
 
@@ -949,8 +953,8 @@ class _Report:
             items = [x for x in self.findings if x["severity"] in sevs]
             if items:
                 flow += [Paragraph(phase, self.st["TGH3"])] + self._bullets(
-                    [f"<b>{_esc(x['fid'])} {_esc(x['title'], 100)}</b>: {_esc(x.get('recommendation') or 'Review and verify.', 400)}"
-                     for x in items[:15]])
+                    [_Markup(f"<b>{_esc(x['fid'])} {_esc(x['title'], 100)}</b>: "
+                             f"{_esc(x.get('recommendation') or 'Review and verify.', 400)}") for x in items[:15]])
         fv = forensics.view(self.r) if not self.host_mode else {"tabs": []}
         if fv["tabs"]:
             flow += [CondPageBreak(40 * mm), Paragraph("Forensic investigation by attack type", self.st["TGH2"]),
@@ -962,7 +966,7 @@ class _Report:
                 if t["actions"]:
                     flow.append(Paragraph("<b>What the devices did:</b> " + _esc("; ".join(
                         f"{a['by']}: {a['action']} x{a['count']}" for a in t["actions"][:5]), 600), self.st["TGSmall"]))
-                flow += self._bullets([f"<b>Step {n}.</b> {_esc(x)}" for n, x in enumerate(t["steps"], 1)])
+                flow += self._bullets([_Markup(f"<b>Step {n}.</b> {_esc(x)}") for n, x in enumerate(t["steps"], 1)])
                 for osname, cmds in t["commands"].items():
                     for c in cmds[:3]:
                         flow.append(Paragraph(f"<b>{_esc(osname)}:</b> {_esc(c, 300)}", self.st["TGCode"]))
@@ -1059,10 +1063,13 @@ def _rule_out(f):
 # ------------------------------------------------------------ markdown -> flowables
 
 def _inline_md(text):
-    t = _esc(text)
-    t = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", t)
-    t = re.sub(r"`([^`]+)`", r'<font name="Courier">\1</font>', t)
-    return t
+    """`code` and **bold** from AI text. Code spans are split out first, so tags always nest correctly
+    (mis-nested markup like **a `b** c` would make reportlab refuse the whole report)."""
+    out = []
+    for i, part in enumerate(re.split(r"`([^`]+)`", str(text or ""))):
+        out.append(f'<font name="Courier">{_esc(part)}</font>' if i % 2
+                   else re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", _esc(part)))
+    return "".join(out)
 
 
 def _first_paragraph(md):

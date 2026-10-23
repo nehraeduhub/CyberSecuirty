@@ -69,6 +69,7 @@ DEFAULTS = {
     "keep_alive": "-1",       # keep the model loaded in RAM forever (no reload delay)
     "report": {},             # legacy PDF branding overrides (Branding settings take precedence)
     "max_upload_mb": 512,     # per uploaded file
+    "analysis_max_mb": 8192,  # memory one analysis may add before ingestion stops (shown as a limitation)
     "keep_uploads": False,    # delete uploaded logs after analysis (evidence is kept in the result)
     "learn_baseline": True,   # update UEBA baselines from accounts not involved in incidents
     "tz_hours": 0,            # time zone of logs that carry no zone information (0 = UTC)
@@ -1644,6 +1645,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def serve(cfg, open_browser=True):
     Handler.cfg = cfg
+    pipeline.ANALYSIS_MAX_MB = max(256, int(cfg.get("analysis_max_mb") or 8192))
     on_network = not is_local_only(cfg)
     if password_mode(cfg) and not cfg.get("session_secret"):
         cfg["session_secret"] = secrets.token_hex(32)

@@ -28,9 +28,13 @@ from pathlib import Path
 
 import config_store
 
-csv.field_size_limit(16 * 1024 * 1024)
+MAX_RECORD = 1024 * 1024  # one CSV row / JSON line / JSON array item (bigger ones are a parse failure)
+csv.field_size_limit(MAX_RECORD)
 RAW_KEEP = 2000           # characters of the original record kept as evidence
 SNIFF_BYTES = 64 * 1024
+MAX_LINE = 16 * 1024      # text lines and event fields are cut here before any pattern matching (same as live)
+MAX_DECOMPRESSED = 4 * 1024 ** 3   # a .gz upload may expand to at most this many bytes (decompression bombs)
+MAX_FAILURES_KEPT = 1000  # failure samples kept per file (all are counted)
 
 # canonical field -> aliases (compared after lower-casing and removing non-alphanumerics)
 DEFAULT_ALIASES = {
@@ -120,7 +124,9 @@ SYSLOG_RE = re.compile(r"^(?:<\d+>)?(?:\d\s+)?((?:[A-Z][a-z]{2}\s+\d{1,2} \d\d:\
                        r"([\w./\-()]+?)(?:\[(\d+)\])?:?\s+(.*)$")
 SSH_RE = re.compile(r"(Failed|Accepted) (\S+) for (?:invalid user )?(\S+) from (\S+)(?: port (\d+))?")
 SSH_INVALID_RE = re.compile(r"Invalid user (\S+) from (\S+)")
-SUDO_RE = re.compile(r"sudo:\s+(\S+)\s*:.*?(?:USER=(\S+))?.*?COMMAND=(.*)$")
+SUDO_RE = re.compile(r"sudo:\s+(\S+)\s*:([^\n]{0,1000}?)COMMAND=(.*)$")   # bounded: no backtracking blow-up
+SUDO_USER_RE = re.compile(r"\bUSER=(\S+)")
+CEF_SPLIT_RE = re.compile(r"(?<!\s)\s+(?=\w+=)")   # CEF extension: "k=v with spaces k2=v2" (linear time)
 FW_RE = re.compile(r"\b(SRC|DST|SPT|DPT|PROTO)=(\S+)")
 WIN_TEXT_RE = re.compile(r"(?:EventID|Event ID|event_id)\D{0,3}(\d{3,5})", re.I)
 UFW_ACTION_RE = re.compile(r"\[UFW (\w+)\]|\b(DROP|DENY|REJECT|BLOCK|ACCEPT|ALLOW)\b")
@@ -222,10 +228,65 @@ def _tz(s):
 
 # ------------------------------------------------------------------ format detection
 
+class LimitExceeded(ValueError):
+    pass
+
+
+class _CappedRaw(io.RawIOBase):
+    """Byte stream that refuses to expand past MAX_DECOMPRESSED (gzip bombs)."""
+
+    def __init__(self, fh, cap):
+        self.fh, self.left = fh, cap
+
+    def readable(self):
+        return True
+
+    def readinto(self, b):
+        data = self.fh.read(min(len(b), self.left + 1))
+        if len(data) > self.left:
+            raise LimitExceeded(f"decompressed data larger than {MAX_DECOMPRESSED // 1024 ** 3} GB - possible "
+                                "decompression bomb; the rest of the file was not analysed")
+        self.left -= len(data)
+        b[:len(data)] = data
+        return len(data)
+
+    def close(self):
+        self.fh.close()
+        super().close()
+
+
 def open_text(path):
     path = Path(path)
-    raw = gzip.open(path, "rb") if path.suffix == ".gz" else open(path, "rb")
+    if path.suffix == ".gz":
+        raw = io.BufferedReader(_CappedRaw(gzip.open(path, "rb"), MAX_DECOMPRESSED), 1 << 16)
+    else:
+        raw = open(path, "rb")
     return io.TextIOWrapper(raw, encoding="utf-8", errors="replace", newline="")
+
+
+def _lines(fh, cap=MAX_LINE, cut=None):
+    """(line_no, line) with each line cut at `cap` characters; the rest of an over-long line is skipped
+    (never read into memory as one string). `cut(line_no)` is called for each cut line."""
+    n = 0
+    while True:
+        line = fh.readline(cap)
+        if not line:
+            return
+        n += 1
+        if len(line) >= cap and not line.endswith(("\n", "\r")):
+            while True:
+                rest = fh.readline(cap)
+                if not rest or rest.endswith(("\n", "\r")):
+                    break
+            if cut:
+                cut(n)
+        yield n, line
+
+
+def _fail(stats, n, msg):
+    stats["failure_count"] = stats.get("failure_count", 0) + 1
+    if len(stats["failures"]) < MAX_FAILURES_KEPT:
+        stats["failures"].append((n, msg))
 
 
 def sniff(path):
@@ -234,8 +295,11 @@ def sniff(path):
     name = p.name.lower().removesuffix(".gz")
     if name.endswith(".evtx"):
         return "unsupported:evtx"
-    with open_text(p) as fh:
-        head = fh.read(SNIFF_BYTES)
+    try:
+        with open_text(p) as fh:
+            head = fh.read(SNIFF_BYTES)
+    except (OSError, EOFError, LimitExceeded) as e:
+        return f"unreadable:{e}"
     s = head.lstrip("\ufeff \r\n\t")
     if not s:
         return "empty"
@@ -246,7 +310,7 @@ def sniff(path):
         try:
             if isinstance(json.loads(first), dict):
                 return "jsonl"
-        except ValueError:
+        except (ValueError, RecursionError):
             pass
         return "json"
     lines = [ln for ln in s.splitlines()[:20] if ln.strip()]
@@ -334,7 +398,7 @@ class Normaliser:
             if f in ev:
                 try:
                     ev[f] = int(float(str(ev[f]).split()[0]))
-                except (ValueError, IndexError):
+                except (ValueError, IndexError, OverflowError):
                     ev.pop(f)
         for f in ("src_ip", "dst_ip"):
             if f in ev:
@@ -366,7 +430,7 @@ SOURCE_HINTS = [
     ("dns", re.compile(r"\bdns\b|named\[|qname|query\[|nxdomain|dnsmasq|unbound|rcode", re.I)),
     ("proxy", re.compile(r"squid|proxy|bluecoat|zscaler|tcp_miss|tcp_hit|x-forwarded", re.I)),
     ("firewall", re.compile(r"ufw|iptables|firewall|fortigate|palo ?alto|pan-os|asa-|checkpoint|"
-                            r"\b(?:deny|drop|accept|allow)\b.*\b(?:src|dst)|policyid|%asa|%ftd", re.I)),
+                            r"\b(?:deny|drop|accept|allow)\b.{0,300}?\b(?:src|dst)|policyid|%asa|%ftd", re.I)),
     ("linux_auth", re.compile(r"sshd\[|sudo:|pam_unix|useradd|usermod|groupadd|passwd\[|systemd-logind|su\[", re.I)),
     ("web", re.compile(r'"(?:GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH) /|nginx|apache|httpd|iis', re.I)),
     ("database", re.compile(r"mysql|postgres|mssql|oracle|sqlserver|mongodb|select .* from", re.I)),
@@ -404,7 +468,11 @@ def parse_text_line(line, norm):
     m = CEF_RE.search(line)
     if m:
         ev.update(vendor=f"{m.group(1)} {m.group(2)}", event_id=m.group(3), signature=m.group(4), severity=m.group(5))
-        rec = {k: v.strip('"') for k, v in re.findall(r"(\w+)=((?:[^=](?!\w+=))*[^=]?)(?=\s+\w+=|$)", m.group(6))}
+        rec = {}
+        for part in CEF_SPLIT_RE.split(m.group(6).strip()):
+            k, eq, v = part.partition("=")
+            if eq and re.fullmatch(r"\w+", k):
+                rec[k] = v.strip().strip('"')
         f, _ = norm.from_record(rec)
         for k, v in f.items():
             ev.setdefault(k, v)
@@ -439,10 +507,10 @@ def parse_text_line(line, norm):
             ev["src_port"] = s.group(5)
     elif (s := SSH_INVALID_RE.search(body)):
         ev.update(outcome="failure", action="logon", user=s.group(1), src_ip=s.group(2), protocol="ssh")
-    elif (s := SUDO_RE.search(body)):
+    elif (s := SUDO_RE.search(body if "sudo:" in body or ev.get("process") != "sudo" else f"sudo: {body}")):
         ev.update(user=s.group(1), command=s.group(3).strip(), action="sudo")
-        if s.group(2):
-            ev["target_user"] = s.group(2).rstrip(";")
+        if (t := SUDO_USER_RE.search(s.group(2))):
+            ev["target_user"] = t.group(1).rstrip(";")
         if "NOT in sudoers" in body or "incorrect password" in body or "authentication failure" in body:
             ev["outcome"] = "failure"
     fw = dict(FW_RE.findall(body))
@@ -476,7 +544,9 @@ def _json_array_items(fh):
     dec = json.JSONDecoder()
     buf, pos, started = "", 0, False
     while True:
-        chunk = fh.read(1 << 20)
+        if len(buf) - pos > MAX_RECORD:
+            raise ValueError(f"a JSON item is larger than {MAX_RECORD // 1024 ** 2} MB")
+        chunk = fh.read(max(1 << 20, len(buf) - pos))  # grow geometrically: an item is re-decoded O(log n) times
         if chunk:
             buf = buf[pos:] + chunk
             pos = 0
@@ -521,7 +591,8 @@ def _iter_records(path, fmt, stats):
                 dialect = csv.Sniffer().sniff("\n".join(sample.splitlines()[:10]), delimiters=",\t;|")
             except csv.Error:
                 dialect = csv.excel
-            reader = csv.reader(fh, dialect)
+            reader = csv.reader((ln for _, ln in _lines(fh, MAX_RECORD,
+                                                        lambda n: _fail(stats, n, "row too long - cut"))), dialect)
             header = [h.strip().lstrip("\ufeff") or f"col{i}" for i, h in enumerate(next(reader, []))]
             # Windows Event Viewer CSV: the 6th column (message) has no header
             if len(header) == 5 and [h.lower() for h in header[:2]] == ["level", "date and time"]:
@@ -533,42 +604,51 @@ def _iter_records(path, fmt, stats):
                 if len(row) > len(header):
                     row = row[:len(header) - 1] + [",".join(row[len(header) - 1:])]
                 if len(row) < len(header) - 1:
-                    stats["failures"].append((n, f"expected {len(header)} columns, got {len(row)}"))
+                    _fail(stats, n, f"expected {len(header)} columns, got {len(row)}")
                 rec = dict(zip(header, row))
                 yield n, rec, ",".join(row)
     elif fmt in ("json", "jsonl"):
         with open_text(path) as fh:
             if fmt == "jsonl":
-                for n, line in enumerate(fh, 1):
+                for n, line in _lines(fh, MAX_RECORD, lambda n: _fail(stats, n, "line too long - cut")):
                     if not line.strip():
                         continue
                     try:
                         obj = json.loads(line)
-                    except ValueError as e:
-                        stats["failures"].append((n, f"invalid JSON ({e.msg})"))
-                        yield n, None, line.rstrip("\r\n")
+                    except (ValueError, RecursionError) as e:
+                        _fail(stats, n, f"invalid JSON ({getattr(e, 'msg', 'nested too deeply')})")
+                        yield n, None, line.rstrip("\r\n")[:MAX_LINE]
                         continue
                     yield n, obj if isinstance(obj, dict) else {"message": obj}, line.rstrip("\r\n")
             else:
                 head = fh.read(SNIFF_BYTES)
                 fh.seek(0)
-                if head.lstrip().startswith("{") and "[" not in head.split(":", 3)[-1][:200] and len(head) < SNIFF_BYTES:
-                    obj = json.load(fh)
-                    items = next((v for v in obj.values() if isinstance(v, list)), [obj]) if isinstance(obj, dict) else [obj]
-                else:
-                    items = _json_array_items(fh)
                 try:
+                    if head.lstrip().startswith("{") and "[" not in head.split(":", 3)[-1][:200] and len(head) < SNIFF_BYTES:
+                        obj = json.load(fh)
+                        items = next((v for v in obj.values() if isinstance(v, list)), [obj]) if isinstance(obj, dict) else [obj]
+                    else:
+                        items = _json_array_items(fh)
                     for n, obj in enumerate(items, 1):
                         if isinstance(obj, dict) and "_source" in obj and isinstance(obj["_source"], dict):
                             obj = obj["_source"]  # Elasticsearch / OpenSearch export
                         yield n, obj if isinstance(obj, dict) else {"message": obj}, json.dumps(obj)[:RAW_KEEP]
-                except ValueError as e:
-                    stats["failures"].append((0, f"JSON structure error: {e}"))
+                except (ValueError, RecursionError) as e:
+                    _fail(stats, 0, f"JSON structure error: {e or 'nested too deeply'}")
     elif fmt == "winxml":
         with open_text(path) as fh:
             n = 0
             try:
-                for _, el in ET.iterparse(_NoDTD(fh), events=("end",)):
+                root, depth = None, 0
+                for kind, el in ET.iterparse(_NoDTD(fh), events=("start", "end")):
+                    if kind == "start":
+                        depth += 1
+                        if root is None:
+                            root = el
+                        if depth > 64:
+                            raise _UnsafeXML("XML nested more than 64 levels deep refused (not a Windows event export)")
+                        continue
+                    depth -= 1
                     if el.tag.rsplit("}", 1)[-1] != "Event":
                         continue
                     n += 1
@@ -587,14 +667,16 @@ def _iter_records(path, fmt, stats):
                             rec["ProcessID"] = child.get("ProcessID")
                     raw = re.sub(r'\s?xmlns(:ns\d+)?="[^"]*"|ns\d+:', "", ET.tostring(el, encoding="unicode"))[:RAW_KEEP]
                     el.clear()
+                    if root is not None and root is not el:
+                        root.clear()  # drop finished events so memory stays flat
                     yield n, rec, raw
             except ET.ParseError as e:
-                stats["failures"].append((n, f"XML error: {e}"))
+                _fail(stats, n, f"XML error: {e}")
             except _UnsafeXML as e:
-                stats["failures"].append((n, str(e)))
+                _fail(stats, n, str(e))
     else:
         with open_text(path) as fh:
-            for n, line in enumerate(fh, 1):
+            for n, line in _lines(fh, MAX_LINE, lambda n: stats.__setitem__("cut_lines", stats.get("cut_lines", 0) + 1)):
                 line = line.rstrip("\r\n")
                 if line.strip():
                     yield n, None, line
@@ -629,25 +711,44 @@ def iter_events(path, display_name=None, tz_hours=0, aliases=None, stats=None):
     st = stats if stats is not None else {}
     st.update(file=name, size=path.stat().st_size, format=fmt, events=0, failures=[], columns=[],
               field_counts=Counter(), sources=Counter(), no_timestamp=0, first=None, last=None)
-    if fmt.startswith("unsupported") or fmt == "empty":
-        st["failures"].append((0, "Windows .evtx is binary - export it from Event Viewer as XML or CSV"
-                               if fmt == "unsupported:evtx" else "file is empty"))
+    if fmt.startswith(("unsupported", "unreadable")) or fmt == "empty":
+        _fail(st, 0, "Windows .evtx is binary - export it from Event Viewer as XML or CSV"
+              if fmt == "unsupported:evtx" else f"file could not be read ({fmt[11:]})"
+              if fmt.startswith("unreadable") else "file is empty")
+        if fmt.startswith("unreadable"):
+            st["format"] = "unreadable"
         return
     tp = TimeParser(tz_hours)
     st["_tp"] = tp
     norm = Normaliser(aliases or load_aliases(), tp)
-    for n, rec, raw in _iter_records(path, fmt, st):
-        if rec is not None:
-            ev, extra = norm.from_record(_flatten(rec) if fmt in ("json", "jsonl") else rec)
-            if fmt == "csv" and not st.get("mapped"):
-                st["mapped"] = {c: norm.map_key(c) for c in st["columns"]}
+    records = _iter_records(path, fmt, st)
+    while True:
+        try:
+            n, rec, raw = next(records)
+        except StopIteration:
+            break
+        except (OSError, EOFError, ValueError, RecursionError, csv.Error) as e:
+            # corrupt .gz, decompression limit, malformed CSV/JSON... keep what was read, report the rest
+            _fail(st, st.get("events", 0), f"reading stopped: {str(e)[:200] or type(e).__name__}")
+            break
+        try:
+            raw = raw[:MAX_LINE]
+            if rec is not None:
+                ev, extra = norm.from_record(_flatten(rec) if fmt in ("json", "jsonl") else rec)
+                if fmt == "csv" and not st.get("mapped"):
+                    st["mapped"] = {c: norm.map_key(c) for c in st["columns"]}
+            else:
+                ev = parse_text_line(raw, norm)
             text = raw
-        else:
-            ev = parse_text_line(raw, norm)
-            text = raw
-        if "ts" in ev:
-            ev["ts_raw"] = ev.pop("ts")
-        ev = norm.finish(ev, text, structured=rec is not None)
+            if "ts" in ev:
+                ev["ts_raw"] = ev.pop("ts")
+            ev = norm.finish(ev, text, structured=rec is not None)
+            for k, v in ev.items():  # no field reaches the detection patterns longer than MAX_LINE
+                if isinstance(v, str) and len(v) > MAX_LINE:
+                    ev[k] = v[:MAX_LINE]
+        except Exception as e:  # noqa: BLE001 - one hostile record must never abort the whole analysis
+            _fail(st, n, f"record could not be normalised ({type(e).__name__})")
+            continue
         # signature rules read `text`; a structured EventID is made explicit for them
         eid = ev.get("event_id")
         ev["text"] = (f"EventID={eid} " if eid and "eventid" not in text[:300].lower().replace(" ", "") else "") + text
@@ -693,7 +794,8 @@ def summarise(st):
         "timezones": dict(tp.zones) if tp else {},
         "no_timestamp": st.get("no_timestamp", 0),
         "time_range": {"start": _fmt(st.get("first")), "end": _fmt(st.get("last"))},
-        "parse_failures": len(st.get("failures", [])),
+        "parse_failures": st.get("failure_count", len(st.get("failures", []))),
+        "cut_lines": st.get("cut_lines", 0),
         "failure_samples": [{"line": ln, "error": err} for ln, err in st.get("failures", [])[:10]],
     }
 

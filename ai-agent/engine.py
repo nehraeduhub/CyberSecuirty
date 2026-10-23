@@ -22,32 +22,32 @@ import trust
 ADMIN_PORTS = {22, 135, 139, 445, 3389, 5985, 5986}
 SAMPLES, REFS = 5, 200
 RX = {
-    "TG-EXE-001": re.compile(r"downloadstring|downloadfile|invoke-webrequest|\biwr\b.+\|\s*iex|\biex\b|"
+    "TG-EXE-001": re.compile(r"downloadstring|downloadfile|invoke-webrequest|\biwr\b.{1,300}?\|\s*iex|\biex\b|"
                              r"invoke-expression|net\.webclient|start-bitstransfer|\s-e(nc|ncodedcommand)?\s+[a-z0-9+/=]{20,}|"
                              r"frombase64string", re.I),
-    "TG-EXE-002": re.compile(r"certutil(\.exe)?\s.*-urlcache|mshta(\.exe)?\s+(https?|javascript|vbscript):|"
-                             r"regsvr32(\.exe)?\s.*/i:https?|rundll32(\.exe)?\s.*javascript:|bitsadmin(\.exe)?\s.*/transfer|"
-                             r"installutil(\.exe)?\s.*/u|msbuild(\.exe)?\s+\S+\.(xml|csproj)", re.I),
+    "TG-EXE-002": re.compile(r"certutil(\.exe)?\s.{0,300}?-urlcache|mshta(\.exe)?\s+(https?|javascript|vbscript):|"
+                             r"regsvr32(\.exe)?\s.{0,300}?/i:https?|rundll32(\.exe)?\s.{0,300}?javascript:|bitsadmin(\.exe)?\s.{0,300}?/transfer|"
+                             r"installutil(\.exe)?\s.{0,300}?/u|msbuild(\.exe)?\s+\S+\.(xml|csproj)", re.I),
     "TG-EXE-003": re.compile(r"\\users\\public\\|\\appdata\\local\\temp\\|\\windows\\temp\\|\\programdata\\[^\\]+\.exe|"
                              r"\\\$recycle\.bin\\|(^|\s)/(tmp|dev/shm|var/tmp)/", re.I),
     "TG-MAL-001": re.compile(r"vssadmin(\.exe)?\s+delete\s+shadows|wmic(\.exe)?\s+shadowcopy\s+delete|"
-                             r"wbadmin(\.exe)?\s+delete\s+(catalog|systemstatebackup)|bcdedit(\.exe)?\s.*recoveryenabled\s+no|"
-                             r"bcdedit(\.exe)?\s.*bootstatuspolicy\s+ignoreallfailures|cipher(\.exe)?\s+/w|"
-                             r"\.(locked|encrypted|crypt|ryk)\b.*rename|readme[-_]?(to[-_]?)?decrypt", re.I),
-    "TG-DEF-001": re.compile(r"set-mppreference\s.*-disable(realtimemonitoring|behaviormonitoring|ioavprotection)|"
+                             r"wbadmin(\.exe)?\s+delete\s+(catalog|systemstatebackup)|bcdedit(\.exe)?\s.{0,300}?recoveryenabled\s+no|"
+                             r"bcdedit(\.exe)?\s.{0,300}?bootstatuspolicy\s+ignoreallfailures|cipher(\.exe)?\s+/w|"
+                             r"\.(locked|encrypted|crypt|ryk)\b.{0,300}?rename|readme[-_]?(to[-_]?)?decrypt", re.I),
+    "TG-DEF-001": re.compile(r"set-mppreference\s.{0,300}?-disable(realtimemonitoring|behaviormonitoring|ioavprotection)|"
                              r"sc(\.exe)?\s+(stop|config)\s+(windefend|sense|wdnissvc)|net\s+stop\s+(windefend|\"?windows defender)|"
                              r"auditctl\s+-e\s*0|auditctl\s+-D|systemctl\s+(stop|disable|mask)\s+(auditd|rsyslog|systemd-journald|"
                              r"firewalld|ufw|falcon|wazuh|osquery)|ufw\s+disable|iptables\s+-F|setenforce\s+0|"
                              r"netsh\s+(advfirewall|firewall)\s+set\s+\S*\s*state\s+off|"
                              r"add-mppreference\s+-exclusionpath", re.I),
-    "TG-CRED-001": re.compile(r"sekurlsa|lsadump|mimikatz|procdump(64)?(\.exe)?\s.*lsass|comsvcs(\.dll)?,?\s*minidump|"
-                              r"ntdsutil.*ifm|reg(\.exe)?\s+save\s+hklm\\(sam|system|security)|hashdump|secretsdump|"
+    "TG-CRED-001": re.compile(r"sekurlsa|lsadump|mimikatz|procdump(64)?(\.exe)?\s.{0,300}?lsass|comsvcs(\.dll)?,?\s*minidump|"
+                              r"ntdsutil.{0,300}?ifm|reg(\.exe)?\s+save\s+hklm\\(sam|system|security)|hashdump|secretsdump|"
                               r"rubeus|kerberoast", re.I),
-    "TG-DB-001": re.compile(r"\bbcp\b.*\bqueryout\b|mysqldump\b|pg_dump\b|pg_dumpall\b|\bexpdp\b|\bexp\s+\w+/|"
-                            r"into\s+outfile|copy\s+\(?select.*\)?\s+to\s+'|sqlcmd.*-o\s|mongoexport|mongodump", re.I),
-    "TG-EXF-002": re.compile(r"7z(a|\.exe)?\s+a\s+.*-p|\brar(\.exe)?\s+a\s+.*-hp|\bzip\s+.*-(P|e)\s|"
-                             r"compress-archive.*-destinationpath|\btar\s+-?c\w*z\w*f\s+\S+\s+(/etc|/home|/var/lib|/srv)", re.I),
-    "TG-LNX-001": re.compile(r"(visudo|vi|vim|nano|tee|sed\s+-i|echo).*(/etc/sudoers|/etc/ssh/sshd_config|/etc/passwd|"
+    "TG-DB-001": re.compile(r"\bbcp\b.{0,300}?\bqueryout\b|mysqldump\b|pg_dump\b|pg_dumpall\b|\bexpdp\b|\bexp\s+\w+/|"
+                            r"into\s+outfile|copy\s+\(?select.{0,300}?\)?\s+to\s+'|sqlcmd.{0,300}?-o\s|mongoexport|mongodump", re.I),
+    "TG-EXF-002": re.compile(r"7z(a|\.exe)?\s+a\s+.{0,300}?-p|\brar(\.exe)?\s+a\s+.{0,300}?-hp|\bzip\s+.{0,300}?-(P|e)\s|"
+                             r"compress-archive.{0,300}?-destinationpath|\btar\s+-?c\w{0,10}z\w{0,10}f\s+\S+\s+(/etc|/home|/var/lib|/srv)", re.I),
+    "TG-LNX-001": re.compile(r"(visudo|vi|vim|nano|tee|sed\s+-i|echo).{0,300}?(/etc/sudoers|/etc/ssh/sshd_config|/etc/passwd|"
                              r"/etc/shadow|/etc/pam\.d/)|chmod\s+[0-7]*[2367]\s+/etc/(passwd|shadow|sudoers)", re.I),
     "TG-NET-006": re.compile(r"firewall (policy|rule)s? (modified|added|changed|deleted)|policy (modified|changed)|"
                              r"%(asa|ftd)-\d-1110(08|10)|configured from|config(uration)? change|"

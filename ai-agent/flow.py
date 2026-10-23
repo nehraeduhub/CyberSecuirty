@@ -42,7 +42,7 @@ SYSLOG_HOST = re.compile(r"^(?:<\d+>)?(?:\w{3} +\d+ [\d:]{8}|\d{4}-\d\d-\d\dT\S+
 RAW_EVENT = re.compile(r"\bevent=([\w.-]+)")
 RAW_REASON = re.compile(r"\breason=([\w.-]+)")
 WEB_PORTS = (80, 443, 8000, 8080, 8443)
-EXPLOIT_HINT = re.compile(r"union\s+select|select.+from|'\s*or\s*'?1|\.\./|%2e%2e|<script|\$\{jndi:|cmd=|exec=|"
+EXPLOIT_HINT = re.compile(r"union\s+select|select.{1,300}?from|'\s*or\s*'?1|\.\./|%2e%2e|<script|\$\{jndi:|cmd=|exec=|"
                           r"/etc/passwd|wp-config|\.env\b|shell\.php|c99|r57|eval\(|base64_decode|;\s*(?:id|whoami|uname)",
                           re.I)
 
@@ -329,8 +329,8 @@ def _node_names(part):
     """[(display name, ip or None)] for one from/to field. "192.0.2.22 (WS-BOB)" -> ("WS-BOB", "192.0.2.22")."""
     part = re.sub(r" ports [\d, .]+$", "", str(part or ""))
     out = []
-    for n in re.split(r" → |, ", part):
-        n = re.sub(r" \[.*?\]$", "", n.strip())
+    for n in re.split(r" → |, ", part[:4096]):
+        n = re.sub(r" \[[^\]]*\]$", "", n.strip()[:256])
         m = re.match(r"^([\d.:a-fA-F]+?)(?::\d+)? \((.+?)\)(?::\d+)?$", n)
         if m:
             out.append((m.group(2), m.group(1)))
