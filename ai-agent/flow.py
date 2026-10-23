@@ -325,22 +325,151 @@ def incident_flow(timeline, evidence_by_id, names=None, limit=40):
     return steps
 
 
+def _node_names(part):
+    """[(display name, ip or None)] for one from/to field. "192.0.2.22 (WS-BOB)" -> ("WS-BOB", "192.0.2.22")."""
+    part = re.sub(r" ports [\d, .]+$", "", str(part or ""))
+    out = []
+    for n in re.split(r" → |, ", part):
+        n = re.sub(r" \[.*?\]$", "", n.strip())
+        m = re.match(r"^([\d.:a-fA-F]+?)(?::\d+)? \((.+?)\)(?::\d+)?$", n)
+        if m:
+            out.append((m.group(2), m.group(1)))
+            continue
+        n = re.sub(r"^(\d+\.\d+\.\d+\.\d+):\d+$", r"\1", n)
+        if n and not n.startswith("DNS") and not n.startswith("Web server"):
+            out.append((n, n if re.fullmatch(r"\d+\.\d+\.\d+\.\d+|[0-9a-fA-F:]*:[0-9a-fA-F:]+", n) else None))
+    return out
+
+
 def path_summary(steps, limit=14):
     """Ordered unique systems the attack touched, e.g. 203.0.113.77 → VPN01 → DC01 → WS-BOB → 203.0.113.99."""
     nodes, seen = [], set()
     for s in steps:
         for part in (s.get("from"), s.get("to")):
-            part = re.sub(r" ports [\d, .]+$", "", str(part or ""))
-            for n in re.split(r" → |, ", part):
-                n = re.sub(r" \[.*?\]$", "", n.strip())
-                ip_name = re.match(r"^([\d.:a-fA-F]+?)(?::\d+)? \((.+?)\)(?::\d+)?$", n)
-                if ip_name:
-                    n = ip_name.group(2)          # "192.0.2.22 (WS-BOB)" -> "WS-BOB"
-                else:
-                    n = re.sub(r"^(\d+\.\d+\.\d+\.\d+):\d+$", r"\1", n)
-                if n and n.lower() not in seen and not n.startswith("DNS"):
+            for n, _ in _node_names(part):
+                if n.lower() not in seen:
                     seen.add(n.lower())
                     nodes.append(n)
     if len(nodes) > limit:
         nodes = nodes[:limit] + [f"+{len(nodes) - limit} more"]
     return " → ".join(nodes)
+
+
+RESULT_RANK = {SUCCESS: 0, EXECUTED: 0, ALLOWED: 1, CHANGED: 1, ERROR: 2, DETECTED: 2, BLOCKED: 3, FAILED: 3, INFO: 4}
+
+
+def diagram(steps, category=None, host_trusted=None, max_nodes=18):
+    """Graph of an incident for drawing: nodes (systems) in layers, edges (what moved between them).
+
+    category(ip) -> trust category, host_trusted(name) -> bool: used to colour your own assets green.
+    Roles: attacker (external source), external (destination outside, e.g. C2 / exfiltration),
+    trusted (in Trusted Networks & Assets), internal (other internal systems), gateway (VPN)."""
+    nodes, edges, order = {}, {}, []
+
+    def node(name, ip):
+        k = name.lower()
+        if k not in nodes:
+            if len(nodes) >= max_nodes:
+                return None
+            nodes[k] = {"id": k, "label": name, "ip": ip if ip and ip != name else None, "role": None, "details": [],
+                        "src": False, "dst": False, "gateway": False, "_ip": ip,
+                        "url": name.startswith("/") or name.endswith("paths probed")}
+            order.append(k)
+        return nodes[k]
+
+    for st in steps:
+        if not (st.get("from") or st.get("to")):
+            continue
+        chain = [_node_names(x) for x in str(st.get("to") or "").split(" → ")]
+        srcs = _node_names(st.get("from"))
+        obj = str(st.get("object") or "")
+        web = re.match(r"^(GET|POST|PUT|DELETE|HEAD|PATCH|OPTIONS) (\S+)", obj)
+        if web and chain and chain[-1]:  # server -> URL path: the page that was attacked / exploited
+            paths = [x.strip().split(" ")[-1] for x in obj.split(", ")]
+            path = paths[0].split("?")[0][:48] if len(paths) == 1 else f"{len(paths)} paths probed"
+            chain.append([(path, None)])
+        label = re.sub(r" \(x\d+\)$", "", str(st.get("action") or ""))[:60]
+        if st.get("object"):
+            label = f"{label} · {str(st['object'])[:50]}"
+        if not srcs:  # action on the machine itself (process, account change...)
+            for name, ip in chain[0] if chain else []:
+                n = node(name, ip)
+                if n is not None and len(n["details"]) < 5:
+                    n["details"].append({"text": (str(st.get("object") or st.get("action") or ""))[:70],
+                                         "result": st.get("result"), "stage": st.get("stage") or ""})
+            continue
+        hops = [srcs] + chain
+        for i in range(len(hops) - 1):
+            for a_name, a_ip in hops[i]:
+                for b_name, b_ip in hops[i + 1]:
+                    a, b = node(a_name, a_ip), node(b_name, b_ip)
+                    if a is None or b is None or a is b:
+                        continue
+                    a["src"], b["dst"] = True, True
+                    if i > 0 or str(st.get("action_by", "")).startswith("VPN"):
+                        if i > 0:
+                            a["gateway"] = True
+                    k = (a["id"], b["id"])
+                    e = edges.get(k)
+                    if e is None:
+                        e = edges[k] = {"from": a["id"], "to": b["id"], "labels": [], "result": st.get("result") or INFO,
+                                        "count": 0, "steps": [], "stage": st.get("stage") or "",
+                                        "via": st.get("via") or ""}
+                    e["count"] += max(1, int(st.get("count") or 1))
+                    lab = label if not b["url"] else re.sub(r" · .*$", "", label)
+                    if lab and lab not in [x[1] for x in e["labels"]]:
+                        e["labels"].append((RESULT_RANK.get(st.get("result"), 4), lab))
+                    if RESULT_RANK.get(st.get("result"), 4) < RESULT_RANK.get(e["result"], 4):
+                        e["result"] = st.get("result")
+                    if st.get("step") and len(e["steps"]) < 6:
+                        e["steps"].append(st["step"])
+    # roles
+    for n in nodes.values():
+        ip, cat = n.pop("_ip"), None
+        if ip and category:
+            try:
+                cat = category(ip)
+            except Exception:  # noqa: BLE001 - colouring only
+                cat = None
+        if n.pop("url"):
+            n["role"] = "url"
+        elif cat in ("configured_internal", "approved_asset", "configured_isp", "known_external_service") or \
+                (not ip and host_trusted and host_trusted(n["label"])):
+            n["role"] = "trusted"
+        elif n["gateway"] and not ip:
+            n["role"] = "gateway"
+        elif ip and cat in ("public_unknown", "suspicious_indicator", None) and not _private(ip):
+            n["role"] = "attacker" if n["src"] else "external"
+        else:
+            n["role"] = "internal"
+        for k in ("src", "dst", "gateway"):
+            n.pop(k)
+    # layers: a node is placed one layer right of the first node that reached it
+    level = {}
+    for k in order:
+        if k not in level:
+            level[k] = 0
+        for e in edges.values():
+            if e["from"] == k and e["to"] not in level:
+                level[e["to"]] = level[k] + 1
+    rows = {}
+    for k in order:
+        lv = level.get(k, 0)
+        nodes[k]["level"], nodes[k]["row"] = lv, rows.get(lv, 0)
+        rows[lv] = rows.get(lv, 0) + 1
+    out_edges = []
+    for e in edges.values():
+        e["label"] = "; ".join(x[1] for x in sorted(e.pop("labels"), key=lambda x: x[0])[:3])
+        out_edges.append(e)
+    return {"nodes": [nodes[k] for k in order], "edges": out_edges,
+            "levels": (max(level.values()) + 1) if level else 0, "rows": max(rows.values()) if rows else 0}
+
+
+def _private(ip):
+    try:
+        import ipaddress
+        import trust
+        a = ipaddress.ip_address(ip)
+        return trust.is_private_ip(ip) or a.is_loopback or a.is_link_local
+    except ValueError:
+        return True

@@ -32,6 +32,7 @@ try:
 except ImportError:  # pragma: no cover - reported to the user by the API
     AVAILABLE = False
 
+import forensics
 import knowledge
 import rules as rulebook
 
@@ -339,6 +340,98 @@ class _Report:
         d.add(Rect(4, 4, 56, 56, rx=8, ry=8, fillColor=colors.HexColor(pal.get(g, "#5a6470")), strokeColor=None))
         d.add(String(32, 19, g, fontSize=32, fillColor=colors.white, textAnchor="middle", fontName="Helvetica-Bold"))
         return d
+
+    ROLE_SEV = {"attacker": "critical", "external": "high", "trusted": "clean", "internal": "low", "gateway": "info",
+                "url": "medium"}
+    ROLE_LABEL = {"attacker": "Attacker", "external": "External destination", "trusted": "Your trusted asset",
+                  "internal": "Internal system", "gateway": "Gateway / VPN", "url": "URL / path"}
+
+    def _diagram(self, d):
+        """Attack diagram for A4: top-to-bottom (each step of the attack one row lower), scaled to the page width."""
+        if not d or not d.get("nodes"):
+            return None
+        from reportlab.graphics.shapes import Group
+        NW, NH, GX, RH, P = 116.0, 32.0, 14.0, 66.0, 6.0
+        cols = max(1, d["rows"])
+        width = P * 2 + cols * NW + (cols - 1) * GX
+        height = P * 2 + d["levels"] * RH - (RH - NH) + 12
+        scale = min(1.0, self.W / width)
+        off = (self.W - width * scale) / 2
+        dr = Drawing(self.W, height * scale + 16)
+        per_level = {}
+        for n in d["nodes"]:
+            per_level[n["level"]] = per_level.get(n["level"], 0) + 1
+        pos = {}
+        for n in d["nodes"]:
+            k = per_level[n["level"]]
+            x0 = P + (width - 2 * P - (k * NW + (k - 1) * GX)) / 2      # centre each row
+            pos[n["id"]] = (x0 + n["row"] * (NW + GX), height - P - NH - n["level"] * RH, n)
+        res_col = {"success": "critical", "executed": "critical", "allowed": "high", "changed": "high", "error": "medium",
+                   "detected": "medium", "blocked": "clean", "failed": "clean", "info": "info"}
+        lines, labels, boxes = [], [], []
+        for e in d["edges"]:
+            if e["from"] not in pos or e["to"] not in pos:
+                continue
+            (ax, ay, _), (bx, by, _) = pos[e["from"]], pos[e["to"]]
+            col = self.SEV.get(res_col.get(e["result"], "info"))
+            if by < ay:   # downwards to a later step
+                x1, y1, x2, y2 = ax + NW / 2, ay, bx + NW / 2, by + NH
+                my = (y1 + y2) / 2
+                path = Path(strokeColor=col, strokeWidth=1.3, fillColor=None)
+                path.moveTo(x1, y1)
+                path.curveTo(x1, my, x2, my, x2, y2 + 4)
+                head = Path(fillColor=col, strokeColor=None)
+                head.moveTo(x2, y2)
+                head.lineTo(x2 - 3, y2 + 6)
+                head.lineTo(x2 + 3, y2 + 6)
+                head.closePath()
+                lines += [path, head]
+                lx, ly = x1 + (x2 - x1) * 0.8, y1 + (y2 - y1) * 0.72   # near the end: fan-out labels stay apart
+            elif by == ay:  # same row: straight across
+                right = bx > ax
+                x1, x2, y = (ax + NW, bx, ay + NH / 2) if right else (ax, bx + NW, ay + NH / 2)
+                path = Path(strokeColor=col, strokeWidth=1.1, fillColor=None)
+                path.moveTo(x1, y)
+                path.lineTo(x2, y)
+                lines.append(path)
+                lx, ly = (x1 + x2) / 2, y + 3
+            else:         # back up to an earlier system (e.g. a response to the attacker): dashed, on the side
+                x1, y1, x2, y2 = ax + NW, ay + NH / 2, bx + NW, by + NH / 2
+                side = max(x1, x2) + 18
+                path = Path(strokeColor=col, strokeWidth=1.1, fillColor=None, strokeDashArray=[3, 2])
+                path.moveTo(x1, y1)
+                path.curveTo(side, y1, side, y2, x2, y2)
+                lines.append(path)
+                lx, ly = side - 2, (y1 + y2) / 2
+            lab = _clean(e["label"].split("; ")[0])
+            lab = lab[:38] + ("..." if len(lab) > 38 else "")
+            w = len(lab) * 2.9 + 4
+            labels.append(Rect(lx - w / 2, ly - 2, w, 8.5, fillColor=colors.white, strokeColor=None))
+            labels.append(String(lx, ly, lab, fontName="Helvetica", fontSize=6.2, fillColor=col, textAnchor="middle"))
+        for x, y, n in pos.values():
+            col = self.SEV.get(self.ROLE_SEV.get(n["role"], "info"))
+            boxes.append(Rect(x, y, NW, NH, rx=5, ry=5, fillColor=colors.Color(col.red, col.green, col.blue, alpha=0.12),
+                              strokeColor=col, strokeWidth=1.1))
+            name = _clean(n["label"])
+            boxes.append(String(x + 5, y + NH - 12, name[:23] + ("..." if len(name) > 23 else ""),
+                                fontName="Helvetica-Bold", fontSize=7.6, fillColor=self.INK))
+            sub = self.ROLE_LABEL.get(n["role"], "") + (f" · {n['ip']}" if n.get("ip") else "")
+            boxes.append(String(x + 5, y + 5, _clean(sub)[:32], fontName="Helvetica", fontSize=6.1, fillColor=col))
+            if n.get("details"):
+                det = _clean(n["details"][0]["text"])
+                more = f" (+{len(n['details']) - 1})" if len(n["details"]) > 1 else ""
+                boxes.append(String(x + 2, y - 7, ("> " + det)[:30] + more, fontName="Helvetica", fontSize=5.6,
+                                    fillColor=colors.HexColor("#5a6470")))
+        grp = Group(*(lines + boxes + labels))
+        grp.transform = (scale, 0, 0, scale, off, 14)
+        dr.add(grp)
+        lx = 0
+        for role, label in self.ROLE_LABEL.items():
+            col = self.SEV.get(self.ROLE_SEV[role])
+            dr.add(Rect(lx, 2, 7, 7, fillColor=col, strokeColor=None))
+            dr.add(String(lx + 10, 2.5, label, fontName="Helvetica", fontSize=6.5, fillColor=self.INK))
+            lx += 14 + len(label) * 3.4
+        return dr
 
     def _bar(self, labels, values, bar_colors=None, height=150):
         width = self.W
@@ -669,6 +762,13 @@ class _Report:
             if inc.get("attack_path"):
                 flow += [Paragraph("Attack path", self.st["TGH3"]),
                          Paragraph(_esc(inc["attack_path"], 900), self.st["TGCode"])]
+            dia = self._diagram(inc.get("diagram"))
+            if dia is not None:
+                flow += [CondPageBreak(dia.height + 20 * mm), Paragraph("Attack diagram", self.st["TGH3"]), dia,
+                         Paragraph("Boxes are systems (red attacker, orange external destination, green your trusted "
+                                   "assets, amber URL/path); arrows show what moved between them, coloured by the "
+                                   "outcome for the defender; each row is a later step. Dashed arrows go back to an earlier system.",
+                                   self.st["TGSmall"])]
             steps = inc.get("flow") or []
             if steps:
                 flow += [CondPageBreak(45 * mm), Paragraph("Attack flow - what each firewall, server and machine did", self.st["TGH3"])]
@@ -793,6 +893,9 @@ class _Report:
                 [Paragraph(_esc(x["value"]), self.st["TGCodeCell"]), str(x["count"]), str(x.get("last", ""))[:10],
                  x.get("last_name") or "-"] for x in mem["seen_before"][:40]], [0.34, 0.14, 0.14, 0.38]))
         iocs = self.r.get("iocs") or {}
+        if iocs.get("trusted"):
+            flow.append(self._p("Your trusted addresses involved (Trusted Networks & Assets) are context, not indicators "
+                                "of compromise, and are never block targets: " + ", ".join(iocs["trusted"][:30]) + "."))
         rows = [[k, v] for k in ("ips", "domains", "urls", "files", "hashes") for v in (iocs.get(k) or [])[:30]]
         if rows:
             flow.append(Paragraph("Indicators of compromise extracted from this analysis", self.st["TGH2"]))
@@ -848,6 +951,23 @@ class _Report:
                 flow += [Paragraph(phase, self.st["TGH3"])] + self._bullets(
                     [f"<b>{_esc(x['fid'])} {_esc(x['title'], 100)}</b>: {_esc(x.get('recommendation') or 'Review and verify.', 400)}"
                      for x in items[:15]])
+        fv = forensics.view(self.r) if not self.host_mode else {"tabs": []}
+        if fv["tabs"]:
+            flow += [CondPageBreak(40 * mm), Paragraph("Forensic investigation by attack type", self.st["TGH2"]),
+                     self._p("Evidence handling first: " + " ".join(fv["general_steps"][:3]))]
+            for t in fv["tabs"]:
+                flow += [CondPageBreak(35 * mm),
+                         Paragraph(f"{_esc(t['title'])} - {t['count']} finding(s), highest {t['severity']}", self.st["TGH3"]),
+                         self._p(t["attack_type"])]
+                if t["actions"]:
+                    flow.append(Paragraph("<b>What the devices did:</b> " + _esc("; ".join(
+                        f"{a['by']}: {a['action']} x{a['count']}" for a in t["actions"][:5]), 600), self.st["TGSmall"]))
+                flow += self._bullets([f"<b>Step {n}.</b> {_esc(x)}" for n, x in enumerate(t["steps"], 1)])
+                for osname, cmds in t["commands"].items():
+                    for c in cmds[:3]:
+                        flow.append(Paragraph(f"<b>{_esc(osname)}:</b> {_esc(c, 300)}", self.st["TGCode"]))
+                if t["suggestions"]:
+                    flow.append(Paragraph("<b>Further suggestions:</b> " + _esc(" ".join(t["suggestions"]), 600), self.st["TGSmall"]))
         return flow
 
     def _s13_appendix(self):

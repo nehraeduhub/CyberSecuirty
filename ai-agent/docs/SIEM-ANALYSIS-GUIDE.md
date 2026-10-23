@@ -98,6 +98,17 @@ created from a disabled example on first use and is never overwritten by `git pu
 - **Import/export:** CSV or JSON. **Preview** shows what would be added, updated or removed and which rows are rejected; only validated rows are applied.
 - **Change history:** every add, edit, delete and import is recorded in `data/audit.log` with who made it, when, and the previous and new value. It's shown on the page.
 
+### Your trusted addresses are always shown green
+Addresses in your inventory (internal networks, ISP addresses, assets and approved external
+services) are shown as **Trusted** in green in "Addresses involved". They are **never** labelled
+malicious or suspicious, never listed as indicators of compromise, never offered as block targets
+and never sent for reputation look-ups. In the IOC card they appear in a separate green group,
+"Your trusted addresses — not IOCs". If a trusted asset is involved in high-severity findings,
+its row says so ("check whether it was affected"), because a trusted workstation can still be
+the victim.
+
+Addresses you list under *Suspicious indicators* are not trusted and are still flagged.
+
 ### Trust is context, never an exemption
 
 - Trusted classification **never lowers severity and never removes a finding**. A credential-dumping finding on a trusted workstation is still *critical*.
@@ -421,19 +432,72 @@ explicit memory. You can review it and remove any part of it under **History →
    Your most recent verdict on an entity decides. A newer false-positive or benign verdict removes it from the feed.
 3. **Sightings.** Suspicious public IPs and indicators are remembered with the analysis they came from. When they appear again, the attacker profile shows "seen in N earlier analyses", and the report lists them in Section 9. Deleting an analysis removes its sightings.
 4. **UEBA baselines**, as before.
+5. **Learning from stored logs.** **History → 🧠 Learn from stored logs** replays every stored analysis in the background:
+   - it rebuilds sightings and rule statistics
+   - it feeds stored logs that have not taught the UEBA baselines yet into them (each log set only once)
+
+   New analyses then show for each finding "This rule fired in N of M earlier analyses", or a **new** badge when the behaviour was never seen before, and the AI is told which rules are new.
 
 The AI case file gets an **ORGANISATION MEMORY** section with the relevant verdicts, sightings
 and reputation, so the local model answers with what your team already knows. Set
 `"learn_from_data": false` to switch learning off.
 
-## 10. Offline and security
+## 10. Forensics page
+
+**Forensics** in the sidebar shows the current analysis, or one opened from History, split by attack type. One tab per type:
+- web attacks
+- brute force & credentials
+- reconnaissance
+- malware & execution
+- persistence
+- lateral movement
+- command & control
+- data theft
+- defence evasion
+- threat intel & IDS
+- UEBA
+
+Every tab shows:
+
+| Part | Content |
+|---|---|
+| Type of attack | What it is and how it usually works, plus the ATT&CK techniques seen |
+| Scope | Attacker / external addresses, *your assets involved* (green), accounts and hosts |
+| Findings | The findings of that type, with severity, rule, time, incident and your verdict |
+| Action taken | What the firewall / IDS / VPN / server / machine did, with counts |
+| Recommendations & containment | From the findings, for an authorised person (nothing is executed) |
+| Further suggestions | Hardening so it doesn't happen again |
+| Questions to answer | What the investigation has to establish |
+| Steps to forensic investigation | Ordered preserve → collect → analyse → scope steps |
+| Collection commands | **Read-only** Linux and Windows commands for the artefacts |
+
+The **Evidence handling** tab covers chain of custody, hashing, time sources and volatile data first.
+
+**🗺️ Attack diagram** draws every incident top to bottom. Each row is a later step of the attack.
+- **Boxes** are systems:
+  - red: attacker
+  - orange: external destination (C2, exfiltration)
+  - green: your trusted assets
+  - blue: other internal systems
+  - grey: VPN / gateway
+  - amber: the URL / path that was attacked, e.g. `/uploads/shell.php`
+- **Arrows** show what happened between systems, coloured by the outcome for the defender: red the attacker succeeded or ran, orange allowed, amber detected only, green blocked or failed. Hover an arrow or box for the details, such as the commands run on a machine.
+
+The same diagram and the forensic steps per attack type are in the PDF report (Sections 5 and 12),
+and **⬇ Forensic guide** downloads it all as Markdown.
+
+![Attack diagram](screenshot-attack-diagram.jpg)
+
+![Forensics page](screenshot-forensics.jpg)
+
+## 11. Offline and security
 
 - **No external calls during analysis.** A test runs the whole analysis with network connections disabled. Ollama is reached on 127.0.0.1 only, and only if you use the AI. The only optional online feature is the reputation look-up (section 9): it is off until you add a key, it runs only on request, and it sends only public indicator values.
 - **The web UI is local by default.** On a network IP it requires the access token. Cross-site requests are blocked, and log content is always HTML-escaped.
 - **Restricted files.** Uploads, baselines, the audit trail and config files are owner-only (0600/0700). Upload names are sanitised and kept inside the upload folder.
 - **Safe parsers.** Parsers never execute content: `csv`, `json`, `ElementTree` and regular expressions only.
 
-## 11. Files
+## 12. Files
 
 | File | Purpose |
 |---|---|
@@ -449,7 +513,7 @@ and reputation, so the local model answers with what your team already knows. Se
 | `config/examples/` | Example `trusted_assets`, `branding`, `field_mappings`, `detection_rules` |
 | `samples/siem/` | Multi-source sample incident + demo inventory + example IoC feed (`scripts/generate_samples.py`) |
 
-## 12. Known limitations
+## 13. Known limitations
 
 - Windows `.evtx` binary files must be exported to XML or CSV first.
 - Typical throughput is about 9,000 events/s per analysis on a 4-core machine. A 1 GB export, roughly 5 million events, takes several minutes. Memory grows with the number of distinct source/destination pairs, about 200 MB for 500,000 flow events.

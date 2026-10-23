@@ -196,11 +196,22 @@ def forget_reputation(value, actor):
 
 # ------------------------------------------------------------------ sightings across analyses
 
-def record_sightings(result, name):
-    """Remember the suspicious public indicators of this analysis for later ones."""
+RULE_STATS = "rule_stats.json"
+BASELINED = "baseline_learned.json"
+
+
+def record_sightings(result, name, when=None):
+    """Remember the suspicious public indicators and the rules that fired in this analysis, for later ones."""
     aid = result.get("analysis_id")
     if not aid:
         return
+    when = when or config_store.now_iso()
+    with _lock:
+        rs = _load(RULE_STATS, {})
+        for rid in {f.get("rule_id") for f in result.get("findings") or [] if f.get("rule_id")}:
+            rs.setdefault(rid, {})[aid] = when
+        rs.setdefault("_analyses", {})[aid] = when
+        _save(RULE_STATS, rs)
     inc_of = {}
     for f in result.get("findings") or []:
         for ip in f.get("ips") or []:
@@ -218,7 +229,7 @@ def record_sightings(result, name):
         s = _load(SIGHTINGS, {})
         for v, verdict in entries[:300]:
             lst = [x for x in s.get(v.lower(), []) if x.get("analysis_id") != aid]
-            lst.append({"analysis_id": aid, "time": config_store.now_iso(), "name": str(name)[:80],
+            lst.append({"analysis_id": aid, "time": when, "name": str(name)[:80],
                         "verdict": verdict, "incident": inc_of.get(v)})
             s[v.lower()] = lst[-10:]
         if len(s) > 20000:
@@ -228,8 +239,15 @@ def record_sightings(result, name):
 
 
 def forget_analysis(aid):
-    """Remove the sightings of a deleted analysis."""
+    """Remove the sightings and rule statistics of a deleted analysis."""
     with _lock:
+        rs = _load(RULE_STATS, {})
+        if any(aid in v for v in rs.values()):
+            for k in list(rs):
+                rs[k].pop(aid, None)
+                if not rs[k]:
+                    rs.pop(k)
+            _save(RULE_STATS, rs)
         s = _load(SIGHTINGS, {})
         changed = False
         for k in list(s):
@@ -246,7 +264,7 @@ def forget_analysis(aid):
 
 def forget_all(actor):
     with _lock:
-        for name in (FEEDBACK, SIGHTINGS, "learned_reputation.json", LEARNED):
+        for name in (FEEDBACK, SIGHTINGS, "learned_reputation.json", LEARNED, RULE_STATS, BASELINED):
             _path(name).unlink(missing_ok=True)
     config_store.audit(actor, "learning", "forget_all", "", None, None)
 
@@ -281,6 +299,24 @@ def annotate(result):
         f.setdefault("notes", []).append(note)
         mem["verdicts"].append({"finding": f.get("fid"), "rule_id": f.get("rule_id"), "entity": entity(f),
                                 "verdict": v["verdict"], "note": v.get("note", ""), "time": v.get("time")})
+    rs = _load(RULE_STATS, {})
+    total = len([k for k in rs.get("_analyses", {}) if k != aid])
+    fp_by_rule = {}
+    for v in fb.values():
+        if v.get("verdict") in ("false_positive", "benign"):
+            fp_by_rule[v.get("rule_id")] = fp_by_rule.get(v.get("rule_id"), 0) + 1
+    for f in result.get("findings") or []:
+        seen = len([k for k in rs.get(f.get("rule_id"), {}) if k != aid])
+        if total >= 3:
+            f["prevalence"] = {"seen_in": seen, "of": total,
+                               "text": (f"New: this rule never fired in the {total} earlier analyses" if not seen else
+                                        f"This rule fired in {seen} of {total} earlier analyses")}
+        if fp_by_rule.get(f.get("rule_id")) and not f.get("analyst_verdict"):
+            f.setdefault("notes", []).append(f"Analysts marked this rule false positive / benign {fp_by_rule[f['rule_id']]} "
+                                              "time(s) on other entities - review it with that in mind.")
+    if total:
+        mem["history"] = {"analyses": total, "new_rules": sorted({f["rule_id"] for f in result.get("findings") or []
+                                                                  if (f.get("prevalence") or {}).get("seen_in") == 0})}
     for p in result.get("ip_profiles") or []:
         prev = [x for x in sightings.get(str(p.get("ip", "")).lower(), []) if x.get("analysis_id") != aid]
         if prev:
@@ -294,7 +330,7 @@ def annotate(result):
             if prev:
                 mem["seen_before"].append({"value": v, "count": len(prev), "last": prev[-1]["time"],
                                            "last_name": prev[-1].get("name"), "verdicts": []})
-    if any(mem.values()):
+    if any(v for k, v in mem.items() if k != "learned_iocs"):
         result["memory"] = mem
     return result
 
@@ -305,4 +341,52 @@ def summary():
             "learned_reputation": sorted(_load("learned_reputation.json", {}).values(),
                                          key=lambda r: r.get("time", ""), reverse=True),
             "sightings": len(_load(SIGHTINGS, {})),
+            "analyses_learned": len(_load(RULE_STATS, {}).get("_analyses", {})),
+            "baselined": len(_load(BASELINED, {})),
+            "job": dict(JOB),
             "counts": {k: sum(1 for v in fb if v["verdict"] == k) for k in VERDICTS}}
+
+
+# ------------------------------------------------------------------ learning from the stored logs
+
+JOB = {"running": False, "done": 0, "total": 0, "current": "", "baselines": 0, "errors": [], "finished": None}
+
+
+def mark_baselined(aid):
+    """This analysis already taught the UEBA baselines (so learning from history won't count it twice)."""
+    with _lock:
+        b = _load(BASELINED, {})
+        b[aid] = config_store.now_iso()
+        _save(BASELINED, b)
+
+
+def learn_from_history(analyse_logs=None, actor=""):
+    """Replay the History: sightings and rule statistics from every stored analysis, and UEBA baselines from
+    stored logs that have not taught them yet. analyse_logs(files) runs the pipeline with baseline learning on.
+    Runs in a background thread; progress is in JOB."""
+    import history
+    if JOB["running"]:
+        return False
+    items = sorted(history.list_all(), key=lambda m: (m.get("time", ""), m.get("ts", 0)))
+    JOB.update(running=True, done=0, total=len(items), current="", baselines=0, errors=[], finished=None)
+    try:
+        for m in items:
+            JOB["current"] = m.get("name", "")
+            try:
+                r = history.load(m["id"])
+                if r and r.get("findings") is not None:
+                    record_sightings(r, m.get("name", ""), m.get("time"))
+                if analyse_logs and m["id"] not in _load(BASELINED, {}) and m.get("kind") in ("upload", "paste"):
+                    files = history.log_files(m["id"])
+                    if files and not history.verify(m["id"]):
+                        analyse_logs(files)
+                        mark_baselined(m["id"])
+                        JOB["baselines"] += 1
+            except Exception as e:  # noqa: BLE001 - one bad entry must not stop the rest
+                JOB["errors"].append(f"{m.get('name', m['id'])}: {e}"[:200])
+            JOB["done"] += 1
+        config_store.audit(actor, "learning", "learn_from_history", "",
+                           None, {"analyses": JOB["done"], "baselines": JOB["baselines"], "errors": len(JOB["errors"])})
+    finally:
+        JOB.update(running=False, current="", finished=config_store.now_iso())
+    return True

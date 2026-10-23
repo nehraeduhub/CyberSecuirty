@@ -71,11 +71,14 @@ def case_file(result, budget_chars=7000):
         for r in sorted(rep.values(), key=lambda r: order.get(r.get("verdict"), 5))[:12]:
             out.append(f"- {r['value']}: {r.get('verdict')} ({r.get('summary', '')[:120]})")
     mem = result.get("memory") or {}
-    if mem.get("verdicts") or mem.get("seen_before"):
+    if mem.get("verdicts") or mem.get("seen_before") or (mem.get("history") or {}).get("new_rules"):
         out.append("\nORGANISATION MEMORY (earlier analyst verdicts and sightings - use them, but verify they still apply):")
         for v in mem.get("verdicts", [])[:10]:
             out.append(f"- {v['finding']} {v['rule_id']} on {v['entity']}: analyst said {v['verdict'].replace('_', ' ')}"
                        f" on {str(v.get('time', ''))[:10]}" + (f" - {v['note'][:120]}" if v.get("note") else ""))
+        if (mem.get("history") or {}).get("new_rules"):
+            out.append(f"- rules that never fired in the {mem['history']['analyses']} earlier analyses (new behaviour): "
+                       + ", ".join(mem["history"]["new_rules"][:10]))
         for x in mem.get("seen_before", [])[:10]:
             out.append(f"- {x['value']} seen in {x['count']} earlier analysis(es), last {str(x['last'])[:10]}"
                        + (f" ({x['last_name'][:50]})" if x.get("last_name") else ""))

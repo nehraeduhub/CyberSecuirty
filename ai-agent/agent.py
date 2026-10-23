@@ -34,6 +34,7 @@ from urllib.request import ProxyHandler, Request, build_opener
 import branding
 import config_store
 import detector
+import forensics
 import history
 import host_audit
 import investigator
@@ -511,6 +512,8 @@ def instant_answer(kind, analysis, index=None):
         return knowledge.explain_markdown(dict(analysis["findings"][int(index)]))
     if kind == "investigation":
         return investigation_markdown(analysis)
+    if kind == "forensics":
+        return forensics.markdown(analysis)
     raise ValueError("unknown instant answer")
 
 
@@ -590,6 +593,8 @@ def finish(cfg, result, kind, name, files=(), move=False, actor="", samples=()):
             history.enforce_retention(cfg.get("history_max_days") or 0, cfg.get("history_max_gb") or 0)
             if cfg.get("learn_from_data", True):
                 memory.record_sightings(result, name)
+                if kind in ("upload", "paste") and cfg.get("learn_baseline", True):
+                    memory.mark_baselined(result["analysis_id"])  # this run already taught the UEBA baselines
         except OSError as e:
             result.setdefault("warnings", []).append(f"Could not store this analysis in the history: {e}")
     result["stored"] = history.exists(result.get("analysis_id"))
@@ -870,6 +875,23 @@ class Handler(BaseHTTPRequestHandler):
                 "providers": reputation.providers(self.cfg), "done": a.get("reputation") or {}})
         if path == "/api/feedback":
             return self._feedback(body)
+        if path == "/api/forensics":
+            a = recall(body)
+            if not isinstance(a, dict) or a.get("findings") is None:
+                return self._send(400, {"error": "run an analysis first"})
+            return self._send(200, dict(forensics.view(a), analysis_id=a.get("analysis_id"),
+                                        name=(history.meta(a["analysis_id"]) or {}).get("name") if history.exists(a.get("analysis_id")) else None))
+        if path == "/api/memory/learn-history":
+            if memory.JOB["running"]:
+                return self._send(409, {"error": "Already learning from the history", "job": memory.JOB})
+            cfg = self.cfg
+
+            def analyse(files):
+                pipeline.analyze_files(files, tz_hours=float(cfg.get("tz_hours") or 0), learn_baseline=True)
+            threading.Thread(target=memory.learn_from_history,
+                             args=(analyse if cfg.get("learn_baseline", True) else None, self._actor()), daemon=True).start()
+            time.sleep(0.2)
+            return self._send(202, {"job": memory.JOB})
         if path == "/api/memory/forget":
             if body.get("all"):
                 memory.forget_all(self._actor())

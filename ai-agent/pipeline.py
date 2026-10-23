@@ -111,7 +111,8 @@ def analyze_files(files, tz_hours=0, learn_baseline=True, inventory=None, iocs=N
         _score(f, ueba_by_user, ti_values)
     for inc in incidents:
         _incident_score(inc, findings)
-    register = _register(findings, incidents, evidence, _asset_names(inv))
+    register = _register(findings, incidents, evidence, _asset_names(inv), lambda ip: inv.classify(ip)["category"],
+                         lambda h: bool(inv.host_asset(h)))
     for inc in incidents:
         inc["checklist"], inc["actions"] = _soar(inc, findings)
     findings.sort(key=lambda f: (-f["risk"]["score"], SEV_RANK[f["severity"]]))
@@ -477,7 +478,7 @@ def _asset_names(inv):
     return name
 
 
-def _register(findings, incidents, evidence, names=None):
+def _register(findings, incidents, evidence, names=None, category=None, host_trusted=None):
     """Assign stable evidence IDs (E-0001...) and attach them to findings and incident timelines.
     Every entry also records what the reporting device did (action) and the event's path."""
     reg, ids = [], {}
@@ -527,6 +528,7 @@ def _register(findings, incidents, evidence, names=None):
         by_eid = {ids[r]: evidence[r] for r in ids}
         inc["flow"] = flow.incident_flow(inc["timeline"], by_eid, names)
         inc["attack_path"] = flow.path_summary(inc["flow"])
+        inc["diagram"] = flow.diagram(inc["flow"], category, host_trusted)
     for f in findings:
         f["evidence"] = [x for x in (eid(r) for r in f.get("evidence_refs", [])[:25]) if x]
         acts = Counter()
@@ -602,6 +604,11 @@ def _soar(inc, findings):
     return check, act
 
 
+# Your own networks, ISP addresses, assets and approved external services: shown as "Trusted" (green), never as
+# malicious/suspicious, and never listed as IOCs or block targets. Their findings are still reported in full.
+TRUSTED_CATEGORIES = ("configured_internal", "approved_asset", "configured_isp", "known_external_service")
+
+
 def _ip_profiles(findings, inv):
     prof = {}
     for f in findings:
@@ -617,10 +624,18 @@ def _ip_profiles(findings, inv):
     for ip, p in prof.items():
         c = inv.classify(ip)
         sev = SEV[min(p["sev"], 4)]
-        internal = c["category"] in ("configured_internal", "approved_asset", "other_private", "loopback_linklocal")
-        verdict = ("Affected internal asset" if internal and sev in ("critical", "high") else
-                   "Malicious" if sev in ("critical", "high") else "Suspicious" if sev == "medium" else "Noisy")
-        out.append({"ip": ip, "public": not internal, "events": p["events"], "severity": sev, "verdict": verdict,
+        trusted = c["category"] in TRUSTED_CATEGORIES
+        internal = trusted or c["category"] in ("other_private", "loopback_linklocal")
+        if trusted:
+            verdict = "Trusted"
+            note = ("Your asset appears in high-severity findings - check whether it was affected."
+                    if sev in ("critical", "high") else "Your asset appears in these findings.")
+        else:
+            verdict = ("Affected internal asset" if internal and sev in ("critical", "high") else
+                       "Malicious" if sev in ("critical", "high") else "Suspicious" if sev == "medium" else "Noisy")
+            note = ""
+        out.append({"ip": ip, "public": not internal, "trusted": trusted, "note": note,
+                    "events": p["events"], "severity": sev, "verdict": verdict,
                     "activity": sorted(p["activity"])[:8], "first_seen": p["first"], "last_seen": p["last"],
                     "classification": c["label"], "trust_class": trust.TRUST_CLASSES.get(c["trust_class"], ""),
                     "asset": (c.get("entry") or {}).get("name")})
@@ -643,9 +658,25 @@ def _iocs(d, findings, e, inv):
             doms.add(f["details"]["domain"])
     for m in e["ti_matches"]:
         (ext if m["type"] == "ip" else doms).add(m["value"]) if m["type"] in ("ip", "domain") else None
-    return {"ips": sorted(ext), "urls": i.get("urls", []), "domains": sorted(doms)[:50], "files": i.get("files", []),
+    trusted = set()
+    for f in findings:
+        for ip in f.get("ips", []):
+            c = inv.classify(ip)
+            if c["category"] in TRUSTED_CATEGORIES:
+                trusted.add(ip)
+    ext -= trusted  # your own addresses are never indicators of compromise
+    return {"ips": sorted(ext), "trusted": sorted(trusted, key=_ip_key), "urls": i.get("urls", []), "domains": sorted(doms)[:50], "files": i.get("files", []),
             "users": sorted({u for f in findings if SEV_RANK[f["severity"]] <= 1 for u in f.get("users", [])})[:20],
             "hashes": sorted(m["value"] for m in e["ti_matches"] if m["type"] == "hash")}
+
+
+def _ip_key(ip):
+    try:
+        import ipaddress
+        a = ipaddress.ip_address(ip)
+        return (a.version, int(a))
+    except ValueError:
+        return (9, 0)
 
 
 def _timeline(evidence, findings):

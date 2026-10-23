@@ -186,6 +186,17 @@
   .chain span { font-size: 11.5px; padding: 2px 8px; border-radius: 6px; background: color-mix(in srgb, var(--brand-hi) 20%, var(--surface2)); border: 1px solid var(--border); }
   .chain span + span::before { content: "→ "; color: var(--muted); }
   .chain.path span { background: var(--surface3); font-family: ui-monospace, Consolas, monospace; }
+  .fortabs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .fortabs button { border: 1px solid var(--border); background: var(--surface2); color: inherit; border-radius: 9px; padding: 7px 11px; font: inherit; font-size: 13px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
+  .fortabs button.active { border-color: var(--brand-hi, var(--brand)); background: color-mix(in srgb, var(--brand-hi, var(--brand)) 16%, var(--surface2)); font-weight: 600; }
+  .fortabs .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+  .steps { margin: 0; padding-left: 20px; } .steps li { margin: 4px 0; }
+  .cmd { font-family: ui-monospace, Consolas, monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; background: var(--surface3); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
+  .diagram { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface2); padding: 8px; }
+  .diagram svg text { font-family: inherit; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; margin-right: 12px; font-size: 12px; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; background: var(--c); display: inline-block; }
+  .tag.trusted { color: var(--clean); border-color: color-mix(in srgb, var(--clean) 50%, transparent); background: color-mix(in srgb, var(--clean) 12%, transparent); }
   .act { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 1px 7px; border-radius: 6px; line-height: 1.45;
          color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
   .hop { white-space: normal; word-break: break-word; }
@@ -233,6 +244,7 @@
     <button class="active" data-page="analyze"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Threat Analysis</button>
     <button data-page="chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg>AI Analyst</button>
     <button data-page="report"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>Reports</button>
+    <button data-page="forensics"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l6 6M8 10.5h5M10.5 8v5"/></svg>Forensics</button>
     <button data-page="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/></svg>History</button>
     <button data-page="trust"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8 12h8M12 8v8"/></svg>Trusted Networks</button>
     <button data-page="branding"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.5"/><circle cx="12" cy="7.5" r="1.5"/><circle cx="15.5" cy="10" r="1.5"/><path d="M12 21a3 3 0 0 1 0-6h2a2 2 0 0 0 2-2"/></svg>Branding</button>
@@ -432,6 +444,18 @@
       <div style="overflow-x:auto;max-height:340px"><table><thead><tr><th>Time (UTC)</th><th>Who</th><th>Area</th><th>Action</th><th>Target</th><th>Before → after</th></tr></thead><tbody id="auditRows"></tbody></table></div></div>
   </section>
 
+  <!-- ================= FORENSICS ================= -->
+  <section class="page" id="page-forensics">
+    <div class="card" id="forEmpty"><div class="empty">🔎 Run an analysis (or open one from <b>History</b>) to see the forensic view.</div></div>
+    <div id="forBody" class="hidden">
+      <div class="card">
+        <h2><span id="forName"></span> <button class="btn sm" id="forMd" style="margin-left:auto">⬇ Forensic guide (Markdown)</button><button class="btn sm brand" id="forPdf">📄 PDF report</button></h2>
+        <div class="tabs fortabs" id="forTabs"></div>
+      </div>
+      <div id="forPanel"></div>
+    </div>
+  </section>
+
   <!-- ================= HISTORY ================= -->
   <section class="page" id="page-history">
     <div class="card">
@@ -441,7 +465,8 @@
       <div style="overflow-x:auto"><table><thead><tr><th><input type="checkbox" id="histAll"></th><th>Time (UTC)</th><th>Name</th><th>Type</th><th>Stored logs</th><th>Events</th><th>Findings</th><th>Risk</th><th></th></tr></thead><tbody id="histRows"></tbody></table></div>
     </div>
     <div class="card">
-      <h2>What the agent has learned <span class="count" id="memCount"></span><button class="btn sm ghost" id="memForgetAll" style="margin-left:auto">Forget everything</button></h2>
+      <h2>What the agent has learned <span class="count" id="memCount"></span><button class="btn sm primary" id="memLearn" style="margin-left:auto" title="Replay every stored analysis and log: sightings, rule statistics and UEBA baselines">🧠 Learn from stored logs</button><button class="btn sm ghost" id="memForgetAll">Forget everything</button></h2>
+      <div class="small" id="memJob" style="margin-bottom:8px"></div>
       <p class="muted small" style="margin-top:0">The local model is not re-trained (that needs a GPU and could be poisoned by attacker-controlled logs). Instead the agent keeps this reviewable memory and uses it in every new analysis and AI investigation: your verdicts adjust confidence and are shown on matching findings, confirmed and reputation-malicious indicators become a local threat-intel feed, and indicators seen before are flagged. Nothing is ever hidden and severity never changes.</p>
       <div class="grid2">
         <div><h3>Analyst verdicts</h3><div style="overflow-x:auto;max-height:340px"><table><thead><tr><th>Verdict</th><th>Rule · entity</th><th>Note</th><th>By / when</th><th></th></tr></thead><tbody id="memVerdicts"></tbody></table></div></div>
@@ -550,6 +575,7 @@ const PAGES = { analyze: ["Threat Analysis", "Analyse logs or audit this machine
   report: ["Reports", "Branded PDF incident / audit report"], settings: ["Settings", "AI engine and performance"],
   trust: ["Trusted Networks & Assets", "Your networks, ISP addresses and assets - context for the engine and the AI"],
   branding: ["Branding", "Application name, logo, colours and report labels"],
+  forensics: ["Forensics", "The analysis by attack type: what happened, what each device did, what to do and how to investigate"],
   history: ["History & Learning", "Stored analyses and logs, and what the agent has learned from them"] };
 function showPage(p) {
   $$("nav button").forEach((b) => b.classList.toggle("active", b.dataset.page === p));
@@ -560,6 +586,7 @@ function showPage(p) {
   if (p === "trust") loadTrust();
   if (p === "branding") loadBranding();
   if (p === "history") loadHistory();
+  if (p === "forensics") loadForensics();
   if (p === "chat") $("#chatInput").focus();
 }
 $$("nav button").forEach((b) => b.onclick = () => showPage(b.dataset.page));
@@ -735,7 +762,7 @@ function renderKpis(a, ms) {
     (a.incidents ? `<div class="kpi"><div class="label">Incidents</div><div class="value">${a.incidents.length}</div>
       <div class="hint">${a.lines.toLocaleString()} events · ${(a.ingestion || []).length} source file(s)</div></div>` :
     `<div class="kpi"><div class="label">${a.kind === "host" ? "Total events" : "Suspicious events"}</div><div class="value">${events.toLocaleString()}</div>
-      <div class="hint">${(a.ip_profiles || []).filter((p) => p.verdict !== "Noisy").length} hostile source(s)</div></div>`);
+      <div class="hint">${(a.ip_profiles || []).filter((p) => !["Noisy", "Trusted", "Affected internal asset"].includes(p.verdict)).length} hostile source(s)</div></div>`);
 }
 function renderSevBars(a) {
   const max = Math.max(1, ...SEVS.map((s) => a.summary[s]));
@@ -806,6 +833,7 @@ function renderFindings() {
           ${f.fp ? `<dt>False positives</dt><dd>${esc(f.fp)}</dd>` : ""}
           ${f.limitation ? `<dt>Limitations</dt><dd>${esc(f.limitation)}</dd>` : ""}
           ${f.risk?.factors ? `<dt>Risk factors</dt><dd class="small">${f.risk.factors.map((x) => `${esc(x.factor)} (${x.points >= 0 ? "+" : ""}${x.points})`).join(" · ")}</dd>` : ""}
+          ${f.prevalence ? `<dt>History</dt><dd class="small">${f.prevalence.seen_in ? "" : '<span class="pill" style="--c:var(--high)">new</span> '}${esc(f.prevalence.text)}</dd>` : ""}
           ${f.analyst_verdict ? `<dt>Analyst verdict</dt><dd><span class="pill" style="--c:${sevVar(f.analyst_verdict.verdict === "true_positive" ? "critical" : "clean")}">${esc(f.analyst_verdict.label || f.analyst_verdict.verdict)}</span> <span class="muted small">${esc(f.analyst_verdict.actor || "")} · ${esc((f.analyst_verdict.time || "").slice(0, 10))}</span>${f.analyst_verdict.note ? `<br>${esc(f.analyst_verdict.note)}` : ""}</dd>` : ""}
           ${f.actions_taken?.length ? `<dt>Action taken</dt><dd class="small">${f.actions_taken.map((x) => `${actPill(x.action + (x.count > 1 ? ` ×${x.count}` : ""), x.result)} <span class="muted">${esc(x.by)}</span>`).join("<br>")}</dd>` : ""}
           ${f.evidence?.length ? `<dt>Evidence</dt><dd class="small">${f.evidence.slice(0, 20).map(esc).join(", ")}${(f.evidence_refs || []).length > 20 ? " …" : ""}</dd>` : ""}
@@ -843,10 +871,10 @@ $("#findings").onclick = async (e) => {
 function renderActors(a) {
   const p = a.ip_profiles || [];
   $("#actorsCard").classList.toggle("hidden", !p.length); $("#actorCount").textContent = p.length ? `${p.length}` : "";
-  const vc = {Malicious: "critical", Suspicious: "medium", Noisy: "info", "Affected internal asset": "high"};
+  const vc = {Malicious: "critical", Suspicious: "medium", Noisy: "info", "Affected internal asset": "high", Trusted: "clean"};
   $("#actors").innerHTML = p.slice(0, 30).map((x) => `<tr><td><span class="tag">${esc(x.ip)}</span>${x.public ? "" : ' <span class="muted">internal</span>'}</td>
     <td><span class="pill" style="--c:${sevVar(vc[x.verdict] || "info")}">${esc(x.verdict)}</span></td>
-    <td class="small">${esc(x.classification || "")}${x.asset ? `<br><b>${esc(x.asset)}</b>` : ""}</td><td>${x.events}</td>
+    <td class="small">${esc(x.classification || "")}${x.asset ? `<br><b>${esc(x.asset)}</b>` : ""}${x.note ? `<br><span class="muted">${esc(x.note)}</span>` : ""}</td><td>${x.events}</td>
     <td>${x.activity.map(esc).join("<br>")}${x.seen_before?.length ? `<br><span class="pill" style="--c:var(--high)" title="${esc(x.seen_before.map((y) => `${y.time.slice(0, 10)} ${y.name}`).join("\n"))}">seen in ${x.seen_before.length} earlier analys${x.seen_before.length === 1 ? "is" : "es"}</span>` : ""}</td><td class="muted">${esc(x.first_seen || "—")}</td><td class="muted">${esc(x.last_seen || "—")}</td></tr>`).join("");
 }
 function renderIncidents(a) {
@@ -899,12 +927,13 @@ function renderLimits(a) {
 }
 function renderIocs(a) {
   const i = a.iocs || {}, groups = [["ips", "IP addresses"], ["domains", "Domains"], ["urls", "URLs"], ["files", "Files"], ["hashes", "Hashes"], ["users", "Accounts"]];
-  const has = groups.some(([k]) => i[k]?.length);
+  const has = groups.some(([k]) => i[k]?.length) || i.trusted?.length;
   $("#iocCard").classList.toggle("hidden", !has);
-  $("#iocs").innerHTML = groups.filter(([k]) => i[k]?.length).map(([k, t]) => `<div><h3>${t} (${i[k].length})</h3>${i[k].map((v) => `<span class="tag">${esc(v)}</span>`).join("")}</div>`).join("");
+  $("#iocs").innerHTML = groups.filter(([k]) => i[k]?.length).map(([k, t]) => `<div><h3>${t} (${i[k].length})</h3>${i[k].map((v) => `<span class="tag">${esc(v)}</span>`).join("")}</div>`).join("") +
+    (i.trusted?.length ? `<div><h3 style="color:var(--clean)">✔ Your trusted addresses (${i.trusted.length}) — not IOCs</h3>${i.trusted.map((v) => `<span class="tag trusted" title="In Trusted Networks &amp; Assets: never listed as an IOC or a block target">${esc(v)}</span>`).join("")}</div>` : "");
 }
 $("#copyIocs").onclick = () => {
-  const i = analysis.iocs || {}; const txt = Object.entries(i).filter(([, v]) => v.length).map(([k, v]) => `# ${k}\n${v.join("\n")}`).join("\n\n");
+  const i = analysis.iocs || {}; const txt = Object.entries(i).filter(([k, v]) => k !== "trusted" && v.length).map(([k, v]) => `# ${k}\n${v.join("\n")}`).join("\n\n");
   navigator.clipboard?.writeText(txt).then(() => toast("IOCs copied"), () => toast("Copy failed"));
 };
 function renderHost(a) {
@@ -970,6 +999,110 @@ async function checkAll() {
 $("#repAll").onclick = checkAll;
 $("#repRows").onclick = async (e) => { const v = e.target.dataset.rep; if (v) { await checkRep(v, true); renderReputation(analysis); } };
 
+/* ---------- forensics ---------- */
+let forData = null, forTab = "diagram";
+const ROLE = {attacker: ["critical", "Attacker"], external: ["high", "External destination"], trusted: ["clean", "Your trusted asset"],
+              internal: ["low", "Internal system"], gateway: ["info", "Gateway / VPN"], url: ["medium", "URL / path"]};
+async function loadForensics() {
+  const has = analysis && analysis.analysis_id && analysis.findings && analysis.kind !== "host";
+  $("#forEmpty").classList.toggle("hidden", !!has); $("#forBody").classList.toggle("hidden", !has);
+  if (!has) return;
+  try { forData = await api("/api/forensics", {analysis_id: analysis.analysis_id}); } catch (e) { toast("Error: " + e.message); return; }
+  $("#forName").textContent = `${forData.name || sourceName || "Current analysis"} · ${analysis.findings.length} findings`;
+  if (forTab !== "diagram" && !forData.tabs.some((t) => t.key === forTab)) forTab = "diagram";
+  renderForTabs(); renderForPanel();
+}
+function renderForTabs() {
+  $("#forTabs").innerHTML = `<button data-ft="diagram" class="${forTab === "diagram" ? "active" : ""}">🗺️ Attack diagram</button><button data-ft="general" class="${forTab === "general" ? "active" : ""}">🧾 Evidence handling</button>` +
+    forData.tabs.map((t) => `<button data-ft="${t.key}" class="${forTab === t.key ? "active" : ""}"><span class="dot" style="--c:${sevVar(t.severity)}"></span>${t.icon} ${esc(t.title)} <span class="muted">${t.count}</span></button>`).join("");
+}
+$("#forTabs").onclick = (e) => { const b = e.target.closest("[data-ft]"); if (!b) return; forTab = b.dataset.ft; renderForTabs(); renderForPanel(); };
+function svgText(s, n) { s = String(s || ""); return esc(s.length > n ? s.slice(0, n - 1) + "…" : s); }
+function drawDiagram(d) {
+  if (!d || !d.nodes.length) return '<div class="muted">No correlated flow to draw.</div>';
+  // top-to-bottom: each layer is a later step of the attack; nodes in a layer are centred side by side
+  const W = 176, H = 52, GX = 30, RH = 128, PX = 30, PY = 18;
+  const cols = Math.max(1, d.rows), width = PX * 2 + cols * W + (cols - 1) * GX + 60, height = PY * 2 + d.levels * RH - (RH - H) + 18;
+  const per = {}; d.nodes.forEach((n) => per[n.level] = (per[n.level] || 0) + 1);
+  const pos = {};
+  d.nodes.forEach((n) => { const k = per[n.level], x0 = PX + (width - 60 - 2 * PX - (k * W + (k - 1) * GX)) / 2;
+    pos[n.id] = {x: x0 + n.row * (W + GX), y: PY + n.level * RH, n}; });
+  const colors = [...new Set(d.edges.map((e) => RESULT_SEV[e.result] || "info"))];
+  let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Attack diagram" style="display:block;margin:0 auto"><defs>` +
+    colors.map((c) => `<marker id="ar-${c}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--${c})"/></marker>`).join("") + "</defs>";
+  let labels = "";
+  d.edges.forEach((e) => {
+    const a = pos[e.from], b = pos[e.to]; if (!a || !b) return;
+    const c = RESULT_SEV[e.result] || "info";
+    let path, lx, ly, anchor = "middle";
+    if (b.y > a.y) {   // label near the arrow's end so fan-out labels don't overlap
+      const x1 = a.x + W / 2, y1 = a.y + H, x2 = b.x + W / 2, y2 = b.y, my = (y1 + y2) / 2;
+      path = `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2 - 2}`; lx = x1 + (x2 - x1) * 0.82; ly = y1 + (y2 - y1) * 0.74;
+    } else if (b.y === a.y) {  // same layer: straight across
+      const right = b.x > a.x, x1 = right ? a.x + W : a.x, x2 = right ? b.x : b.x + W, y = a.y + H / 2;
+      path = `M${x1},${y} L${x2 + (right ? -2 : 2)},${y}`; lx = (x1 + x2) / 2; ly = a.y - 8;
+    } else {  // back to an earlier system (e.g. the server answering the attacker): dashed arc on the right
+      const x1 = a.x + W, y1 = a.y + H / 2, x2 = b.x + W, y2 = b.y + H / 2, side = Math.max(x1, x2) + 46;
+      path = `M${x1},${y1} C${side},${y1} ${side},${y2} ${x2 + 2},${y2}`; lx = side - 8; ly = (y1 + y2) / 2; anchor = "end";
+    }
+    const w = Math.min(5, 1.3 + Math.log2(1 + e.count));
+    svg += `<g><title>${esc(e.label)}${e.via ? " (via " + esc(e.via) + ")" : ""} · ${e.count} event(s) · flow steps ${esc((e.steps || []).join(", "))}</title>
+      <path d="${path}" fill="none" stroke="var(--${c})" stroke-width="${w}" opacity=".8" ${b.y > a.y ? "" : 'stroke-dasharray="5 4"'} marker-end="url(#ar-${c})"/></g>`;
+    labels += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="10.5" font-weight="600" fill="var(--${c})" paint-order="stroke" stroke="var(--surface2)" stroke-width="5"><title>${esc(e.label)}</title>${svgText(e.label.split("; ")[0], 34)}</text>`;
+  });
+  d.nodes.forEach((n) => {
+    const p = pos[n.id], [c, role] = ROLE[n.role] || ROLE.internal;
+    const det = n.details || [];
+    svg += `<g><title>${esc(n.label)}${n.ip ? " (" + esc(n.ip) + ")" : ""} — ${role}${det.length ? "\n" + det.map((x) => "• " + x.text).join("\n") : ""}</title>
+      <rect x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="10" fill="color-mix(in srgb, var(--${c}) 14%, var(--surface))" stroke="var(--${c})" stroke-width="1.6"/>
+      <text x="${p.x + 10}" y="${p.y + 21}" font-size="13" font-weight="700" fill="var(--ink)">${svgText(n.label, 22)}</text>
+      <text x="${p.x + 10}" y="${p.y + 39}" font-size="10.5" fill="var(--${c})">${esc(role)}${n.ip ? " · " + esc(n.ip) : ""}</text>
+      ${det.length ? `<text x="${p.x + 4}" y="${p.y + H + 14}" font-size="10" fill="var(--muted)">▶ ${svgText(det[0].text, 30)}${det.length > 1 ? ` (+${det.length - 1})` : ""}</text>` : ""}</g>`;
+  });
+  return svg + labels + "</svg>";
+}
+function renderForPanel() {
+  const P = $("#forPanel");
+  if (forTab === "diagram") {
+    P.innerHTML = forData.incidents.length ? forData.incidents.map((i) => `<div class="card"><h2><span class="pill" style="--c:${sevVar(i.severity)}">${esc(i.severity)}</span> ${esc(i.id)} · ${esc(i.status || "")}</h2>
+      <div class="small muted" style="margin-bottom:8px">${esc(i.title)}</div>
+      <div class="legend small" style="margin-bottom:8px">${Object.values(ROLE).map(([c, t]) => `<span><i style="--c:var(--${c})"></i>${t}</span>`).join("")}
+        <span class="muted">· arrows: <b style="color:var(--critical)">red</b> attacker succeeded / ran · <b style="color:var(--high)">orange</b> allowed · <b style="color:var(--medium)">amber</b> detected only · <b style="color:var(--clean)">green</b> blocked / failed — hover for details</span></div>
+      <div class="diagram">${drawDiagram(i.diagram)}</div>
+      ${i.attack_path ? `<div class="small muted" style="margin-top:8px">Path: ${esc(i.attack_path)}</div>` : ""}</div>`).join("")
+      : '<div class="card"><div class="empty">No correlated incident in this analysis, so there is no attack path to draw. See the attack-type tabs.</div></div>';
+    return;
+  }
+  if (forTab === "general") {
+    P.innerHTML = `<div class="card"><h2>Evidence handling — do this first</h2><ol class="steps">${forData.general_steps.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>
+      <p class="muted small">All commands on the next tabs are read-only collection commands. Containment steps are recommendations for an authorised person — the agent never executes anything.</p></div>`;
+    return;
+  }
+  const t = forData.tabs.find((x) => x.key === forTab); if (!t) return;
+  const list = (a) => a.length ? `<ul class="steps">${a.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : '<span class="muted">-</span>';
+  const scope = (lbl, a, cls) => a.length ? `<dt>${lbl}</dt><dd>${a.map((x) => `<span class="tag ${cls || ""}">${esc(x)}</span>`).join("")}</dd>` : "";
+  P.innerHTML = `<div class="card"><h2>${t.icon} ${esc(t.title)} <span class="pill" style="--c:${sevVar(t.severity)}">${esc(t.severity)}</span> <span class="count">${t.count} finding(s) · ${t.events} event(s)${t.window[0] ? ` · ${esc(t.window[0])} → ${esc(t.window[1] || "")}` : ""}</span></h2>
+      <p style="margin-top:0">${esc(t.attack_type)}</p>
+      <dl class="kv">${scope("Attacker / external", t.scope.attacker_ips)}${scope("Your assets involved", t.scope.your_assets, "trusted")}${scope("Accounts", t.scope.accounts)}${scope("Hosts", t.scope.hosts)}
+        ${t.techniques.length ? `<dt>ATT&amp;CK</dt><dd>${t.techniques.map((x) => `<span class="tag">${esc(x)}</span>`).join("")}</dd>` : ""}</dl></div>
+    <div class="grid2">
+      <div class="card"><h2>Findings (type of attack)</h2><div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Finding</th><th>Severity</th><th>Events</th></tr></thead><tbody>
+        ${t.findings.map((f) => `<tr><td class="muted">${esc(f.fid)}</td><td>${esc(f.title)}${f.analyst_verdict ? ` <span class="tag">${esc(f.analyst_verdict.label || f.analyst_verdict.verdict)}</span>` : ""}<br><span class="muted small">${esc(f.rule_id)} · ${esc(f.first_seen || "")}${f.incident ? " · " + esc(f.incident) : ""}</span></td><td><span class="pill" style="--c:${sevVar(f.severity)}">${esc(f.severity)}</span></td><td>${f.count}</td></tr>`).join("")}</tbody></table></div></div>
+      <div class="card"><h2>Action taken by devices</h2>${t.actions.length ? t.actions.map((a) => `<div style="margin:6px 0">${actPill(a.action + (a.count > 1 ? ` ×${a.count}` : ""), a.result)} <span class="muted small">${esc(a.by)}</span></div>`).join("") : '<span class="muted">No device action recorded in these logs.</span>'}</div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2>Recommendations</h2>${list(t.recommendations)}<h3>Containment (for an authorised person)</h3>${list(t.containment)}</div>
+      <div class="card"><h2>Further suggestions</h2>${list(t.suggestions)}<h3>Questions to answer</h3>${list(t.questions)}</div>
+    </div>
+    <div class="card"><h2>Steps to forensic investigation</h2><ol class="steps">${t.steps.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>
+      ${Object.entries(t.commands).map(([os, cmds]) => `<h3>${esc(os)} — read-only collection commands</h3>${cmds.map((c) => `<div class="cmd">${esc(c)}</div>`).join("")}`).join("")}</div>`;
+}
+$("#forMd").onclick = async () => {
+  try { const r = await api("/api/instant", {kind: "forensics", analysis_id: analysis.analysis_id}); download("forensic-guide.md", r.markdown, "text/markdown"); }
+  catch (e) { toast("Error: " + e.message); }
+};
+$("#forPdf").onclick = () => $("#pdfBtn").click();
+
 /* ---------- history & learning ---------- */
 const fmtBytes = (n) => n > 1 << 30 ? (n / (1 << 30)).toFixed(1) + " GB" : n > 1 << 20 ? (n / (1 << 20)).toFixed(1) + " MB" : n > 1024 ? Math.round(n / 1024) + " KB" : n + " B";
 const KIND = {upload: "Uploaded files", paste: "Pasted log", sample: "Sample data", host: "Host audit"};
@@ -1020,7 +1153,12 @@ $("#histDelAll").onclick = async () => {
 };
 async function loadMemory() {
   let m; try { m = await api("/api/memory"); } catch { return; }
-  $("#memCount").textContent = `${m.verdicts.length} verdicts · ${m.learned.length} learned indicators · ${m.sightings} indicators remembered`;
+  $("#memCount").textContent = `${m.verdicts.length} verdicts · ${m.learned.length} learned indicators · ${m.sightings} indicators remembered · ${m.analyses_learned} analyses learned · ${m.baselined} logs in UEBA baselines`;
+  const j = m.job || {};
+  $("#memJob").innerHTML = j.running ? `<span class="spin"></span> Learning from stored logs: ${j.done}/${j.total} — ${esc(j.current)}`
+    : j.finished ? `Last learning run: ${esc(j.finished.replace("T", " ").replace("Z", ""))} UTC · ${j.done} analyses, ${j.baselines} log sets added to the UEBA baselines${j.errors?.length ? ` · <span style="color:var(--high)">${j.errors.length} problem(s): ${esc(j.errors[0])}</span>` : ""}` : "";
+  $("#memLearn").disabled = !!j.running;
+  if (j.running) setTimeout(loadMemory, 1500);
   const VL = {true_positive: ["True positive", "critical"], false_positive: ["False positive", "clean"], benign: ["Benign / expected", "clean"]};
   $("#memVerdicts").innerHTML = m.verdicts.length ? m.verdicts.map((v) => `<tr><td><span class="pill" style="--c:${sevVar(VL[v.verdict]?.[1] || "info")}">${esc(VL[v.verdict]?.[0] || v.verdict)}</span></td>
     <td class="small"><b>${esc(v.rule_id)}</b> · ${esc(v.entity || "-")}<br><span class="muted">${esc(v.title)}</span></td><td class="small">${esc(v.note || "")}</td>
@@ -1036,6 +1174,10 @@ $("#page-history").addEventListener("click", async (e) => {
   try { await api("/api/memory/forget", k ? {key: k} : {value: v}); toast("Forgotten"); } catch (err) { toast("Error: " + err.message); }
   loadMemory();
 });
+$("#memLearn").onclick = async () => {
+  try { await api("/api/memory/learn-history", {}); toast("Learning from the stored logs…"); } catch (e) { toast("Error: " + e.message); }
+  loadMemory();
+};
 $("#memForgetAll").onclick = async () => {
   if (!confirm("Forget all verdicts, learned indicators and sightings? Stored analyses are kept.")) return;
   await api("/api/memory/forget", {all: true}); toast("Learning memory cleared"); loadMemory();

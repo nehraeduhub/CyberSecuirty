@@ -39,6 +39,8 @@ only public IPs, domains or URLs to AbuseIPDB or VirusTotal, and only when you a
 | 🎨 | **Branding**: app and organisation names, logo (validated PNG/JPEG), colours and report labels, all editable in the UI. Hide it from the web UI with `"ui_show_branding": false`, and lock the Branding page with `"ui_hide_branding_page": true` in `config.json` |
 | 🗂️ | **History**: every analysis is stored with its original logs (SHA-256), so you can open it again, re-analyse it with the current rules, download the logs or delete it. Retention by age or size |
 | 🌐 | **Reputation**: AbuseIPDB and VirusTotal look-ups for public IPs, domains and URLs. Optional and only on request; internal and your own addresses are never sent |
+| 🔬 | **Forensics page**: one tab per attack type (type of attack, actions taken by devices, recommendations, further suggestions, ordered forensic steps, read-only collection commands) and a **visual attack diagram** per incident: attacker → gateway → server → URL/path → C2/exfiltration, coloured by outcome. Also in the PDF |
+| 🟢 | **Trusted always green**: your networks, ISP addresses and assets are never shown as malicious, never listed as IOCs and never block targets. Their findings are still reported |
 | 🧠 | **Learns from your data**: your true/false-positive verdicts, confirmed and reputation-malicious indicators (a local IoC feed) and earlier sightings feed into every new analysis and the AI's case file. Reviewable and removable; nothing is ever hidden |
 | 📑 | **15-section A4 PDF report**: finding cards that paginate correctly, timeline, UEBA, trust context, ATT&CK, threat intelligence, risk, false positives, remediation, evidence appendix, limitations. Markdown export too |
 | 💬 | Chat with the agent: exploits, hardening, Sigma/Splunk rules, attacker intent, CTFs |
@@ -186,6 +188,7 @@ ai-agent/
 ├── parsers.py             # SIEM format detection, streaming readers, field mapping, timestamps
 ├── engine.py              # structured rules, UEBA, statistics, threat intel, forensics
 ├── rules.py               # detection rule catalogue (IDs, severity, confidence, ATT&CK, FP guidance)
+├── forensics.py           # forensic view per attack type (steps, read-only commands, suggestions)
 ├── history.py             # stored analyses + original logs (open, re-analyse, download, delete, retention)
 ├── reputation.py          # AbuseIPDB / VirusTotal look-ups (opt-in, public indicators only, cached)
 ├── memory.py              # learning: analyst verdicts, learned IoC feed, sightings across analyses
