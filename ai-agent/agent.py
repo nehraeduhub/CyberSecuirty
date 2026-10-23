@@ -98,11 +98,13 @@ DEFAULTS = {
     "live_enabled": False,    # live analysis of logs forwarded by your SIEM (separate window: /live)
     "live_token": "",         # ingest token for POST /api/live/ingest (auto-generated when live is enabled)
     "live_syslog_port": 0,    # also receive syslog (UDP + TCP) on this port, e.g. 5514 (0 = off)
-    "live_syslog_host": "0.0.0.0",
+    "live_syslog_host": "",   # syslog bind address (empty = same as "host")
     "live_allowed_sources": [],  # accept syslog only from these IPs / CIDRs (empty = any)
     "live_window_minutes": 60,   # analyse the events received in the last N minutes
     "live_interval_s": 20,    # re-analyse at most this often when new events arrive
     "live_keep_days": 7,      # keep the raw live spool (data/live) this many days
+    "live_max_mb": 256,       # memory budget for the live window
+    "live_spool_max_mb": 1024,  # disk budget for data/live (oldest days deleted first)
     "ui_show_branding": True,       # false = hide logo, organisation name and credit line in the web UI
     "ui_hide_branding_page": False,  # true = remove the Branding page and lock branding changes from the web UI
     "port": 8787,

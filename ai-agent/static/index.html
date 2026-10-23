@@ -257,7 +257,8 @@
     <div class="perf" id="perf"></div>
   </div>
   <div class="credit hidden" id="signedIn" style="padding-bottom:4px">Signed in as <b id="signedUser"></b> ·
-    <a href="#" id="signOut" style="color:inherit">Sign out</a></div>
+    <a href="#" id="signOut" style="color:inherit">Sign out</a> ·
+    <a href="#" id="signOutAll" style="color:inherit" title="End every session on every browser">everywhere</a></div>
   <div class="credit" id="credit"></div>
 </aside>
 
@@ -558,8 +559,13 @@ function toast(msg, ms = 3500) {
   document.body.appendChild(t); setTimeout(() => t.remove(), ms);
 }
 document.addEventListener("click", async (e) => {
-  if (e.target.id !== "signOut") return;
-  e.preventDefault(); await fetch("/api/logout", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"}); location.reload();
+  if (e.target.id !== "signOut" && e.target.id !== "signOutAll") return;
+  e.preventDefault();
+  const everywhere = e.target.id === "signOutAll";
+  if (everywhere && !confirm("Sign out every browser and device that is signed in to this agent?")) return;
+  await fetch("/api/logout", {method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({everywhere})});
+  location.reload();
 });
 async function api(path, body) {
   const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
@@ -613,7 +619,7 @@ $("#menuBtn").onclick = () => $("#sidebar").classList.toggle("open");
 /* ---------- status & settings ---------- */
 function renderStatus(s) {
   status = s;
-  $("#signedIn").classList.toggle("hidden", s.login !== "password"); $("#signedUser").textContent = s.user || "";
+  $("#signedIn").classList.toggle("hidden", s.login === "none"); $("#signedUser").textContent = s.user || "access token";
   document.body.classList.toggle("nobrand", s.ui_show_branding === false);
   $('nav button[data-page="branding"]').classList.toggle("hidden", !!s.ui_hide_branding_page);
   $("#page-branding").classList.toggle("hidden", !!s.ui_hide_branding_page);

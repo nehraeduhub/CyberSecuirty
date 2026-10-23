@@ -175,6 +175,17 @@ Rules live in [`detector.py`](detector.py) as plain regexes, so it's easy to add
   malicious page can't drive your agent or change its settings.
 - Log content is always HTML-escaped in the UI, so attacker-controlled log lines can't
   run scripts in your browser.
+- **Sessions** are signed, expiring, HttpOnly/SameSite=Strict cookies (Secure on HTTPS) in both password
+  and token mode. Repeated wrong passwords lock the address out for a while. To end every session on
+  every browser, use **Sign out everywhere**.
+- Every response carries a strict nonce-based Content-Security-Policy and the usual security headers
+  (frame-ancestors, nosniff, no-referrer, HSTS on HTTPS). Request bodies are size-checked before they are read, and slow
+  clients are timed out.
+- `config/`, `data/` and uploads are owner-only (0700, files 0600). `config.json` is written atomically.
+- The local AI URL must be `http(s)` and can't point at cloud metadata addresses. Changing its host clears
+  the stored API key.
+- The full assessment, every finding and its fix, and the regression tests are in
+  [docs/SECURITY-VAPT-REPORT.md](docs/SECURITY-VAPT-REPORT.md).
 - Use the agent only on systems you own or are authorised to assess.
 
 ## 🧪 Tests

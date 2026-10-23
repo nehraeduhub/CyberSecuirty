@@ -498,6 +498,13 @@ curl -X POST http://SERVER:8787/api/live/ingest -H 'X-Ingest-Token: TOKEN' -H 'C
 - **The side panels** show events per minute, the correlated incidents with their attack path, and hostile sources. Your trusted addresses never appear there.
 - **💾 Snapshot → main window** stores the window's logs and analysis in the **History** (type "Live snapshot") and opens it in the main window. There you get the attack diagram, the Forensics tabs, AI investigation, threat-intel look-ups and the PDF report. Snapshots also feed **Learn from stored logs**.
 - **Raw events** are kept in `data/live/` (owner-only) for `live_keep_days` (default 7). After a restart the last window is reloaded. Nothing is blocked or executed. Turning live analysis on or off and new tokens are recorded in the change history.
+- **Limits** (protect the agent from floods): lines over 16 KB are cut, the in-memory window is capped by
+  `live_max_mb` (default 256), and the disk spool by `live_spool_max_mb` (default 1024). At that limit the oldest days are
+  deleted first, and writing pauses if the spool is still full. Syslog over TCP accepts at most 64 connections,
+  each closed after 120 s idle.
+- **Syslog bind address:** the listener binds to the agent's own `host` unless you set `live_syslog_host`. UDP sender
+  addresses can be forged, so prefer the HTTPS ingest with the token, or restrict senders with
+  `live_allowed_sources` (it applies to HTTP ingest too) and the firewall.
 
 ![Live window](screenshot-live.jpg)
 

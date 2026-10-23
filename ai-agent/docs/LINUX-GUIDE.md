@@ -244,3 +244,11 @@ Other speed tips:
 - The web UI blocks requests from other websites (CSRF / DNS-rebinding protection), and all
   log content is HTML-escaped.
 - Nothing is sent to the internet. After setup you can run the machine fully offline.
+- When the agent listens on a network address, turn on HTTPS (`python3 agent.py make-cert --port 443`).
+  Sessions are signed, expiring cookies. **Sign out everywhere** (top bar) ends every session at once.
+- `config/` and `data/` are owner-only (0700). Run the agent as a normal user, never as root. For port 443, use
+  the service's `AmbientCapabilities=CAP_NET_BIND_SERVICE` (see *Port 443 without root* above).
+- Live syslog binds to the same address as the agent unless you set `live_syslog_host`. Allow only your SIEM in the
+  firewall, and set `live_allowed_sources`.
+- The security assessment and its regression tests: [SECURITY-VAPT-REPORT.md](SECURITY-VAPT-REPORT.md).
+  Re-run `python3 -m unittest discover -s tests` after every update.
