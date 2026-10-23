@@ -359,14 +359,81 @@ timelines and many findings. They then measure every character's position in the
 must be A4, no text may be outside the printable width, and every page must be numbered. An example is in
 [`docs/sample-report.pdf`](sample-report.pdf).
 
-## 9. Offline and security
+## 9. History, reputation and learning
 
-- **No external calls during analysis.** A test runs the whole analysis with network connections disabled. Ollama is reached on 127.0.0.1 only, and only if you use the AI.
+### History
+Every analysis is stored until you delete it: uploaded files, pasted logs, the sample dataset and host audits.
+
+**What is stored**, in `data/history/<id>/` (owner-only permissions):
+- the full result, including the AI investigation, reputation results and your verdicts
+- the original log files, exactly as received, with their SHA-256
+
+**On the History page you can:**
+- **Open** an analysis again. Its PDF report and AI chat work as before.
+- **Re-analyse** it. The stored logs are run again with your current rules, trusted inventory and learning, and the result is saved as a new entry. Stored files whose SHA-256 no longer matches are refused.
+- **Download** the stored logs.
+- **Delete** one analysis, several selected ones, or all of them. Every deletion is recorded in the change history.
+
+| `config.json` | Default | Meaning |
+|---|---|---|
+| `history_enabled` | `true` | keep analyses (also in Settings) |
+| `store_logs` | `true` | keep the original log files with each analysis |
+| `history_max_days` | `0` | delete analyses older than N days (0 = keep until deleted) |
+| `history_max_gb` | `20` | delete the oldest analyses when the history grows beyond this |
+
+### Reputation (AbuseIPDB / VirusTotal)
+The **Reputation** card lists the public IPs, domains and full URLs of an analysis. **Check** or
+**Check all** asks AbuseIPDB (IPs) and VirusTotal (IPs, domains, URLs) for their reputation and
+shows a verdict for each:
+- `malicious`: AbuseIPDB ≥ 75% or at least 3 VirusTotal engines
+- `suspicious`
+- `no known abuse`
+- `unknown`
+
+The results are saved with the analysis, included in PDF Section 9 and given to the AI.
+
+This is the only feature that contacts the internet, so it is limited:
+- **Off by default.** It works only once you add a key in **Settings → Reputation look-ups**, or set `abuseipdb_key` / `virustotal_key` in `config.json` or `AGENT_ABUSEIPDB_KEY` / `AGENT_VIRUSTOTAL_KEY` in the environment.
+- **Runs only on request.** A look-up happens when you click, unless you switch on `reputation_auto`.
+- **Only the indicator is sent.** Log lines are never sent.
+- **Some indicators are never sent:** private, reserved and documentation addresses, internal names (`.local`, `.corp`…) and anything listed in Trusted Networks & Assets. The server refuses them.
+- **URLs are only looked up.** They are never submitted for scanning, because a submission would make them public.
+- **Cached and rate-limited.** Results are cached for 24 hours (`reputation_cache_hours`). Requests are throttled to the free-tier limits: VirusTotal 4 per minute and 500 per day (`virustotal_per_min`, `virustotal_daily_limit`), AbuseIPDB 1,000 per day (`abuseipdb_daily_limit`).
+- **Logged.** Every look-up is recorded in the change history.
+- **Never changes findings.** Reputation is context: it doesn't change severity, and a clean result doesn't clear a finding.
+- **Network access.** The server needs outbound HTTPS to `api.abuseipdb.com` and `www.virustotal.com`. The standard `HTTPS_PROXY` variable is honoured.
+
+### Learning from your data
+The local model's weights are **not** re-trained. On a CPU-only server that is impractical, and
+weights trained on attacker-controlled log text could be poisoned. Instead the agent keeps an
+explicit memory. You can review it and remove any part of it under **History → What the agent has learned**:
+
+1. **Analyst verdicts.** Under each finding, mark it ✔ True positive, ✖ False positive or Benign / expected, with a note. The verdict is stored for that rule on that entity (the main external IP, otherwise the account, otherwise the host). In later analyses the same rule on the same entity:
+   - shows your verdict and note
+   - adjusts confidence: +10 for a true positive, −25 for a false positive or benign
+   - adjusts risk, listed as an explicit risk factor
+
+   Severity is never changed, and no finding is ever hidden.
+2. **Learned indicators.** These become a local IoC feed (`data/learned_iocs.csv`), matched offline in every later analysis as a threat-intel finding:
+   - public IPs, plus URLs, domains and hashes in the evidence, from findings you confirmed
+   - indicators that the reputation look-up rated malicious
+
+   Your most recent verdict on an entity decides. A newer false-positive or benign verdict removes it from the feed.
+3. **Sightings.** Suspicious public IPs and indicators are remembered with the analysis they came from. When they appear again, the attacker profile shows "seen in N earlier analyses", and the report lists them in Section 9. Deleting an analysis removes its sightings.
+4. **UEBA baselines**, as before.
+
+The AI case file gets an **ORGANISATION MEMORY** section with the relevant verdicts, sightings
+and reputation, so the local model answers with what your team already knows. Set
+`"learn_from_data": false` to switch learning off.
+
+## 10. Offline and security
+
+- **No external calls during analysis.** A test runs the whole analysis with network connections disabled. Ollama is reached on 127.0.0.1 only, and only if you use the AI. The only optional online feature is the reputation look-up (section 9): it is off until you add a key, it runs only on request, and it sends only public indicator values.
 - **The web UI is local by default.** On a network IP it requires the access token. Cross-site requests are blocked, and log content is always HTML-escaped.
 - **Restricted files.** Uploads, baselines, the audit trail and config files are owner-only (0600/0700). Upload names are sanitised and kept inside the upload folder.
 - **Safe parsers.** Parsers never execute content: `csv`, `json`, `ElementTree` and regular expressions only.
 
-## 10. Files
+## 11. Files
 
 | File | Purpose |
 |---|---|
@@ -382,7 +449,7 @@ must be A4, no text may be outside the printable width, and every page must be n
 | `config/examples/` | Example `trusted_assets`, `branding`, `field_mappings`, `detection_rules` |
 | `samples/siem/` | Multi-source sample incident + demo inventory + example IoC feed (`scripts/generate_samples.py`) |
 
-## 11. Known limitations
+## 12. Known limitations
 
 - Windows `.evtx` binary files must be exported to XML or CSV first.
 - Typical throughput is about 9,000 events/s per analysis on a 4-core machine. A 1 GB export, roughly 5 million events, takes several minutes. Memory grows with the number of distinct source/destination pairs, about 200 MB for 500,000 flow events.

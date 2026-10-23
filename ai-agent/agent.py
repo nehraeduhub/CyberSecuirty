@@ -17,6 +17,7 @@ import json
 import os
 import re
 import secrets
+import shutil
 import socket
 import sys
 import threading
@@ -33,11 +34,14 @@ from urllib.request import ProxyHandler, Request, build_opener
 import branding
 import config_store
 import detector
+import history
 import host_audit
 import investigator
 import knowledge
+import memory
 import pipeline
 import report_pdf
+import reputation
 import trust
 
 VERSION = "3.0.0"
@@ -69,6 +73,18 @@ DEFAULTS = {
     "password_hash": "",      # salted PBKDF2-SHA256 hash, never the password itself
     "session_secret": "",     # signs login cookies (auto-generated)
     "session_hours": 12,      # how long a password login stays valid
+    "history_enabled": True,  # keep every analysis (History page) until you delete it
+    "store_logs": True,       # keep the original uploaded / pasted log files with the analysis
+    "history_max_days": 0,    # delete analyses older than this (0 = keep until deleted)
+    "history_max_gb": 20,     # delete the oldest analyses when history exceeds this size (0 = no limit)
+    "learn_from_data": True,  # use analyst verdicts, learned indicators and earlier sightings
+    "abuseipdb_key": "",      # reputation look-ups (optional, sent only when you ask): abuseipdb.com
+    "virustotal_key": "",     # virustotal.com (free key: 4 look-ups/minute, 500/day)
+    "reputation_auto": False,  # look up public IPs/URLs automatically after each analysis
+    "reputation_cache_hours": 24,
+    "virustotal_per_min": 4,
+    "virustotal_daily_limit": 500,
+    "abuseipdb_daily_limit": 1000,
     "ui_show_branding": True,       # false = hide logo, organisation name and credit line in the web UI
     "ui_hide_branding_page": False,  # true = remove the Branding page and lock branding changes from the web UI
     "port": 8787,
@@ -112,12 +128,14 @@ def load_config():
     env = {"provider": "AGENT_PROVIDER", "base_url": "AGENT_BASE_URL", "model": "AGENT_MODEL",
            "api_key": "AGENT_API_KEY", "host": "AGENT_HOST", "port": "AGENT_PORT",
            "access_token": "AGENT_TOKEN"}
-    env.update(ui_show_branding="AGENT_SHOW_BRANDING", ui_hide_branding_page="AGENT_HIDE_BRANDING_PAGE")
+    env.update(ui_show_branding="AGENT_SHOW_BRANDING", ui_hide_branding_page="AGENT_HIDE_BRANDING_PAGE",
+               abuseipdb_key="AGENT_ABUSEIPDB_KEY", virustotal_key="AGENT_VIRUSTOTAL_KEY")
     for key, var in env.items():
         if os.environ.get(var):
             cfg[key] = os.environ[var]
     cfg["port"] = int(cfg["port"])
-    for key in ("ui_show_branding", "ui_hide_branding_page"):
+    for key in ("ui_show_branding", "ui_hide_branding_page", "history_enabled", "store_logs", "learn_from_data",
+                "reputation_auto"):
         cfg[key] = _flag(cfg[key])
     return cfg
 
@@ -130,7 +148,9 @@ def _flag(v):
 
 
 SAVED_KEYS = ("provider", "base_url", "model", "api_key", "temperature", "num_ctx", "num_predict",
-              "num_thread", "keep_alive", "report", "learn_baseline", "tz_hours", "ui_show_branding")
+              "num_thread", "keep_alive", "report", "learn_baseline", "tz_hours", "ui_show_branding",
+              "history_enabled", "store_logs", "history_max_days", "learn_from_data", "abuseipdb_key",
+              "virustotal_key", "reputation_auto")
 
 
 def save_config(cfg, keys=SAVED_KEYS):
@@ -535,8 +555,49 @@ def remember(result):
 
 
 def recall(body):
-    a = _ANALYSES.get(str(body.get("analysis_id") or ""))
+    aid = str(body.get("analysis_id") or "")
+    a = _ANALYSES.get(aid)
+    if a is None and history.exists(aid):  # older analysis: load it back from the history
+        a = history.load(aid)
+        if a is not None:
+            _ANALYSES[aid] = a
+            while len(_ANALYSES) > _ANALYSES_MAX:
+                _ANALYSES.popitem(last=False)
     return a if a is not None else body.get("analysis")
+
+
+def persist(analysis):
+    """Save later additions (AI text, reputation, verdicts) to the stored analysis, if it is stored."""
+    if isinstance(analysis, dict) and history.exists(analysis.get("analysis_id")):
+        try:
+            history.update_result(analysis)
+        except OSError:
+            pass
+
+
+def finish(cfg, result, kind, name, files=(), move=False, actor="", samples=()):
+    """Every new analysis: give it an id, apply what was learned, store it in the history."""
+    remember(result)
+    if cfg.get("learn_from_data", True) and result.get("findings") is not None:
+        try:
+            memory.annotate(result)
+        except (OSError, ValueError, KeyError) as e:
+            result.setdefault("warnings", []).append(f"Learning memory not applied: {e}")
+    if cfg.get("history_enabled", True):
+        try:
+            history.save(result, kind, name, files if cfg.get("store_logs", True) else (), move=move,
+                         actor=actor, samples=samples)
+            history.enforce_retention(cfg.get("history_max_days") or 0, cfg.get("history_max_gb") or 0)
+            if cfg.get("learn_from_data", True):
+                memory.record_sightings(result, name)
+        except OSError as e:
+            result.setdefault("warnings", []).append(f"Could not store this analysis in the history: {e}")
+    result["stored"] = history.exists(result.get("analysis_id"))
+    return result
+
+
+def learned_feeds(cfg):
+    return memory.learned_feed_paths() if cfg.get("learn_from_data", True) else None
 
 
 SAFE_NAME = re.compile(r"[^A-Za-z0-9._\-]+")
@@ -666,6 +727,27 @@ class Handler(BaseHTTPRequestHandler):
             if self.cfg.get("ui_hide_branding_page"):
                 return self._send(403, {"error": BRANDING_LOCKED})
             return self._send(200, branding.load())
+        if path == "/api/history":
+            return self._send(200, {"items": history.list_all(), "usage": history.usage(),
+                                    "enabled": bool(self.cfg.get("history_enabled", True)),
+                                    "store_logs": bool(self.cfg.get("store_logs", True))})
+        if path == "/api/history/file":
+            q = parse_qs(urlparse(self.path).query)
+            aid, name = (q.get("id") or [""])[0], (q.get("name") or [""])[0]
+            fp = history.file_path(aid, name) if history.valid_id(aid) else None
+            if not fp:
+                return self._send(404, {"error": "file not found"})
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Length", str(fp.stat().st_size))
+            self.send_header("Content-Disposition", f'attachment; filename="{safe_filename(name)}"')
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.end_headers()
+            with open(fp, "rb") as fh:
+                shutil.copyfileobj(fh, self.wfile, 1 << 20)
+            return None
+        if path == "/api/memory":
+            return self._send(200, memory.summary())
         if path == "/api/audit-log":
             return self._send(200, {"entries": config_store.read_audit(200)})
         if path.startswith("/samples/"):
@@ -686,6 +768,11 @@ class Handler(BaseHTTPRequestHandler):
                 "login": "password" if password_mode(cfg) else "token" if cfg.get("access_token") else "none",
                 "user": self._user() if password_mode(cfg) else None,
                 "ui_show_branding": bool(cfg.get("ui_show_branding", True)),
+                "history_enabled": bool(cfg.get("history_enabled", True)), "store_logs": bool(cfg.get("store_logs", True)),
+                "history_max_days": cfg.get("history_max_days") or 0, "learn_from_data": bool(cfg.get("learn_from_data", True)),
+                "reputation_providers": reputation.providers(cfg), "reputation_auto": bool(cfg.get("reputation_auto")),
+                "has_abuseipdb_key": bool(cfg.get("abuseipdb_key")), "has_virustotal_key": bool(cfg.get("virustotal_key")),
+                "reputation_quota": reputation.quota_used(),
                 "ui_hide_branding_page": bool(cfg.get("ui_hide_branding_page")),
                 "trust_entries": trust.Inventory.load().enabled_count,
                 "learn_baseline": bool(cfg.get("learn_baseline", True)), "tz_hours": cfg.get("tz_hours", 0),
@@ -744,10 +831,21 @@ class Handler(BaseHTTPRequestHandler):
             text = body.get("text") or ""
             if not text.strip():
                 return self._send(400, {"error": "No log text supplied"})
-            res = pipeline.analyze_text(text, str(body.get("name") or "pasted log")[:80],
-                                        tz_hours=float(self.cfg.get("tz_hours") or 0),
-                                        learn_baseline=bool(self.cfg.get("learn_baseline", True)))
-            return self._send(200, remember(pipeline.to_json(res)))
+            display = str(body.get("name") or "pasted log")[:80]
+            config_store.ensure_dirs()
+            tmp = config_store.UPLOAD_DIR / f"paste-{secrets.token_hex(8)}.log"
+            tmp.write_text(text, encoding="utf-8")
+            os.chmod(tmp, 0o600)
+            try:
+                res = pipeline.analyze_files([(tmp, display)], tz_hours=float(self.cfg.get("tz_hours") or 0),
+                                             learn_baseline=bool(self.cfg.get("learn_baseline", True)),
+                                             extra_ioc_paths=learned_feeds(self.cfg))
+                name = safe_filename(display)
+                out = finish(self.cfg, pipeline.to_json(res), "paste", display,
+                             [(tmp, name if Path(name).suffix else name + ".log")], move=True, actor=self._actor())
+            finally:
+                tmp.unlink(missing_ok=True)
+            return self._send(200, out)
         if path == "/api/analyze-batch":
             return self._analyze_batch(body)
         if path == "/api/analyze-sample":
@@ -755,9 +853,30 @@ class Handler(BaseHTTPRequestHandler):
                            ".log", ".xml") and "demo" not in p.name and "ioc" not in p.name)
             res = pipeline.analyze_files([(p, p.name) for p in files], learn_baseline=False,
                                          extra_ioc_paths=[SAMPLES / "siem" / "ioc_feed.csv"])
-            return self._send(200, remember(pipeline.to_json(res)))
+            return self._send(200, finish(self.cfg, pipeline.to_json(res), "sample", "SIEM sample dataset",
+                                          actor=self._actor(), samples=[p.name for p in files]))
         if path.startswith("/api/trust/"):
             return self._trust(path, body)
+        if path.startswith("/api/history/"):
+            return self._history(path, body)
+        if path == "/api/reputation/check":
+            return self._reputation(body)
+        if path == "/api/reputation/candidates":
+            a = recall(body)
+            if not isinstance(a, dict):
+                return self._send(400, {"error": "run an analysis first"})
+            return self._send(200, {"candidates": reputation.candidates(
+                a, trust.Inventory.load(), allow_documentation=bool(self.cfg.get("reputation_allow_documentation"))),
+                "providers": reputation.providers(self.cfg), "done": a.get("reputation") or {}})
+        if path == "/api/feedback":
+            return self._feedback(body)
+        if path == "/api/memory/forget":
+            if body.get("all"):
+                memory.forget_all(self._actor())
+                return self._send(200, memory.summary())
+            ok = memory.forget(str(body.get("key")), self._actor()) if body.get("key") else \
+                memory.forget_reputation(str(body.get("value")), self._actor())
+            return self._send(200 if ok else 404, memory.summary())
         if path in ("/api/branding", "/api/branding/logo") and self.cfg.get("ui_hide_branding_page"):
             return self._send(403, {"error": BRANDING_LOCKED})
         if path == "/api/branding":
@@ -778,7 +897,8 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/chat":
             return self._chat(body)
         if path == "/api/audit":
-            return self._send(200, remember(host_audit.run_audit(include_logs=body.get("include_logs", True))))
+            return self._send(200, finish(self.cfg, host_audit.run_audit(include_logs=body.get("include_logs", True)),
+                                          "host", f"Host audit of {socket.gethostname()}", actor=self._actor()))
         if path == "/api/instant":
             try:
                 md = instant_answer(body.get("kind"), recall(body) or {}, body.get("index"))
@@ -832,10 +952,16 @@ class Handler(BaseHTTPRequestHandler):
         files = sorted(p for p in d.glob("*") if p.is_file()) if d.exists() else []
         if not files:
             return self._send(400, {"error": "no uploaded files in this batch"})
+        stored = None
         try:
             res = pipeline.analyze_files([(p, p.name) for p in files],
                                          tz_hours=float(body.get("tz_hours", self.cfg.get("tz_hours") or 0)),
-                                         learn_baseline=bool(body.get("learn_baseline", self.cfg.get("learn_baseline", True))))
+                                         learn_baseline=bool(body.get("learn_baseline", self.cfg.get("learn_baseline", True))),
+                                         extra_ioc_paths=learned_feeds(self.cfg))
+            name = str(body.get("name") or "") or (files[0].name if len(files) == 1 else f"{len(files)} files: " +
+                                                   ", ".join(p.name for p in files[:3]) + (" ..." if len(files) > 3 else ""))
+            stored = finish(self.cfg, pipeline.to_json(res), "upload", name[:160], [(p, p.name) for p in files],
+                            move=True, actor=self._actor())
         finally:
             if not self.cfg.get("keep_uploads"):
                 for p in files:
@@ -844,7 +970,92 @@ class Handler(BaseHTTPRequestHandler):
                     d.rmdir()
                 except OSError:
                     pass
-        return self._send(200, remember(pipeline.to_json(res)))
+        return self._send(200, stored)
+
+    # ------------------------------------------------------------ history, reputation, learning
+    def _history(self, path, body):
+        actor = self._actor()
+        aid = str(body.get("id") or "")
+        if path == "/api/history/delete":
+            if body.get("all"):
+                for m in history.list_all():
+                    memory.forget_analysis(m["id"])
+                return self._send(200, {"deleted": history.delete_all(actor)})
+            ids = body.get("ids") or [aid]
+            n = 0
+            for i in ids:
+                if history.valid_id(i) and history.delete(i, actor):
+                    memory.forget_analysis(i)
+                    _ANALYSES.pop(i, None)
+                    n += 1
+            return self._send(200 if n else 404, {"deleted": n} if n else {"error": "not found"})
+        if not history.exists(aid):
+            return self._send(404, {"error": "This analysis is no longer in the history."})
+        if path == "/api/history/open":
+            a = recall({"analysis_id": aid})
+            bad = history.verify(aid)
+            if bad:
+                a.setdefault("warnings", []).append("Stored log file(s) changed since they were stored "
+                                                    f"(SHA-256 mismatch): {', '.join(bad)}")
+            return self._send(200, a)
+        if path == "/api/history/reanalyse":
+            m = history.meta(aid)
+            if m.get("kind") == "sample":
+                files = [(SAMPLES / "siem" / n, n) for n in m.get("samples", []) if (SAMPLES / "siem" / n).is_file()]
+                extra = [SAMPLES / "siem" / "ioc_feed.csv"]
+            else:
+                files, extra = history.log_files(aid), []
+            if not files:
+                return self._send(400, {"error": "No stored log files for this analysis (store_logs was off, "
+                                                 "or it was a host audit)."})
+            bad = history.verify(aid)
+            if bad:
+                return self._send(409, {"error": f"Stored log file(s) changed since they were stored: {', '.join(bad)}"})
+            res = pipeline.analyze_files(files, tz_hours=float(self.cfg.get("tz_hours") or 0), learn_baseline=False,
+                                         extra_ioc_paths=extra + (learned_feeds(self.cfg) or []))
+            name = f"{m.get('name', 'analysis')} (re-analysed)"[:160]
+            out = finish(self.cfg, pipeline.to_json(res), m.get("kind", "upload"), name,
+                         files if m.get("kind") != "sample" else (), actor=actor, samples=m.get("samples", []))
+            return self._send(200, out)
+        return self._send(404, {"error": "not found"})
+
+    def _reputation(self, body):
+        analysis = recall(body) if body.get("analysis_id") else None
+        try:
+            res = reputation.lookup(self.cfg, body.get("value"), trust.Inventory.load(), force=bool(body.get("force")))
+        except reputation.RefusedError as e:
+            return self._send(422, {"error": str(e), "refused": True})
+        except ValueError as e:
+            return self._send(400, {"error": str(e)})
+        if not res.get("cached"):
+            config_store.audit(self._actor(), "reputation", "lookup", res["value"], None,
+                               {"verdict": res["verdict"], "providers": reputation.providers(self.cfg)})
+        if self.cfg.get("learn_from_data", True):
+            memory.learn_reputation(res, self._actor())
+        if isinstance(analysis, dict):
+            analysis.setdefault("reputation", {})[res["value"]] = res
+            persist(analysis)
+        return self._send(200, res)
+
+    def _feedback(self, body):
+        analysis = recall(body)
+        if not isinstance(analysis, dict):
+            return self._send(400, {"error": "analysis not found"})
+        f = next((x for x in analysis.get("findings") or [] if x.get("fid") == body.get("fid")), None)
+        if not f:
+            return self._send(404, {"error": "finding not found"})
+        try:
+            v = memory.record_verdict(f, str(body.get("verdict")), body.get("note"), self._actor(),
+                                      analysis.get("analysis_id"), analysis)
+        except ValueError as e:
+            return self._send(400, {"error": str(e)})
+        if v:
+            f["analyst_verdict"] = {k: v.get(k) for k in ("verdict", "note", "actor", "time", "analysis_id")}
+            f["analyst_verdict"]["label"] = memory.VERDICTS[v["verdict"]]
+        else:
+            f.pop("analyst_verdict", None)
+        persist(analysis)
+        return self._send(200, {"finding": f, "learned": len(memory.learned_indicators())})
 
     # ------------------------------------------------------------ trusted networks & assets
     def _trust(self, path, body):
@@ -910,6 +1121,19 @@ class Handler(BaseHTTPRequestHandler):
                     cfg[key] = max(0, int(body[key]))
                 except (TypeError, ValueError):
                     return self._send(400, {"error": f"{key} must be a number"})
+        for key in ("history_enabled", "store_logs", "learn_from_data", "reputation_auto"):
+            if key in body:
+                cfg[key] = bool(body[key])
+        if "history_max_days" in body:
+            try:
+                cfg["history_max_days"] = max(0, int(body["history_max_days"] or 0))
+            except (TypeError, ValueError):
+                return self._send(400, {"error": "history_max_days must be a number"})
+        for key in ("abuseipdb_key", "virustotal_key"):
+            if isinstance(body.get(key), str) and body[key] != "********":
+                if body[key].strip() and not re.fullmatch(r"[A-Za-z0-9_\-]{16,128}", body[key].strip()):
+                    return self._send(400, {"error": f"{key} does not look like an API key"})
+                cfg[key] = body[key].strip()
         if "ui_show_branding" in body and not cfg.get("ui_hide_branding_page"):  # locked with the page
             cfg["ui_show_branding"] = bool(body["ui_show_branding"])
         if "learn_baseline" in body:
@@ -959,6 +1183,7 @@ class Handler(BaseHTTPRequestHandler):
                 if body.get("investigate"):
                     analysis["ai_investigation"] = {"text": reply, "validation": v, "model": self.cfg.get("model"),
                                                     "time": datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")}
+                    persist(analysis)
         except (BrokenPipeError, ConnectionResetError):
             pass  # user pressed Stop
         except (LLMError, ValueError) as e:
@@ -1143,7 +1368,9 @@ def cli_scan(cfg, args):
     result = pipeline.to_json(pipeline.analyze_files(
         files, tz_hours=float(cfg.get("tz_hours") or 0), inventory=inv,
         learn_baseline=bool(cfg.get("learn_baseline", True)) and not args.no_learn,
-        extra_ioc_paths=[Path(x) for x in args.ioc or []]))
+        extra_ioc_paths=[Path(x) for x in args.ioc or []] + (learned_feeds(cfg) or [])))
+    if cfg.get("learn_from_data", True):
+        memory.annotate(result)
     if args.json:
         return print(json.dumps(result, indent=2))
     print_result(result)

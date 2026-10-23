@@ -140,6 +140,11 @@ class NetworkAccessTests(unittest.TestCase):
         self.json = json
         self.tmp = Path(tempfile.mkdtemp()) / "config.json"
         self.tmp.write_text(json.dumps({"host": "0.0.0.0", "port": 0, "access_token": "s3cret"}))
+        import config_store
+        self._data = config_store.DATA_DIR, config_store.UPLOAD_DIR, config_store.AUDIT_LOG
+        config_store.DATA_DIR = self.tmp.parent / "data"           # history, learning and audit stay in the temp dir
+        config_store.UPLOAD_DIR = config_store.DATA_DIR / "uploads"
+        config_store.AUDIT_LOG = config_store.DATA_DIR / "audit.log"
         self._orig = agent.CONFIG_FILE
         agent.CONFIG_FILE = self.tmp
         cfg = agent.load_config()
@@ -150,8 +155,10 @@ class NetworkAccessTests(unittest.TestCase):
         self.base = f"http://127.0.0.1:{self.httpd.server_address[1]}"
 
     def tearDown(self):
+        import config_store
         self.httpd.shutdown()
         agent.CONFIG_FILE = self._orig
+        config_store.DATA_DIR, config_store.UPLOAD_DIR, config_store.AUDIT_LOG = self._data
 
     def req(self, path, body=None, cookie=None):
         from urllib.error import HTTPError

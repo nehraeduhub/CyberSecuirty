@@ -63,7 +63,22 @@ def case_file(result, budget_chars=7000):
     tr = result.get("time_range") or {}
     out.append(f"TIME RANGE: {tr.get('start')} to {tr.get('end')} (UTC). Overall risk {result.get('risk_score')}/100.")
     trust = result.get("trust") or {}
-    out.append("TRUSTED INVENTORY:\n" + (trust.get("summary") or "not configured")[:1200])
+    out.append("TRUSTED INVENTORY:\n" + (trust.get("summary") or "not configured")[:900])
+    rep = result.get("reputation") or {}
+    if rep:
+        out.append("\nEXTERNAL REPUTATION (looked up by the analyst; context only):")
+        order = {"malicious": 0, "suspicious": 1}
+        for r in sorted(rep.values(), key=lambda r: order.get(r.get("verdict"), 5))[:12]:
+            out.append(f"- {r['value']}: {r.get('verdict')} ({r.get('summary', '')[:120]})")
+    mem = result.get("memory") or {}
+    if mem.get("verdicts") or mem.get("seen_before"):
+        out.append("\nORGANISATION MEMORY (earlier analyst verdicts and sightings - use them, but verify they still apply):")
+        for v in mem.get("verdicts", [])[:10]:
+            out.append(f"- {v['finding']} {v['rule_id']} on {v['entity']}: analyst said {v['verdict'].replace('_', ' ')}"
+                       f" on {str(v.get('time', ''))[:10]}" + (f" - {v['note'][:120]}" if v.get("note") else ""))
+        for x in mem.get("seen_before", [])[:10]:
+            out.append(f"- {x['value']} seen in {x['count']} earlier analysis(es), last {str(x['last'])[:10]}"
+                       + (f" ({x['last_name'][:50]})" if x.get("last_name") else ""))
     by_fid = {f.get("fid"): f for f in result.get("findings", [])}
     for inc in (result.get("incidents") or [])[:4]:
         out.append(f"\n{inc['id']} [{inc['severity']}] risk {inc['risk']['score']} status '{inc['status']}' "

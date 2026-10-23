@@ -233,6 +233,7 @@
     <button class="active" data-page="analyze"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Threat Analysis</button>
     <button data-page="chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg>AI Analyst</button>
     <button data-page="report"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>Reports</button>
+    <button data-page="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/></svg>History</button>
     <button data-page="trust"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8 12h8M12 8v8"/></svg>Trusted Networks</button>
     <button data-page="branding"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.5"/><circle cx="12" cy="7.5" r="1.5"/><circle cx="15.5" cy="10" r="1.5"/><path d="M12 21a3 3 0 0 1 0-6h2a2 2 0 0 0 2-2"/></svg>Branding</button>
     <button data-page="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>Settings</button>
@@ -332,6 +333,11 @@
         <h2>Indicators of compromise <button class="btn sm ghost" id="copyIocs" style="margin-left:auto">Copy all</button></h2>
         <div class="ioc-grid" id="iocs"></div>
       </div>
+      <div class="card hidden" id="repCard">
+        <h2>Reputation — AbuseIPDB / VirusTotal <span class="count" id="repMeta"></span><button class="btn sm" id="repAll" style="margin-left:auto">🌐 Check all</button></h2>
+        <p class="muted small" style="margin-top:0" id="repNote">Only the IP, domain or URL is sent, and only when you click. Internal, private and your own (Trusted Networks) addresses are never sent. Reputation is context: it never changes a finding's severity.</p>
+        <div style="overflow-x:auto;max-height:420px"><table><thead><tr><th>Indicator</th><th>Seen as</th><th>AbuseIPDB</th><th>VirusTotal</th><th>Verdict</th><th></th></tr></thead><tbody id="repRows"></tbody></table></div>
+      </div>
       <div class="card hidden" id="hostCard"><h2>Host details</h2><dl class="kv" id="hostInfo"></dl></div>
     </div>
   </section>
@@ -426,6 +432,24 @@
       <div style="overflow-x:auto;max-height:340px"><table><thead><tr><th>Time (UTC)</th><th>Who</th><th>Area</th><th>Action</th><th>Target</th><th>Before → after</th></tr></thead><tbody id="auditRows"></tbody></table></div></div>
   </section>
 
+  <!-- ================= HISTORY ================= -->
+  <section class="page" id="page-history">
+    <div class="card">
+      <h2>Analysis history <span class="count" id="histUsage"></span>
+        <button class="btn sm" id="histDelSel" style="margin-left:auto" disabled>🗑 Delete selected</button><button class="btn sm ghost" id="histDelAll">Delete all</button></h2>
+      <p class="muted small" style="margin-top:0" id="histNote">Every analysis is kept with its original log files (SHA-256 recorded) until you delete it. Open one to see it again, re-analyse it with your current rules, trust inventory and what has been learned, or download the stored logs.</p>
+      <div style="overflow-x:auto"><table><thead><tr><th><input type="checkbox" id="histAll"></th><th>Time (UTC)</th><th>Name</th><th>Type</th><th>Stored logs</th><th>Events</th><th>Findings</th><th>Risk</th><th></th></tr></thead><tbody id="histRows"></tbody></table></div>
+    </div>
+    <div class="card">
+      <h2>What the agent has learned <span class="count" id="memCount"></span><button class="btn sm ghost" id="memForgetAll" style="margin-left:auto">Forget everything</button></h2>
+      <p class="muted small" style="margin-top:0">The local model is not re-trained (that needs a GPU and could be poisoned by attacker-controlled logs). Instead the agent keeps this reviewable memory and uses it in every new analysis and AI investigation: your verdicts adjust confidence and are shown on matching findings, confirmed and reputation-malicious indicators become a local threat-intel feed, and indicators seen before are flagged. Nothing is ever hidden and severity never changes.</p>
+      <div class="grid2">
+        <div><h3>Analyst verdicts</h3><div style="overflow-x:auto;max-height:340px"><table><thead><tr><th>Verdict</th><th>Rule · entity</th><th>Note</th><th>By / when</th><th></th></tr></thead><tbody id="memVerdicts"></tbody></table></div></div>
+        <div><h3>Learned indicators (local IoC feed)</h3><div style="overflow-x:auto;max-height:340px"><table><thead><tr><th>Indicator</th><th>Source</th><th>Why</th><th></th></tr></thead><tbody id="memIocs"></tbody></table></div></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= BRANDING ================= -->
   <section class="page" id="page-branding">
     <div class="grid2">
@@ -464,7 +488,18 @@
       <div class="form">
         <div><label><input type="checkbox" id="cfgLearn"> Learn UEBA baselines from each analysis</label><div class="muted small">Only accounts not involved in incidents or high findings are learned.</div></div>
         <div><label>Time zone of logs without zone info (hours from UTC)</label><input id="cfgTz" type="number" step="0.5" min="-14" max="14"></div>
+        <div><label><input type="checkbox" id="cfgHist"> Keep analyses in the History</label><div class="muted small">Stored in data/history on this server (owner-only permissions).</div></div>
+        <div><label><input type="checkbox" id="cfgStoreLogs"> Keep the original log files with each analysis</label><div class="muted small">Needed for re-analysis and as evidence (SHA-256 recorded).</div></div>
+        <div><label>Delete analyses older than (days, 0 = keep until deleted)</label><input id="cfgHistDays" type="number" min="0" step="1"></div>
+        <div><label><input type="checkbox" id="cfgLearnData"> Learn from verdicts, reputation and earlier analyses</label><div class="muted small">See History → What the agent has learned.</div></div>
         <div><label><input type="checkbox" id="cfgBrand"> Show branding in the web interface</label><div class="muted small" id="cfgBrandNote">Logo, organisation name and credit line in the sidebar and on the sign-in page. PDF reports always keep their branding.</div></div>
+      </div>
+      <h2 style="margin-top:22px">Reputation look-ups (online, optional)</h2>
+      <p class="muted small" style="margin-top:0">The only feature that contacts the internet. Only the indicator (public IP, domain or URL) is sent — never log lines, never internal or Trusted-Network addresses — and only when you click <b>Check</b>, unless you switch on automatic look-ups. URLs are looked up, never submitted. Free keys: <b>abuseipdb.com</b> (1,000/day) and <b>virustotal.com</b> (4/minute, 500/day).</p>
+      <div class="form">
+        <div><label>AbuseIPDB API key</label><input id="cfgAbuse" type="password" autocomplete="off" placeholder="not set"></div>
+        <div><label>VirusTotal API key</label><input id="cfgVt" type="password" autocomplete="off" placeholder="not set"></div>
+        <div><label><input type="checkbox" id="cfgRepAuto"> Look up public IPs and URLs automatically after each analysis</label><div class="muted small" id="cfgRepQuota"></div></div>
       </div>
       <div class="row" style="margin-top:16px"><button class="btn primary" id="cfgSave">Save settings</button><button class="btn" id="warmBtn">Pre-load model now</button></div>
     </div>
@@ -514,7 +549,8 @@ const PAGES = { analyze: ["Threat Analysis", "Analyse logs or audit this machine
   chat: ["AI Analyst", "Local, uncensored AI — nothing leaves this machine"],
   report: ["Reports", "Branded PDF incident / audit report"], settings: ["Settings", "AI engine and performance"],
   trust: ["Trusted Networks & Assets", "Your networks, ISP addresses and assets - context for the engine and the AI"],
-  branding: ["Branding", "Application name, logo, colours and report labels"] };
+  branding: ["Branding", "Application name, logo, colours and report labels"],
+  history: ["History & Learning", "Stored analyses and logs, and what the agent has learned from them"] };
 function showPage(p) {
   $$("nav button").forEach((b) => b.classList.toggle("active", b.dataset.page === p));
   $$(".page").forEach((s) => s.classList.toggle("active", s.id === "page-" + p));
@@ -523,6 +559,7 @@ function showPage(p) {
   if (p === "report") refreshReportPage();
   if (p === "trust") loadTrust();
   if (p === "branding") loadBranding();
+  if (p === "history") loadHistory();
   if (p === "chat") $("#chatInput").focus();
 }
 $$("nav button").forEach((b) => b.onclick = () => showPage(b.dataset.page));
@@ -560,6 +597,11 @@ function fillSettings() {
   $("#cfgKey").value = status.has_api_key ? "********" : ""; $("#cfgTemp").value = status.temperature; $("#tempVal").textContent = status.temperature;
   $("#cfgCtx").value = String(status.num_ctx); $("#cfgPredict").value = status.num_predict; $("#cfgThreads").value = status.num_thread;
   $("#cfgLearn").checked = !!status.learn_baseline; $("#cfgTz").value = status.tz_hours || 0;
+  $("#cfgHist").checked = status.history_enabled !== false; $("#cfgStoreLogs").checked = status.store_logs !== false;
+  $("#cfgHistDays").value = status.history_max_days || 0; $("#cfgLearnData").checked = status.learn_from_data !== false;
+  $("#cfgAbuse").value = status.has_abuseipdb_key ? "********" : ""; $("#cfgVt").value = status.has_virustotal_key ? "********" : "";
+  $("#cfgRepAuto").checked = !!status.reputation_auto;
+  $("#cfgRepQuota").textContent = Object.keys(status.reputation_quota || {}).length ? "Used today: " + Object.entries(status.reputation_quota).map(([k, v]) => `${k} ${v}`).join(", ") : "";
   $("#cfgBrand").checked = status.ui_show_branding !== false; $("#cfgBrand").disabled = !!status.ui_hide_branding_page;
   if (status.ui_hide_branding_page) $("#cfgBrandNote").textContent = "Locked in config.json (\"ui_hide_branding_page\": true). Change \"ui_show_branding\" there and restart.";
 }
@@ -575,6 +617,9 @@ $("#cfgSave").onclick = async () => {
     if ($("#cfgThreads").value !== "") body.num_thread = +$("#cfgThreads").value;
     body.learn_baseline = $("#cfgLearn").checked; body.tz_hours = +$("#cfgTz").value || 0;
     if (!$("#cfgBrand").disabled) body.ui_show_branding = $("#cfgBrand").checked;
+    Object.assign(body, {history_enabled: $("#cfgHist").checked, store_logs: $("#cfgStoreLogs").checked,
+      history_max_days: +$("#cfgHistDays").value || 0, learn_from_data: $("#cfgLearnData").checked,
+      abuseipdb_key: $("#cfgAbuse").value, virustotal_key: $("#cfgVt").value, reputation_auto: $("#cfgRepAuto").checked});
     renderStatus(await api("/api/config", body)); toast(status.online ? "Saved — connected ✔" : "Saved, but the AI server is offline");
   } catch (e) { toast("Error: " + e.message); }
 };
@@ -666,6 +711,8 @@ function setResult(a, ms) {
   $("#emptyState").classList.add("hidden"); $("#results").classList.remove("hidden");
   renderKpis(a, ms); renderSevBars(a); drawTimeline(a); renderFilters(a); renderFindings();
   renderActors(a); renderIocs(a); renderHost(a); renderIncidents(a); renderUeba(a); renderIngest(a); renderLimits(a);
+  renderReputation(a);
+  (a.warnings || []).forEach((w) => toast(w));
   $("#results").scrollIntoView({behavior: "smooth", block: "start"});
 }
 const GRADE_COL = {A: "#1E9E4F", B: "#5aa84b", C: "#b58400", D: "#d4561b", E: "#d1391c", F: "#c4122f"};
@@ -759,17 +806,36 @@ function renderFindings() {
           ${f.fp ? `<dt>False positives</dt><dd>${esc(f.fp)}</dd>` : ""}
           ${f.limitation ? `<dt>Limitations</dt><dd>${esc(f.limitation)}</dd>` : ""}
           ${f.risk?.factors ? `<dt>Risk factors</dt><dd class="small">${f.risk.factors.map((x) => `${esc(x.factor)} (${x.points >= 0 ? "+" : ""}${x.points})`).join(" · ")}</dd>` : ""}
+          ${f.analyst_verdict ? `<dt>Analyst verdict</dt><dd><span class="pill" style="--c:${sevVar(f.analyst_verdict.verdict === "true_positive" ? "critical" : "clean")}">${esc(f.analyst_verdict.label || f.analyst_verdict.verdict)}</span> <span class="muted small">${esc(f.analyst_verdict.actor || "")} · ${esc((f.analyst_verdict.time || "").slice(0, 10))}</span>${f.analyst_verdict.note ? `<br>${esc(f.analyst_verdict.note)}` : ""}</dd>` : ""}
           ${f.actions_taken?.length ? `<dt>Action taken</dt><dd class="small">${f.actions_taken.map((x) => `${actPill(x.action + (x.count > 1 ? ` ×${x.count}` : ""), x.result)} <span class="muted">${esc(x.by)}</span>`).join("<br>")}</dd>` : ""}
           ${f.evidence?.length ? `<dt>Evidence</dt><dd class="small">${f.evidence.slice(0, 20).map(esc).join(", ")}${(f.evidence_refs || []).length > 20 ? " …" : ""}</dd>` : ""}
           ${f.first_seen && f.last_seen !== f.first_seen ? `<dt>Window</dt><dd>${esc(f.first_seen)} → ${esc(f.last_seen)}</dd>` : ""}
           ${f.references?.length ? `<dt>References</dt><dd>${f.references.map((r) => /^https?:/.test(r) ? `<a href="${esc(r)}" target="_blank" rel="noopener">${esc(r.replace(/^https?:\/\//, ""))}</a>` : esc(r)).join(" · ")}</dd>` : ""}
         </dl>
         ${f.samples.map((s) => `<pre>${s.evidence ? `<span class="ln">[${esc(s.evidence)}] </span>` : ""}${s.ref ? `<span class="ln">${esc(s.ref)} </span>` : s.line ? `<span class="ln">L${s.line} </span>` : ""}${esc(s.text)}</pre>`).join("")}
-        <div class="row" style="margin-top:8px"><button class="btn sm" data-ask="${i}">🤖 Ask AI about this</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn sm" data-ask="${i}">🤖 Ask AI about this</button>
+          ${f.fid && analysis.analysis_id ? `<span class="muted small" style="margin-left:8px">Your verdict:</span>
+          ${[["true_positive", "✔ True positive"], ["false_positive", "✖ False positive"], ["benign", "Benign / expected"]].map(([v, t]) =>
+            `<button class="btn sm ${f.analyst_verdict?.verdict === v ? "primary" : "ghost"}" data-verdict="${v}" data-fid="${esc(f.fid)}">${t}</button>`).join("")}
+          ${f.analyst_verdict ? `<button class="btn sm ghost" data-verdict="clear" data-fid="${esc(f.fid)}" title="Remove the verdict">↺</button>` : ""}` : ""}</div>
       </div>
     </details>`).join("") : `<div class="empty">✅ Nothing matches — ${analysis.findings.length ? "change the filter" : "no threats matched the built-in rules. Try AI Investigate for a second opinion."}</div>`;
 }
-$("#findings").onclick = (e) => {
+$("#findings").onclick = async (e) => {
+  const vb = e.target.closest("[data-verdict]");
+  if (vb) {
+    const verdict = vb.dataset.verdict, fid = vb.dataset.fid;
+    const note = verdict === "clear" ? "" : prompt(`Note for this verdict (optional) — e.g. why it is ${verdict.replace("_", " ")}:`, "");
+    if (note === null) return;
+    try {
+      const r = await api("/api/feedback", {analysis_id: analysis.analysis_id, fid, verdict, note});
+      const k = analysis.findings.findIndex((f) => f.fid === fid); analysis.findings[k] = r.finding;
+      const open = $$("#findings details.finding").map((d) => d.open); renderFindings();
+      $$("#findings details.finding").forEach((d, n) => d.open = open[n]);
+      toast(verdict === "clear" ? "Verdict removed" : `Saved — the agent will remember this (${r.learned} learned indicator${r.learned === 1 ? "" : "s"})`);
+    } catch (err) { toast("Error: " + err.message); }
+    return;
+  }
   const i = e.target.dataset.ask; if (i === undefined) return;
   const f = analysis.findings[+i]; showPage("chat");
   send(`Analyse this finding in context: "${f.title}" (${f.count} events, sources: ${f.ips.join(", ") || "n/a"}).\nEvidence:\n${f.samples[0]?.text || ""}\nIs it a real attack, what was the attacker trying to do, and what exactly should I check next?`);
@@ -781,7 +847,7 @@ function renderActors(a) {
   $("#actors").innerHTML = p.slice(0, 30).map((x) => `<tr><td><span class="tag">${esc(x.ip)}</span>${x.public ? "" : ' <span class="muted">internal</span>'}</td>
     <td><span class="pill" style="--c:${sevVar(vc[x.verdict] || "info")}">${esc(x.verdict)}</span></td>
     <td class="small">${esc(x.classification || "")}${x.asset ? `<br><b>${esc(x.asset)}</b>` : ""}</td><td>${x.events}</td>
-    <td>${x.activity.map(esc).join("<br>")}</td><td class="muted">${esc(x.first_seen || "—")}</td><td class="muted">${esc(x.last_seen || "—")}</td></tr>`).join("");
+    <td>${x.activity.map(esc).join("<br>")}${x.seen_before?.length ? `<br><span class="pill" style="--c:var(--high)" title="${esc(x.seen_before.map((y) => `${y.time.slice(0, 10)} ${y.name}`).join("\n"))}">seen in ${x.seen_before.length} earlier analys${x.seen_before.length === 1 ? "is" : "es"}</span>` : ""}</td><td class="muted">${esc(x.first_seen || "—")}</td><td class="muted">${esc(x.last_seen || "—")}</td></tr>`).join("");
 }
 function renderIncidents(a) {
   const incs = a.incidents || [];
@@ -851,6 +917,129 @@ function renderHost(a) {
 $("#jsonBtn").onclick = () => download("analysis.json", JSON.stringify(analysis, null, 2), "application/json");
 $("#investigateBtn").onclick = () => { showPage("chat"); send(null, true); };
 $$("[data-instant]").forEach((b) => b.onclick = () => instant(b.dataset.instant, b.textContent.replace(/[⚡\s]+/, "")));
+
+/* ---------- reputation (AbuseIPDB / VirusTotal) ---------- */
+const REP_SEV = {malicious: "critical", suspicious: "medium", "no known abuse": "clean", unknown: "info"};
+let repCands = [];
+function repCell(r, p) {
+  const x = r && r[p]; if (!x) return '<span class="muted">-</span>';
+  if (x.error) return `<span class="muted">${esc(x.error)}</span>`;
+  const link = x.link ? ` <a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">↗</a>` : "";
+  if (p === "abuseipdb") return `<b>${x.score ?? "?"}%</b> · ${x.reports || 0} reports${link}<br><span class="muted small">${esc([x.country, x.isp, x.usage].filter(Boolean).join(" · "))}${x.tor ? " · Tor" : ""}</span>`;
+  if (x.found === false) return `<span class="muted">not known${link}</span>`;
+  return `<b>${x.malicious}/${x.engines}</b> malicious${x.suspicious ? `, ${x.suspicious} suspicious` : ""}${link}<br><span class="muted small">${esc([x.country, x.owner, ...(x.categories || [])].filter(Boolean).join(" · "))}</span>`;
+}
+async function renderReputation(a) {
+  const card = $("#repCard");
+  if (!a.analysis_id || a.kind === "host") { card.classList.add("hidden"); return; }
+  let d; try { d = await api("/api/reputation/candidates", {analysis_id: a.analysis_id}); } catch { card.classList.add("hidden"); return; }
+  if (analysis !== a) return;
+  repCands = d.candidates; card.classList.toggle("hidden", !repCands.length && !Object.keys(d.done).length);
+  const ok = d.providers.length > 0;
+  $("#repAll").disabled = !ok || !repCands.length;
+  $("#repMeta").textContent = ok ? `${repCands.length} public indicator(s) · ${d.providers.join(" + ")}` : "no API key configured";
+  if (!ok) $("#repNote").innerHTML = 'Add a free AbuseIPDB and/or VirusTotal API key in <b>Settings → Reputation look-ups</b> to check these public indicators. Only the indicator value is sent, and only when you click.';
+  const rows = repCands.map((c) => ({...c, res: d.done[c.value]}));
+  Object.values(d.done).forEach((r) => { if (!rows.some((x) => x.value === r.value)) rows.push({value: r.value, type: r.type, context: "", res: r}); });
+  $("#repRows").innerHTML = rows.map((c) => `<tr data-v="${esc(c.value)}"><td><span class="tag">${esc(c.value)}</span><br><span class="muted small">${esc(c.type)}</span></td>
+    <td class="small">${esc(c.context)}</td><td class="small" data-p="abuseipdb">${c.type === "ip" ? repCell(c.res, "abuseipdb") : '<span class="muted">IPs only</span>'}</td>
+    <td class="small" data-p="virustotal">${repCell(c.res, "virustotal")}</td>
+    <td data-p="verdict">${c.res ? `<span class="pill" style="--c:${sevVar(REP_SEV[c.res.verdict] || "info")}">${esc(c.res.verdict)}</span>${c.res.cached ? '<br><span class="muted small">cached</span>' : ""}` : '<span class="muted">not checked</span>'}</td>
+    <td><button class="btn sm" data-rep="${esc(c.value)}" ${ok ? "" : "disabled"}>${c.res ? "↻" : "Check"}</button></td></tr>`).join("");
+  if (ok && status?.reputation_auto && !a._repAuto && repCands.some((c) => !d.done[c.value])) { a._repAuto = true; checkAll(); }
+}
+async function checkRep(value, force) {
+  const tr = $(`#repRows tr[data-v="${CSS.escape(value)}"]`); const btn = tr && $("button", tr);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span>'; }
+  try {
+    const r = await api("/api/reputation/check", {analysis_id: analysis.analysis_id, value, force});
+    (analysis.reputation ||= {})[value] = r; return r;
+  } catch (e) { toast(`${value}: ${e.message}`); }
+  finally { if (btn) { btn.disabled = false; btn.textContent = "↻"; } }
+}
+async function checkAll() {
+  const todo = repCands.filter((c) => !(analysis.reputation || {})[c.value]);
+  const btn = $("#repAll"); btn.disabled = true;
+  for (let i = 0; i < todo.length; i++) {
+    btn.textContent = `Checking ${i + 1}/${todo.length}…`;
+    await checkRep(todo[i].value); await renderReputation(analysis);
+  }
+  btn.textContent = "🌐 Check all"; btn.disabled = false;
+  if (todo.length) toast("Reputation look-ups finished" + (status?.reputation_providers?.includes("virustotal") ? " (VirusTotal free tier: 4 per minute)" : ""));
+}
+$("#repAll").onclick = checkAll;
+$("#repRows").onclick = async (e) => { const v = e.target.dataset.rep; if (v) { await checkRep(v, true); renderReputation(analysis); } };
+
+/* ---------- history & learning ---------- */
+const fmtBytes = (n) => n > 1 << 30 ? (n / (1 << 30)).toFixed(1) + " GB" : n > 1 << 20 ? (n / (1 << 20)).toFixed(1) + " MB" : n > 1024 ? Math.round(n / 1024) + " KB" : n + " B";
+const KIND = {upload: "Uploaded files", paste: "Pasted log", sample: "Sample data", host: "Host audit"};
+async function loadHistory() {
+  let h; try { h = await api("/api/history"); } catch (e) { toast("Error: " + e.message); return; }
+  $("#histUsage").textContent = `${h.usage.analyses} analys${h.usage.analyses === 1 ? "is" : "es"} · ${h.usage.log_files} log files · ${fmtBytes(h.usage.bytes)}`;
+  if (!h.enabled) $("#histNote").innerHTML = "<b>History is switched off</b> (Settings → Analysis). New analyses are not stored.";
+  $("#histRows").innerHTML = h.items.length ? h.items.map((m) => `<tr data-id="${esc(m.id)}">
+    <td><input type="checkbox" class="histSel" value="${esc(m.id)}"></td><td class="muted small">${esc(m.time.replace("T", " ").replace("Z", ""))}</td>
+    <td><b>${esc(m.name)}</b>${m.has_ai ? ' <span class="tag">AI</span>' : ""}${m.reputation ? ` <span class="tag">${m.reputation} reputation</span>` : ""}<br><span class="muted small">${esc(m.actor || "")}</span></td>
+    <td class="small">${esc(KIND[m.kind] || m.kind)}</td>
+    <td class="small">${(m.files || []).map((f) => `<a href="/api/history/file?id=${encodeURIComponent(m.id)}&name=${encodeURIComponent(f.name)}" title="SHA-256 ${esc(f.sha256)}">⬇ ${esc(f.name)}</a> <span class="muted">${fmtBytes(f.bytes)}</span>`).join("<br>") || '<span class="muted">' + (m.samples?.length ? "built-in samples" : "none") + "</span>"}</td>
+    <td>${(m.events || 0).toLocaleString()}</td><td>${m.findings}${m.incidents ? `<br><span class="muted small">${m.incidents} incident(s)</span>` : ""}</td>
+    <td><span class="pill" style="--c:${sevVar(m.risk_level || "info")}">${m.risk_score}</span></td>
+    <td style="white-space:nowrap"><button class="btn sm" data-h="open">Open</button> ${(m.files || []).length || m.samples?.length ? '<button class="btn sm ghost" data-h="reanalyse" title="Run again with the current rules, trust inventory and learning">↻ Re-analyse</button>' : ""} <button class="btn sm ghost" data-h="delete">🗑</button></td></tr>`).join("")
+    : '<tr><td colspan="9" class="muted">No stored analyses yet.</td></tr>';
+  $("#histAll").checked = false; $("#histDelSel").disabled = true;
+  loadMemory();
+}
+$("#histRows").onclick = async (e) => {
+  const act = e.target.dataset.h; if (!act) return;
+  const id = e.target.closest("tr").dataset.id;
+  try {
+    if (act === "delete") {
+      if (!confirm("Delete this analysis and its stored log files? This cannot be undone.")) return;
+      await api("/api/history/delete", {id}); toast("Deleted"); return loadHistory();
+    }
+    e.target.disabled = true; e.target.innerHTML = '<span class="spin"></span>';
+    const t0 = performance.now();
+    const a = await api("/api/history/" + act, {id});
+    sourceName = a.ingestion?.map((i) => i.file).join(", ") || "stored analysis"; $("#fileName").textContent = sourceName;
+    showPage("analyze"); setResult(a, performance.now() - t0);
+    if (act === "reanalyse") toast("Re-analysed and stored as a new entry");
+  } catch (err) { toast("Error: " + err.message); loadHistory(); }
+};
+$("#histRows").onchange = () => { $("#histDelSel").disabled = !$$(".histSel:checked").length; };
+$("#histAll").onchange = (e) => { $$(".histSel").forEach((c) => c.checked = e.target.checked); $("#histDelSel").disabled = !e.target.checked; };
+$("#histDelSel").onclick = async () => {
+  const ids = $$(".histSel:checked").map((c) => c.value);
+  if (!ids.length || !confirm(`Delete ${ids.length} analyses and their stored log files? This cannot be undone.`)) return;
+  try { await api("/api/history/delete", {ids}); toast(`Deleted ${ids.length}`); } catch (e) { toast("Error: " + e.message); }
+  loadHistory();
+};
+$("#histDelAll").onclick = async () => {
+  if (!confirm("Delete ALL stored analyses and log files? This cannot be undone.")) return;
+  try { const r = await api("/api/history/delete", {all: true}); toast(`Deleted ${r.deleted}`); } catch (e) { toast("Error: " + e.message); }
+  loadHistory();
+};
+async function loadMemory() {
+  let m; try { m = await api("/api/memory"); } catch { return; }
+  $("#memCount").textContent = `${m.verdicts.length} verdicts · ${m.learned.length} learned indicators · ${m.sightings} indicators remembered`;
+  const VL = {true_positive: ["True positive", "critical"], false_positive: ["False positive", "clean"], benign: ["Benign / expected", "clean"]};
+  $("#memVerdicts").innerHTML = m.verdicts.length ? m.verdicts.map((v) => `<tr><td><span class="pill" style="--c:${sevVar(VL[v.verdict]?.[1] || "info")}">${esc(VL[v.verdict]?.[0] || v.verdict)}</span></td>
+    <td class="small"><b>${esc(v.rule_id)}</b> · ${esc(v.entity || "-")}<br><span class="muted">${esc(v.title)}</span></td><td class="small">${esc(v.note || "")}</td>
+    <td class="small muted">${esc(v.actor || "")}<br>${esc((v.time || "").slice(0, 10))}</td><td><button class="btn sm ghost" data-forget="${esc(v.key)}" title="Forget">✕</button></td></tr>`).join("")
+    : '<tr><td colspan="5" class="muted small">Mark findings as true / false positive (buttons under each finding) and the agent will remember.</td></tr>';
+  $("#memIocs").innerHTML = m.learned.length ? m.learned.map((r) => `<tr><td><span class="tag">${esc(r.value)}</span></td><td class="small">${esc(r.source)}</td>
+    <td class="small muted">${esc(r.description)}</td><td>${r.source === "LOCAL-REPUTATION" ? `<button class="btn sm ghost" data-forget-v="${esc(r.value)}" title="Forget">✕</button>` : ""}</td></tr>`).join("")
+    : '<tr><td colspan="4" class="muted small">Indicators from confirmed findings and malicious reputation results appear here and are matched in every later analysis (offline).</td></tr>';
+}
+$("#page-history").addEventListener("click", async (e) => {
+  const k = e.target.dataset.forget, v = e.target.dataset.forgetV;
+  if (!k && !v) return;
+  try { await api("/api/memory/forget", k ? {key: k} : {value: v}); toast("Forgotten"); } catch (err) { toast("Error: " + err.message); }
+  loadMemory();
+});
+$("#memForgetAll").onclick = async () => {
+  if (!confirm("Forget all verdicts, learned indicators and sightings? Stored analyses are kept.")) return;
+  await api("/api/memory/forget", {all: true}); toast("Learning memory cleared"); loadMemory();
+};
 
 /* ---------- AI analyst ---------- */
 function md(src) {  // small, safe markdown renderer: escape first, then format

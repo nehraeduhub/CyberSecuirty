@@ -11,7 +11,8 @@ IDS, proxy, DNS, EDR, web) and it will:
 - let a **local, uncensored AI model** investigate the evidence
 - produce a **branded 15-section A4 PDF report**
 
-Nothing leaves your machine.
+Nothing leaves your machine. The one exception is the optional reputation look-up, which sends
+only public IPs, domains or URLs to AbuseIPDB or VirusTotal, and only when you ask.
 
 📘 **Full guide: [docs/SIEM-ANALYSIS-GUIDE.md](docs/SIEM-ANALYSIS-GUIDE.md)** · 🐧 CPU-only Linux setup: [docs/LINUX-GUIDE.md](docs/LINUX-GUIDE.md)
 
@@ -36,6 +37,9 @@ Nothing leaves your machine.
 | 👤 | **UEBA**: explainable per-account baselines (hours, sources, hosts, privileges, peers), with thin-history detection |
 | 🏢 | **Trusted Networks & Assets**: CIDR/IP inventory with precedence, import/export with preview, and a change history. Trust is context and never suppresses a finding |
 | 🎨 | **Branding**: app and organisation names, logo (validated PNG/JPEG), colours and report labels, all editable in the UI. Hide it from the web UI with `"ui_show_branding": false`, and lock the Branding page with `"ui_hide_branding_page": true` in `config.json` |
+| 🗂️ | **History**: every analysis is stored with its original logs (SHA-256), so you can open it again, re-analyse it with the current rules, download the logs or delete it. Retention by age or size |
+| 🌐 | **Reputation**: AbuseIPDB and VirusTotal look-ups for public IPs, domains and URLs. Optional and only on request; internal and your own addresses are never sent |
+| 🧠 | **Learns from your data**: your true/false-positive verdicts, confirmed and reputation-malicious indicators (a local IoC feed) and earlier sightings feed into every new analysis and the AI's case file. Reviewable and removable; nothing is ever hidden |
 | 📑 | **15-section A4 PDF report**: finding cards that paginate correctly, timeline, UEBA, trust context, ATT&CK, threat intelligence, risk, false positives, remediation, evidence appendix, limitations. Markdown export too |
 | 💬 | Chat with the agent: exploits, hardening, Sigma/Splunk rules, attacker intent, CTFs |
 
@@ -182,6 +186,9 @@ ai-agent/
 ├── parsers.py             # SIEM format detection, streaming readers, field mapping, timestamps
 ├── engine.py              # structured rules, UEBA, statistics, threat intel, forensics
 ├── rules.py               # detection rule catalogue (IDs, severity, confidence, ATT&CK, FP guidance)
+├── history.py             # stored analyses + original logs (open, re-analyse, download, delete, retention)
+├── reputation.py          # AbuseIPDB / VirusTotal look-ups (opt-in, public indicators only, cached)
+├── memory.py              # learning: analyst verdicts, learned IoC feed, sightings across analyses
 ├── pipeline.py            # upload-to-report pipeline: correlation, risk, evidence register, SOAR
 ├── flow.py                # action taken per event (firewall/server/machine) and incident attack flow
 ├── investigator.py        # AI investigation agent: case file, deterministic investigation, answer checks

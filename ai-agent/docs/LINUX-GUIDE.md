@@ -211,6 +211,8 @@ Other speed tips:
 | Host audit shows limited results | Run it as root: `sudo python3 agent.py audit --pdf audit.pdf` |
 | Want to use it from another PC | Set `"host": "0.0.0.0"` in `config.json` and sign in with the access token (section 4), or use an SSH tunnel |
 | Can't open `http://SERVER-IP:8787` | Check `"host"` in `config.json`, restart the agent, and open the port: `sudo ufw allow from 192.168.1.0/24 to any port 8787 proto tcp` |
+| Reputation says "cannot reach the service" | The server needs outbound HTTPS to api.abuseipdb.com and www.virustotal.com (set `HTTPS_PROXY` if you use a proxy) |
+| Disk filling up | History keeps every analysis with its logs. Delete old ones on the History page, or set `"history_max_days"` / `"history_max_gb"` in `config.json` |
 | Lost the access token | `python3 agent.py info` on the server |
 | Forgot the password | On the server: `python3 agent.py set-password` (sets a new one), then restart the agent |
 | "Too many failed sign-ins" | Wait 15 minutes, or restart the agent |

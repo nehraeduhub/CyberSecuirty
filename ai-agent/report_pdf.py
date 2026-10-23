@@ -589,6 +589,10 @@ class _Report:
             rows.append(("Accounts", ", ".join(f["users"][:10])))
         if f.get("ips"):
             rows.append(("IP addresses", ", ".join(f["ips"][:15])))
+        av = f.get("analyst_verdict")
+        if av:
+            rows.append(("Analyst verdict", f"{av.get('label') or av.get('verdict')} - {av.get('actor', '')} "
+                                            f"{str(av.get('time', ''))[:10]}" + (f": {av['note']}" if av.get("note") else "")))
         acts = f.get("actions_taken") or []
         if acts:
             rows.append(("Action taken", Paragraph("<br/>".join(
@@ -769,6 +773,25 @@ class _Report:
                  str(f["count"])] for f in tif], [0.1, 0.24, 0.18, 0.38, 0.1]))
         else:
             flow.append(self._p("No activity matched the loaded indicator feeds."))
+        rep = self.r.get("reputation") or {}
+        if rep:
+            order = {"malicious": 0, "suspicious": 1, "no known abuse": 2, "unknown": 3}
+            flow.append(Paragraph("External reputation (AbuseIPDB / VirusTotal)", self.st["TGH2"]))
+            flow.append(self._p("Looked up on request; only the indicator value was sent. Reputation is context: it "
+                                "does not change severity, and \"no known abuse\" does not clear a finding."))
+            flow.append(self._table(["Indicator", "Type", "Verdict", "Details", "Checked (UTC)"], [
+                [Paragraph(_esc(r["value"]), self.st["TGCodeCell"]), r.get("type", ""),
+                 self._act(r.get("verdict", "unknown").capitalize(),
+                           {"malicious": "success", "suspicious": "error", "no known abuse": "blocked"}.get(r.get("verdict"), "info")),
+                 r.get("summary") or "-", str(r.get("checked", ""))[:16].replace("T", " ")]
+                for r in sorted(rep.values(), key=lambda r: order.get(r.get("verdict"), 9))[:60]],
+                [0.24, 0.08, 0.14, 0.4, 0.14]))
+        mem = self.r.get("memory") or {}
+        if mem.get("seen_before"):
+            flow.append(Paragraph("Seen in earlier analyses", self.st["TGH2"]))
+            flow.append(self._table(["Indicator", "Earlier analyses", "Last seen", "Last analysis"], [
+                [Paragraph(_esc(x["value"]), self.st["TGCodeCell"]), str(x["count"]), str(x.get("last", ""))[:10],
+                 x.get("last_name") or "-"] for x in mem["seen_before"][:40]], [0.34, 0.14, 0.14, 0.38]))
         iocs = self.r.get("iocs") or {}
         rows = [[k, v] for k in ("ips", "domains", "urls", "files", "hashes") for v in (iocs.get(k) or [])[:30]]
         if rows:
