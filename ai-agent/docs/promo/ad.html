@@ -1,0 +1,314 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>CyberSec AI Agent ad</title>
+<style>
+:root { --bg:#070d1a; --navy:#0f1d36; --card:#13233f; --line:#22365a; --green:#22c55e; --green2:#4ade80;
+        --red:#f43f5e; --amber:#f59e0b; --blue:#60a5fa; --text:#e6edf7; --muted:#8fa3c0; }
+* { box-sizing:border-box; margin:0; padding:0; }
+html,body { width:1920px; height:1080px; overflow:hidden; background:var(--bg); font-family:"Inter",sans-serif; color:var(--text); }
+#stage { position:relative; width:1920px; height:1080px; overflow:hidden;
+         background: radial-gradient(1200px 700px at 70% 20%, #11264a 0%, transparent 60%),
+                     radial-gradient(900px 600px at 10% 90%, #0d2a22 0%, transparent 60%), var(--bg); }
+.grid { position:absolute; inset:-200px; background-image:linear-gradient(rgba(96,165,250,.06) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(96,165,250,.06) 1px,transparent 1px); background-size:64px 64px; }
+.scene { position:absolute; inset:0; opacity:0; }
+.center { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+h1 { font-weight:800; letter-spacing:-0.02em; }
+.kicker { font-size:26px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--green2); }
+.big { font-size:96px; line-height:1.05; font-weight:800; letter-spacing:-0.03em; }
+.mid { font-size:64px; line-height:1.1; font-weight:800; letter-spacing:-0.02em; }
+.sub { font-size:34px; color:var(--muted); font-weight:500; line-height:1.35; }
+.red { color:var(--red); } .green { color:var(--green2); }
+/* log stream */
+#logs { position:absolute; left:120px; right:120px; top:0; font-family:"DejaVu Sans Mono",monospace; font-size:22px; line-height:40px; color:#41587d; white-space:nowrap; }
+#logs div.hit { color:#ffd3dc; background:rgba(244,63,94,.18); outline:2px solid var(--red); border-radius:6px; }
+.veil { position:absolute; inset:0; background:linear-gradient(90deg, rgba(7,13,26,.93) 0%, rgba(7,13,26,.7) 50%, rgba(7,13,26,.3) 100%); }
+#hitbox { position:absolute; left:120px; right:120px; height:40px; font-family:"DejaVu Sans Mono",monospace; font-size:22px; line-height:40px; white-space:nowrap; color:#fff; border:2px solid #f43f5e; border-radius:6px; padding-left:6px; opacity:0; }
+/* frames */
+.browser { position:absolute; border-radius:18px; overflow:hidden; background:#0b1426; border:1px solid #2a4068;
+           box-shadow:0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.03); }
+.browser .bar { height:44px; background:#101c33; display:flex; align-items:center; gap:10px; padding:0 18px; border-bottom:1px solid #22365a; }
+.browser .bar i { width:13px; height:13px; border-radius:50%; display:block; }
+.browser .bar span { margin-left:18px; font-size:17px; color:#7f93b3; background:#0b1426; padding:6px 18px; border-radius:8px; }
+.browser .shot { position:relative; overflow:hidden; }
+.browser img { display:block; width:100%; transform-origin:0 0; }
+.browser img.zoom { width:135%; }
+.copy { position:absolute; left:110px; width:640px; top:0; bottom:0; display:flex; flex-direction:column; justify-content:center; gap:28px; }
+.chips { display:flex; flex-direction:column; gap:16px; }
+.chip { display:flex; align-items:center; gap:16px; font-size:28px; font-weight:600; background:rgba(19,35,63,.85);
+        border:1px solid var(--line); border-radius:14px; padding:16px 22px; }
+.chip b { width:36px; height:36px; border-radius:50%; background:var(--green); display:grid; place-items:center; flex:none; }
+.chip b svg { width:20px; height:20px; }
+/* pipeline */
+.pipe { display:flex; gap:34px; align-items:flex-start; margin-top:70px; }
+.step { width:230px; display:flex; flex-direction:column; align-items:center; gap:18px; }
+.step .ic { width:128px; height:128px; border-radius:50%; display:grid; place-items:center; background:#13233f; border:3px solid #2a4068; }
+.step .ic svg { width:58px; height:58px; }
+.step .t { font-size:30px; font-weight:700; }
+.step .d { font-size:20px; color:var(--muted); line-height:1.35; }
+.arrow { width:40px; height:4px; background:#2a4068; margin-top:62px; border-radius:2px; }
+.formats { margin-top:60px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+.formats span { font-size:22px; font-weight:600; color:#b7c6dd; border:1px solid var(--line); border-radius:999px; padding:10px 22px; background:rgba(19,35,63,.7); }
+/* stats */
+.stats { display:grid; grid-template-columns:repeat(4, 360px); gap:34px; margin-top:70px; }
+.stat { background:rgba(19,35,63,.9); border:1px solid var(--line); border-radius:22px; padding:38px 30px; text-align:left; }
+.stat .n { font-size:96px; font-weight:800; letter-spacing:-0.03em; line-height:1; }
+.stat .l { margin-top:16px; font-size:26px; font-weight:600; color:#c9d6ea; line-height:1.3; }
+/* logo */
+.shield { width:190px; height:190px; }
+.wordmark { font-size:110px; font-weight:800; letter-spacing:-0.035em; }
+.tag { font-size:38px; color:#c9d6ea; font-weight:500; }
+.pill { display:inline-flex; gap:14px; align-items:center; font-size:26px; font-weight:600; padding:14px 28px; border-radius:999px;
+        background:rgba(34,197,94,.12); border:1px solid rgba(74,222,128,.45); color:var(--green2); }
+.flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; }
+.vignette { position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%); }
+.progress { position:absolute; left:0; bottom:0; height:6px; background:linear-gradient(90deg,var(--green),var(--blue)); }
+</style></head>
+<body><div id="stage">
+<div class="grid" id="grid"></div>
+
+<!-- S1 hook -->
+<div class="scene" id="s1">
+  <div id="logs"></div>
+  <div class="veil"></div><div id="hitbox"></div>
+  <div class="copy" style="width:1100px;gap:22px">
+    <div class="kicker" id="s1k">Your SOC, every day</div>
+    <div class="big" id="s1a">10,000 alerts.</div>
+    <div class="big" id="s1b">One is a <span class="red">real attack.</span></div>
+    <div class="sub" id="s1c" style="margin-top:10px">Which one?</div>
+  </div>
+</div>
+
+<!-- S2 logo -->
+<div class="scene center" id="s2" style="gap:34px">
+  <svg class="shield" id="logo" viewBox="0 0 100 100">
+    <defs><linearGradient id="gs" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#16a34a"/></linearGradient></defs>
+    <path id="shieldPath" d="M50 6 L88 20 V48 C88 72 71 88 50 95 C29 88 12 72 12 48 V20 Z" fill="none" stroke="url(#gs)" stroke-width="5" stroke-linejoin="round"/>
+    <path id="shieldFill" d="M50 6 L88 20 V48 C88 72 71 88 50 95 C29 88 12 72 12 48 V20 Z" fill="url(#gs)" opacity="0"/>
+    <path id="check" d="M33 50 L45 62 L68 38" fill="none" stroke="#06210f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div class="wordmark" id="s2w">CyberSec <span class="green">AI Agent</span></div>
+  <div class="tag" id="s2t">Offline AI log analysis, investigation &amp; forensics</div>
+</div>
+
+<!-- S3 pipeline -->
+<div class="scene center" id="s3">
+  <div class="kicker" id="s3k">How it works</div>
+  <div class="mid" id="s3h" style="margin-top:22px">From raw logs to a <span class="green">verified attack story</span></div>
+  <div class="pipe" id="pipe"></div>
+  <div class="formats" id="formats"></div>
+</div>
+
+<!-- S4 dashboard -->
+<div class="scene" id="s4">
+  <div class="copy">
+    <div class="kicker">Threat analysis</div>
+    <div class="mid">Every alert, <span class="green">correlated</span> into incidents</div>
+    <div class="chips" id="c4"></div>
+  </div>
+  <div class="browser" id="b4" style="left:840px;top:150px;width:990px">
+    <div class="bar"><i style="background:#f87171"></i><i style="background:#fbbf24"></i><i style="background:#4ade80"></i><span>https://cybersec-agent.local</span></div>
+    <div class="shot" style="height:640px"><img class="zoom" id="i4" src="../screenshot-dashboard.jpg"></div>
+  </div>
+</div>
+
+<!-- S5 diagram -->
+<div class="scene" id="s5">
+  <div class="copy">
+    <div class="kicker">Attack diagram</div>
+    <div class="mid">See the <span class="red">whole attack</span> at a glance</div>
+    <div class="chips" id="c5"></div>
+  </div>
+  <div class="browser" id="b5" style="left:840px;top:150px;width:990px;background:#f6f8fc">
+    <div class="bar"><i style="background:#f87171"></i><i style="background:#fbbf24"></i><i style="background:#4ade80"></i><span>Forensics · Attack diagram</span></div>
+    <div class="shot" style="height:682px;background:#f6f8fc"><img id="i5" src="../screenshot-attack-diagram.jpg"></div>
+  </div>
+</div>
+
+<!-- S6 forensics -->
+<div class="scene" id="s6">
+  <div class="copy">
+    <div class="kicker">Forensics</div>
+    <div class="mid">Know <span class="green">what happened</span> and what to do next</div>
+    <div class="chips" id="c6"></div>
+  </div>
+  <div class="browser" id="b6" style="left:840px;top:150px;width:990px">
+    <div class="bar"><i style="background:#f87171"></i><i style="background:#fbbf24"></i><i style="background:#4ade80"></i><span>Forensics · per attack type</span></div>
+    <div class="shot" style="height:640px"><img class="zoom" id="i6" src="../screenshot-forensics.jpg"></div>
+  </div>
+</div>
+
+<!-- S7 live -->
+<div class="scene" id="s7">
+  <div class="copy">
+    <div class="kicker">Live SIEM analysis</div>
+    <div class="mid">Forward suspicious logs. <span class="green">Get answers live.</span></div>
+    <div class="chips" id="c7"></div>
+  </div>
+  <div class="browser" id="b7" style="left:840px;top:150px;width:990px">
+    <div class="bar"><i style="background:#f87171"></i><i style="background:#fbbf24"></i><i style="background:#4ade80"></i><span>Live analysis</span></div>
+    <div class="shot" style="height:640px"><img class="zoom" id="i7" src="../screenshot-live.jpg"></div>
+  </div>
+</div>
+
+<!-- S8 privacy + stats -->
+<div class="scene center" id="s8">
+  <div class="kicker" id="s8k">Private by design</div>
+  <div class="mid" id="s8h" style="margin-top:22px">Your logs <span class="green">never leave your server.</span></div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<!-- S9 end card -->
+<div class="scene center" id="s9" style="gap:30px">
+  <svg class="shield" id="logo2" viewBox="0 0 100 100" style="width:150px;height:150px">
+    <path d="M50 6 L88 20 V48 C88 72 71 88 50 95 C29 88 12 72 12 48 V20 Z" fill="url(#gs)"/>
+    <path d="M33 50 L45 62 L68 38" fill="none" stroke="#06210f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div class="wordmark" id="s9w" style="font-size:100px">CyberSec <span class="green">AI Agent</span></div>
+  <div class="tag" id="s9t" style="font-size:44px;font-weight:700;color:#fff">Detect. Investigate. Report. <span class="green">Offline.</span></div>
+  <div style="display:flex;gap:18px;margin-top:14px" id="s9p">
+    <span class="pill">Runs on your own Linux server</span><span class="pill">No GPU needed</span><span class="pill">No cloud</span>
+  </div>
+  <div class="sub" id="s9b" style="margin-top:34px;font-size:28px">by <b style="color:#fff">Tech Guardians</b></div>
+</div>
+
+<div class="flash" id="flash"></div>
+<div class="vignette"></div>
+<div class="progress" id="prog"></div>
+</div>
+
+<script>
+const ICON = {
+  upload: '<path d="M12 16V4m0 0l-5 5m5-5l5 5M4 20h16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  search: '<circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M15.5 15.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  link: '<path d="M10 14a4 4 0 005.66 0l3-3a4 4 0 00-5.66-5.66l-1 1M14 10a4 4 0 00-5.66 0l-3 3a4 4 0 005.66 5.66l1-1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  ai: '<rect x="4" y="7" width="16" height="12" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 3v4M9 12h.01M15 12h.01M9 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  doc: '<path d="M7 3h7l5 5v13H7z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M14 3v5h5M10 13h6M10 17h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  check: '<path d="M5 12l5 5L19 7" stroke="#06210f" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+};
+const svg = (k, c) => `<svg viewBox="0 0 24 24" style="color:${c||'#fff'}">${ICON[k]}</svg>`;
+
+// ---------- build static content
+const users = ["alice","bob","carol_adm","svc_backup","dave","erin","admin_it","peggy","trent","victor"];
+const hosts = ["vpn01","fw-edge","WS-BOB","DC01","FS01","DB01","web01","HR01"];
+let r = 7; const rnd = () => (r = (r * 1103515245 + 12345) % 2147483648) / 2147483648;
+const rows = [];
+for (let i = 0; i < 70; i++) {
+  const h = hosts[Math.floor(rnd()*hosts.length)], u = users[Math.floor(rnd()*users.length)];
+  const ip = `10.${Math.floor(rnd()*20)}.${Math.floor(rnd()*250)}.${Math.floor(rnd()*250)}`;
+  const mm = String(10 + Math.floor(i/3)).padStart(2,"0"), ss = String(Math.floor(rnd()*60)).padStart(2,"0");
+  const kinds = [`sshd[2211]: Accepted publickey for ${u} from ${ip} port 51022`, `kernel: [UFW ALLOW] SRC=${ip} DST=10.0.0.5 PROTO=TCP DPT=443`,
+    `vpnd[88]: event=auth_success user=${u} src_ip=${ip}`, `EventID=4624 LogonType=3 Account=${u} Source=${ip}`,
+    `nginx: ${ip} "GET /api/v1/items?page=${i} HTTP/1.1" 200 5123`, `dns: query A updates.${u}.corp from ${ip}`,
+    `sudo: ${u} : TTY=pts/0 ; USER=root ; COMMAND=/usr/bin/systemctl status`];
+  rows.push(`Oct 18 02:${mm}:${ss} ${h} ${kinds[Math.floor(rnd()*kinds.length)]}`);
+}
+const HIT = 31;
+rows[HIT] = `Oct 18 02:57:06 vpn01 vpnd[88]: event=auth_success user=bob src_ip=203.0.113.77  (after 22 failures)`;
+document.getElementById("logs").innerHTML = rows.map((t, i) => `<div class="${i === HIT ? "hit" : ""}">${t}</div>`).join("");
+
+const steps = [["upload","Ingest","Upload or SIEM forward"],["search","Detect","70+ rules · UEBA"],["link","Correlate","Kill-chain incidents"],
+               ["ai","Investigate","Local AI, evidence-cited"],["doc","Report","Branded PDF · forensics"]];
+document.getElementById("pipe").innerHTML = steps.map((s, i) => (i ? '<div class="arrow"></div>' : "") +
+  `<div class="step"><div class="ic">${svg(s[0], "#8fa3c0")}</div><div class="t">${s[1]}</div><div class="d">${s[2]}</div></div>`).join("");
+document.getElementById("formats").innerHTML = ["CSV","JSON","Windows XML","Syslog","CEF","LEEF","Web logs",".gz"].map(f => `<span>${f}</span>`).join("");
+
+const chips = {
+  c4: ["70+ detection rules + UEBA", "MITRE ATT&CK kill chain", "Risk score for every incident", "Evidence ID on every claim"],
+  c5: ["Attacker → VPN → workstation", "Lateral movement to servers", "Data exfiltration path", "Coloured by outcome"],
+  c6: ["Action taken by each device", "Recommendations per attack", "Step-by-step forensic guide", "Your trusted network stays green"],
+  c7: ["Splunk · Wazuh · Elastic · Graylog", "HTTPS ingest or syslog", "Rolling window, re-analysed live", "8 threat-intel sources on demand"],
+};
+for (const [id, list] of Object.entries(chips))
+  document.getElementById(id).innerHTML = list.map(t => `<div class="chip"><b>${ICON.check ? svg("check") : ""}</b>${t}</div>`).join("");
+
+const STATS = [[0,"cloud dependencies","#4ade80"],[8,"threat-intel sources","#60a5fa"],[152,"automated tests","#f59e0b"],[33,"security findings found &amp; fixed","#f43f5e"]];
+document.getElementById("stats").innerHTML = STATS.map((s, i) =>
+  `<div class="stat" id="st${i}"><div class="n" style="color:${s[2]}" id="sn${i}">0</div><div class="l">${s[1]}</div></div>`).join("");
+
+// ---------- timeline
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, d) => clamp((t - a) / d);
+const eo = x => 1 - Math.pow(1 - x, 3);           // ease out cubic
+const eio = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+const $ = id => document.getElementById(id);
+function rise(el, t, at, dist = 40, dur = .6) {    // fade + slide up
+  const p = eo(prog(t, at, dur));
+  el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * dist}px)`;
+}
+const SCENES = [["s1",0,5],["s2",5,9.5],["s3",9.5,15],["s4",15,21],["s5",21,26.5],["s6",26.5,31.5],["s7",31.5,36.5],["s8",36.5,41.5],["s9",41.5,48]];
+const TOTAL = 48;
+
+function seek(t) {
+  $("grid").style.transform = `translate(${-(t * 6) % 64}px, ${-(t * 10) % 64}px)`;
+  for (const [id, a, b] of SCENES) {
+    const fin = prog(t, a - .25, .5), fout = 1 - prog(t, b - .25, .45);
+    const o = (id === "s1" ? 1 : fin) * (id === "s9" ? 1 : fout);
+    const el = $(id);
+    el.style.opacity = o;
+    el.style.visibility = o > 0 ? "visible" : "hidden";
+    el.style.transform = `scale(${1 + (1 - (id === "s1" ? 1 : eo(fin))) * 0.04})`;
+  }
+  // S1
+  $("logs").style.transform = `translateY(${-140 - t * 95}px)`;
+  const hitRow = $("logs").children[HIT], hb = $("hitbox");
+  hb.textContent = rows[HIT]; hb.style.top = (hitRow.offsetTop - 140 - t * 95) + "px";
+  hb.style.opacity = t > 2.4 ? 1 : 0;
+  hb.style.background = `rgba(244,63,94,${0.25 + 0.15 * Math.abs(Math.sin(t * 6))})`;
+  hb.style.boxShadow = `0 0 ${20 + 20 * Math.abs(Math.sin(t * 6))}px rgba(244,63,94,.6)`;
+  hitRow.style.opacity = t > 2.4 ? 1 : 0.35;
+  hitRow.style.outlineColor = t > 2.4 ? "#f43f5e" : "transparent";
+  hitRow.style.background = t > 2.4 ? `rgba(244,63,94,${0.12 + 0.12 * Math.abs(Math.sin(t * 6))})` : "transparent";
+  rise($("s1k"), t, .15); rise($("s1a"), t, .45, 60); rise($("s1b"), t, 2.0, 60); rise($("s1c"), t, 3.4, 30);
+  // S2 logo draw
+  const sp = $("shieldPath"), L = 330;
+  sp.style.strokeDasharray = L; sp.style.strokeDashoffset = L * (1 - eio(prog(t, 5.05, 1.1)));
+  $("shieldFill").style.opacity = eo(prog(t, 6.0, .5));
+  const ck = $("check"); ck.style.strokeDasharray = 60; ck.style.strokeDashoffset = 60 * (1 - eo(prog(t, 6.3, .45)));
+  const lp = eo(prog(t, 5.0, .9)); $("logo").style.transform = `scale(${0.6 + 0.4 * lp}) rotate(${(1 - lp) * -12}deg)`;
+  rise($("s2w"), t, 6.4, 50, .7); rise($("s2t"), t, 7.1, 30, .7);
+  // S3 pipeline
+  rise($("s3k"), t, 9.7); rise($("s3h"), t, 9.9, 40);
+  const st = $("pipe").querySelectorAll(".step"), ar = $("pipe").querySelectorAll(".arrow");
+  st.forEach((s, i) => {
+    const at = 10.6 + i * 0.7; rise(s, t, at, 50, .5);
+    const on = t > at + .25, ic = s.querySelector(".ic");
+    ic.style.background = on ? "#16a34a" : "#13233f"; ic.style.borderColor = on ? "#4ade80" : "#2a4068";
+    ic.style.boxShadow = on ? `0 0 ${30 + 20 * Math.sin(t * 4 + i)}px rgba(34,197,94,.45)` : "none";
+    ic.querySelector("svg").style.color = on ? "#fff" : "#8fa3c0";
+  });
+  ar.forEach((a, i) => { const p = prog(t, 10.6 + i * 0.7 + .35, .35);
+    a.style.background = `linear-gradient(90deg,#4ade80 ${p * 100}%,#2a4068 ${p * 100}%)`; });
+  $("formats").querySelectorAll("span").forEach((f, i) => rise(f, t, 13.9 + i * .07, 20, .4));
+  // S4-S7: browser + chips + Ken Burns
+  for (const [n, a, pan, px0, px1] of [[4, 15, 260, 120, 330], [5, 21, 0, 0, 0], [6, 26.5, 260, 60, 300], [7, 31.5, 190, 0, 160]]) {
+    const b = $("b" + n), p = eo(prog(t, a + .1, .8));
+    b.style.opacity = p; b.style.transform = `translateX(${(1 - p) * 120}px) perspective(1800px) rotateY(${-6 + p * 3}deg)`;
+    const k = prog(t, a, 5.5);
+    const img = $("i" + n);
+    img.style.transform = n === 5 ? `scale(${1 + 0.05 * k})` : `translate(${-(px0 + (px1 - px0) * eio(k))}px, ${-pan * eio(k)}px)`;
+    const sc = $("s" + n);
+    sc.querySelectorAll(".copy > .kicker, .copy > .mid").forEach((e, i) => rise(e, t, a + .2 + i * .25, 40));
+    $("c" + n).querySelectorAll(".chip").forEach((c, i) => {
+      const at = a + 1.2 + i * .55, p2 = eo(prog(t, at, .5));
+      c.style.opacity = p2; c.style.transform = `translateX(${(1 - p2) * -40}px)`;
+      c.style.borderColor = (t > at && t < at + .9) ? "#4ade80" : "#22365a";
+    });
+  }
+  // S8 stats
+  rise($("s8k"), t, 36.7); rise($("s8h"), t, 36.9, 40);
+  STATS.forEach((s, i) => {
+    const at = 37.6 + i * .35; rise($("st" + i), t, at, 50, .5);
+    $("sn" + i).textContent = Math.round(s[0] * eo(prog(t, at, 1.1)));
+  });
+  // S9 end card
+  const e = eo(prog(t, 41.6, .8)); $("logo2").style.transform = `scale(${0.7 + 0.3 * e})`; $("logo2").style.opacity = e;
+  rise($("s9w"), t, 42.0, 40, .7); rise($("s9t"), t, 42.7, 30); rise($("s9p"), t, 43.4, 30); rise($("s9b"), t, 44.0, 20);
+  // beat flashes on scene cuts
+  let f = 0; for (const c of [5, 41.5]) f = Math.max(f, 0.35 * (1 - prog(t, c, .35)) * (t >= c ? 1 : 0));
+  $("flash").style.opacity = f;
+  $("prog").style.width = `${(t / TOTAL) * 100}%`;
+  $("prog").style.opacity = t > 41.5 ? 0 : .8;
+}
+window.seek = seek; window.TOTAL = TOTAL;
+seek(0);
+</script></body></html>
