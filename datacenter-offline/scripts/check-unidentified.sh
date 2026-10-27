@@ -160,4 +160,4 @@ echo
 echo "After changing collector/collector.conf: docker compose restart collector monitor-sync"
 echo "and collect again: docker compose exec collector collect.sh once"
 echo "Devices that become identified are merged; delete leftover ones in GLPI under"
-echo "Administration > Unmanaged devices (or ignore PCs and phones)."
+echo "Assets > Unmanaged devices (or ignore PCs and phones)."

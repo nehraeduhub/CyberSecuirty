@@ -39,4 +39,4 @@ if [ "$found" -gt 0 ]; then
   glpi-injector --recursive --directory "$out" --url "$GLPI_URL" --verbose
 fi
 echo "Done. New devices appear in GLPI under Assets (Network devices, PDUs, Printers...)."
-echo "Unknown IPs without SNMP answer are listed under Administration > Inventory > Unmanaged devices."
+echo "Unknown IPs without SNMP answer are listed under Assets > Unmanaged devices."
