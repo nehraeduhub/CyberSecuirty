@@ -68,11 +68,12 @@ if [ -n "$tok" ]; then
 else
   fail "REST API login failed for dc-monitor (scripts/configure-glpi.sh, then re-run install-offline.sh)"
 fi
-if curl -s --max-time 15 -u glpi:glpi "$glpi_local/apirest.php/initSession" | grep -q session_token; then
-  fail "The super-admin 'glpi' still has the default password 'glpi'"
-else
-  pass "Default 'glpi' password is changed"
-fi
+r=$(curl -s --max-time 15 -u glpi:glpi "$glpi_local/apirest.php/initSession")
+case "$r" in
+  *session_token*) fail "The super-admin 'glpi' still has the default password 'glpi' (change it: DEPLOYMENT-GUIDE step 6)" ;;
+  *ERROR_GLPI_LOGIN*|*"Incorrect username or password"*) pass "Default 'glpi' password is changed" ;;
+  *) warn "Could not check the 'glpi' password (API not answering yet)" ;;
+esac
 
 echo
 echo "Collection and monitoring"
