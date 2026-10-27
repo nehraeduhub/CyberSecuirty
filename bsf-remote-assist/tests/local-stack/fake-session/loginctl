@@ -1,9 +1,0 @@
-#!/bin/sh
-# TEST HARNESS ONLY. Headless containers have no systemd-logind, so the MeshCentral agent cannot find the
-# logged-in X session it should capture. This stub reports one active X11 session on $BSF_TEST_DISPLAY.
-case "$*" in
-  *list-sessions*json*|*json*list-sessions*) echo '[{"session":"5","uid":0,"user":"root","seat":"seat0","tty":""}]';;
-  *list-sessions*) printf "SESSION UID USER SEAT TTY\n      5   0 root seat0\n\n1 sessions listed.\n";;
-  *show-session*) printf "Display=${BSF_TEST_DISPLAY:-:5}\nType=x11\nState=active\nActive=yes\nRemote=no\nName=root\nUser=0\nClass=user\nSeat=seat0\n";;
-  *) ;;
-esac

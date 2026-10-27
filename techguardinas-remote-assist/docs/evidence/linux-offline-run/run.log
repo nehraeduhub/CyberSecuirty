@@ -1,0 +1,53 @@
+work directory: /srv/tg-stack-20261027-181701
+== network inside test namespace
+lo               UNKNOWN        127.0.0.1/8 
+routes: 0
+Bootstrap administrator ready: tgadmin
+{"status": "ok", "service": "techguardinas-remote-api"}
+Stack is up: https://remote.techguardinas.test
+[18:17:41] Internet check from test host: unreachable: ConnectionError
+[18:17:42] PASS Portal health and admin login
+[18:17:46] PASS Admin created technician accounts in the portal
+[18:17:49] PASS Device group created and linked to a MeshCentral device group — {"id": 1, "name": "HQ-IT", "description": "", "active": true, "auto_approve": false, "record_sessions": true, "linked": true, "devices": 0}
+[18:17:49] PASS Windows agent installer served by internal portal with internal server URL embedded — wss://mesh.remote.techguardinas.test:443/agent.ashx
+[18:17:49] PASS Managed agent package downloaded from portal — 1769931 bytes
+[18:18:06] PASS Managed endpoint registered with internal MeshCentral and appears in portal — vm Ubuntu 24.04.5 LTS
+[18:18:06] PASS Newly registered device is NOT approved (pending)
+[18:18:06] PASS Connect refused while device is pending approval (agent installed is not enough) — {"detail":"You are not authorized for this device."}
+[18:18:09] PASS Administrator approved the device
+[18:18:12] PASS tech1 granted group permission (connect, files, terminal, reboot)
+[18:18:12] PASS Unauthorized technician does not see the device
+[18:18:12] PASS Unauthorized technician is refused by the server — {"detail":"You are not authorized for this device."}
+[18:18:13] PASS Authorized technician without MFA step-up is refused — {"detail":"MFA is required for this connection. Enroll an authenticator under Settings first."}
+[18:18:13] PASS No technician MeshCentral account has standing rights on the endpoint — None
+[18:18:16] PASS Technician enrolled TOTP MFA
+[18:18:31] PASS Unattended connect authorized after MFA step-up; console opened — f7dc24eb-e94a-4f72-84d7-02e79aa4cfe6
+[18:18:31] PASS Rights granted on exactly this endpoint for the session (device-level link) — {'user//tgtech-2': {'rights': 12863496, 'name': 'tech1'}}
+[18:18:36] PASS Remote desktop of PC-2 visible in browser console (frame connected)
+[18:18:40] PASS Keyboard and mouse input reached PC-2 (window title changed on the endpoint)
+[18:18:48] PASS Remote terminal executed a command on PC-2
+[18:18:52] PASS Remote file browser connected (file transfer channel) —   10/27/2026, 6:17:33 PM  n/a bin   4/8/2024, 4:14:20 PM  n/a bin.usr-is-merged   4/22/2024, 1:08:03 PM  n/a boot   10/2
+[18:18:55] PASS Chat window opened against MeshCentral messenger for this device
+[18:19:00] PASS Reboot command delivered to the agent (agent logged power action 3)
+[18:19:02] PASS Console shows device offline during restart
+[18:19:13] PASS Console reconnected automatically after the endpoint came back
+[18:19:15] PASS Rights removed from endpoint at session end — {}
+[18:19:15] PASS No live tunnels remain for the technician on the endpoint — No websocket sessions.
+[18:19:15] PASS Console cannot be reopened after the session ended — {"detail":"Session is ended."}
+[18:19:15] PASS Session record: technician, device, MFA, capabilities, times, outcome — {"status": "ENDED", "ended_by": "TECHNICIAN", "end_reason": "Ended by technician", "capabilities": {"chat": true, "files": true, "reboot": true, "desktop": true, "terminal": true}}
+[18:19:24] PASS Revoking device approval terminates an open session immediately — Authorization revoked / tunnels: No websocket sessions.
+[18:19:26] PASS Attended session code generated (9 digits, time-limited, internal URL) — https://remote.techguardinas.test/join/538942648
+[18:19:27] PASS Remote user downloaded the session agent from the internal portal — TechGuardinas-Remote-Support-538942648.tar.gz
+[18:19:27] PASS Session code cannot be reused by anyone else after approval — {"detail":"This session code has already been used."}
+[18:19:29] PASS Technician sees the remote computer after the user clicked Connect
+[18:19:35] PASS Remote user approved on-screen consent; desktop connected
+[18:19:38] PASS Keyboard/mouse control on PC-1
+[18:19:47] PASS Remote user terminated the session; technician console closed — Remote user ended the session from the support page
+[18:19:47] PASS Agent-side consent outcomes recorded (desktop accepted, terminal rejected) — {"desktop": "accepted", "terminal": "rejected"}
+[18:19:47] PASS Per-session MeshCentral group deleted at session end
+[18:19:55] PASS Closing the agent on the remote PC ends the session — Remote user closed the support agent or disconnected
+[18:19:57] PASS Cancelled invitation code is rejected — {"detail":"This code is not valid or has expired. Ask your technician for a new code."}
+[18:19:57] PASS Unknown code rejected
+[18:20:06] PASS Audit log contains the full lifecycle — missing: []
+[18:20:06] PASS Browsers made no request to any host other than the two internal servers
+[18:20:06] 44 passed, 0 failed — evidence in /srv/tg-stack-20261027-181701/evidence

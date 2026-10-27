@@ -1,0 +1,114 @@
+# TechGuardinas Remote — complete on-premises stack. Every image is built or pulled on a connected build host and
+# transferred into the MPLS environment (see deploy/OFFLINE-IMAGES.md). Nothing here needs the Internet at run time.
+name: techguardinas-remote
+
+x-portal-env: &portal-env
+  env_file: .env
+  environment:
+    POSTGRES_HOST: db
+    REDIS_URL: redis://redis:6379/0
+    MESH_LOGIN_KEY_FILE: /run/secrets/mesh_login_key
+    MESH_CA_BUNDLE: /etc/techguardinas/ca.crt
+  secrets: [mesh_login_key]
+  volumes:
+    - ./deploy/certs/ca.crt:/etc/techguardinas/ca.crt:ro
+    - staticdata:/app/staticfiles
+  depends_on:
+    db: { condition: service_healthy }
+    redis: { condition: service_started }
+  networks: [internal]
+  restart: unless-stopped
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    networks: [internal]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redisdata:/data]
+    networks: [internal]
+    restart: unless-stopped
+
+  web:
+    <<: *portal-env
+    build: ./backend
+    image: techguardinas-remote/web:2.0.0
+
+  worker:
+    <<: *portal-env
+    image: techguardinas-remote/web:2.0.0
+    entrypoint: ["python", "manage.py", "session_worker"]
+    depends_on:
+      web: { condition: service_started }
+
+  frontend:
+    build: ./frontend
+    image: techguardinas-remote/frontend:2.0.0
+    networks: [internal]
+    restart: unless-stopped
+
+  meshcentral:
+    build: ./meshcentral
+    image: techguardinas-remote/meshcentral:1.2.5
+    environment:
+      MESH_HOSTNAME: ${MESH_HOSTNAME}
+      MESH_SERVICE_USER: ${MESH_SERVICE_USER:-tg-portal-svc}
+      MESH_LOGIN_KEY_FILE: /run/secrets/mesh_login_key
+      MESH_CLIPBOARD_GET: ${MESH_CLIPBOARD_GET:-true}
+      MESH_CLIPBOARD_SET: ${MESH_CLIPBOARD_SET:-true}
+      MESH_IDLE_TIMEOUT_MINUTES: ${MESH_IDLE_TIMEOUT_MINUTES:-15}
+    secrets: [mesh_login_key]
+    volumes:
+      - meshdata:/opt/meshcentral/meshcentral-data
+      - meshfiles:/opt/meshcentral/meshcentral-files
+      - meshbackups:/opt/meshcentral/meshcentral-backups
+      - meshrecordings:/opt/meshcentral/meshcentral-recordings
+    networks: [internal]
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.29-alpine
+    depends_on: [web, frontend, meshcentral]
+    environment:
+      PORTAL_HOSTNAME: ${PORTAL_HOSTNAME}
+      MESH_HOSTNAME: ${MESH_HOSTNAME}
+    ports: ["443:443", "80:80"]
+    volumes:
+      - ./deploy/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./deploy/certs:/etc/nginx/certs:ro
+      - staticdata:/static:ro
+    networks:
+      internal:
+        # Inside the stack the public names resolve to NGINX, so the backend and MeshCentral
+        # (certUrl) use exactly the same TLS endpoint as browsers and agents.
+        aliases: ["${PORTAL_HOSTNAME}", "${MESH_HOSTNAME}"]
+    restart: unless-stopped
+
+networks:
+  internal: {}
+
+secrets:
+  mesh_login_key:
+    file: ./deploy/secrets/mesh_login_key
+
+volumes:
+  pgdata:
+  redisdata:
+  staticdata:
+  meshdata:
+  meshfiles:
+  meshbackups:
+  meshrecordings:

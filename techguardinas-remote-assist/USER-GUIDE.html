@@ -1,0 +1,398 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TechGuardinas Remote — Installation and User Guide</title><style>body{font-family:"Segoe UI",Arial,sans-serif;color:#172033;max-width:900px;margin:32px auto;padding:0 24px;line-height:1.55;font-size:14px}
+h1{color:#0b1f3a;border-bottom:3px solid #1264d8;padding-bottom:8px}h2{color:#0b1f3a;margin-top:32px;border-bottom:1px solid #e1e7ef;padding-bottom:4px;page-break-after:avoid}h3{color:#102846}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px}th,td{border:1px solid #d5dce6;padding:6px 8px;text-align:left;vertical-align:top}th{background:#eef2f7}
+code{background:#f1f5f9;padding:1px 4px;border-radius:4px;font-size:12.5px}pre{background:#0f1b30;color:#e2e8f0;padding:12px;border-radius:8px;overflow-x:auto;white-space:pre-wrap}pre code{background:none;color:inherit}
+blockquote{border-left:4px solid #1264d8;background:#eef6ff;margin:12px 0;padding:8px 16px}hr{border:0;border-top:1px solid #e1e7ef}
+@media print{body{margin:0;max-width:none}pre{page-break-inside:avoid}tr{page-break-inside:avoid}}</style></head><body><h1 id="techguardinas-remote-installation-and-user-guide">TechGuardinas Remote — Installation and User Guide</h1>
+<p>Version 2.0.0 · Self-hosted remote support on Linux, published across the MPLS network</p>
+<hr />
+<h2 id="1-what-you-are-installing">1. What you are installing</h2>
+<p>TechGuardinas Remote lets technicians support users' Windows PCs from a web browser, entirely inside your network:</p>
+<ul>
+<li><strong>Attended support</strong> — the user is at the PC. The technician generates a one-time 9-digit code; the user opens a web page, approves, runs a small support agent and clicks <strong>Connect</strong>; the user is asked again on screen before their desktop, a command prompt or files are opened, and can end the session at any time.</li>
+<li><strong>Unattended access</strong> — an agent is installed on managed PCs (by GPO). Technicians connect to PCs an administrator has approved and assigned to them, after an MFA code.</li>
+<li><strong>Remote console in the browser</strong> — screen with mouse and keyboard, multiple monitors, clipboard, file transfer, command terminal, chat, reboot with automatic reconnect.</li>
+<li><strong>Records</strong> — every session is logged: who, which PC, how it was authorized, what was allowed, start/end, who ended it, outcome.</li>
+</ul>
+<p>Everything runs on <strong>one Linux server</strong>: the portal, the remote-control engine (open-source MeshCentral), the relay, the database and the agent downloads. No Internet connection, cloud account or external service is used.</p>
+<p>The server is reached by two internal names, for example:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>remote.techguardinas.local</code></td>
+<td>Portal: technicians, administrators, users joining a session</td>
+</tr>
+<tr>
+<td><code>mesh.remote.techguardinas.local</code></td>
+<td>Remote engine: the console inside the portal, and the agents on PCs</td>
+</tr>
+</tbody>
+</table>
+<p>Replace <code>techguardinas.local</code> with your internal domain throughout this guide.</p>
+<hr />
+<h2 id="2-requirements">2. Requirements</h2>
+<h3 id="server">Server</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Minimum</th>
+<th>Recommended (up to ~2,000 PCs)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU / RAM</td>
+<td>2 vCPU / 4 GB</td>
+<td>4 vCPU / 8 GB</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td>30 GB</td>
+<td>100 GB (more if session recording is enabled)</td>
+</tr>
+<tr>
+<td>OS</td>
+<td>Ubuntu 22.04/24.04 LTS or RHEL/Rocky/Alma 9 (64-bit)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>Software</td>
+<td>Docker Engine + Docker Compose plugin, <code>openssl</code>, <code>curl</code></td>
+<td>same</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>Static IP reachable from every MPLS site on TCP 443</td>
+<td>same</td>
+</tr>
+</tbody>
+</table>
+<h3 id="installing-docker">Installing Docker</h3>
+<p><strong>Server has Internet or an internal Ubuntu mirror (easiest):</strong></p>
+<pre><code class="language-bash">sudo apt-get update
+sudo apt-get install -y docker.io docker-compose-v2      # Ubuntu 22.04 / 24.04 packages
+sudo systemctl enable --now docker
+docker compose version                                  # must print a version
+</code></pre>
+<p><strong>Server has no Internet (Ubuntu):</strong> on a connected Ubuntu machine of the <strong>same version</strong>, download the
+packages, copy the folder to the server and install them there. <code>apt-get download</code> fetches only the named
+packages (it has no <code>--resolve</code> option), so let apt collect everything into an empty folder instead:</p>
+<pre><code class="language-bash"># connected machine
+mkdir -p ~/docker-debs &amp;&amp; cd ~/docker-debs
+sudo apt-get update
+sudo apt-get install --download-only -y -o Dir::Cache::archives=&quot;$PWD&quot; docker.io docker-compose-v2
+ls *.deb
+# copy ~/docker-debs to the server, then on the server:
+cd docker-debs &amp;&amp; sudo apt-get install -y ./*.deb &amp;&amp; sudo systemctl enable --now docker
+</code></pre>
+<p>Run the download on a machine where Docker is <strong>not</strong> installed yet, otherwise apt skips packages it already has.</p>
+<p><strong>RHEL / Rocky / Alma 9:</strong> <code>dnf download</code> needs the plugin first: <code>sudo dnf install -y dnf-plugins-core</code>.</p>
+<pre><code class="language-bash"># connected machine
+sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+mkdir -p ~/docker-rpms &amp;&amp; cd ~/docker-rpms
+dnf download --resolve docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# on the server:
+cd docker-rpms &amp;&amp; sudo dnf install -y ./*.rpm &amp;&amp; sudo systemctl enable --now docker
+</code></pre>
+<p>Or use your organisation's internal package mirror.</p>
+<h3 id="client-pcs">Client PCs</h3>
+<p>Windows 10/11 with Edge or Chrome. The <strong>internal CA certificate</strong> must be trusted (section 4.3).</p>
+<hr />
+<h2 id="3-prepare-the-installation-files">3. Prepare the installation files</h2>
+<p>The zip contains the application but <strong>not</strong> the container images (about 2.5 GB). Create them once on any Linux machine that has Docker and Internet access (the "build machine"):</p>
+<pre><code class="language-bash">unzip techguardinas-remote-assist-setup-2.0.0.zip
+cd techguardinas-remote-assist
+./setup.sh build-images
+</code></pre>
+<p>This produces <code>images/techguardinas-remote-images.tar</code> and its checksum. Have it scanned by your security team, then copy the <strong>whole <code>techguardinas-remote-assist</code> folder including <code>images/</code></strong> to the server (USB disk, internal file share, <code>scp</code>).</p>
+<blockquote>
+<p>If the server itself may reach your internal package/registry mirrors, you can skip this and run the install with <code>BUILD_ON_SERVER=1</code>.</p>
+</blockquote>
+<hr />
+<h2 id="4-publish-the-server-on-the-mpls-network">4. Publish the server on the MPLS network</h2>
+<h3 id="41-ip-address-and-routing">4.1 IP address and routing</h3>
+<p>Give the server a static IP in a data-centre VLAN that every MPLS site can route to (for example <code>10.20.30.40</code>). No NAT is needed. Agents and browsers always connect <strong>to</strong> the server; the server never connects to PCs.</p>
+<h3 id="42-internal-dns">4.2 Internal DNS</h3>
+<p>Create two A records pointing to the server IP, in a zone every site resolves.</p>
+<p>On a Windows DNS server (PowerShell, as DNS administrator):</p>
+<pre><code class="language-powershell">Add-DnsServerResourceRecordA -ZoneName &quot;techguardinas.local&quot; -Name &quot;remote&quot;      -IPv4Address 10.20.30.40
+Add-DnsServerResourceRecordA -ZoneName &quot;techguardinas.local&quot; -Name &quot;mesh.remote&quot; -IPv4Address 10.20.30.40
+</code></pre>
+<p>On BIND: <code>remote IN A 10.20.30.40</code> and <code>mesh.remote IN A 10.20.30.40</code>.</p>
+<p>Check from a PC at a remote site: <code>nslookup remote.techguardinas.local</code> and <code>nslookup mesh.remote.techguardinas.local</code>.</p>
+<h3 id="43-certificate-https">4.3 Certificate (HTTPS)</h3>
+<p>Choose one:</p>
+<ul>
+<li><strong>Your organisation's CA (preferred)</strong> — request a server certificate with both names as Subject Alternative Names. Before installing, place three files in <code>deploy/certs/</code> on the server: <code>fullchain.pem</code> (server certificate + intermediates), <code>privkey.pem</code> (its key), <code>ca.crt</code> (root CA). Your PCs probably trust this CA already.</li>
+<li><strong>Let the installer create one</strong> — if <code>deploy/certs/</code> is empty, <code>setup.sh</code> creates a dedicated "TechGuardinas Remote Internal CA" and the server certificate. You must then distribute the CA to every PC:</li>
+<li>Group Policy Management → edit a GPO linked to all computers → <em>Computer Configuration → Policies → Windows Settings → Security Settings → Public Key Policies → Trusted Root Certification Authorities</em> → <strong>Import</strong> <code>TechGuardinas-Remote-Internal-CA.crt</code> (created next to <code>setup.sh</code>).</li>
+<li>Single PC for testing: <code>certutil -addstore -f Root TechGuardinas-Remote-Internal-CA.crt</code> (administrator prompt).</li>
+<li>Firefox: enable policy <em>Certificates → ImportEnterpriseRoots</em>.</li>
+<li>Keep <code>deploy/certs/ca.key</code> safe (copy it offline and remove it from the server once installation is complete).</li>
+</ul>
+<h3 id="44-firewall-rules">4.4 Firewall rules</h3>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Port</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All MPLS user and PC subnets</td>
+<td>Server</td>
+<td><strong>TCP 443</strong></td>
+<td>Portal, console, agents and relay — everything</td>
+</tr>
+<tr>
+<td>All MPLS subnets</td>
+<td>Server</td>
+<td>TCP 80 (optional)</td>
+<td>Redirects to HTTPS only</td>
+</tr>
+<tr>
+<td>Server</td>
+<td>Domain controllers</td>
+<td>TCP 636</td>
+<td>Only if AD login is enabled</td>
+</tr>
+<tr>
+<td>Server, PCs</td>
+<td>NTP server</td>
+<td>UDP 123</td>
+<td>Correct time is required for MFA codes</td>
+</tr>
+</tbody>
+</table>
+<p>Nothing needs to be opened <strong>towards</strong> PCs: no RDP (3389), no SMB (445), no WinRM. The installer opens 443/80 on the server's own firewall (ufw/firewalld) if one is active. Full table: <code>deploy/NETWORK-PORTS.md</code>.</p>
+<p>If the network team uses a proxy for web traffic, add both names to the proxy <strong>bypass</strong> list on PCs (browsers and agents must connect directly).</p>
+<hr />
+<h2 id="5-install-on-the-linux-server">5. Install on the Linux server</h2>
+<pre><code class="language-bash">cd techguardinas-remote-assist
+sudo ./setup.sh install
+</code></pre>
+<p>You will be asked for:
+1. <strong>Portal host name</strong> — e.g. <code>remote.techguardinas.local</code>
+2. <strong>Engine host name</strong> — press Enter to accept <code>mesh.remote.techguardinas.local</code>
+3. <strong>Server IP</strong> — detected automatically; confirm
+4. <strong>Administrator user name</strong> — default <code>tgadmin</code></p>
+<p>The installer then checks the server, loads the images, writes <code>.env</code> with random secrets, creates or uses the certificate, generates the engine key, opens the firewall, starts all services and confirms that the portal and engine respond. The first administrator password is written to <strong><code>ADMIN-CREDENTIALS.txt</code></strong> (readable by root only) — note it, then delete the file.</p>
+<p>Unattended example:</p>
+<pre><code class="language-bash">sudo ASSUME_YES=1 PORTAL_HOSTNAME=remote.techguardinas.local MESH_HOSTNAME=mesh.remote.techguardinas.local SERVER_IP=10.20.30.40 ./setup.sh install
+</code></pre>
+<p>The services restart automatically after a server reboot.</p>
+<p><strong>Verify from a PC at another site:</strong> open <code>https://remote.techguardinas.local</code> — you should see the TechGuardinas Remote sign-in page with a valid padlock (no certificate warning). Also open <code>https://mesh.remote.techguardinas.local</code> — a sign-in page must appear (it is never used directly; it proves the second name works).</p>
+<hr />
+<h2 id="6-first-time-setup-administrator">6. First-time setup (administrator)</h2>
+<p>Sign in at <code>https://remote.techguardinas.local</code> with the bootstrap account.</p>
+<ol>
+<li><strong>Settings → Configure authenticator.</strong> Scan the QR code with an authenticator app (Microsoft Authenticator, Google Authenticator, FreeOTP — all work offline) and enter the 6-digit code.</li>
+<li><strong>Users → Create local user</strong> for each technician (role <em>TECHNICIAN</em>), auditor (<em>AUDITOR</em>) and further administrators. Passwords must be at least 12 characters. <em>Optional:</em> Settings → Active Directory/LDAPS, then <em>Provision AD user</em> and <em>Enable</em>.</li>
+<li><strong>Groups &amp; Agents → Create group</strong>, e.g. <code>HQ-IT</code>, <code>Branch-Delhi</code>. Tick <em>Record sessions</em> if your policy requires recordings. Each group has its own agent installer.</li>
+<li><strong>Deploy the agent</strong> to the PCs of each group — see section 7.</li>
+<li><strong>Device Approval</strong> — PCs appear here as <em>PENDING</em> once their agent is running. Check the name/IP and click <strong>Approve</strong>. Unapproved PCs can never be accessed.</li>
+<li><strong>Permissions</strong> — choose a technician and a group (or a single device), tick what they may do (<em>Connect, File transfer, Terminal, Reboot</em>) and <strong>Save</strong>.</li>
+<li>Ask every technician to enrol MFA (Settings) before their first unattended connection.</li>
+</ol>
+<hr />
+<h2 id="7-deploying-the-agent-to-windows-pcs">7. Deploying the agent to Windows PCs</h2>
+<ol>
+<li><strong>Groups &amp; Agents → windows-x64</strong> next to the group: downloads <code>TechGuardinas-Remote-Agent-&lt;group&gt;.exe</code>. It contains only the server's internal address and the group identity.</li>
+<li>Record its hash: <code>Get-FileHash .\TechGuardinas-Remote-Agent-HQ-IT.exe -Algorithm SHA256</code>.</li>
+<li>Copy it with <code>deployment/gpo/Install-TechGuardinasRemoteAgent.ps1</code> to <code>\\&lt;domain&gt;\NETLOGON\TechGuardinasRemote\</code>.</li>
+<li>GPO (link to a pilot OU first): <em>Computer Configuration → Policies → Windows Settings → Scripts → Startup → PowerShell</em>:
+   <code>-NoProfile -ExecutionPolicy Bypass -File \\&lt;domain&gt;\NETLOGON\TechGuardinasRemote\Install-TechGuardinasRemoteAgent.ps1 -InstallerPath \\&lt;domain&gt;\NETLOGON\TechGuardinasRemote\TechGuardinas-Remote-Agent-HQ-IT.exe -Sha256 &lt;hash&gt;</code></li>
+<li>Reboot a pilot PC; it appears under <strong>Device Approval</strong>. Log: <code>C:\ProgramData\TechGuardinasRemote\install.log</code>.</li>
+<li>Single PC by hand (administrator prompt): <code>TechGuardinas-Remote-Agent-HQ-IT.exe -fullinstall</code>.</li>
+</ol>
+<p>Removal: <code>Uninstall-TechGuardinasRemoteAgent.ps1 -InstallerPath &lt;same exe&gt;</code>, then <em>Revoke</em> the device in the portal.</p>
+<hr />
+<h2 id="8-technician-guide">8. Technician guide</h2>
+<h3 id="81-attended-support-user-is-at-the-pc">8.1 Attended support (user is at the PC)</h3>
+<ol>
+<li><strong>Start Remote Support → Generate session code.</strong> A 9-digit code and a link appear (valid for 10 minutes, single use).</li>
+<li>Give the user the <strong>code</strong> (phone) or the <strong>link</strong> (internal chat/e-mail).</li>
+<li>Watch the progress list: <em>user approved → agent connecting → Connected: PC name</em>.</li>
+<li>Click <strong>Open remote console</strong>. The user sees <em>"<your name> requesting remote desktop access. Grant access?"</em> and clicks <strong>Yes</strong>.</li>
+<li>Work in the console (8.3). Terminal and Files each ask the user again.</li>
+<li>Click <strong>End Session</strong> and type the outcome (e.g. <em>Resolved — printer driver reinstalled</em>).</li>
+</ol>
+<h3 id="82-unattended-access-managed-pc">8.2 Unattended access (managed PC)</h3>
+<ol>
+<li><strong>Unattended Access</strong> lists only the PCs you are permitted to use, with Online/Offline status.</li>
+<li>Click <strong>Connect</strong> next to an online PC and enter your current <strong>6-digit MFA code</strong>.</li>
+<li>The console opens. A connection bar on the PC shows that a session is in progress.</li>
+<li><strong>End Session</strong> when finished, with an outcome note.</li>
+</ol>
+<h3 id="83-the-remote-console">8.3 The remote console</h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Remote Desktop</strong></td>
+<td>Click <em>Connect</em> inside the view. Move the mouse over the screen to type into it. Toolbar below: Ctrl+Alt+Del, clipboard, display selection (multiple monitors), full screen.</td>
+</tr>
+<tr>
+<td><strong>Terminal</strong></td>
+<td>Command prompt on the remote PC (if permitted).</td>
+</tr>
+<tr>
+<td><strong>Files</strong></td>
+<td>Browse, upload and download files (if permitted).</td>
+</tr>
+<tr>
+<td><strong>Device Events</strong></td>
+<td>The engine's event list for the PC.</td>
+</tr>
+<tr>
+<td><strong>Chat</strong></td>
+<td>Opens a chat window with the user.</td>
+</tr>
+<tr>
+<td><strong>Reboot</strong></td>
+<td>Restarts the PC (if permitted). Unattended: the console shows <em>Device offline</em> and reconnects automatically. Attended: the session ends (the user must reconnect).</td>
+</tr>
+<tr>
+<td><strong>End Session</strong></td>
+<td>Ends access immediately and records the outcome.</td>
+</tr>
+</tbody>
+</table>
+<p>The top bar shows the PC, mode, session code, online status, elapsed time and the session's end time (sessions are limited to 2 hours by default; the console signs out after 15 minutes of inactivity).</p>
+<hr />
+<h2 id="9-remote-user-guide-print-and-share">9. Remote user guide (print and share)</h2>
+<blockquote>
+<p><strong>Getting help from TechGuardinas IT</strong>
+1. The technician tells you a <strong>9-digit code</strong> or sends a link.
+2. Open <strong>https://remote.techguardinas.local/join</strong> and type the code (or click the link).
+3. Check the technician's name, type your name, tick <strong>I authorize this remote support session</strong>, click <strong>Approve</strong>.
+4. Click <strong>Download</strong>, open the downloaded file and click <strong>Connect</strong>. Nothing is installed.
+5. When the technician wants to see your screen, a box asks <strong>Grant access?</strong> — click <strong>Yes</strong>. You will be asked again for a command prompt or files.
+6. To stop at any time: click <strong>End session</strong> on the web page, or close the support agent window, or click <strong>Disconnect</strong> on the bar at the top of your screen.
+When the session ends the technician has no further access. Close the support agent window.</p>
+</blockquote>
+<hr />
+<h2 id="10-auditor-guide">10. Auditor guide</h2>
+<ul>
+<li><strong>Sessions → All technicians</strong> lists every session; <strong>Details</strong> shows the full record: technician, PC, how access was authorized (user consent or permission + MFA), the user's on-screen answers, allowed features, times, who ended it and why, outcome, the audit trail and the engine's own events.</li>
+<li><strong>Audit Log</strong> lists every sign-in, failed sign-in, permission change, device approval, session step and denial, searchable by user or detail.</li>
+<li>Session recordings (if enabled) are kept on the server; see <code>deploy/DEPLOYMENT.md</code>.</li>
+</ul>
+<hr />
+<h2 id="11-operating-the-server">11. Operating the server</h2>
+<p>All commands run in the <code>techguardinas-remote-assist</code> folder on the server.</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Status and health</td>
+<td><code>sudo ./setup.sh status</code></td>
+</tr>
+<tr>
+<td>Stop / start / restart</td>
+<td><code>sudo ./setup.sh stop</code> · <code>start</code> · <code>restart</code></td>
+</tr>
+<tr>
+<td>Logs (all, or one service)</td>
+<td><code>sudo ./setup.sh logs</code> · <code>sudo ./setup.sh logs web</code></td>
+</tr>
+<tr>
+<td>Backup (database + engine data)</td>
+<td><code>sudo ./setup.sh backup</code> (to <code>/var/backups/techguardinas-remote</code>; set <code>BACKUP_DIR=</code> to change)</td>
+</tr>
+<tr>
+<td>Restore database</td>
+<td><code>sudo ./deploy/restore-postgres.sh /var/backups/techguardinas-remote/portal-&lt;date&gt;.dump</code></td>
+</tr>
+<tr>
+<td>Print the CA certificate</td>
+<td><code>./setup.sh export-ca</code></td>
+</tr>
+<tr>
+<td>Reset the bootstrap admin password</td>
+<td><code>sudo ./setup.sh reset-admin-password</code></td>
+</tr>
+<tr>
+<td>Emergency: stop all remote access</td>
+<td><code>sudo docker compose stop meshcentral</code></td>
+</tr>
+<tr>
+<td>Remove (keeps data unless you type PURGE)</td>
+<td><code>sudo ./setup.sh uninstall</code></td>
+</tr>
+</tbody>
+</table>
+<p>Schedule a nightly backup: <code>echo '30 1 * * * root cd /opt/techguardinas-remote-assist &amp;&amp; ./setup.sh backup' | sudo tee /etc/cron.d/techguardinas-remote</code> (adjust the path), and copy the backups off the server.</p>
+<p><strong>Policy settings</strong> (session length, code validity, MFA, clipboard, consent, recording) are in <code>.env</code>; after editing run <code>sudo ./setup.sh restart</code>. They are explained in <code>deploy/DEPLOYMENT.md</code>.</p>
+<p><strong>Updating:</strong> build new images on the build machine (<code>./setup.sh build-images</code> with the new version), back up, copy <code>images/</code> to the server, <code>sudo docker load -i images/techguardinas-remote-images.tar</code>, <code>sudo ./setup.sh restart</code>.</p>
+<hr />
+<h2 id="12-troubleshooting">12. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Browser shows a certificate warning</td>
+<td>The CA is not trusted on that PC (4.3), or you opened the IP instead of the host name.</td>
+</tr>
+<tr>
+<td>Page does not open from a remote site</td>
+<td>DNS record (<code>nslookup</code>), routing/firewall to TCP 443, proxy bypass for both names.</td>
+</tr>
+<tr>
+<td>Console area stays blank</td>
+<td><code>mesh.remote…</code> blocked or not resolving from the technician's PC.</td>
+</tr>
+<tr>
+<td>PC never appears in Device Approval</td>
+<td>On the PC: service <em>TechGuardinasRemoteAgent</em> running? <code>Test-NetConnection mesh.remote.techguardinas.local -Port 443</code>.</td>
+</tr>
+<tr>
+<td>"MFA is required" / "Invalid MFA code"</td>
+<td>Enrol in Settings; check the phone's and server's clock (NTP).</td>
+</tr>
+<tr>
+<td>"You are not authorized for this device"</td>
+<td>Device not approved, or no permission for the technician (Permissions page).</td>
+</tr>
+<tr>
+<td>Attended code "not valid or has expired"</td>
+<td>Codes are single-use and valid 10 minutes; generate a new one.</td>
+</tr>
+<tr>
+<td>Session ends by itself</td>
+<td>Two-hour limit, the device was un-approved, the technician account was disabled, or the user ended it — see the session record.</td>
+</tr>
+<tr>
+<td>Anything else</td>
+<td><code>sudo ./setup.sh status</code> and <code>sudo ./setup.sh logs web worker meshcentral nginx</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-before-going-live">13. Before going live</h2>
+<p>The system has been tested end to end on Linux test PCs, including a fully network-isolated run and a run of this installer's Docker deployment. <strong>The two-Windows-PC acceptance test has not yet been performed.</strong> Complete <code>docs/ACCEPTANCE-TEST.md</code> §2 on a pilot OU before rolling the agent out widely, and read <code>docs/STATUS-AND-LIMITATIONS.md</code> (notably: clipboard policy is global; the attended agent window must be closed by the user after the session; Windows-specific behaviour still to be confirmed).</p></body></html>

@@ -1,0 +1,769 @@
+{
+  "results": [
+    {
+      "check": "Portal health and admin login",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Admin created technician accounts in the portal",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Device group created and linked to a MeshCentral device group",
+      "pass": true,
+      "detail": "{\"id\": 1, \"name\": \"HQ-IT\", \"description\": \"\", \"active\": true, \"auto_approve\": false, \"record_sessions\": true, \"linked\": true, \"devices\": 0}"
+    },
+    {
+      "check": "Windows agent installer served by internal portal with internal server URL embedded",
+      "pass": true,
+      "detail": "wss://mesh.remote.techguardinas.test:443/agent.ashx"
+    },
+    {
+      "check": "Managed agent package downloaded from portal",
+      "pass": true,
+      "detail": "1769931 bytes"
+    },
+    {
+      "check": "Managed endpoint registered with internal MeshCentral and appears in portal",
+      "pass": true,
+      "detail": "vm Ubuntu 24.04.5 LTS"
+    },
+    {
+      "check": "Newly registered device is NOT approved (pending)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Connect refused while device is pending approval (agent installed is not enough)",
+      "pass": true,
+      "detail": "{\"detail\":\"You are not authorized for this device.\"}"
+    },
+    {
+      "check": "Administrator approved the device",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "tech1 granted group permission (connect, files, terminal, reboot)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Unauthorized technician does not see the device",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Unauthorized technician is refused by the server",
+      "pass": true,
+      "detail": "{\"detail\":\"You are not authorized for this device.\"}"
+    },
+    {
+      "check": "Authorized technician without MFA step-up is refused",
+      "pass": true,
+      "detail": "{\"detail\":\"MFA is required for this connection. Enroll an authenticator under Settings first.\"}"
+    },
+    {
+      "check": "No technician MeshCentral account has standing rights on the endpoint",
+      "pass": true,
+      "detail": "None"
+    },
+    {
+      "check": "Technician enrolled TOTP MFA",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Unattended connect authorized after MFA step-up; console opened",
+      "pass": true,
+      "detail": "f7dc24eb-e94a-4f72-84d7-02e79aa4cfe6"
+    },
+    {
+      "check": "Rights granted on exactly this endpoint for the session (device-level link)",
+      "pass": true,
+      "detail": "{'user//tgtech-2': {'rights': 12863496, 'name': 'tech1'}}"
+    },
+    {
+      "check": "Remote desktop of PC-2 visible in browser console (frame connected)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Keyboard and mouse input reached PC-2 (window title changed on the endpoint)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Remote terminal executed a command on PC-2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Remote file browser connected (file transfer channel)",
+      "pass": true,
+      "detail": "\u00a0 10/27/2026, 6:17:33 PM\u00a0 n/a bin \u00a0 4/8/2024, 4:14:20 PM\u00a0 n/a bin.usr-is-merged \u00a0 4/22/2024, 1:08:03 PM\u00a0 n/a boot \u00a0 10/2"
+    },
+    {
+      "check": "Chat window opened against MeshCentral messenger for this device",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Reboot command delivered to the agent (agent logged power action 3)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Console shows device offline during restart",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Console reconnected automatically after the endpoint came back",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Rights removed from endpoint at session end",
+      "pass": true,
+      "detail": "{}"
+    },
+    {
+      "check": "No live tunnels remain for the technician on the endpoint",
+      "pass": true,
+      "detail": "No websocket sessions."
+    },
+    {
+      "check": "Console cannot be reopened after the session ended",
+      "pass": true,
+      "detail": "{\"detail\":\"Session is ended.\"}"
+    },
+    {
+      "check": "Session record: technician, device, MFA, capabilities, times, outcome",
+      "pass": true,
+      "detail": "{\"status\": \"ENDED\", \"ended_by\": \"TECHNICIAN\", \"end_reason\": \"Ended by technician\", \"capabilities\": {\"chat\": true, \"files\": true, \"reboot\": true, \"desktop\": true, \"terminal\": true}}"
+    },
+    {
+      "check": "Revoking device approval terminates an open session immediately",
+      "pass": true,
+      "detail": "Authorization revoked / tunnels: No websocket sessions."
+    },
+    {
+      "check": "Attended session code generated (9 digits, time-limited, internal URL)",
+      "pass": true,
+      "detail": "https://remote.techguardinas.test/join/538942648"
+    },
+    {
+      "check": "Remote user downloaded the session agent from the internal portal",
+      "pass": true,
+      "detail": "TechGuardinas-Remote-Support-538942648.tar.gz"
+    },
+    {
+      "check": "Session code cannot be reused by anyone else after approval",
+      "pass": true,
+      "detail": "{\"detail\":\"This session code has already been used.\"}"
+    },
+    {
+      "check": "Technician sees the remote computer after the user clicked Connect",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Remote user approved on-screen consent; desktop connected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Keyboard/mouse control on PC-1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Remote user terminated the session; technician console closed",
+      "pass": true,
+      "detail": "Remote user ended the session from the support page"
+    },
+    {
+      "check": "Agent-side consent outcomes recorded (desktop accepted, terminal rejected)",
+      "pass": true,
+      "detail": "{\"desktop\": \"accepted\", \"terminal\": \"rejected\"}"
+    },
+    {
+      "check": "Per-session MeshCentral group deleted at session end",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Closing the agent on the remote PC ends the session",
+      "pass": true,
+      "detail": "Remote user closed the support agent or disconnected"
+    },
+    {
+      "check": "Cancelled invitation code is rejected",
+      "pass": true,
+      "detail": "{\"detail\":\"This code is not valid or has expired. Ask your technician for a new code.\"}"
+    },
+    {
+      "check": "Unknown code rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "Audit log contains the full lifecycle",
+      "pass": true,
+      "detail": "missing: []"
+    },
+    {
+      "check": "Browsers made no request to any host other than the two internal servers",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "context": {
+    "portal": "https://remote.techguardinas.test",
+    "network": "lo               UNKNOWN        127.0.0.1/8 \n",
+    "routes": "",
+    "internet_check": "unreachable: ConnectionError",
+    "pc2_device": {
+      "id": "409967cc-1e98-4f84-83c8-880568915a4c",
+      "name": "vm",
+      "hostname": "vm",
+      "ip_address": "127.0.0.1",
+      "os": "Ubuntu 24.04.5 LTS",
+      "group": "HQ-IT",
+      "online": true,
+      "approved": false,
+      "removed": false,
+      "agent_version": "Feb 15 2026, 1740302142",
+      "last_seen": "2026-10-27T18:18:04.298459Z",
+      "can_connect": false,
+      "capabilities": {}
+    },
+    "pc2_node": "node//JGSvBCY3V5$GO@32yBh$wdXLuhz6pcZDA0VFbync7HRFy2mTlfnv0rOueWikqn0I",
+    "unattended_session": "f7dc24eb-e94a-4f72-84d7-02e79aa4cfe6",
+    "unattended_record": {
+      "id": "f7dc24eb-e94a-4f72-84d7-02e79aa4cfe6",
+      "code": "373860897",
+      "mode": "UNATTENDED",
+      "status": "ENDED",
+      "technician": "tech1",
+      "device_id": "409967cc-1e98-4f84-83c8-880568915a4c",
+      "target_name": "vm",
+      "target_os": "Ubuntu 24.04.5 LTS",
+      "target_ip": "127.0.0.1",
+      "capabilities": {
+        "chat": true,
+        "files": true,
+        "reboot": true,
+        "desktop": true,
+        "terminal": true
+      },
+      "mfa_verified": true,
+      "created_at": "2026-10-27T18:18:31.298945+00:00",
+      "expires_at": null,
+      "authorized_at": "2026-10-27T18:18:31.297721+00:00",
+      "started_at": "2026-10-27T18:18:31.353852+00:00",
+      "ended_at": "2026-10-27T18:19:13.495218+00:00",
+      "deadline_at": "2026-10-27T20:18:31.297721+00:00",
+      "customer_name": "",
+      "customer_consent_at": null,
+      "ended_by": "TECHNICIAN",
+      "end_reason": "Ended by technician",
+      "outcome": "Resolved - unattended test",
+      "device_online": true,
+      "remote_consent": {},
+      "recording": false,
+      "mesh_events": [
+        {
+          "msg": "Removed user device rights for vm",
+          "time": "2026-10-27T18:19:13.505Z",
+          "user": "tg-portal-svc",
+          "msgid": 81
+        },
+        {
+          "msg": "Remote Desktop Connection Bar Activated/Updated (127.0.0.1)",
+          "time": "2026-10-27T18:19:09.416Z",
+          "user": "tgtech-2",
+          "msgid": 31
+        },
+        {
+          "msg": "Started remote desktop with toast notification (127.0.0.1)",
+          "time": "2026-10-27T18:19:09.387Z",
+          "user": "tgtech-2",
+          "msgid": 35
+        },
+        {
+          "msg": "Started desktop session \"82rjol7sf4h\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-27T18:19:09.320Z",
+          "user": "tgtech-2",
+          "msgid": 15
+        },
+        {
+          "msg": "Finished recording session, 4 second(s)",
+          "time": "2026-10-27T18:19:00.127Z",
+          "user": "",
+          "msgid": null
+        },
+        {
+          "msg": "Performing power action=3, forced=0",
+          "time": "2026-10-27T18:18:57.159Z",
+          "user": "tg-portal-svc",
+          "msgid": 25
+        },
+        {
+          "msg": "Ended file management session \"fuhtyhyxaxs\" from 127.0.0.1 to 127.0.0.1, 4 second(s)",
+          "time": "2026-10-27T18:18:55.125Z",
+          "user": "tgtech-2",
+          "msgid": 12
+        },
+        {
+          "msg": "Finished recording session, 6 second(s)",
+          "time": "2026-10-27T18:18:53.432Z",
+          "user": "",
+          "msgid": null
+        },
+        {
+          "msg": "Opening: https://mesh.remote.techguardinas.test:443/messenger?id=meshmessenger/node%2F%2FJGSvBCY3V5%24GO%4032yBh%24wdXLuhz6pcZDA0VFbync7HRFy2mTlfnv0rOueWikqn0I/user%2F%2Ftgtech-2",
+          "time": "2026-10-27T18:18:52.203Z",
+          "user": "tgtech-2",
+          "msgid": 20
+        },
+        {
+          "msg": "Started remote files with toast notification (127.0.0.1)",
+          "time": "2026-10-27T18:18:51.030Z",
+          "user": "tgtech-2",
+          "msgid": 42
+        },
+        {
+          "msg": "Started file management session \"fuhtyhyxaxs\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-27T18:18:51.027Z",
+          "user": "tgtech-2",
+          "msgid": 16
+        },
+        {
+          "msg": "Ended terminal session \"ie9cpn31dr\" from 127.0.0.1 to 127.0.0.1, 5 second(s)",
+          "time": "2026-10-27T18:18:48.431Z",
+          "user": "tgtech-2",
+          "msgid": 10
+        },
+        {
+          "msg": "Finished recording session, 7 second(s)",
+          "time": "2026-10-27T18:18:45.098Z",
+          "user": "",
+          "msgid": null
+        },
+        {
+          "msg": "Started terminal session \"ie9cpn31dr\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-27T18:18:42.691Z",
+          "user": "tgtech-2",
+          "msgid": 14
+        },
+        {
+          "msg": "Ended desktop session \"mhgojz33x6b\" from 127.0.0.1 to 127.0.0.1, 7 second(s)",
+          "time": "2026-10-27T18:18:40.096Z",
+          "user": "tgtech-2",
+          "msgid": 11
+        },
+        {
+          "msg": "Remote Desktop Connection Bar Activated/Updated (127.0.0.1)",
+          "time": "2026-10-27T18:18:32.841Z",
+          "user": "tgtech-2",
+          "msgid": 31
+        },
+        {
+          "msg": "Started remote desktop with toast notification (127.0.0.1)",
+          "time": "2026-10-27T18:18:32.780Z",
+          "user": "tgtech-2",
+          "msgid": 35
+        },
+        {
+          "msg": "Started desktop session \"mhgojz33x6b\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-27T18:18:32.682Z",
+          "user": "tgtech-2",
+          "msgid": 15
+        },
+        {
+          "msg": "Changed user device rights for vm",
+          "time": "2026-10-27T18:18:31.296Z",
+          "user": "tg-portal-svc",
+          "msgid": 82
+        }
+      ],
+      "authorization": {
+        "mfa": true,
+        "role": "TECHNICIAN",
+        "source": "perm:1",
+        "mesh_rights": 12863496
+      },
+      "audit": [
+        {
+          "action": "SESSION_AUTHORIZED",
+          "created_at": "2026-10-27T18:18:31.302567Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "mfa": true,
+            "mode": "UNATTENDED",
+            "device": "vm",
+            "device_id": "409967cc-1e98-4f84-83c8-880568915a4c",
+            "mesh_rights": 12863496,
+            "capabilities": {
+              "chat": true,
+              "files": true,
+              "reboot": true,
+              "desktop": true,
+              "terminal": true
+            }
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "DEVICE_ONLINE",
+          "created_at": "2026-10-27T18:18:31.327766Z",
+          "source_ip": null,
+          "details": {
+            "node": "vm"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "SESSION_STARTED",
+          "created_at": "2026-10-27T18:18:31.355540Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "code": "373860897",
+            "target": "vm"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-27T18:18:31.356596Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "desktop"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-27T18:18:40.082309Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "terminal"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-27T18:18:48.418235Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "files"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CHAT_OPENED",
+          "created_at": "2026-10-27T18:18:52.204569Z",
+          "source_ip": "127.0.0.1",
+          "details": {},
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-27T18:18:55.115791Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "desktop"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "DEVICE_REBOOT",
+          "created_at": "2026-10-27T18:18:57.162567Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "target": "vm"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "DEVICE_OFFLINE",
+          "created_at": "2026-10-27T18:19:01.333301Z",
+          "source_ip": null,
+          "details": {
+            "node": "vm"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "DEVICE_ONLINE",
+          "created_at": "2026-10-27T18:19:04.329350Z",
+          "source_ip": null,
+          "details": {
+            "node": "vm"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-27T18:19:04.355462Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "desktop"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "SESSION_ENDED",
+          "created_at": "2026-10-27T18:19:13.558609Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "reason": "Ended by technician",
+            "ended_by": "TECHNICIAN",
+            "revoke_error": null,
+            "remote_consent": {},
+            "duration_seconds": 42
+          },
+          "actor__username": "tech1"
+        }
+      ]
+    },
+    "attended_session": "7920f6f0-e411-4ebc-8d00-84790947b87b",
+    "attended_record": {
+      "id": "7920f6f0-e411-4ebc-8d00-84790947b87b",
+      "code": "538942648",
+      "mode": "ATTENDED",
+      "status": "ENDED",
+      "technician": "tech1",
+      "device_id": null,
+      "target_name": "vm",
+      "target_os": "Ubuntu 24.04.5 LTS",
+      "target_ip": "127.0.0.1",
+      "capabilities": {
+        "chat": true,
+        "files": true,
+        "reboot": false,
+        "desktop": true,
+        "terminal": true
+      },
+      "mfa_verified": false,
+      "created_at": "2026-10-27T18:19:26.334764+00:00",
+      "expires_at": "2026-10-27T18:29:26.334294+00:00",
+      "authorized_at": "2026-10-27T18:19:28.843462+00:00",
+      "started_at": "2026-10-27T18:19:29.815698+00:00",
+      "ended_at": "2026-10-27T18:19:46.806247+00:00",
+      "deadline_at": "2026-10-27T20:19:28.843462+00:00",
+      "customer_name": "Remote User One",
+      "customer_consent_at": "2026-10-27T18:19:26.873247+00:00",
+      "ended_by": "REMOTE_USER",
+      "end_reason": "Remote user ended the session from the support page",
+      "outcome": "",
+      "device_online": true,
+      "remote_consent": {
+        "desktop": "accepted",
+        "terminal": "rejected"
+      },
+      "recording": true,
+      "join_url": "https://remote.techguardinas.test/join/538942648",
+      "mesh_events": [
+        {
+          "msg": "Removed user device rights for vm",
+          "time": "2026-10-27T18:19:46.817Z",
+          "user": "tg-portal-svc",
+          "msgid": 81
+        },
+        {
+          "msg": "Finished recording session, 7 second(s)",
+          "time": "2026-10-27T18:19:43.897Z",
+          "user": "",
+          "msgid": null
+        },
+        {
+          "msg": "Ended terminal session \"dwvw5dcqwuw\" from 127.0.0.1 to 127.0.0.1, 1 second(s)",
+          "time": "2026-10-27T18:19:42.636Z",
+          "user": "tgtech-2",
+          "msgid": 10
+        },
+        {
+          "msg": "Local user rejected remote terminal request (127.0.0.1)",
+          "time": "2026-10-27T18:19:42.633Z",
+          "user": "tgtech-2",
+          "msgid": 28
+        },
+        {
+          "msg": "Started terminal session \"dwvw5dcqwuw\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-27T18:19:41.474Z",
+          "user": "tgtech-2",
+          "msgid": 14
+        },
+        {
+          "msg": "Ended desktop session \"tcwjb4jvh1f\" from 127.0.0.1 to 127.0.0.1, 7 second(s)",
+          "time": "2026-10-27T18:19:38.894Z",
+          "user": "tgtech-2",
+          "msgid": 11
+        },
+        {
+          "msg": "Remote Desktop Connection Bar Activated/Updated (127.0.0.1)",
+          "time": "2026-10-27T18:19:32.589Z",
+          "user": "tgtech-2",
+          "msgid": 31
+        },
+        {
+          "msg": "Starting remote desktop after local user accepted (127.0.0.1)",
+          "time": "2026-10-27T18:19:32.569Z",
+          "user": "tgtech-2",
+          "msgid": 30
+        },
+        {
+          "msg": "Started desktop session \"tcwjb4jvh1f\" from 127.0.0.1 to 127.0.0.1",
+          "time": "2026-10-27T18:19:31.417Z",
+          "user": "tgtech-2",
+          "msgid": 15
+        },
+        {
+          "msg": "Changed user device rights for vm",
+          "time": "2026-10-27T18:19:28.843Z",
+          "user": "tg-portal-svc",
+          "msgid": 82
+        }
+      ],
+      "authorization": {
+        "role": "TECHNICIAN",
+        "policy": "attended",
+        "recording": true,
+        "mesh_rights": 12601352,
+        "consent_flags": 127
+      },
+      "audit": [
+        {
+          "action": "SESSION_CREATED",
+          "created_at": "2026-10-27T18:19:26.336671Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "code": "538942648",
+            "mode": "ATTENDED",
+            "expires_at": "2026-10-27T18:29:26.334294+00:00",
+            "capabilities": {
+              "chat": true,
+              "files": true,
+              "reboot": false,
+              "desktop": true,
+              "terminal": true
+            }
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "REMOTE_USER_OPENED_INVITATION",
+          "created_at": "2026-10-27T18:19:26.582792Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "code": "538942648"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "REMOTE_USER_CONSENTED",
+          "created_at": "2026-10-27T18:19:26.876985Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "name": "Remote User One",
+            "technician": "tech1",
+            "capabilities": {
+              "chat": true,
+              "files": true,
+              "reboot": false,
+              "desktop": true,
+              "terminal": true
+            }
+          },
+          "actor__username": null
+        },
+        {
+          "action": "REMOTE_USER_DOWNLOADED_AGENT",
+          "created_at": "2026-10-27T18:19:27.455958Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "bytes": 1769946,
+            "platform": "linux-x64"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "REMOTE_AGENT_CONNECTED",
+          "created_at": "2026-10-27T18:19:28.845583Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "os": "Ubuntu 24.04.5 LTS",
+            "code": "538942648",
+            "target": "vm",
+            "ip_reported": "127.0.0.1",
+            "extra_agents_removed": 0
+          },
+          "actor__username": null
+        },
+        {
+          "action": "DEVICE_ONLINE",
+          "created_at": "2026-10-27T18:19:28.861155Z",
+          "source_ip": null,
+          "details": {
+            "node": "vm"
+          },
+          "actor__username": null
+        },
+        {
+          "action": "SESSION_STARTED",
+          "created_at": "2026-10-27T18:19:29.817377Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "code": "538942648",
+            "target": "vm"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-27T18:19:29.819171Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "desktop"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "CONSOLE_OPENED",
+          "created_at": "2026-10-27T18:19:38.882268Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "view": "terminal"
+          },
+          "actor__username": "tech1"
+        },
+        {
+          "action": "SESSION_ENDED",
+          "created_at": "2026-10-27T18:19:46.877880Z",
+          "source_ip": "127.0.0.1",
+          "details": {
+            "reason": "Remote user ended the session from the support page",
+            "ended_by": "REMOTE_USER",
+            "revoke_error": null,
+            "remote_consent": {
+              "desktop": "accepted",
+              "terminal": "rejected"
+            },
+            "duration_seconds": 16
+          },
+          "actor__username": null
+        }
+      ]
+    },
+    "external_requests": [],
+    "started": "2026-10-27T18:17:41.380839+00:00",
+    "finished": "2026-10-27T18:20:06.951728+00:00"
+  },
+  "passed": 44,
+  "failed": 0
+}
