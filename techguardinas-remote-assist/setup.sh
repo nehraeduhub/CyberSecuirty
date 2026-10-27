@@ -75,7 +75,12 @@ load_images() {
     c_ok "Images loaded"
   elif [ "${BUILD_ON_SERVER:-0}" = 1 ]; then
     c_warn "Building images on this server (needs Internet or internal mirrors)"
-    dc build && for i in postgres:17-alpine redis:7-alpine nginx:1.29-alpine; do docker pull "$i"; done
+    local tmp_env=0
+    [ -f .env ] || { cp .env.example .env; tmp_env=1; }   # compose needs an .env file to parse the project
+    dc build
+    for i in postgres:17-alpine redis:7-alpine nginx:1.29-alpine; do docker pull "$i"; done
+    [ "$tmp_env" = 1 ] && rm -f .env
+    c_ok "Images built"
   else
     die "Images not found. Run './setup.sh build-images' on a connected machine and copy images/ here (or set BUILD_ON_SERVER=1)."
   fi
