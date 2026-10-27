@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan &amp; settings | DC Viewer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+  <!-- Login -->
+  <main id="login-view" class="login" hidden>
+    <form id="login-form" class="card login-card" autocomplete="on">
+      <h1>DC Viewer</h1>
+      <p class="muted">Sign in with your GLPI account. Changing settings needs an Admin or Super-Admin profile.</p>
+      <label>Login <input name="user" autocomplete="username" required></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </main>
+
+  <!-- App -->
+  <div id="app-view" hidden>
+    <header class="topbar">
+      <div class="brand">DC Viewer</div>
+      <nav class="nav" aria-label="Views">
+        <a href="index.html">Devices</a>
+        <a href="scan.html" aria-current="page">Scan &amp; settings</a>
+        <a href="racks.html" data-feature="racks">Racks</a>
+        <a href="inventory.html" data-feature="inventory">Inventory</a>
+        <a href="status.html" data-feature="grafana">Status</a>
+      </nav>
+      <div class="spacer"></div>
+      <span id="who" class="muted small"></span>
+      <a id="glpi-link" class="btn ghost" target="_blank" rel="noopener">Open GLPI</a>
+      <button id="logout" class="btn ghost" type="button">Sign out</button>
+    </header>
+
+    <p id="readonly" class="note" hidden>Your GLPI profile can view these settings but not change them. Sign in with an Admin or Super-Admin account to change them.</p>
+
+    <div class="settings">
+      <!-- Scan -->
+      <section class="card">
+        <div class="card-head">
+          <h2>Scan</h2>
+          <button id="scan-now" class="btn" type="button">Scan now</button>
+        </div>
+        <div id="scan-state" class="scan-state muted">Loading…</div>
+        <ul id="scan-steps" class="steps"></ul>
+        <p class="muted small">A scan checks every address of the networks below. Devices that answer SNMP are added with brand, model, serial number, MAC and ports;
+          the others are added as <em>Unidentified</em> with their IP (and MAC on the server's own networks). Each /24 network takes about 1&ndash;2 minutes.</p>
+      </section>
+
+      <!-- Networks -->
+      <section class="card">
+        <div class="card-head"><h2>Networks to scan</h2></div>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th scope="col">On</th><th scope="col">Network</th><th scope="col">Name</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead>
+          <tbody id="nets"></tbody>
+        </table></div>
+        <p id="nets-empty" class="muted empty">No networks yet.</p>
+        <form id="net-form" class="inline-form">
+          <label>Network <input name="network" required placeholder="192.168.15.0/24" autocomplete="off"></label>
+          <label>Name <input name="name" placeholder="Server VLAN" autocomplete="off"></label>
+          <button class="btn ghost" type="submit">Add network</button>
+        </form>
+        <p class="muted small">A network (192.168.15.0/24), a range (192.168.15.10-192.168.15.50) or one IP. Up to /16.</p>
+        <details class="find">
+          <summary>Find networks from a router</summary>
+          <form id="find-form" class="inline-form">
+            <label>Router, L3 switch or firewall IP <input name="router" required placeholder="192.168.15.1" autocomplete="off"></label>
+            <button class="btn ghost" type="submit">Find</button>
+          </form>
+          <p class="muted small">Reads its interfaces and routing table over SNMP (save an SNMP credential below first).</p>
+          <div id="find-result"></div>
+        </details>
+      </section>
+
+      <!-- SNMP credentials -->
+      <section class="card">
+        <div class="card-head"><h2>SNMP credentials</h2></div>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th scope="col">On</th><th scope="col">Name</th><th scope="col">Version</th><th scope="col">Community / user</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead>
+          <tbody id="creds"></tbody>
+        </table></div>
+        <p id="creds-empty" class="muted empty">No credentials yet. Without one, devices are only found by ping (no brand, model or serial).</p>
+        <form id="cred-form" class="inline-form">
+          <label>Version
+            <select name="version">
+              <option value="2c">v2c</option>
+              <option value="3">v3</option>
+              <option value="1">v1</option>
+            </select></label>
+          <label>Name <input name="name" placeholder="Core switches" autocomplete="off"></label>
+          <label data-v="12">Community <input name="community" autocomplete="off"></label>
+          <label data-v="3" hidden>User <input name="username" autocomplete="off"></label>
+          <label data-v="3" hidden>Auth
+            <select name="authprotocol"><option value="sha">SHA</option><option value="md5">MD5</option></select></label>
+          <label data-v="3" hidden>Auth password <input name="authpassword" type="password" autocomplete="new-password"></label>
+          <label data-v="3" hidden>Privacy
+            <select name="privprotocol"><option value="aes">AES</option><option value="des">DES</option><option value="3des">3DES</option><option value="">None</option></select></label>
+          <label data-v="3" hidden>Privacy password <input name="privpassword" type="password" autocomplete="new-password"></label>
+          <button class="btn ghost" type="submit">Add credential</button>
+        </form>
+        <p class="muted small">Tried in this order on every device; read-only is enough. Passwords are stored on the server and never shown again.</p>
+      </section>
+
+      <!-- Options and features -->
+      <section class="card">
+        <div class="card-head"><h2>Options</h2></div>
+        <div class="inline-form">
+          <label>Scan every (minutes) <input id="o-interval" type="number" min="5" max="10080"></label>
+          <label>Parallel scans <input id="o-threads" type="number" min="1" max="128"></label>
+          <label>SNMP wait (seconds) <input id="o-timeout" type="number" min="1" max="30"></label>
+        </div>
+        <h3 class="sub">Features</h3>
+        <div id="features" class="toggles"></div>
+      </section>
+    </div>
+
+    <div class="savebar">
+      <span id="dirty" class="muted small"></span>
+      <p id="save-error" class="error" role="alert"></p>
+      <button id="save" class="btn" type="button" disabled>Save changes</button>
+    </div>
+  </div>
+
+  <script src="glpi-client.js"></script>
+  <script src="scan.js"></script>
+</body>
+</html>

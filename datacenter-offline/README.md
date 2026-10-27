@@ -10,9 +10,9 @@ Addresses below are for the default **HTTPS mode** (`TLS=yes` in `.env`). In HTT
 | What | URL on your server | Used for |
 |---|---|---|
 | **GLPI** | `https://<server>/` | Main GUI: data centres, server rooms, racks, assets, cables, tickets, contracts |
-| **DC Viewer – Racks** | `https://<server>:8443/viewer/` | Read-only screen for the NOC or a wall display: floor plan, rack fronts and backs, space/power/weight, device search |
-| **DC Viewer – Inventory** | `https://<server>:8443/viewer/inventory.html` | Everything collected from the network: summary, collection status, charts, network map, device table with CSV export |
-| **DC Viewer – Status** (Grafana) | `https://<server>:8443/viewer/status.html` | **Up / down**: every device's live status, history, availability and ping. **Network & hardware**: ports down, traffic, errors, CPU, firewall HA, and server hardware health from iLO/iDRAC. Full Grafana is at `https://<server>:8443/grafana/` |
+| **DC Viewer – Devices** | `https://<server>:8443/viewer/` | Every device with **live up/down**, name (click to rename), IP, type, brand, model, serial, MAC; **SSH / RDP / Web** buttons; add devices by IP; delete; CSV export |
+| **DC Viewer – Scan & settings** | `https://<server>:8443/viewer/scan.html` | Networks to scan, SNMP credentials, scan interval, **Scan now** with progress, and switches for every other feature (sign in as a GLPI Admin/Super-Admin to change) |
+| DC Viewer – Racks, Inventory, Status (Grafana) | `…/viewer/racks.html`, `inventory.html`, `status.html` | Off by default; turn them on under *Scan & settings → Features* |
 | **Learning library** | `https://<server>:8443/glpi-datacenter-library.html` | NehraEduHub GLPI data centre course, works offline |
 
 ```
@@ -37,6 +37,17 @@ Addresses below are for the default **HTTPS mode** (`TLS=yes` in `.env`). In HTT
 ```
 
 ---
+
+
+### Devices and scanning from the browser
+
+1. Open `https://<server>:8443/viewer/scan.html` and sign in with a GLPI **Admin** or **Super-Admin** account.
+2. **Networks to scan**: add each network (`192.168.15.0/24`), a range or a single IP. *Find networks from a router* reads a router's interfaces and routes over SNMP and offers each network it knows.
+3. **SNMP credentials**: add your read-only community (v2c) or SNMPv3 user. With SNMP, devices come in with brand, model, serial number, MAC and ports; without it they are found by ping only and shown as *Unidentified*.
+4. **Save changes**, then **Scan now**. Progress shows on the page; each /24 takes about 1–2 minutes.
+5. **Devices** lists everything with live status (pinged every 30 seconds, refreshed on the page every 30). Click a name to rename it; *Add devices* takes one `IP name` per line.
+
+The settings live in the `dc_settings` Docker volume (`settings.json`, read by the collector and monitor-sync); they are kept across upgrades and included in `scripts/backup.sh`. Networks and credentials in `collector/collector.conf` still work and are used together with the GUI ones. Servers over SSH/WinRM and VMware are still set in `collector.conf` and switched on under *Features*.
 
 ## 1. Build the bundle (on a machine with internet)
 
@@ -175,7 +186,7 @@ Collected devices are not placed in racks automatically. Place them in the GLPI 
 
 ## 5. Using the DC Viewer
 
-Open `https://<server>:8443/viewer/` and sign in with your GLPI account. Each user sees only what their GLPI profile allows. Switch between **Racks** and **Inventory** at the top.
+Open `https://<server>:8443/viewer/` and sign in with your GLPI account. Each user sees only what their GLPI profile allows. **Devices** and **Scan & settings** are always there; Racks, Inventory and Status show when switched on under *Scan & settings → Features*.
 
 ### Inventory dashboard
 
@@ -276,6 +287,8 @@ Restore onto a fresh install:
 gunzip -c backups/<ts>/glpi-db.sql.gz | docker compose exec -T db sh -c 'mariadb -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" "$MARIADB_DATABASE"'
 docker compose exec -T glpi tar -C /var/glpi -xzf - < backups/<ts>/glpi-data.tar.gz
 docker compose restart glpi
+# DC Viewer settings (networks, SNMP credentials, features)
+docker compose exec -T manager sh -c 'cat > /settings/settings.json' < backups/<ts>/dc-settings.json
 ```
 
 ## 8. Security checklist
@@ -286,7 +299,8 @@ docker compose restart glpi
 - [ ] HTTPS on (`TLS=yes`, the default) with a certificate from your internal CA in `tls/server.crt` and `tls/server.key`. The self-signed one is only a start
 - [ ] To use the import script from an admin PC, set `API_ADMIN_RANGE_START/END` in `.env`, then run `scripts/configure-glpi.sh`
 - [ ] Read-only SNMP credentials, and a dedicated low-privilege inventory account for SSH/WinRM/vSphere
-- [ ] `collector/collector.conf` stays `chmod 600` (it holds credentials)
+- [ ] `collector/collector.conf` stays `chmod 600` (it holds credentials); SNMP credentials entered in the DC Viewer are stored in the `dc_settings` volume, readable only by root on the server
+- [ ] Only GLPI Admin/Super-Admin accounts can change the DC Viewer settings; give NOC staff a Read-Only GLPI profile
 - [ ] `backup.sh` scheduled, and backups copied off the server
 - [ ] To update GLPI: build a new bundle with a newer `GLPI_VERSION`, run `backup.sh`, then `install-offline.sh` (GLPI updates its database automatically)
 
@@ -296,7 +310,8 @@ docker compose restart glpi
 |---|---|
 | `docker-compose.yml`, `.env.example` | The stack and its settings |
 | `nginx/default.conf` | Portal: library, viewer, API proxy |
-| `viewer/` | DC Viewer: Racks (`index.html`), Inventory (`inventory.html`) and Status (`status.html`, embeds Grafana); plain HTML/JS/CSS with no external libraries |
+| `viewer/` | DC Viewer: Devices (`index.html`), Scan & settings (`scan.html`), Racks (`racks.html`), Inventory (`inventory.html`) and Status (`status.html`, embeds Grafana); plain HTML/JS/CSS with no external libraries |
+| `manager/manager.pl` | DC Viewer management API behind `/api/`: settings (`dc_settings` volume), device status from Prometheus, Scan now |
 | `collector/` | Network collector image (`Dockerfile`, `collect.sh`) and `collector.conf.example` |
 | `monitoring/` | Prometheus, Blackbox and Grafana config, the Device status and Network & hardware dashboards, the GLPI → ping/SNMP target sync (`targets/glpi-targets.pl`) and extra checks (`manual/`) |
 | `EQUIPMENT.md` | Per-device setup for your Sophos, Radware, HPE SimpliVity/VME, Accesleron, HP/Dell servers and Cisco/Dell/HP network gear |

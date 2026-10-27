@@ -7,6 +7,9 @@ set -uo pipefail
 CONF=${COLLECTOR_CONF:-/etc/collector/collector.conf}
 GLPI_URL=${GLPI_URL:-http://glpi/}
 STATUS_DIR=${STATUS_DIR:-/status}
+# Settings made in the DC Viewer (Scan & settings page), and its "Scan now" request
+SETTINGS=${SETTINGS_FILE:-/settings/settings.json}
+SCAN_REQUEST=$STATUS_DIR/scan-request
 LOCK=/tmp/collect.lock
 WORK=
 
@@ -131,9 +134,19 @@ collect_esx() {
   done < <(lines "${ESX_HOSTS:-}")
 }
 
-run_once() {
+# collector.conf, then the DC Viewer settings on top
+load_config() {
+  SNMP_RANGES="" SNMP_CREDENTIALS="" REMOTES="" ESX_HOSTS=""
   # shellcheck disable=SC1090
-  [ -f "$CONF" ] && . "$CONF" || { log "No $CONF - copy collector.conf.example to collector.conf"; }
+  [ -f "$CONF" ] && . "$CONF"
+  if [ -f "$SETTINGS" ]; then
+    eval "$(perl /usr/local/bin/settings-env.pl "$SETTINGS")"
+  fi
+}
+
+run_once() {
+  rm -f "$SCAN_REQUEST"
+  load_config
   STEPS=()
   local started
   started=$(date -u +%FT%TZ)
@@ -163,9 +176,11 @@ case "${1:-loop}" in
   loop)
     while true; do
       run_locked
-      # shellcheck disable=SC1090
-      [ -f "$CONF" ] && . "$CONF"
-      sleep "$(( ${INTERVAL_MINUTES:-60} * 60 ))"
+      load_config
+      # Wait for the interval, or less when "Scan now" is pressed in the DC Viewer
+      end=$(( $(date +%s) + ${INTERVAL_MINUTES:-60} * 60 ))
+      while [ "$(date +%s)" -lt "$end" ] && [ ! -e "$SCAN_REQUEST" ]; do sleep 5; done
+      [ -e "$SCAN_REQUEST" ] && log "Scan requested from the DC Viewer"
     done ;;
   *) exec "$@" ;;
 esac

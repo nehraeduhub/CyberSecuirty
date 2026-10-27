@@ -21,6 +21,9 @@ docker compose exec -T db mariadb-dump --single-transaction --routines \
 echo "Archiving GLPI files..."
 docker compose exec -T glpi tar -C /var/glpi -czf - . > "$dest/glpi-data.tar.gz"
 
+# DC Viewer settings (networks, SNMP credentials, features)
+docker compose exec -T manager cat /settings/settings.json > "$dest/dc-settings.json" 2>/dev/null || rm -f "$dest/dc-settings.json"
+
 cp .env "$dest/env.backup"
 chmod 600 "$dest/env.backup"
 

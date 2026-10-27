@@ -59,6 +59,7 @@ services:
     depends_on:
       - glpi
       - grafana
+      - manager
     ports:
       - "${PORTAL_PORT:-8080}:80"
 
@@ -75,8 +76,10 @@ services:
       - ./collector/collector.conf:/etc/collector/collector.conf:ro,z
       # The kit's copy, so script updates apply without rebuilding the image
       - ./collector/collect.sh:/usr/local/bin/collect.sh:ro,z
+      - ./collector/settings-env.pl:/usr/local/bin/settings-env.pl:ro,z
       - ./collector/ssh:/root/.ssh:z
       - collector_status:/status
+      - dc_settings:/settings:ro
     depends_on:
       - glpi
 
@@ -98,6 +101,24 @@ services:
       - ./collector/collector.conf:/etc/collector/collector.conf:ro,z
       - monitor_targets:/targets
       - snmp_auth:/snmp
+      - dc_settings:/settings
+    depends_on:
+      - glpi
+
+  # DC Viewer management API (/api/): settings made in the browser, device
+  # status, "Scan now". Reuses the collector image's Perl.
+  manager:
+    image: "dc-collector:${AGENT_VERSION:-1.17}"
+    restart: unless-stopped
+    entrypoint: ["perl", "/opt/manager.pl"]
+    environment:
+      GLPI_URL: http://glpi
+      PROMETHEUS_URL: http://prometheus:9090
+    volumes:
+      - ./manager/manager.pl:/opt/manager.pl:ro,z
+      - ./scripts/discover-networks.pl:/opt/discover-networks.pl:ro,z
+      - dc_settings:/settings
+      - collector_status:/status
     depends_on:
       - glpi
 
@@ -171,3 +192,4 @@ volumes:
   prometheus_data:
   snmp_auth:
   grafana_data:
+  dc_settings:

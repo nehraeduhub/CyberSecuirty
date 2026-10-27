@@ -20,6 +20,8 @@
 #   SNMP_TARGETS_FILE  /targets/snmp.json
 #   SNMP_AUTH_FILE     /snmp/auth.yml                  (snmp_exporter auth config)
 #   SNMP_EXPORTER_URL  http://snmp-exporter:9116       (reloaded when auth changes)
+#   SETTINGS_FILE      /settings/settings.json         (DC Viewer settings: SNMP credentials, features)
+#   SYNC_REQUEST       /settings/sync-request          (sync right away when this file appears)
 use strict;
 use warnings;
 use LWP::UserAgent;
@@ -39,6 +41,8 @@ my %exclude = map { lc($_) => 1 } grep { length } split /\s*,\s*/, ($ENV{EXCLUDE
 my $conf      = $ENV{COLLECTOR_CONF} || '/etc/collector/collector.conf';
 my $snmp_out  = $ENV{SNMP_TARGETS_FILE} || '/targets/snmp.json';
 my $auth_out  = $ENV{SNMP_AUTH_FILE} || '/snmp/auth.yml';
+my $settings  = $ENV{SETTINGS_FILE} || '/settings/settings.json';
+my $sync_req  = $ENV{SYNC_REQUEST} || '/settings/sync-request';
 my $exporter  = ($ENV{SNMP_EXPORTER_URL} || 'http://snmp-exporter:9116') =~ s{/+$}{}r;
 
 # GLPI types that answer SNMP
@@ -113,8 +117,22 @@ sub write_file {
     return 1;
 }
 
-# SNMP_CREDENTIALS from collector.conf: one "version:2c,community:x" style line each
+# Settings made in the DC Viewer, {} when there are none
+sub gui_settings {
+    open my $fh, '<', $settings or return {};
+    local $/; my $raw = <$fh>; close $fh;
+    return eval { decode_json($raw) } || {};
+}
+
+# SNMP credentials: the DC Viewer's first, then SNMP_CREDENTIALS from collector.conf
 sub snmp_credentials {
+    my @gui = map { my %c = %$_; delete @c{qw(id name enabled)}; \%c }
+              grep { $_->{enabled} && $_->{version} } @{ gui_settings()->{snmp} || [] };
+    return (@gui, conf_credentials());
+}
+
+# SNMP_CREDENTIALS from collector.conf: one "version:2c,community:x" style line each
+sub conf_credentials {
     open my $fh, '<', $conf or return ();
     local $/; my $text = <$fh>; close $fh;
     my ($block) = $text =~ /^SNMP_CREDENTIALS="(.*?)"/ms or return ();
@@ -266,13 +284,17 @@ sub sync_once {
         }
         # Unidentified devices (answered ping/ARP but not SNMP): taken from their
         # IP address records, as the read-only profile can't list Unmanaged items
-        if ($unident) {
+        my $f = gui_settings()->{features} || {};
+        if (exists $f->{monitor_unidentified} ? $f->{monitor_unidentified} : $unident) {
+            # Names given in the DC Viewer or GLPI, when this account may read them
+            my $unmanaged = eval { fetch_all($token, 'Unmanaged') } || [];
+            my %uname = map { ($_->{id} => $_->{name}) } @$unmanaged;
             for my $k (grep { /^Unmanaged:/ } keys %ip) {
                 my ($id) = $k =~ /:(\d+)$/;
                 push @targets, {
                     targets => [ $ip{$k} ],
                     labels  => {
-                        name => $ip{$k}, itemtype => 'Unmanaged', type => 'Unidentified',
+                        name => $uname{$id} || $ip{$k}, itemtype => 'Unmanaged', type => 'Unidentified',
                         rack => '', glpi_id => "$id", status => '',
                         glpi_url => $public ? "$public/front/unmanaged.form.php?id=$id" : '',
                     },
@@ -304,5 +326,10 @@ while (1) {
     else            { logmsg("sync failed: $@") }
     last if $once;
     # Retry soon after a failure (e.g. GLPI still starting), else wait the interval
-    sleep(defined $n ? $every : 30);
+    # A change in the DC Viewer (rename, new device, settings) asks for a sync now
+    my $end = time + (defined $n ? $every : 30);
+    while (time < $end) {
+        if (-e $sync_req) { unlink $sync_req; last }
+        sleep 3;
+    }
 }

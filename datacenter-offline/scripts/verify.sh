@@ -22,7 +22,7 @@ else
 fi
 
 echo "Containers"
-for svc in db glpi portal collector monitor-sync blackbox snmp-exporter prometheus grafana; do
+for svc in db glpi portal manager collector monitor-sync blackbox snmp-exporter prometheus grafana; do
   state=$(docker compose ps --format '{{.State}} {{.Health}}' "$svc" 2>/dev/null | head -1)
   case "$state" in
     running*unhealthy*) fail "$svc is unhealthy" ;;
@@ -38,6 +38,7 @@ echo "Web"
 c=$(code "$glpi_local/"); [[ $c =~ ^(200|302)$ ]] && pass "GLPI answers on $glpi_local" || fail "GLPI on $glpi_local returned ${c:-nothing}"
 c=$(code "$glpi_user/"); [[ $c =~ ^(200|302)$ ]] && pass "GLPI for users: ${GLPI_PUBLIC_URL:-$glpi_user}" || fail "GLPI for users ($glpi_user) returned ${c:-nothing}"
 c=$(code "$portal/viewer/"); [ "$c" = 200 ] && pass "DC Viewer: $portal/viewer/" || fail "DC Viewer returned ${c:-nothing}"
+c=$(code "$portal/api/features"); [ "$c" = 200 ] && pass "DC Viewer settings API (manager)" || fail "DC Viewer settings API returned ${c:-nothing} (docker compose logs manager)"
 c=$(code "$portal/glpi-datacenter-library.html"); [ "$c" = 200 ] && pass "Learning library" || fail "Learning library returned ${c:-nothing}"
 c=$(code "$portal/grafana/api/health"); [ "$c" = 200 ] && pass "Grafana" || fail "Grafana returned ${c:-nothing}"
 if [ "$tls" = yes ]; then

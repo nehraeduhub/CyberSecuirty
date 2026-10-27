@@ -176,9 +176,8 @@ It ends with your URLs:
 
 ```
 GLPI (manage assets, racks, rooms):   https://dc.nehraeduhub.lan/
-DC Viewer (read-only rack screens):   https://dc.nehraeduhub.lan:8443/viewer/
-Inventory dashboard:                  https://dc.nehraeduhub.lan:8443/viewer/inventory.html
-Device status (Grafana):              https://dc.nehraeduhub.lan:8443/viewer/status.html
+DC Viewer - Devices (status, SSH/RDP): https://dc.nehraeduhub.lan:8443/viewer/
+DC Viewer - Scan & settings:           https://dc.nehraeduhub.lan:8443/viewer/scan.html
 Learning library:                     https://dc.nehraeduhub.lan:8443/glpi-datacenter-library.html
 ```
 
@@ -211,7 +210,17 @@ Then:
 
 Follow **`EQUIPMENT.md`** for each device type: Sophos, Alteon, iLO, iDRAC, Cisco, Dell, HP/Aruba, vCenter, VME hosts.
 
-### 7.2 Tell the collector what to scan
+### 7.2 Scan your networks (in the browser)
+
+1. Open **`https://<server>:8443/viewer/scan.html`** and sign in as `glpi` (or another GLPI Admin/Super-Admin).
+2. **Networks to scan**: add every network, e.g. `192.168.15.0/24`, `192.168.1.0/24`, `192.168.16.0/24`. Don't know them all? Open *Find networks from a router*, type your core router's IP and add what it lists.
+3. **SNMP credentials**: add your read-only community or SNMPv3 user (as set up in 7.1).
+4. **Save changes**, then **Scan now**. The page shows progress; each /24 takes about 1–2 minutes.
+5. Open **Devices** (`https://<server>:8443/viewer/`): every device found, with live up/down, brand, model, serial number and MAC. Click a name to rename it; **Add devices** adds IPs by hand (one `IP name` per line); **SSH / RDP / Web** open a session.
+
+Racks, Inventory and the Grafana Status tab are off at first: turn them on under **Scan & settings → Features**.
+
+**Servers over SSH/WinRM and VMware** are set in `collector.conf` (below) and need *Collect servers* / *Collect VMware* switched on under Features. Networks and SNMP credentials can also go in `collector.conf`; they are used together with the ones from the browser.
 
 ```bash
 cd /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline

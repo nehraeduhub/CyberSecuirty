@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DC Viewer | NehraEduHub</title>
+  <title>Devices | DC Viewer</title>
   <link rel="stylesheet" href="style.css">
   <script src="config.js"></script>
 </head>
@@ -17,7 +17,7 @@
       <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
       <button class="btn" type="submit">Sign in</button>
       <p id="login-error" class="error" role="alert"></p>
-      <p class="muted small"><a href="../index.html">&larr; Back to NehraEduHub</a></p>
+      <p class="muted small"><a href="../index.html" data-feature="library">&larr; Back to NehraEduHub</a></p>
     </form>
   </main>
 
@@ -26,14 +26,12 @@
     <header class="topbar">
       <div class="brand">DC Viewer</div>
       <nav class="nav" aria-label="Views">
-        <a href="index.html" aria-current="page">Racks</a>
-        <a href="inventory.html">Inventory</a>
-        <a href="status.html">Status</a>
+        <a href="index.html" aria-current="page">Devices</a>
+        <a href="scan.html">Scan &amp; settings</a>
+        <a href="racks.html" data-feature="racks">Racks</a>
+        <a href="inventory.html" data-feature="inventory">Inventory</a>
+        <a href="status.html" data-feature="grafana">Status</a>
       </nav>
-      <label class="sr-only" for="room-select">Server room</label>
-      <select id="room-select"></select>
-      <label class="sr-only" for="search">Search devices</label>
-      <input id="search" type="search" placeholder="Search name or serial&hellip;">
       <div class="spacer"></div>
       <span id="updated" class="muted small"></span>
       <button id="refresh" class="btn ghost" type="button" title="Reload from GLPI">Refresh</button>
@@ -41,45 +39,60 @@
       <button id="logout" class="btn ghost" type="button">Sign out</button>
     </header>
 
-    <section id="stats" class="stats" aria-label="Room summary"></section>
+    <section id="stats" class="stats" aria-label="Summary"></section>
 
-    <div class="layout">
-      <section class="card floor-card">
-        <div class="card-head">
-          <h2 id="room-title">Floor plan</h2>
-          <span class="legend"><i class="sw lo"></i>&lt;50% U used <i class="sw mid"></i>50&ndash;80% <i class="sw hi"></i>&gt;80%</span>
-        </div>
-        <div id="floor" class="floor"></div>
-        <div id="unplaced"></div>
-        <div id="search-results"></div>
-      </section>
-
-      <section class="card rack-card">
-        <div class="card-head">
-          <h2 id="rack-title">Select a rack</h2>
-          <div class="seg" role="group" aria-label="Rack face">
-            <button type="button" data-face="0" aria-pressed="true">Front</button>
-            <button type="button" data-face="1" aria-pressed="false">Rear</button>
-          </div>
-        </div>
-        <div id="rack-meta" class="rack-meta"></div>
-        <div class="rack-wrap">
-          <div id="pdu-left" class="pdu-side"></div>
-          <div id="rack" class="rack" aria-label="Rack elevation"></div>
-          <div id="pdu-right" class="pdu-side"></div>
-        </div>
-      </section>
-
-      <aside class="card detail-card">
-        <h2>Device</h2>
-        <div id="detail" class="muted">Click a device in the rack.</div>
-      </aside>
-    </div>
+    <section class="card devices-card">
+      <div class="toolbar">
+        <label class="grow"><span class="sr-only">Search</span>
+          <input id="q" type="search" placeholder="Search name, IP, serial, MAC, model&hellip;"></label>
+        <label><span class="sr-only">Type</span><select id="f-type"><option value="">All types</option></select></label>
+        <label><span class="sr-only">Status</span>
+          <select id="f-status">
+            <option value="">Any status</option>
+            <option value="up">Up</option>
+            <option value="down">Down</option>
+            <option value="none">Not monitored yet</option>
+          </select></label>
+        <button id="add" class="btn" type="button">Add devices</button>
+        <button id="del" class="btn ghost" type="button" disabled>Delete selected</button>
+        <button id="csv" class="btn ghost" type="button">Export CSV</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table devices">
+          <thead><tr id="thead"></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p id="empty" class="muted empty" hidden></p>
+      <p class="muted small">Click a name to rename it. Status refreshes every 30 seconds; a new or renamed device shows in it within about a minute.
+        <strong>SSH</strong> opens your ssh:// handler (e.g. MobaXterm or PuTTY) and copies <code>ssh &lt;ip&gt;</code>;
+        <strong>RDP</strong> downloads a .rdp file that opens Remote Desktop (mstsc).</p>
+    </section>
 
     <p id="app-error" class="error" role="alert"></p>
   </div>
 
+  <dialog id="add-dialog" class="dialog">
+    <form id="add-form" method="dialog">
+      <h2>Add devices</h2>
+      <p class="muted small">One device per line: IP address, then an optional name. Without a name the IP is used; you can rename it later.</p>
+      <label>Devices
+        <textarea name="lines" rows="8" required placeholder="192.168.15.1 core-switch&#10;192.168.1.1&#10;192.168.16.1 fw-edge"></textarea></label>
+      <label>Type
+        <select name="type">
+          <option value="NetworkEquipment">Network device (switch, router, firewall, load balancer&hellip;)</option>
+          <option value="Computer">Server or computer</option>
+          <option value="Unmanaged">Other / not sure</option>
+        </select></label>
+      <p id="add-error" class="error" role="alert"></p>
+      <div class="row-end">
+        <button class="btn ghost" type="button" id="add-cancel">Cancel</button>
+        <button class="btn" type="submit" id="add-save">Add</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="glpi-client.js"></script>
-  <script src="app.js"></script>
+  <script src="devices.js"></script>
 </body>
 </html>

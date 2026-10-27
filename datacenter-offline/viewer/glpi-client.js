@@ -22,6 +22,7 @@
   DC.el = function (tag, attrs, children) {
     var node = document.createElement(tag);
     Object.keys(attrs || {}).forEach(function (k) {
+      if (attrs[k] == null || attrs[k] === false) return;
       if (k === 'class') node.className = attrs[k];
       else if (k === 'text') node.textContent = attrs[k];
       else if (k === 'style') node.style.cssText = attrs[k];
@@ -51,7 +52,9 @@
     if (DC.token) headers['Session-Token'] = DC.token;
     if (CFG.appToken) headers['App-Token'] = CFG.appToken;
     Object.assign(headers, opts.headers || {});
-    return fetch(API + '/' + path, { headers: headers }).then(function (r) {
+    var init = { headers: headers, method: opts.method || 'GET' };
+    if (opts.body !== undefined) init.body = JSON.stringify(opts.body);
+    return fetch(API + '/' + path, init).then(function (r) {
       return r.text().then(function (body) {
         var json = null;
         try { json = body ? JSON.parse(body) : null; } catch (e) { /* not json */ }
@@ -85,6 +88,53 @@
         });
     }
     return page(0);
+  };
+
+  // DC Viewer management API (/api/, the manager container): settings, device
+  // status, scan now. Signed in with the same GLPI session.
+  DC.mgr = function (path, opts) {
+    opts = opts || {};
+    var headers = { 'Content-Type': 'application/json' };
+    if (DC.token) headers['Session-Token'] = DC.token;
+    if (CFG.appToken) headers['App-Token'] = CFG.appToken;
+    var init = { headers: headers, method: opts.method || 'GET', cache: 'no-store' };
+    if (opts.body !== undefined) init.body = JSON.stringify(opts.body);
+    return fetch('../api/' + path, init).then(function (r) {
+      return r.text().then(function (body) {
+        var json = null;
+        try { json = body ? JSON.parse(body) : null; } catch (e) { /* not json */ }
+        if (!r.ok) {
+          var err = new Error((json && json.error) || 'HTTP ' + r.status +
+            (r.status === 502 || r.status === 504 ? ' (manager container not running?)' : ''));
+          err.status = r.status;
+          throw err;
+        }
+        return json;
+      });
+    });
+  };
+
+  // Hide the tabs switched off on the Scan & settings page (links marked data-feature)
+  DC.applyFeatures = function () {
+    return DC.mgr('features').then(function (f) {
+      document.querySelectorAll('[data-feature]').forEach(function (a) {
+        a.hidden = f[a.getAttribute('data-feature')] === false;
+      });
+      return f;
+    }).catch(function () { return {}; });
+  };
+
+  // Short message at the bottom of the page
+  DC.toast = function (text, isError) {
+    var t = document.getElementById('dc-toast');
+    if (!t) {
+      t = DC.el('div', { id: 'dc-toast', class: 'toast', role: 'status' });
+      document.body.appendChild(t);
+    }
+    t.textContent = text;
+    t.className = 'toast show' + (isError ? ' bad' : '');
+    clearTimeout(DC.toast.timer);
+    DC.toast.timer = setTimeout(function () { t.className = 'toast'; }, isError ? 8000 : 3500);
   };
 
   DC.byId = function (list) {
@@ -138,6 +188,7 @@
     });
     $('logout').addEventListener('click', function () { DC.logout(false); });
 
+    DC.applyFeatures();
     DC.token = recall();
     if (DC.token) show();
     else $('login-view').hidden = false;

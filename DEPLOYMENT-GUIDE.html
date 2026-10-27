@@ -267,9 +267,8 @@ sudo SERVER_NAME=dc.nehraeduhub.lan ./install-offline.sh
 </ol>
 <p>It ends with your URLs:</p>
 <pre><code>GLPI (manage assets, racks, rooms):   https://dc.nehraeduhub.lan/
-DC Viewer (read-only rack screens):   https://dc.nehraeduhub.lan:8443/viewer/
-Inventory dashboard:                  https://dc.nehraeduhub.lan:8443/viewer/inventory.html
-Device status (Grafana):              https://dc.nehraeduhub.lan:8443/viewer/status.html
+DC Viewer - Devices (status, SSH/RDP): https://dc.nehraeduhub.lan:8443/viewer/
+DC Viewer - Scan &amp; settings:           https://dc.nehraeduhub.lan:8443/viewer/scan.html
 Learning library:                     https://dc.nehraeduhub.lan:8443/glpi-datacenter-library.html
 </code></pre>
 <p>Unattended install: <code>sudo ADMIN_PASSWORD='…' DISABLE_DEMO_USERS=yes SERVER_NAME=… ./install-offline.sh</code></p>
@@ -290,7 +289,16 @@ Learning library:                     https://dc.nehraeduhub.lan:8443/glpi-datac
 <h2 id="step-7-connect-your-equipment">Step 7: Connect your equipment</h2>
 <h3 id="71-enable-snmp-accounts-on-devices">7.1 Enable SNMP / accounts on devices</h3>
 <p>Follow <strong><code>EQUIPMENT.md</code></strong> for each device type: Sophos, Alteon, iLO, iDRAC, Cisco, Dell, HP/Aruba, vCenter, VME hosts.</p>
-<h3 id="72-tell-the-collector-what-to-scan">7.2 Tell the collector what to scan</h3>
+<h3 id="72-scan-your-networks-in-the-browser">7.2 Scan your networks (in the browser)</h3>
+<ol>
+<li>Open <strong><code>https://&lt;server&gt;:8443/viewer/scan.html</code></strong> and sign in as <code>glpi</code> (or another GLPI Admin/Super-Admin).</li>
+<li><strong>Networks to scan</strong>: add every network, e.g. <code>192.168.15.0/24</code>, <code>192.168.1.0/24</code>, <code>192.168.16.0/24</code>. Don't know them all? Open <em>Find networks from a router</em>, type your core router's IP and add what it lists.</li>
+<li><strong>SNMP credentials</strong>: add your read-only community or SNMPv3 user (as set up in 7.1).</li>
+<li><strong>Save changes</strong>, then <strong>Scan now</strong>. The page shows progress; each /24 takes about 1–2 minutes.</li>
+<li>Open <strong>Devices</strong> (<code>https://&lt;server&gt;:8443/viewer/</code>): every device found, with live up/down, brand, model, serial number and MAC. Click a name to rename it; <strong>Add devices</strong> adds IPs by hand (one <code>IP name</code> per line); <strong>SSH / RDP / Web</strong> open a session.</li>
+</ol>
+<p>Racks, Inventory and the Grafana Status tab are off at first: turn them on under <strong>Scan &amp; settings → Features</strong>.</p>
+<p><strong>Servers over SSH/WinRM and VMware</strong> are set in <code>collector.conf</code> (below) and need <em>Collect servers</em> / <em>Collect VMware</em> switched on under Features. Networks and SNMP credentials can also go in <code>collector.conf</code>; they are used together with the ones from the browser.</p>
 <pre><code class="language-bash">cd /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline
 sudo nano collector/collector.conf
 </code></pre>

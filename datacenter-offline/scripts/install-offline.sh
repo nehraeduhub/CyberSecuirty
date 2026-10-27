@@ -236,7 +236,7 @@ echo "Starting containers..."
 docker compose up -d
 # Containers that mount single config files keep the old file after an upgrade
 # replaces it; recreate them (they hold no data) so they read the new versions
-docker compose up -d --force-recreate --no-deps portal blackbox prometheus monitor-sync snmp-exporter >/dev/null
+docker compose up -d --force-recreate --no-deps portal blackbox prometheus monitor-sync snmp-exporter manager collector >/dev/null
 
 echo "Waiting for GLPI (first start installs the database, ~1-3 minutes)..."
 if [ "$tls" = yes ]; then local_glpi="http://127.0.0.1:${GLPI_LOCAL_PORT:-8081}"; else local_glpi="http://127.0.0.1:${GLPI_PORT:-80}"; fi
@@ -281,6 +281,9 @@ granted=$(sql "SELECT pu.id FROM glpi_profiles_users pu JOIN glpi_users u ON u.i
 if [ -n "$profile" ] && [ -z "$granted" ]; then
   console user:grant dc-monitor --profile="$profile" --entity=0 --recursive >/dev/null
 fi
+# Read-Only cannot list unidentified (Unmanaged) devices by default; the status
+# needs their names
+[ -n "$profile" ] && sql "UPDATE glpi_profilerights SET rights = rights | 1 WHERE profiles_id=$profile AND name='unmanaged'"
 docker compose restart monitor-sync >/dev/null
 echo "Monitoring account 'dc-monitor' (read-only) ready."
 
@@ -297,16 +300,18 @@ cat <<MSG
 
 Data centre stack is running.
   GLPI (manage assets, racks, rooms):   $glpi_link
-  DC Viewer (read-only rack screens):   $portal/viewer/
-  Inventory dashboard:                  $portal/viewer/inventory.html
-  Device status (Grafana):              $portal/viewer/status.html
+  DC Viewer - Devices (status, SSH/RDP): $portal/viewer/
+  DC Viewer - Scan & settings:           $portal/viewer/scan.html
+      (sign in with a GLPI Admin/Super-Admin account to add networks and SNMP credentials)
+  Grafana (turn on the Status tab in Scan & settings): $portal/grafana/
       Grafana login: admin / password in $KIT/.env (GRAFANA_ADMIN_PASSWORD)
   Learning library:                     $portal/glpi-datacenter-library.html
   GLPI Agent installers:                $BUNDLE/agents/
   GLPI for scripts on this server:      $local_glpi
 
-Automatic collection: edit $KIT/collector/collector.conf (IP ranges, SNMP,
-SSH/WinRM, VMware), then:  cd $KIT && docker compose restart collector
+Automatic collection: add networks and SNMP credentials on the Scan & settings
+page and press Scan now. Servers over SSH/WinRM and VMware still use
+$KIT/collector/collector.conf (then: cd $KIT && docker compose restart collector).
 Collect now:               cd $KIT && docker compose exec collector collect.sh once
 Check everything:          $KIT/scripts/verify.sh
 
