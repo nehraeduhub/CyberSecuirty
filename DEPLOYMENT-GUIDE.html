@@ -491,7 +491,7 @@ sudo docker compose down -v       # ALSO deletes all data: database, files, hist
 <tr>
 <td>Many <strong>Unidentified devices</strong> on the Inventory dashboard</td>
 <td>They answered ping/ARP but not SNMP: servers, PCs, devices without SNMP or with an ACL</td>
-<td><code>sudo ./scripts/check-unidentified.sh</code> says what each one is (SSH/Windows/ESXi/web device) and what to add to <code>collector.conf</code></td>
+<td><code>sudo ./scripts/check-unidentified.sh</code> says what each one is (SSH/Windows/ESXi/web device) and what to add to <code>collector.conf</code>; <code>--write --ssh-user U --winrm-user U --esx-user U</code> adds them</td>
 </tr>
 <tr>
 <td>Device in <strong>Administration → Inventory → Refused equipment</strong></td>
