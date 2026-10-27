@@ -91,6 +91,11 @@ for key in GLPI_VERSION MARIADB_VERSION NGINX_VERSION AGENT_VERSION GRAFANA_VERS
   fi
 done
 
+# A setting added twice (e.g. pasted again) would break the edits below: keep the last one
+awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/ { last[$1] = NR } { line[NR] = $0; key[NR] = ($0 ~ /^[A-Za-z_][A-Za-z0-9_]*=/) ? $1 : "" }
+  END { for (i = 1; i <= NR; i++) if (key[i] == "" || last[key[i]] == i) print line[i] }' .env > .env.tmp \
+  && cat .env.tmp > .env && rm -f .env.tmp
+
 # Installs made before HTTPS support keep plain HTTP until you switch (see guide)
 grep -q '^TLS=' .env || echo "TLS=no" >> .env
 tls=$(grep '^TLS=' .env | cut -d= -f2 | tr 'A-Z' 'a-z')
@@ -112,7 +117,7 @@ host=${server_name:-${ip:-localhost}}
 setkey() { # key value  (always)
   if grep -q "^$1=" .env; then sed -i "s#^$1=.*#$1=$2#" .env; else echo "$1=$2" >> .env; fi
 }
-envval() { local v; v=$(grep "^$1=" .env | cut -d= -f2 || true); echo "${v:-$2}"; }
+envval() { local v; v=$(grep "^$1=" .env | tail -1 | cut -d= -f2 || true); echo "${v:-$2}"; }
 # Remember a SERVER_NAME given on the command line for later runs and upgrades
 [ -n "$server_name" ] && setkey SERVER_NAME "$server_name"
 https_port=$(envval HTTPS_PORT 443)
