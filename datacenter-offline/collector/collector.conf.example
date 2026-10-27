@@ -7,6 +7,10 @@ INTERVAL_MINUTES=60
 # Parallel threads for SNMP scans
 THREADS=16
 
+# Seconds to wait for an SNMP answer from each address (the agent's own
+# default is 60, which makes a /24 with few devices take hours)
+SNMP_TIMEOUT=2
+
 # ---------------------------------------------------------------- SNMP
 # IP ranges to discover: Cisco/Dell/HP switches and routers, Sophos firewall,
 # Radware Alteon, iLO and iDRAC cards, PDUs, UPS. One range per line:

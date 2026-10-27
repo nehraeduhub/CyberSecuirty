@@ -73,6 +73,8 @@ services:
       GLPI_URL: http://glpi/
     volumes:
       - ./collector/collector.conf:/etc/collector/collector.conf:ro,z
+      # The kit's copy, so script updates apply without rebuilding the image
+      - ./collector/collect.sh:/usr/local/bin/collect.sh:ro,z
       - ./collector/ssh:/root/.ssh:z
       - collector_status:/status
     depends_on:

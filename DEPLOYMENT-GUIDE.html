@@ -311,8 +311,14 @@ ESX_HOSTS=&quot;
 &quot;
 </code></pre>
 <p>On every Linux or VME host listed in <code>REMOTES</code>, authorise the collector's key: <code>cat collector/ssh/id_ed25519.pub</code> (EQUIPMENT.md shows how).</p>
+<p><strong>Don't know every subnet? Let the kit find them.</strong> <code>discover-networks.sh</code> lists this server's own networks and asks your core router / L3 switch / firewall over SNMP for its interfaces and routing table, so you get every subnet the data centre routes. Put your read-only community (or SNMPv3 user) in <code>SNMP_CREDENTIALS</code> first, or pass <code>--community</code>:</p>
+<pre><code class="language-bash">sudo ./scripts/discover-networks.sh                          # asks the default gateway; shows only
+sudo ./scripts/discover-networks.sh 10.10.0.1 10.10.0.2      # ask these routers / core switches
+sudo ./scripts/discover-networks.sh --community YOUR-RO --write   # add new ranges to collector.conf
+</code></pre>
+<p>It skips networks larger than /16 (summary routes such as 10.0.0.0/8; change with <code>--max-prefix</code>), skips ranges already listed, and keeps a backup <code>collector.conf.bak.*</code>. Remove any line you don't want scanned (guest Wi-Fi, user VLANs) before collecting.</p>
 <pre><code class="language-bash">sudo docker compose restart collector monitor-sync
-sudo docker compose exec collector collect.sh once     # first collection now (a /24 takes a few minutes)
+sudo docker compose exec collector collect.sh once     # first collection now (about 1-2 minutes per /24)
 </code></pre>
 <p><strong>Check:</strong>
 - <strong>Inventory dashboard → Automatic collection</strong> shows each step <strong>OK</strong>.
@@ -394,6 +400,10 @@ sudo ./scripts/backup.sh            # database + GLPI files + .env -&gt; backups
 <tr>
 <td>Collect now</td>
 <td><code>docker compose exec collector collect.sh once</code></td>
+</tr>
+<tr>
+<td>Find new subnets</td>
+<td><code>./scripts/discover-networks.sh --community NAME</code> (add <code>--write</code> to save)</td>
 </tr>
 <tr>
 <td>Change scan ranges / credentials</td>

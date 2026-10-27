@@ -238,9 +238,19 @@ ESX_HOSTS="
 
 On every Linux or VME host listed in `REMOTES`, authorise the collector's key: `cat collector/ssh/id_ed25519.pub` (EQUIPMENT.md shows how).
 
+**Don't know every subnet? Let the kit find them.** `discover-networks.sh` lists this server's own networks and asks your core router / L3 switch / firewall over SNMP for its interfaces and routing table, so you get every subnet the data centre routes. Put your read-only community (or SNMPv3 user) in `SNMP_CREDENTIALS` first, or pass `--community`:
+
+```bash
+sudo ./scripts/discover-networks.sh                          # asks the default gateway; shows only
+sudo ./scripts/discover-networks.sh 10.10.0.1 10.10.0.2      # ask these routers / core switches
+sudo ./scripts/discover-networks.sh --community YOUR-RO --write   # add new ranges to collector.conf
+```
+
+It skips networks larger than /16 (summary routes such as 10.0.0.0/8; change with `--max-prefix`), skips ranges already listed, and keeps a backup `collector.conf.bak.*`. Remove any line you don't want scanned (guest Wi-Fi, user VLANs) before collecting.
+
 ```bash
 sudo docker compose restart collector monitor-sync
-sudo docker compose exec collector collect.sh once     # first collection now (a /24 takes a few minutes)
+sudo docker compose exec collector collect.sh once     # first collection now (about 1-2 minutes per /24)
 ```
 
 **Check:**
@@ -338,6 +348,7 @@ All commands are run in `/opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offl
 | Status of containers | `docker compose ps` |
 | Logs | `docker compose logs --tail 100 glpi` (or collector, monitor-sync, portal, grafana…) |
 | Collect now | `docker compose exec collector collect.sh once` |
+| Find new subnets | `./scripts/discover-networks.sh --community NAME` (add `--write` to save) |
 | Change scan ranges / credentials | edit `collector/collector.conf`, then `docker compose restart collector monitor-sync` |
 | Add a service check | add a file to `monitoring/manual/` (no restart needed) |
 | Replace the HTTPS certificate | copy the new `tls/server.crt` + `tls/server.key`, then `docker compose restart portal`; also copy `server.crt` to the agents' `server-ca.crt` |

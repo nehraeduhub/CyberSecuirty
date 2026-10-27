@@ -122,6 +122,7 @@ The `collector` container fetches device information from your network on a sche
 | `REMOTES` | Linux/Unix servers over **SSH**, Windows servers over **WinRM**: hardware, OS, software, disks, network cards | An account that can read inventory; for SSH, the collector's public key |
 | `ESX_HOSTS` | VMware ESXi hosts / vCenter: hosts and their virtual machines | A read-only vSphere user |
 | `INTERVAL_MINUTES` | How often everything runs (default 60) | – |
+| `THREADS`, `SNMP_TIMEOUT` | Parallel scans (default 16) and seconds to wait for each SNMP answer (default 2) | – |
 
 ```bash
 cd site/datacenter-offline
@@ -146,7 +147,9 @@ Then list it in `REMOTES` as `ssh://inventory@10.10.1.21`. The first time a serv
 
 **Windows servers.** Enable WinRM (`winrm quickconfig`) and list them as `winrm://inventory:password@10.10.1.40` (a local account with read access).
 
-**Speed.** SNMP discovery checks every address, so a /24 range takes a few minutes. Raise `THREADS` for large networks.
+**Find all subnets automatically.** `scripts/discover-networks.sh [router-ip...] [--community NAME] [--write]` reads this server's networks and the interfaces and routing tables of your routers / L3 switches over SNMP (default: the server's gateway), then prints the ranges to scan. `--write` adds the new ones to `SNMP_RANGES` (backup kept). Networks larger than /16 are skipped (`--max-prefix`).
+
+**Speed.** SNMP discovery checks every address, so a /24 range takes a minute or two. Raise `THREADS` for large networks. Raise `SNMP_TIMEOUT` (default 2 seconds) only for devices behind slow WAN links.
 
 **Network map.** The map is built from the switches' LLDP/CDP neighbour tables and MAC address tables. Enable LLDP or CDP on your switches and include them in `SNMP_RANGES`.
 

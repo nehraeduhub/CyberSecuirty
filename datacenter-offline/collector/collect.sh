@@ -61,7 +61,7 @@ collect_snmp() {
     mkdir -p "$out"
     log "SNMP discovery $first - $last"
     if glpi-netdiscovery --first "$first" --last "$last" "${creds[@]}" \
-        --threads "${THREADS:-16}" --inventory --save "$out" >/dev/null 2>"$out.err"; then
+        --threads "${THREADS:-16}" --timeout "${SNMP_TIMEOUT:-2}" --inventory --save "$out" >/dev/null 2>"$out.err"; then
       read -r files sent < <(inject "$out")
       log "  $files result file(s), $sent sent to GLPI"
       step "SNMP $range" ok "$files" "$sent" ""
