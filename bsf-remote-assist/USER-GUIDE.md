@@ -37,19 +37,38 @@ Replace `bsf.local` with your internal domain throughout this guide.
 | Software | Docker Engine + Docker Compose plugin, `openssl`, `curl` | same |
 | Network | Static IP reachable from every MPLS site on TCP 443 | same |
 
-### Installing Docker without Internet
-On a connected machine with the **same OS version**, download the packages and copy them over:
+### Installing Docker
 
+**Server has Internet or an internal Ubuntu mirror (easiest):**
 ```bash
-# Ubuntu (connected machine, after adding Docker's apt repository)
-apt-get download docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-# copy the .deb files to the server, then on the server:
-sudo apt install ./*.deb && sudo systemctl enable --now docker
+sudo apt-get update
+sudo apt-get install -y docker.io docker-compose-v2      # Ubuntu 22.04 / 24.04 packages
+sudo systemctl enable --now docker
+docker compose version                                  # must print a version
+```
 
-# RHEL/Rocky/Alma 9 (connected machine, after adding Docker's dnf repository)
+**Server has no Internet (Ubuntu):** on a connected Ubuntu machine of the **same version**, download the
+packages, copy the folder to the server and install them there. `apt-get download` fetches only the named
+packages (it has no `--resolve` option), so let apt collect everything into an empty folder instead:
+```bash
+# connected machine
+mkdir -p ~/docker-debs && cd ~/docker-debs
+sudo apt-get update
+sudo apt-get install --download-only -y -o Dir::Cache::archives="$PWD" docker.io docker-compose-v2
+ls *.deb
+# copy ~/docker-debs to the server, then on the server:
+cd docker-debs && sudo apt-get install -y ./*.deb && sudo systemctl enable --now docker
+```
+Run the download on a machine where Docker is **not** installed yet, otherwise apt skips packages it already has.
+
+**RHEL / Rocky / Alma 9:** `dnf download` needs the plugin first: `sudo dnf install -y dnf-plugins-core`.
+```bash
+# connected machine
+sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+mkdir -p ~/docker-rpms && cd ~/docker-rpms
 dnf download --resolve docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 # on the server:
-sudo dnf install ./*.rpm && sudo systemctl enable --now docker
+cd docker-rpms && sudo dnf install -y ./*.rpm && sudo systemctl enable --now docker
 ```
 Or use your organisation's internal package mirror.
 
