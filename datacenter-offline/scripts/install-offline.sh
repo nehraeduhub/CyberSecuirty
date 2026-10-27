@@ -58,6 +58,10 @@ done
 
 cd "$KIT"
 
+# Bundles built before SNMPv3 AES support: add it to the collector image again
+# (loading the bundle's image above replaces a patched one)
+bash scripts/patch-collector.sh --no-restart
+
 # Upgrade from a bundle extracted into another folder: carry over that
 # installation's settings, keys and certificates (its data lives in Docker volumes)
 prev=$(docker inspect dc-glpi-1 -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' 2>/dev/null || true)

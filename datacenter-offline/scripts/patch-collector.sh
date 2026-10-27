@@ -4,7 +4,8 @@
 # fix lack libcrypt-rijndael-perl, so SNMPv3 with AES privacy fails
 # ("Crypt::Rijndael perl module needs to be installed"). Safe to repeat.
 #
-#   sudo ./scripts/patch-collector.sh
+#   sudo ./scripts/patch-collector.sh               (restarts the collector)
+#   sudo ./scripts/patch-collector.sh --no-restart  (used by install-offline.sh)
 set -euo pipefail
 
 KIT=$(cd "$(dirname "$0")/.." && pwd)
@@ -16,7 +17,7 @@ docker image inspect "$image" >/dev/null 2>&1 || { echo "Image $image not found:
 ls collector/patches/*.deb >/dev/null 2>&1 || { echo "No packages in collector/patches/." >&2; exit 1; }
 
 if docker run --rm --entrypoint perl "$image" -MCrypt::Rijndael -e1 2>/dev/null; then
-  echo "$image already has Crypt::Rijndael (SNMPv3 AES works). Nothing to do."
+  [ "${1:-}" = --no-restart ] || echo "$image already has Crypt::Rijndael (SNMPv3 AES works). Nothing to do."
   exit 0
 fi
 
@@ -32,5 +33,6 @@ docker build --pull=false -q -t "$image" "$ctx" >/dev/null
 docker run --rm --entrypoint perl "$image" -MCrypt::Rijndael -e1
 echo "Patched $image: SNMPv3 with AES now works."
 
-docker compose up -d collector monitor-sync
+[ "${1:-}" = --no-restart ] && exit 0
+docker compose up -d collector monitor-sync manager
 echo "Collector restarted. Collect again: docker compose exec collector collect.sh once"
