@@ -53,12 +53,17 @@ if [ -z "$list" ]; then
 fi
 [ "$csv" = yes ] || echo "Checking $(wc -l <<<"$list") unidentified device(s) (about 15 s each, 8 at a time)..." >&2
 
-# 8 probes in parallel inside the collector
-docker compose cp scripts/check-unidentified.pl collector:/tmp/check-unidentified.pl >/dev/null 2>&1
-result=$(printf '%s\n' "$list" | docker compose exec -T collector sh -c '
-  f=$(mktemp -d); cd "$f"; cat > list; split -n l/8 list part.
-  for p in part.*; do perl /tmp/check-unidentified.pl "$1" < "$p" > "$p.out" & done; wait
-  cat part.*.out; cd /; rm -rf "$f"' sh "$creds")
+# 8 probes in parallel inside the collector (the Perl script is passed as an argument)
+out=$(printf '%s\n' "$list" | docker compose exec -T collector sh -c '
+  f=$(mktemp -d); cd "$f"; printf "%s\n" "$2" > probe.pl; cat > list; split -n l/8 list part.
+  for p in part.*; do perl probe.pl "$1" < "$p" > "$p.out" 2> "$p.err" & done; wait
+  cat part.*.out; cat part.*.err | sort -u | sed "s/^/ERR: /"; cd /; rm -rf "$f"' sh "$creds" "$(cat scripts/check-unidentified.pl)" 2>&1) || true
+result=$(awk -F'\t' 'NF >= 6 && $1 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/' <<<"$out")
+if [ -z "$result" ]; then
+  echo "The probe gave no results. Output from the collector:" >&2
+  printf '%s\n' "$out" | head -20 >&2
+  exit 1
+fi
 
 result=$(sort -t. -k1,1n -k2,2n -k3,3n -k4,4n <<<"$result")
 if [ "$csv" = yes ]; then
