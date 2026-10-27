@@ -8,6 +8,7 @@ COPY glpi-agent-${AGENT_VERSION}-linux-installer.pl /tmp/glpi-agent-installer.pl
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends perl ca-certificates openssh-client iputils-ping \
+    libcrypt-rijndael-perl \
  && perl /tmp/glpi-agent-installer.pl --install --type=all --silent --no-question --service=0 --cron=0 \
  && rm -f /tmp/glpi-agent-installer.pl \
  && apt-get clean && rm -rf /var/lib/apt/lists/*

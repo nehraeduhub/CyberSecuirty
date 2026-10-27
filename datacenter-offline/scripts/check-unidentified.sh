@@ -78,6 +78,12 @@ done <<<"$result"
 echo
 echo "Summary:"
 cut -f5 <<<"$result" | sed 's/ (.*//' | sort | uniq -c | sort -rn | sed 's/^/  /'
+errs=$(grep '^ERR: ' <<<"$out" | sort -u || true)
+if [ -n "$errs" ]; then
+  echo
+  echo "Problems with your SNMP_CREDENTIALS (these credentials could not be used):"
+  sed 's/^ERR: /  /' <<<"$errs"
+fi
 echo
 echo "After changing collector/collector.conf: docker compose restart collector monitor-sync"
 echo "and collect again: docker compose exec collector collect.sh once"

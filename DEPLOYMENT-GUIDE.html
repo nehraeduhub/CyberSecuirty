@@ -484,6 +484,11 @@ sudo docker compose down -v       # ALSO deletes all data: database, files, hist
 <td>Inventory dashboard → collection errors; test from the server: <code>docker compose exec collector glpi-netinventory --host &lt;ip&gt; --credentials version:2c,community:&lt;c&gt;</code></td>
 </tr>
 <tr>
+<td>SNMPv3 devices not collected; logs say <code>Crypt::Rijndael perl module needs to be installed</code></td>
+<td>Collector image from a bundle built before 27 Oct 2026 lacks AES support</td>
+<td><code>sudo ./scripts/patch-collector.sh</code> (offline, adds it to the image)</td>
+</tr>
+<tr>
 <td>Many <strong>Unidentified devices</strong> on the Inventory dashboard</td>
 <td>They answered ping/ARP but not SNMP: servers, PCs, devices without SNMP or with an ACL</td>
 <td><code>sudo ./scripts/check-unidentified.sh</code> says what each one is (SSH/Windows/ESXi/web device) and what to add to <code>collector.conf</code></td>

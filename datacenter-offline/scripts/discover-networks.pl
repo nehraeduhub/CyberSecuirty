@@ -30,7 +30,8 @@ sub session {
         } else {
             %o = (%o, -version => ($c->{version} eq '1' ? 'snmpv1' : 'snmpv2c'), -community => $c->{community} || 'public');
         }
-        my ($s) = Net::SNMP->session(%o) or next;
+        my ($s, $err) = Net::SNMP->session(%o);
+        unless ($s) { warn "  $ip: $err\n" if $err && $err !~ /No response|discovery/i; next }
         my $r = $s->get_request(-varbindlist => ['1.3.6.1.2.1.1.5.0']);
         return ($s, $r->{'1.3.6.1.2.1.1.5.0'}) if $r;
         $s->close;

@@ -177,7 +177,8 @@ sub snmp_probe {
         } else {
             %opt = (%opt, -version => ($c->{version} eq '1' ? 'snmpv1' : 'snmpv2c'), -community => $c->{community} || 'public');
         }
-        my ($s) = Net::SNMP->session(%opt) or next;
+        my ($s, $err) = Net::SNMP->session(%opt);
+        unless ($s) { warn "SNMP credential ".($i + 1).": $err\n" if $err && $err !~ /No response|discovery/i; next }
         my $r = $s->get_request(-varbindlist => ['1.3.6.1.2.1.1.2.0']);
         $s->close;
         next unless $r && defined $r->{'1.3.6.1.2.1.1.2.0'};

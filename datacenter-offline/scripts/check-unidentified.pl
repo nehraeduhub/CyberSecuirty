@@ -29,7 +29,8 @@ sub snmp_try {
     } else {
         %o = (%o, -version => ($c->{version} eq '1' ? 'snmpv1' : 'snmpv2c'), -community => $c->{community} || 'public');
     }
-    my ($s) = Net::SNMP->session(%o) or return;
+    my ($s, $err) = Net::SNMP->session(%o);
+    unless ($s) { warn "SNMP setup: $err\n" if $err && $err !~ /No response|discovery/i; return }
     my $r = $s->get_request(-varbindlist => ['1.3.6.1.2.1.1.1.0']);
     $s->close;
     return $r ? ($r->{'1.3.6.1.2.1.1.1.0'} // '') : undef;
