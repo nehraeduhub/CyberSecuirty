@@ -14,6 +14,7 @@
 #   TARGETS_FILE       /targets/glpi.json
 #   SYNC_MINUTES       5
 #   MONITOR_TYPES      Computer,NetworkEquipment,PDU,Printer,Phone,Peripheral,Enclosure
+#   MONITOR_UNIDENTIFIED yes                  also ping unidentified (Unmanaged) addresses
 #   EXCLUDE_STATES     comma list of GLPI statuses to skip, e.g. "Retired,In stock"
 #   COLLECTOR_CONF     /etc/collector/collector.conf   (SNMP_CREDENTIALS are read from it)
 #   SNMP_TARGETS_FILE  /targets/snmp.json
@@ -33,6 +34,7 @@ my $pass    = $ENV{GLPI_PASSWORD} // '';
 my $out     = $ENV{TARGETS_FILE} || '/targets/glpi.json';
 my $every   = ($ENV{SYNC_MINUTES} || 5) * 60;
 my @types   = split /\s*,\s*/, ($ENV{MONITOR_TYPES} || 'Computer,NetworkEquipment,PDU,Printer,Phone,Peripheral,Enclosure');
+my $unident = lc($ENV{MONITOR_UNIDENTIFIED} || 'yes') ne 'no';
 my %exclude = map { lc($_) => 1 } grep { length } split /\s*,\s*/, ($ENV{EXCLUDE_STATES} || '');
 my $conf      = $ENV{COLLECTOR_CONF} || '/etc/collector/collector.conf';
 my $snmp_out  = $ENV{SNMP_TARGETS_FILE} || '/targets/snmp.json';
@@ -262,14 +264,31 @@ sub sync_once {
                 };
             }
         }
+        # Unidentified devices (answered ping/ARP but not SNMP): taken from their
+        # IP address records, as the read-only profile can't list Unmanaged items
+        if ($unident) {
+            for my $k (grep { /^Unmanaged:/ } keys %ip) {
+                my ($id) = $k =~ /:(\d+)$/;
+                push @targets, {
+                    targets => [ $ip{$k} ],
+                    labels  => {
+                        name => $ip{$k}, itemtype => 'Unmanaged', type => 'Unidentified',
+                        rack => '', glpi_id => "$id", status => '',
+                        glpi_url => $public ? "$public/front/unmanaged.form.php?id=$id" : '',
+                    },
+                };
+            }
+        }
         1;
     } or do { my $e = $@; api($token, 'killSession'); die $e };
     api($token, 'killSession');
 
     # One target per address: GLPI can hold duplicates of the same device; keep
-    # the record placed in a rack, else the first by name
+    # an identified record over an unidentified one, then the one placed in a
+    # rack, else the first by name
     my %by_ip;
-    for my $t (sort { ($b->{labels}{rack} ne '') <=> ($a->{labels}{rack} ne '') || $a->{labels}{name} cmp $b->{labels}{name} } @targets) {
+    for my $t (sort { ($a->{labels}{itemtype} eq 'Unmanaged') <=> ($b->{labels}{itemtype} eq 'Unmanaged')
+                      || ($b->{labels}{rack} ne '') <=> ($a->{labels}{rack} ne '') || $a->{labels}{name} cmp $b->{labels}{name} } @targets) {
         $by_ip{ $t->{targets}[0] } //= $t;
     }
     @targets = sort { $a->{labels}{name} cmp $b->{labels}{name} } values %by_ip;

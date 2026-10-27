@@ -252,6 +252,7 @@ The modules are `icmp` (the default), `tcp_connect` (any port), `http_2xx` (web 
 |---|---|---|
 | `GRAFANA_ANONYMOUS` | `false` | `true` shows dashboards without logging in (for wall screens on a trusted network) |
 | `MONITOR_EXCLUDE_STATES` | empty | GLPI statuses not to monitor, e.g. `Retired,In stock` |
+| `MONITOR_UNIDENTIFIED` | `yes` | Also ping unidentified devices (GLPI Unmanaged items); they show in Status with type *Unidentified* |
 | `MONITOR_SYNC_MINUTES` | `5` | How often GLPI devices are re-read |
 | `PROMETHEUS_RETENTION` | `90d` | How long to keep history |
 

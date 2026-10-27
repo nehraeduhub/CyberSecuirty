@@ -92,6 +92,7 @@ services:
       GLPI_PASSWORD: ${MONITOR_GLPI_PASSWORD:-}
       SYNC_MINUTES: ${MONITOR_SYNC_MINUTES:-5}
       EXCLUDE_STATES: ${MONITOR_EXCLUDE_STATES:-}
+      MONITOR_UNIDENTIFIED: ${MONITOR_UNIDENTIFIED:-yes}
     volumes:
       - ./monitoring/targets/glpi-targets.pl:/opt/glpi-targets.pl:ro,z
       - ./collector/collector.conf:/etc/collector/collector.conf:ro,z
