@@ -145,7 +145,9 @@ echo '<public key>' | sudo tee -a ~inventory/.ssh/authorized_keys
 
 Then list it in `REMOTES` as `ssh://inventory@10.10.1.21`. The first time a server is seen, its host key is recorded in `collector/ssh/known_hosts`. If a key changes later, the connection fails instead of being trusted silently. Some hardware details, such as serial numbers, come from `dmidecode`, which needs root. Without it, the server is still inventoried, just with fewer details.
 
-**Windows servers.** Enable WinRM (`winrm quickconfig`) and list them as `winrm://inventory:password@10.10.1.40` (a local account with read access).
+**Windows servers.** The agent logs in to WinRM with Basic authentication only, so use a **local** account (domain accounts always fail) and turn on Basic: see EQUIPMENT.md, *Windows servers*. List them as `winrm://inventory:password@10.10.1.40`.
+
+**Login problems.** `scripts/test-remote.sh <ip>` tests one server from `REMOTES` and says what is wrong: port closed, WinRM Basic off, SSH key not authorised, or wrong password.
 
 **Find all subnets automatically.** `scripts/discover-networks.sh [router-ip...] [--community NAME] [--write]` reads this server's networks and the interfaces and routing tables of your routers / L3 switches over SNMP (default: the server's gateway), then prints the ranges to scan. `--write` adds the new ones to `SNMP_RANGES` (backup kept). Networks larger than /16 are skipped (`--max-prefix`).
 

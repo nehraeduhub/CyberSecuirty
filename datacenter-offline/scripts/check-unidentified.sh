@@ -3,7 +3,7 @@
 # answered ping/ARP during the scan but not SNMP. For each one this checks
 # SNMP again (your credentials, then "public"), a few TCP ports and the SSH
 # banner, and says what the device probably is and what to add to
-# collector/collector.conf so it is fully inventoried. Changes nothing.
+# collector/collector.conf so it is fully inventoried. Changes nothing unless --write.
 #
 #   sudo ./scripts/check-unidentified.sh            # all unidentified devices
 #   sudo ./scripts/check-unidentified.sh 10.10.0.   # only addresses starting with this
@@ -12,9 +12,9 @@
 # Add what was found to collector.conf (only the kinds you give an account for;
 # a missing password is asked for; addresses already listed are skipped):
 #   sudo ./scripts/check-unidentified.sh --write --ssh-user inventory \
-#        --winrm-user 'CORP\svc-inventory' --esx-user svc-glpi
+#        --winrm-user inventory --esx-user svc-glpi
 #     Linux servers -> REMOTES ssh://USER@ip   (authorise collector/ssh/id_ed25519.pub on them)
-#     Windows       -> REMOTES winrm://USER:PASSWORD@ip
+#     Windows       -> REMOTES winrm://USER:PASSWORD@ip   (a LOCAL account: see EQUIPMENT.md)
 #     ESXi hosts    -> ESX_HOSTS "ip USER PASSWORD" (or list your vCenter once instead)
 set -euo pipefail
 
@@ -127,8 +127,9 @@ if [ "$write" != yes ]; then
   if [ ${#remotes[@]} -gt 0 ] || [ ${#esx[@]} -gt 0 ]; then
     echo
     echo "To add these servers automatically (accounts asked for, nothing else changes):"
-    echo "  sudo ./scripts/check-unidentified.sh --write --ssh-user inventory --winrm-user 'DOMAIN\\user' --esx-user root"
-    echo "  (leave out the kinds you don't want; --help for details)"
+    echo "  sudo ./scripts/check-unidentified.sh --write --ssh-user inventory --winrm-user inventory --esx-user root"
+    echo "  (leave out the kinds you don't want; Windows needs a LOCAL account, see EQUIPMENT.md;"
+    echo "   test one server's login with: ./scripts/test-remote.sh <ip>)"
   fi
 else
   add_r=() add_e=()

@@ -489,6 +489,11 @@ sudo docker compose down -v       # ALSO deletes all data: database, files, hist
 <td><code>sudo ./scripts/patch-collector.sh</code> (offline, adds it to the image)</td>
 </tr>
 <tr>
+<td>Servers in <code>REMOTES</code> fail with wrong password / can't authenticate</td>
+<td>Windows: Basic auth off or a domain account; Linux: collector key not authorised</td>
+<td><code>sudo ./scripts/test-remote.sh &lt;ip&gt;</code> says which; Windows needs a local account with Basic on (EQUIPMENT.md)</td>
+</tr>
+<tr>
 <td>Many <strong>Unidentified devices</strong> on the Inventory dashboard</td>
 <td>They answered ping/ARP but not SNMP: servers, PCs, devices without SNMP or with an ACL</td>
 <td><code>sudo ./scripts/check-unidentified.sh</code> says what each one is (SSH/Windows/ESXi/web device) and what to add to <code>collector.conf</code>; <code>--write --ssh-user U --winrm-user U --esx-user U</code> adds them</td>

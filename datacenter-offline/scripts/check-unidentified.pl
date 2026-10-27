@@ -75,7 +75,7 @@ while (my $line = <STDIN>) {
     } elsif ($o{vmware}) {
         ($what, $todo) = ('VMware ESXi host', "add it (or its vCenter) to ESX_HOSTS: $ip <user> <password>");
     } elsif ($o{winrm} || $o{rdp}) {
-        ($what, $todo) = ('Windows server', "add to REMOTES: winrm://inventory:PASSWORD\@$ip" . ($o{winrm} ? '' : '  (enable WinRM first: winrm quickconfig)'));
+        ($what, $todo) = ('Windows server', "add to REMOTES: winrm://inventory:PASSWORD\@$ip" . '  (LOCAL account, Basic auth on: see EQUIPMENT.md)');
     } elsif ($b =~ /OpenSSH.*(Ubuntu|Debian|el\d|Red ?Hat|Rocky|Alma|SUSE)|OpenSSH_\d/i && $b !~ /Cisco|RomSShell|Comware|Dell|Force10|Aruba|Sophos/i) {
         ($what, $todo) = ('Linux/Unix server (or appliance) with SSH', "add to REMOTES: ssh://inventory\@$ip  (and authorise collector/ssh/id_ed25519.pub on it)");
     } elsif ($b =~ /Cisco|Comware|Force10|Aruba|ProCurve|Dell|HP|Sophos|Alteon|RomSShell|mpSSH/i) {

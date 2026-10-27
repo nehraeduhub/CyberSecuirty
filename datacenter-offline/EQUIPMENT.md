@@ -92,6 +92,25 @@ The server and its iLO appear as two GLPI assets: the server under Computers, th
 - **iDRAC** (iDRAC9: **iDRAC Settings → Services → SNMP Agent**): enable it, then set the community or SNMPv3 user and the protocol. Add the iDRAC IPs to `SNMP_RANGES`. The dashboard shows **global system status**, **storage status** and temperatures.
 - **Operating system**: as for HP servers.
 
+## Windows servers (WinRM)
+
+The GLPI agent logs in to WinRM with **Basic authentication only**. Windows has Basic turned off by default, and Basic never works with **domain** accounts, so a domain login always fails with "wrong credentials" even when the password is right. On each Windows server (admin PowerShell), or for all of them with a GPO:
+
+```powershell
+# local inventory account (use your own strong password)
+net user inventory "S0me-Strong-Pass" /add /passwordchg:no /expires:never
+net localgroup Administrators inventory /add
+winrm quickconfig -q
+winrm set winrm/config/service/auth '@{Basic="true"}'
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+# allow only the GLPI server to reach WinRM
+New-NetFirewallRule -DisplayName "WinRM from GLPI" -Direction Inbound -Protocol TCP -LocalPort 5985 -RemoteAddress <GLPI-server-IP> -Action Allow
+```
+
+Then list it as `winrm://inventory:PASSWORD@<ip>` in `REMOTES` (or use `check-unidentified.sh --write --winrm-user inventory`). Test one server with `./scripts/test-remote.sh <ip>`: it says whether the port is open, whether Basic is offered and whether the login works.
+
+`AllowUnencrypted` sends the login only base64-encoded over port 5985. Keep it to the management network, firewalled to the GLPI server, with a dedicated account. To encrypt it, add an HTTPS listener (port 5986) with a certificate and use `winrm://inventory:PASSWORD@<ip>:5986/?mode=ssl` instead; then `AllowUnencrypted` is not needed.
+
 ## Cisco switches and routers (IOS / IOS-XE)
 
 ```
