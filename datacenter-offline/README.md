@@ -149,6 +149,8 @@ Then list it in `REMOTES` as `ssh://inventory@10.10.1.21`. The first time a serv
 
 **Find all subnets automatically.** `scripts/discover-networks.sh [router-ip...] [--community NAME] [--write]` reads this server's networks and the interfaces and routing tables of your routers / L3 switches over SNMP (default: the server's gateway), then prints the ranges to scan. `--write` adds the new ones to `SNMP_RANGES` (backup kept). Networks larger than /16 are skipped (`--max-prefix`).
 
+**Unidentified devices.** Addresses that answer ping/ARP but not SNMP become GLPI *Unmanaged* items ("Unidentified devices" on the dashboard). `scripts/check-unidentified.sh [ip-prefix] [--csv]` probes each one (SNMP, SSH banner, ports 22/80/443/902/3389/5985) and says what it probably is and what to add: `REMOTES` for Linux/Windows servers, `ESX_HOSTS` for ESXi, SNMP for network devices and management cards.
+
 **Speed.** SNMP discovery checks every address, so a /24 range takes a minute or two. Raise `THREADS` for large networks. Raise `SNMP_TIMEOUT` (default 2 seconds) only for devices behind slow WAN links.
 
 **Network map.** The map is built from the switches' LLDP/CDP neighbour tables and MAC address tables. Enable LLDP or CDP on your switches and include them in `SNMP_RANGES`.

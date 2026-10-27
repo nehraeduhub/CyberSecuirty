@@ -402,6 +402,10 @@ sudo ./scripts/backup.sh            # database + GLPI files + .env -&gt; backups
 <td><code>docker compose exec collector collect.sh once</code></td>
 </tr>
 <tr>
+<td>Explain unidentified devices</td>
+<td><code>./scripts/check-unidentified.sh</code> (add <code>--csv &gt; file.csv</code> for a spreadsheet)</td>
+</tr>
+<tr>
 <td>Find new subnets</td>
 <td><code>./scripts/discover-networks.sh --community NAME</code> (add <code>--write</code> to save)</td>
 </tr>
@@ -478,6 +482,11 @@ sudo docker compose down -v       # ALSO deletes all data: database, files, hist
 <td>Device not in GLPI</td>
 <td>SNMP blocked or wrong credentials</td>
 <td>Inventory dashboard → collection errors; test from the server: <code>docker compose exec collector glpi-netinventory --host &lt;ip&gt; --credentials version:2c,community:&lt;c&gt;</code></td>
+</tr>
+<tr>
+<td>Many <strong>Unidentified devices</strong> on the Inventory dashboard</td>
+<td>They answered ping/ARP but not SNMP: servers, PCs, devices without SNMP or with an ACL</td>
+<td><code>sudo ./scripts/check-unidentified.sh</code> says what each one is (SSH/Windows/ESXi/web device) and what to add to <code>collector.conf</code></td>
 </tr>
 <tr>
 <td>Device in <strong>Administration → Inventory → Refused equipment</strong></td>

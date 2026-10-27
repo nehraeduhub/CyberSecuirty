@@ -348,6 +348,7 @@ All commands are run in `/opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offl
 | Status of containers | `docker compose ps` |
 | Logs | `docker compose logs --tail 100 glpi` (or collector, monitor-sync, portal, grafana…) |
 | Collect now | `docker compose exec collector collect.sh once` |
+| Explain unidentified devices | `./scripts/check-unidentified.sh` (add `--csv > file.csv` for a spreadsheet) |
 | Find new subnets | `./scripts/discover-networks.sh --community NAME` (add `--write` to save) |
 | Change scan ranges / credentials | edit `collector/collector.conf`, then `docker compose restart collector monitor-sync` |
 | Add a service check | add a file to `monitoring/manual/` (no restart needed) |
@@ -389,6 +390,7 @@ sudo docker compose down -v       # ALSO deletes all data: database, files, hist
 | Install stops at "Waiting for GLPI" | Database still initialising on slow disk | `docker compose logs glpi db`; re-run `install-offline.sh` (safe to repeat) |
 | Browser certificate warning | Self-signed certificate | Install your internal CA certificate (Day-2: Replace the HTTPS certificate) |
 | Device not in GLPI | SNMP blocked or wrong credentials | Inventory dashboard → collection errors; test from the server: `docker compose exec collector glpi-netinventory --host <ip> --credentials version:2c,community:<c>` |
+| Many **Unidentified devices** on the Inventory dashboard | They answered ping/ARP but not SNMP: servers, PCs, devices without SNMP or with an ACL | `sudo ./scripts/check-unidentified.sh` says what each one is (SSH/Windows/ESXi/web device) and what to add to `collector.conf` |
 | Device in **Administration → Inventory → Refused equipment** | Device reports no serial and no MAC over SNMP | Widen the device's SNMP view (ENTITY-MIB, IF-MIB) |
 | Same device twice in GLPI | Imported from CSV without a serial, then collected | Put the serial in `devices.csv`, delete the duplicate, re-run the import |
 | Device "Not answering SNMP" in Network & hardware | Credential works for collection but not from monitoring | The first matching credential in `SNMP_CREDENTIALS` is used. Check the device's SNMP ACL allows the server |
