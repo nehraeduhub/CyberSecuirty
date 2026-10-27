@@ -113,6 +113,9 @@ services:
     entrypoint: ["perl", "/opt/manager.pl"]
     environment:
       GLPI_URL: http://glpi
+      GLPI_PUBLIC_URL: ${GLPI_PUBLIC_URL:-}
+      GLPI_USER: dc-monitor
+      GLPI_PASSWORD: ${MONITOR_GLPI_PASSWORD:-}
       PROMETHEUS_URL: http://prometheus:9090
     volumes:
       - ./manager/manager.pl:/opt/manager.pl:ro,z

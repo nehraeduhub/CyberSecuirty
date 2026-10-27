@@ -176,7 +176,8 @@ It ends with your URLs:
 
 ```
 GLPI (manage assets, racks, rooms):   https://dc.nehraeduhub.lan/
-DC Viewer - Devices (status, SSH/RDP): https://dc.nehraeduhub.lan:8443/viewer/
+DC Viewer - Monitor (no sign-in):      https://dc.nehraeduhub.lan:8443/viewer/
+DC Viewer - Manage devices:            https://dc.nehraeduhub.lan:8443/viewer/devices.html
 DC Viewer - Scan & settings:           https://dc.nehraeduhub.lan:8443/viewer/scan.html
 Learning library:                     https://dc.nehraeduhub.lan:8443/glpi-datacenter-library.html
 ```
@@ -216,7 +217,7 @@ Follow **`EQUIPMENT.md`** for each device type: Sophos, Alteon, iLO, iDRAC, Cisc
 2. **Networks to scan**: add every network, e.g. `192.168.15.0/24`, `192.168.1.0/24`, `192.168.16.0/24`. Don't know them all? Open *Find networks from a router*, type your core router's IP and add what it lists.
 3. **SNMP credentials**: add your read-only community or SNMPv3 user (as set up in 7.1).
 4. **Save changes**, then **Scan now**. The page shows progress; each /24 takes about 1–2 minutes.
-5. Open **Devices** (`https://<server>:8443/viewer/`): every device found, with live up/down, brand, model, serial number and MAC. Click a name to rename it; **Add devices** adds IPs by hand (one `IP name` per line); **SSH / RDP / Web** open a session.
+5. Open the **Monitor** (`https://<server>:8443/viewer/`, no sign-in): live online/offline per category and an *Offline now* list. Under **Manage devices** rename devices (click a name), set categories, and **Add devices** by IP (one `IP name` per line). **SSH / RDP / Web** buttons open a session.
 
 Racks, Inventory and the Grafana Status tab are off at first: turn them on under **Scan & settings → Features**.
 

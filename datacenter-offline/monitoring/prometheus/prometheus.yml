@@ -9,6 +9,7 @@ global:
 scrape_configs:
   # Ping every device (or another blackbox module set with a "module" label)
   - job_name: device
+    scrape_interval: 15s
     metrics_path: /probe
     params:
       module: [icmp]

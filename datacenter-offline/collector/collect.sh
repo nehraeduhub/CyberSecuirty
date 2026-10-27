@@ -72,7 +72,7 @@ collect_snmp() {
       step "SNMP $range" error 0 0 "$(tail -3 "$out.err")"
       log "  failed: $(tail -1 "$out.err")"
     fi
-  done < <(lines "${SNMP_RANGES:-}")
+  done < <(lines "${SNMP_RANGES:-}" | awk '!seen[$0]++')   # a range in both collector.conf and the GUI runs once
 }
 
 # Trust-on-first-use for SSH targets (like StrictHostKeyChecking=accept-new):

@@ -137,6 +137,34 @@
     DC.toast.timer = setTimeout(function () { t.className = 'toast'; }, isError ? 8000 : 3500);
   };
 
+  // One-click access: SSH (ssh:// link + copies the command), RDP (.rdp file
+  // for mstsc), the device's web page, and its GLPI record
+  DC.connectButtons = function (ip, name, glpiUrl) {
+    var el = DC.el, out = [];
+    if (ip) {
+      out.push(el('a', { class: 'go', href: 'ssh://' + ip, title: 'SSH to ' + ip, text: 'SSH', onclick: function () {
+        var text = 'ssh ' + ip;
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(function () {
+            DC.toast('Copied "' + text + '" - paste it in MobaXterm or a terminal if no SSH app opened');
+          }, function () {});
+        }
+      } }));
+      out.push(el('button', { type: 'button', class: 'go', title: 'Remote Desktop (mstsc) to ' + ip, text: 'RDP', onclick: function () {
+        var file = 'full address:s:' + ip + '\r\nprompt for credentials:i:1\r\nadministrative session:i:0\r\nscreen mode id:i:2\r\n';
+        var a = el('a', { href: URL.createObjectURL(new Blob([file], { type: 'application/x-rdp' })),
+          download: (name || ip).replace(/[^\w.-]+/g, '_') + '.rdp' });
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+        DC.toast('Open the downloaded ' + a.download + ' to start Remote Desktop');
+      } }));
+      out.push(el('a', { class: 'go', href: 'https://' + ip + '/', target: '_blank', rel: 'noopener', title: 'Web page of ' + ip, text: 'Web' }));
+    }
+    if (glpiUrl) out.push(el('a', { class: 'go', href: glpiUrl, target: '_blank', rel: 'noopener', title: 'Open in GLPI', text: 'GLPI' }));
+    return out;
+  };
+
   DC.byId = function (list) {
     var m = {};
     list.forEach(function (o) { m[o.id] = o; });

@@ -14,6 +14,8 @@
 #   SCAN_REQUEST    /status/scan-request      (the collector starts a run when it appears)
 #   SYNC_REQUEST    /settings/sync-request    (monitor-sync re-reads GLPI when it appears)
 #   DISCOVER_SCRIPT /opt/discover-networks.pl
+#   GLPI_USER / GLPI_PASSWORD  read-only GLPI account for the Monitor page (dc-monitor)
+#   GLPI_PUBLIC_URL            GLPI as users reach it (links on the Monitor page)
 use strict;
 use warnings;
 use HTTP::Daemon;
@@ -23,6 +25,7 @@ use LWP::UserAgent;
 use JSON::PP;
 use URI::Escape qw(uri_escape);
 use POSIX qw(strftime);
+use MIME::Base64 ();
 
 my $listen   = $ENV{LISTEN} || '0.0.0.0:8090';
 my $glpi     = ($ENV{GLPI_URL} || 'http://glpi') =~ s{/+$}{}r;
@@ -31,6 +34,9 @@ my $file     = $ENV{SETTINGS_FILE} || '/settings/settings.json';
 my $scan_req = $ENV{SCAN_REQUEST} || '/status/scan-request';
 my $sync_req = $ENV{SYNC_REQUEST} || '/settings/sync-request';
 my $discover = $ENV{DISCOVER_SCRIPT} || '/opt/discover-networks.pl';
+my $mon_user = $ENV{GLPI_USER} || 'dc-monitor';
+my $mon_pass = $ENV{GLPI_PASSWORD} // '';
+my $glpi_pub = ($ENV{GLPI_PUBLIC_URL} || '') =~ s{/+$}{}r;
 
 my $json = JSON::PP->new->utf8->canonical->pretty;
 my $ua   = LWP::UserAgent->new(timeout => 20, agent => 'dc-manager');
@@ -50,8 +56,9 @@ sub defaults {
         features => {
             racks => JSON::PP::false, inventory => JSON::PP::false, grafana => JSON::PP::false,
             library => JSON::PP::true, servers => JSON::PP::false, vmware => JSON::PP::false,
-            monitor_unidentified => JSON::PP::true,
+            monitor_unidentified => JSON::PP::true, public_monitor => JSON::PP::true,
         },
+        categories => {},   # ip -> category chosen in the DC Viewer
     };
 }
 
@@ -171,6 +178,7 @@ sub merge_settings {
         $s->{features}{$k} = ($new->{features} || {})->{$k} ? JSON::PP::true : JSON::PP::false
             if exists(($new->{features} || {})->{$k});
     }
+    $s->{categories} = $old->{categories} || {};   # changed only through /api/categories
     return ($s, \@err);
 }
 
@@ -215,6 +223,138 @@ sub device_status {
         $out{ $m->{metric}{instance} }{rtt_ms} = sprintf('%.1f', $m->{value}[1] * 1000) + 0;
     }
     return \%out;
+}
+
+# ------------------------------------------------------------------ monitor
+# Categories on the Monitor page, in display order
+my @CATEGORIES = ('Firewall', 'Load balancer', 'Router', 'Switch', 'Wireless', 'Server', 'Storage',
+                  'Management', 'Power', 'Printer', 'Phone', 'Other', 'Unknown');
+my %IS_CATEGORY = map { $_ => 1 } @CATEGORIES;
+
+# Best guess from what GLPI knows; people can override it per device
+sub auto_category {
+    my ($d) = @_;
+    my $t = lc join ' ', map { $_ // '' } @$d{qw(brand model type name)};
+    return 'Unknown'  if $d->{itemtype} eq 'Unmanaged';
+    return 'Power'    if $d->{itemtype} eq 'PDU' || $t =~ /\b(ups|pdu|apc|eaton|vertiv|liebert)\b/;
+    return 'Printer'  if $d->{itemtype} eq 'Printer';
+    return 'Phone'    if $d->{itemtype} eq 'Phone';
+    return 'Management' if $t =~ /integrated lights|\bilo\b|idrac|\bimm\b|\bbmc\b|\bxcc\b|ipmi/;
+    return 'Firewall' if $t =~ /firewall|sophos|fortinet|fortigate|palo ?alto|check ?point|firepower|\basa\b|watchguard|sonicwall|pfsense|opnsense|juniper srx|\bsrx\d/;
+    return 'Load balancer' if $t =~ /load ?balanc|radware|alteon|\bf5\b|big-?ip|netscaler|citrix adc|\ba10\b|kemp|array networks|\bslb\b|\badc\b/;
+    return 'Storage'  if $t =~ /storage|\bnas\b|\bsan\b|3par|primera|nimble|\bmsa\b|powervault|powerstore|netapp|unity|synology|qnap|simplivity|isilon/;
+    return 'Wireless' if $t =~ /wireless|\bwlc\b|aironet|access point|\bap\d|ruckus|ubiquiti|unifi|meraki mr|instant on ap/;
+    return 'Router'   if $t =~ /router|\bisr\d*\b|\basr\d*\b|\bcsr\d*|\bmx\d|vyos|mikrotik|edgerouter|\bc8\d{2}0|catalyst 8\d00/;
+    return 'Server'   if $d->{itemtype} eq 'Computer' || $t =~ /proliant|poweredge|server|esxi/;
+    return 'Switch'   if $d->{itemtype} eq 'NetworkEquipment';
+    return 'Other';
+}
+
+sub glpi_get {
+    my ($token, $path) = @_;
+    my $r = $ua->get("$glpi/apirest.php/$path", 'Session-Token' => $token);
+    return ($r, $r->is_success ? (eval { decode_json($r->decoded_content || 'null') } // []) : undef);
+}
+
+sub glpi_all {
+    my ($token, $type, $extra) = @_;
+    my ($start, @all) = (0);
+    while (1) {
+        my ($r, $d) = glpi_get($token, "$type?is_deleted=0&range=$start-" . ($start + 999) . ($extra ? "&$extra" : ''));
+        last unless $r->is_success;   # no right on this type, or past the end
+        push @all, @{ $d || [] };
+        my ($total) = ($r->header('Content-Range') // '') =~ m{/(\d+)$};
+        last if !$total || $start + 1000 >= $total;
+        $start += 1000;
+    }
+    return \@all;
+}
+
+sub drop { my $v = shift; return '' if !defined $v || $v eq '0' || $v eq '&nbsp;'; return "$v" }
+sub ipnum { my $ip = shift // ''; $ip =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/ ? (($1 * 256 + $2) * 256 + $3) * 256 + $4 : 2**33 }
+
+my %devcache = (until => 0, list => [], error => '');
+
+# Devices with an IPv4 address, read from GLPI with the read-only account (cached 30 s)
+sub glpi_devices {
+    return @devcache{qw(list error)} if $devcache{until} > time;
+    my $r = $ua->get("$glpi/apirest.php/initSession",
+        Authorization => 'Basic ' . MIME::Base64::encode_base64("$mon_user:$mon_pass", ''));
+    unless ($r->is_success) {
+        @devcache{qw(until error)} = (time + 10, "GLPI login of '$mon_user' failed: " . $r->status_line);
+        return @devcache{qw(list error)};
+    }
+    my $token = decode_json($r->decoded_content)->{session_token};
+    my (%ip, %mac, @list);
+    for my $a (@{ glpi_all($token, 'IPAddress') }) {
+        next unless ($a->{version} // 0) == 4 && $a->{name} && $a->{mainitemtype} && $a->{name} !~ /^(127\.|169\.254\.|0\.)/;
+        my $k = "$a->{mainitemtype}:$a->{mainitems_id}";
+        $ip{$k} = $a->{name} if !$ip{$k} || ipnum($a->{name}) < ipnum($ip{$k});
+    }
+    for my $p (@{ glpi_all($token, 'NetworkPort') }) {
+        my $k = "$p->{itemtype}:$p->{items_id}";
+        $mac{$k} //= $p->{mac} if $p->{mac} && $p->{mac} !~ /^(00:){5}00$/;
+    }
+    for my $type (qw(NetworkEquipment Computer PDU Printer Phone Peripheral Unmanaged)) {
+        for my $it (@{ glpi_all($token, $type, 'expand_dropdowns=true') }) {
+            next if $it->{is_template} || ($type eq 'Unmanaged' && $it->{hub});
+            my $k = "$type:$it->{id}";
+            my $addr = $ip{$k} || ($type eq 'Unmanaged' && is_ipv4($it->{ip}) ? $it->{ip} : '') or next;
+            my ($mk) = grep { /models_id$/ } keys %$it;
+            my ($tk) = grep { /types_id$/ } keys %$it;
+            my %d = (key => $k, itemtype => $type, id => $it->{id}, ip => $addr,
+                     name => $it->{name} || $addr, brand => drop($it->{manufacturers_id}),
+                     model => drop($mk ? $it->{$mk} : ''), type => drop($tk ? $it->{$tk} : ''),
+                     serial => $it->{serial} // '', mac => $mac{$k} // '',
+                     glpi_url => ($glpi_pub ? "$glpi_pub/front/" . lc($type) . ".form.php?id=$it->{id}" : ''));
+            $d{auto} = auto_category(\%d);
+            push @list, \%d;
+        }
+    }
+    $ua->get("$glpi/apirest.php/killSession", 'Session-Token' => $token);
+    # One entry per IP: an identified device wins over an unidentified one
+    my %by;
+    for my $d (sort { ($a->{itemtype} eq 'Unmanaged') <=> ($b->{itemtype} eq 'Unmanaged') || $a->{id} <=> $b->{id} } @list) {
+        $by{ $d->{ip} } //= $d;
+    }
+    @devcache{qw(until list error)} = (time + 30, [ sort { ipnum($a->{ip}) <=> ipnum($b->{ip}) } values %by ], '');
+    return @devcache{qw(list error)};
+}
+
+# Everything the Monitor page shows, in one call
+sub monitor {
+    my ($list, $err) = glpi_devices();
+    my $s    = load_settings();
+    my $over = $s->{categories} || {};
+    my $st   = device_status();
+    my %last_up;
+    for my $m (@{ prom_query('time() - max by (instance) (max_over_time((timestamp(probe_success{job="device"} == 1))[24h:30s]))') }) {
+        $last_up{ $m->{metric}{instance} } = int $m->{value}[1];
+    }
+    my (%cat, @out);
+    my %tot = (total => 0, up => 0, down => 0, unknown => 0);
+    for my $d (@$list) {
+        my %o = %$d;
+        $o{category} = $IS_CATEGORY{ $over->{ $d->{ip} } // '' } ? $over->{ $d->{ip} } : $d->{auto};
+        $o{category_set} = exists $over->{ $d->{ip} } ? JSON::PP::true : JSON::PP::false;
+        my $x = $st->{ $d->{ip} };
+        $o{state} = !$x ? 'unknown' : $x->{up} ? 'up' : 'down';
+        $o{rtt_ms} = $x->{rtt_ms} if $x && defined $x->{rtt_ms};
+        # Down: seconds since the last good ping (absent = not up in the last 24 h)
+        $o{down_for_s} = $last_up{ $d->{ip} } if $o{state} eq 'down' && defined $last_up{ $d->{ip} };
+        my $c = $cat{ $o{category} } //= { name => $o{category}, total => 0, up => 0, down => 0, unknown => 0 };
+        $c->{total}++; $c->{ $o{state} }++;
+        $tot{total}++; $tot{ $o{state} }++;
+        push @out, \%o;
+    }
+    return {
+        generated  => time,
+        totals     => \%tot,
+        categories => [ map { $cat{$_} } grep { $cat{$_} } @CATEGORIES ],
+        category_list => \@CATEGORIES,
+        devices    => \@out,
+        error      => $err || undef,
+    };
 }
 
 # ------------------------------------------------------------- find networks
@@ -265,12 +405,18 @@ sub handle {
 
     # Feature switches decide which tabs show; no secrets, so no sign-in needed
     return reply($c, 200, load_settings()->{features}) if $m eq 'GET' && $path eq '/features';
+    # The Monitor page: open to anyone who can reach the portal unless switched off
+    if ($m eq 'GET' && $path eq '/monitor') {
+        return reply($c, 200, monitor()) if load_settings()->{features}{public_monitor} || whoami($req);
+        return reply($c, 401, { error => 'Sign in to see the monitor (public view is switched off).' });
+    }
 
     my $who = whoami($req) or return reply($c, 401, { error => 'Sign in to GLPI first (session missing or expired).' });
     return reply($c, 200, $who) if $m eq 'GET' && $path eq '/whoami';
     return reply($c, 200, device_status()) if $m eq 'GET' && $path eq '/status';
     if ($m eq 'POST' && $path eq '/sync') {
         touch($sync_req);
+        $devcache{until} = 0;
         return reply($c, 202, { ok => 1 });
     }
     return reply($c, 200, masked(load_settings())) if $m eq 'GET' && $path eq '/settings';
@@ -288,6 +434,18 @@ sub handle {
         touch($sync_req);
         logmsg("settings saved by $who->{name}: ", scalar @{ $s->{networks} }, " network(s), ", scalar @{ $s->{snmp} }, " credential(s)");
         return reply($c, 200, masked($s));
+    }
+    if ($m eq 'PUT' && $path eq '/categories') {
+        my $b = body($req) || {};
+        my $cat = $b->{category} // '';
+        return reply($c, 400, { error => "Unknown category '$cat'" }) if length $cat && !$IS_CATEGORY{$cat};
+        my @ips = grep { is_ipv4($_) } @{ ref $b->{ips} eq 'ARRAY' ? $b->{ips} : [] };
+        return reply($c, 400, { error => 'Give the IP addresses of the devices' }) unless @ips;
+        my $s = load_settings();
+        for my $ip (@ips) { if (length $cat) { $s->{categories}{$ip} = $cat } else { delete $s->{categories}{$ip} } }
+        save_settings($s);
+        logmsg("category '", ($cat || 'automatic'), "' set by $who->{name} for ", scalar @ips, " device(s)");
+        return reply($c, 200, { ok => 1 });
     }
     if ($m eq 'POST' && $path eq '/scan') {
         touch($scan_req) or return reply($c, 500, { error => "Cannot write $scan_req" });

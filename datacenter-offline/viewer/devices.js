@@ -24,7 +24,8 @@
     { key: 'state', label: 'Status', sort: true },
     { key: 'name', label: 'Name', sort: true },
     { key: 'ip', label: 'IP address', sort: true },
-    { key: 'type', label: 'Type', sort: true },
+    { key: 'category', label: 'Category', sort: true },
+    { key: 'type', label: 'GLPI type', sort: true },
     { key: 'brand', label: 'Brand', sort: true },
     { key: 'model', label: 'Model', sort: true },
     { key: 'serial', label: 'Serial no.', sort: true },
@@ -33,7 +34,7 @@
     { key: 'go', label: 'Connect' }
   ];
 
-  var state = { devices: [], status: {}, sort: { key: 'ip', dir: 1 }, selected: {} };
+  var state = { devices: [], status: {}, cats: {}, catList: [], admin: false, sort: { key: 'ip', dir: 1 }, selected: {} };
   var timers = [];
 
   // ------------------------------------------------------------- loading
@@ -44,14 +45,49 @@
       Promise.all(TYPES.map(function (t) { return DC.fetchAll(t.itemtype, 'expand_dropdowns=true'); })),
       DC.fetchAll('IPAddress'),
       DC.fetchAll('NetworkPort'),
-      loadStatus()
+      loadStatus(),
+      loadCategories(),
+      DC.mgr('whoami').then(function (w) { state.admin = !!w.admin; }, function () {})
     ]).then(function (r) {
       state.devices = build(r[0], r[1], r[2]);
+      fillCategoryLists();
       fillTypes();
       render();
       $('updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
     }).catch(function (e) {
       DC.loadError(e, $('app-error'), $('updated'));
+    });
+  }
+
+  // Category per IP, as on the Monitor page (automatic or chosen here)
+  function loadCategories() {
+    return DC.mgr('monitor').then(function (m) {
+      state.cats = {};
+      (m.devices || []).forEach(function (d) { state.cats[d.ip] = { name: d.category, set: d.category_set }; });
+      state.catList = m.category_list || [];
+    }).catch(function () {});
+  }
+
+  function catOf(d) { return (state.cats[d.ip] || {}).name || (d.itemtype === 'Unmanaged' ? 'Unknown' : ''); }
+
+  function fillCategoryLists() {
+    var add = $('add-category'), bulk = $('bulk-cat');
+    add.length = 0;
+    add.appendChild(el('option', { value: '', text: 'Automatic (from brand and model)' }));
+    bulk.length = 1;
+    bulk.appendChild(el('option', { value: '__auto', text: 'Automatic' }));
+    state.catList.forEach(function (c) {
+      add.appendChild(el('option', { value: c, text: c }));
+      bulk.appendChild(el('option', { value: c, text: c }));
+    });
+  }
+
+  // Set (or with '' clear) the category of these devices
+  function setCategory(list, cat) {
+    var ips = list.map(function (d) { return d.ip; }).filter(Boolean);
+    if (!ips.length) return Promise.resolve();
+    return DC.mgr('categories', { method: 'PUT', body: { ips: ips, category: cat } }).then(function () {
+      return loadCategories();
     });
   }
 
@@ -135,13 +171,14 @@
       if (type && d.itemtype !== type) return false;
       if (st && stateOf(d) !== st) return false;
       if (!q) return true;
-      return [d.name, d.ips.join(' '), d.serial, d.mac, d.model, d.brand, d.type].join(' ').toLowerCase().indexOf(q) !== -1;
+      return [d.name, d.ips.join(' '), d.serial, d.mac, d.model, d.brand, d.type, catOf(d)].join(' ').toLowerCase().indexOf(q) !== -1;
     });
   }
 
   function sortVal(d, key) {
     if (key === 'ip') return ipNum(d.ip);
     if (key === 'state') return { down: 0, none: 1, up: 2 }[stateOf(d)];
+    if (key === 'category') return catOf(d).toLowerCase();
     return String(d[key] || '').toLowerCase();
   }
 
@@ -195,6 +232,7 @@
       ? 'No device matches the filters.'
       : 'No devices yet. Add your networks on the Scan & settings page and press Scan now, or use Add devices.';
     $('del').disabled = !Object.keys(state.selected).length;
+    $('bulk-cat').disabled = !state.admin || !Object.keys(state.selected).length;
     $('del').textContent = 'Delete selected' + (Object.keys(state.selected).length ? ' (' + Object.keys(state.selected).length + ')' : '');
     if (state.statusError) $('app-error').textContent = state.statusError;
   }
@@ -208,7 +246,8 @@
       el('td', { class: 'nowrap' }, [el('span', { class: 'sdot s-' + st }), stText]),
       el('td', {}, [nameCell(d)]),
       el('td', { class: 'mono nowrap', title: d.ips.join(', '), text: d.ip + (d.ips.length > 1 ? ' +' + (d.ips.length - 1) : '') }),
-      el('td', { text: d.type }),
+      el('td', {}, [categoryCell(d)]),
+      el('td', { class: 'muted', text: d.type }),
       el('td', { text: d.brand }),
       el('td', { text: d.model }),
       el('td', { class: 'mono', text: d.serial }),
@@ -216,6 +255,20 @@
       el('td', { class: 'nowrap small', text: d.seen ? d.seen.slice(0, 16) : '' }),
       el('td', { class: 'nowrap' }, connect(d))
     ]);
+  }
+
+  function categoryCell(d) {
+    var cur = state.cats[d.ip] || {};
+    if (!state.admin || !d.ip) return document.createTextNode(catOf(d));
+    var sel = el('select', { class: 'cat-select', 'aria-label': 'Category of ' + d.name });
+    sel.appendChild(el('option', { value: '', text: (cur.set ? 'Automatic' : catOf(d) + ' (auto)') }));
+    state.catList.forEach(function (c) { sel.appendChild(el('option', { value: c, text: c })); });
+    sel.value = cur.set ? cur.name : '';
+    sel.addEventListener('change', function () {
+      setCategory([d], sel.value).then(function () { DC.toast(d.name + ': ' + (sel.value || 'automatic category')); render(); },
+        function (e) { DC.toast('Could not set the category: ' + e.message, true); });
+    });
+    return sel;
   }
 
   // ------------------------------------------------------------- rename
@@ -253,32 +306,8 @@
     return b;
   }
 
-  // ------------------------------------------------------------- connect
   function connect(d) {
-    if (!d.ip) return [el('a', { class: 'go', href: DC.glpiForm(d.itemtype, d.id), target: '_blank', rel: 'noopener', text: 'GLPI' })];
-    return [
-      el('a', { class: 'go', href: 'ssh://' + d.ip, title: 'SSH to ' + d.ip, text: 'SSH', onclick: function () {
-        copy('ssh ' + d.ip);
-      } }),
-      el('button', { type: 'button', class: 'go', title: 'Remote Desktop (mstsc) to ' + d.ip, text: 'RDP', onclick: function () { rdp(d); } }),
-      el('a', { class: 'go', href: 'https://' + d.ip + '/', target: '_blank', rel: 'noopener', title: 'Web page of ' + d.ip, text: 'Web' }),
-      el('a', { class: 'go', href: DC.glpiForm(d.itemtype, d.id), target: '_blank', rel: 'noopener', title: 'Open in GLPI', text: 'GLPI' })
-    ];
-  }
-
-  function copy(text) {
-    var ok = function () { DC.toast('Copied "' + text + '" - paste it in MobaXterm or a terminal if no SSH app opened'); };
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(ok, function () {});
-  }
-
-  function rdp(d) {
-    var file = 'full address:s:' + d.ip + '\r\nprompt for credentials:i:1\r\nadministrative session:i:0\r\nscreen mode id:i:2\r\n';
-    var a = el('a', { href: URL.createObjectURL(new Blob([file], { type: 'application/x-rdp' })),
-      download: (d.name || d.ip).replace(/[^\w.-]+/g, '_') + '.rdp' });
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    DC.toast('Open the downloaded ' + a.download + ' to start Remote Desktop');
+    return DC.connectButtons(d.ip, d.name, DC.glpiForm(d.itemtype, d.id));
   }
 
   // ------------------------------------------------------------- add
@@ -292,7 +321,8 @@
 
   function addDevices(e) {
     e.preventDefault();
-    var f = e.target, type = f.type.value, err = [], todo = [];
+    var f = e.target, cat = f.category.value, err = [], todo = [];
+    var type = cat === 'Server' ? 'Computer' : cat === 'Unknown' ? 'Unmanaged' : 'NetworkEquipment';
     var known = {};
     state.devices.forEach(function (d) { d.ips.forEach(function (ip) { known[ip] = d.name; }); });
     f.lines.value.split(/\n/).forEach(function (line, i) {
@@ -313,6 +343,7 @@
     }, Promise.resolve()).then(function () {
       $('add-save').disabled = false;
       DC.mgr('sync', { method: 'POST' }).catch(function () {});
+      if (cat) setCategory(todo, cat).catch(function () {});
       if (failed.length) $('add-error').textContent = 'Added ' + done + ', failed:\n' + failed.join('\n');
       else { $('add-dialog').close(); DC.toast('Added ' + done + ' device(s); their status appears within a minute'); }
       load();
@@ -370,6 +401,15 @@
   $('add-cancel').addEventListener('click', function () { $('add-dialog').close(); });
   $('add-form').addEventListener('submit', addDevices);
   $('del').addEventListener('click', deleteSelected);
+  $('bulk-cat').addEventListener('change', function (e) {
+    var v = e.target.value, list = Object.keys(state.selected).map(function (k) { return state.selected[k]; });
+    e.target.value = '';
+    if (!v) return;
+    setCategory(list, v === '__auto' ? '' : v).then(function () {
+      DC.toast(list.length + ' device(s) set to ' + (v === '__auto' ? 'automatic' : v));
+      render();
+    }, function (err) { DC.toast('Could not set the category: ' + err.message, true); });
+  });
   $('csv').addEventListener('click', exportCsv);
 
   DC.initAuth({

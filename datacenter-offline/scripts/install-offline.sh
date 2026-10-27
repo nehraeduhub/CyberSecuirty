@@ -304,7 +304,8 @@ cat <<MSG
 
 Data centre stack is running.
   GLPI (manage assets, racks, rooms):   $glpi_link
-  DC Viewer - Devices (status, SSH/RDP): $portal/viewer/
+  DC Viewer - Monitor (no sign-in):      $portal/viewer/
+  DC Viewer - Manage devices:            $portal/viewer/devices.html
   DC Viewer - Scan & settings:           $portal/viewer/scan.html
       (sign in with a GLPI Admin/Super-Admin account to add networks and SNMP credentials)
   Grafana (turn on the Status tab in Scan & settings): $portal/grafana/

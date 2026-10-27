@@ -10,7 +10,8 @@ Addresses below are for the default **HTTPS mode** (`TLS=yes` in `.env`). In HTT
 | What | URL on your server | Used for |
 |---|---|---|
 | **GLPI** | `https://<server>/` | Main GUI: data centres, server rooms, racks, assets, cables, tickets, contracts |
-| **DC Viewer – Devices** | `https://<server>:8443/viewer/` | Every device with **live up/down**, name (click to rename), IP, type, brand, model, serial, MAC; **SSH / RDP / Web** buttons; add devices by IP; delete; CSV export |
+| **DC Viewer – Monitor** (NOC) | `https://<server>:8443/viewer/` | **No sign-in.** Live online/offline counts, availability, every **category** (Firewall, Load balancer, Router, Switch, Wireless, Server, Storage, Management, Power …) with its health, an **Offline now** list with how long, and every device as a tile with **SSH / RDP / Web**. Pinged every 15 s, refreshed every 10 s; full-screen for wall displays |
+| **DC Viewer – Manage devices** | `https://<server>:8443/viewer/devices.html` | Rename (click a name), set the **category** per device or for a selection, add devices by IP, delete, CSV export, with brand, model, serial, MAC |
 | **DC Viewer – Scan & settings** | `https://<server>:8443/viewer/scan.html` | Networks to scan, SNMP credentials, scan interval, **Scan now** with progress, and switches for every other feature (sign in as a GLPI Admin/Super-Admin to change) |
 | DC Viewer – Racks, Inventory, Status (Grafana) | `…/viewer/racks.html`, `inventory.html`, `status.html` | Off by default; turn them on under *Scan & settings → Features* |
 | **Learning library** | `https://<server>:8443/glpi-datacenter-library.html` | NehraEduHub GLPI data centre course, works offline |
@@ -45,7 +46,7 @@ Addresses below are for the default **HTTPS mode** (`TLS=yes` in `.env`). In HTT
 2. **Networks to scan**: add each network (`192.168.15.0/24`), a range or a single IP. *Find networks from a router* reads a router's interfaces and routes over SNMP and offers each network it knows.
 3. **SNMP credentials**: add your read-only community (v2c) or SNMPv3 user. With SNMP, devices come in with brand, model, serial number, MAC and ports; without it they are found by ping only and shown as *Unidentified*.
 4. **Save changes**, then **Scan now**. Progress shows on the page; each /24 takes about 1–2 minutes.
-5. **Devices** lists everything with live status (pinged every 30 seconds, refreshed on the page every 30). Click a name to rename it; *Add devices* takes one `IP name` per line.
+5. **Monitor** (`/viewer/`, no sign-in) shows everything live by category. **Manage devices** is where you rename devices, set categories (worked out from brand and model at first) and add devices by IP (one `IP name` per line). Turn *Monitor page without sign-in* off under Features to require a GLPI login.
 
 The settings live in the `dc_settings` Docker volume (`settings.json`, read by the collector and monitor-sync); they are kept across upgrades and included in `scripts/backup.sh`. Networks and credentials in `collector/collector.conf` still work and are used together with the GUI ones. Servers over SSH/WinRM and VMware are still set in `collector.conf` and switched on under *Features*.
 

@@ -8,6 +8,7 @@
   var el = DC.el, $ = DC.$;
 
   var FEATURES = [
+    ['public_monitor', 'Monitor page without sign-in', 'Anyone who can open the portal sees the live status (read-only); changes always need sign-in'],
     ['monitor_unidentified', 'Show status of unidentified devices', 'Ping devices that did not answer SNMP too'],
     ['inventory', 'Inventory tab', 'Charts, network map and collection details'],
     ['grafana', 'Status tab (Grafana)', 'Up/down history, ports, traffic and hardware health dashboards'],
