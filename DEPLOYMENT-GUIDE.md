@@ -125,9 +125,32 @@ cd /opt/dc/dc-offline-bundle-YYYYMMDD
 sudo ./site/datacenter-offline/scripts/preflight.sh
 ```
 
-It checks the OS, CPU, RAM, disk, Docker (or the bundled packages), free ports and NTP, and verifies every bundle file against its checksum. It changes nothing.
+It checks the OS, CPU, RAM, disk, Docker (or the bundled packages), free ports and NTP, and verifies the images, Docker packages and agents against their checksums. It changes nothing.
 
-**Check:** `Result: ready to install`. Fix every **[FAIL]** first, and read the **[WARN]** items.
+**Check:** `Result: ready to install`. Fix every **[FAIL]** first, and read the **[WARN]** items. **Don't start the install while pre-flight shows a FAIL.**
+
+### If ports 80 or 443 are already in use
+
+Another web server on this machine (often Apache or nginx from the OS install) holds the port. See what it is:
+
+```bash
+ss -ltnp | grep -E ':(80|443)\b'
+```
+
+- **You don't need it** (e.g. the default Apache "It works" page): stop it for good, then run pre-flight again.
+  ```bash
+  systemctl disable --now apache2      # or: nginx
+  ```
+- **You need it**: move this stack to free ports. Run the installer once so it creates `.env`; it stops at the port check without starting anything. Then set the ports and run pre-flight again:
+  ```bash
+  cd /opt/dc/dc-offline-bundle-YYYYMMDD
+  nano site/datacenter-offline/.env
+  #   HTTPS_PORT=9443          GLPI          -> https://<server>:9443/
+  #   HTTP_REDIRECT_PORT=8880  redirect      -> http://<server>:8880/
+  #   PORTAL_TLS_PORT=8443     viewer/Grafana (change too if 8443 is taken)
+  sudo ./site/datacenter-offline/scripts/preflight.sh
+  ```
+  The installer puts the ports into every link and redirect. Open your firewall for the new ports instead of 443/80, and give users and agents the GLPI address with the port (e.g. `https://dc.example.lan:9443/`).
 
 ---
 
@@ -249,6 +272,7 @@ Copy `monitoring/manual/your-services.yml.disabled` to `your-services.yml`. Fill
 Only needed for servers you don't inventory over SSH or WinRM. Copy `/opt/dc/dc-offline-bundle-*/agents/` to the server. It already contains `server-ca.crt`, so agents trust your HTTPS certificate. Then:
 
 ```bash
+# with HTTPS_PORT other than 443, include it: https://dc.nehraeduhub.lan:9443/
 sudo ./install-agent-linux.sh https://dc.nehraeduhub.lan/       # Linux
 install-agent-windows.cmd https://dc.nehraeduhub.lan/           # Windows, as Administrator
 ```
@@ -335,7 +359,7 @@ All commands are run in `/opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offl
 
 ### Switching between HTTP and HTTPS
 
-Set `TLS=yes` or `TLS=no` in `.env`, and clear `GLPI_PUBLIC_URL=` and `GRAFANA_ROOT_URL=` so they're recalculated. Then re-run `sudo ./install-offline.sh` from the bundle folder.
+Set `TLS=yes` or `TLS=no` (and the ports, if needed) in `.env`, then re-run `sudo ./install-offline.sh` from the bundle folder. The public URLs are recalculated from `SERVER_NAME` and the ports on every run.
 
 ### Uninstall
 
@@ -350,7 +374,7 @@ sudo docker compose down -v       # ALSO deletes all data: database, files, hist
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `preflight.sh`: port 80/443/8443 in use | Another web server is installed | Stop or remove it (`systemctl disable --now apache2 nginx`) or change `PORTAL_TLS_PORT` |
+| `preflight.sh` or the installer: port 80/443/8443 in use | Another web server is installed | Stop it (`systemctl disable --now apache2 nginx`), or set `HTTPS_PORT`, `HTTP_REDIRECT_PORT`, `PORTAL_TLS_PORT` in `.env` (step 4) |
 | Install stops at "Waiting for GLPI" | Database still initialising on slow disk | `docker compose logs glpi db`; re-run `install-offline.sh` (safe to repeat) |
 | Browser certificate warning | Self-signed certificate | Install your internal CA certificate (Day-2: Replace the HTTPS certificate) |
 | Device not in GLPI | SNMP blocked or wrong credentials | Inventory dashboard → collection errors; test from the server: `docker compose exec collector glpi-netinventory --host <ip> --credentials version:2c,community:<c>` |

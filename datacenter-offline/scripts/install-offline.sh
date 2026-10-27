@@ -45,8 +45,9 @@ docker compose version >/dev/null || { echo "The docker compose plugin is missin
 systemctl is-active --quiet docker 2>/dev/null || systemctl start docker 2>/dev/null || true
 
 if [ -f SHA256SUMS ]; then
+  # Only the downloaded payload: kit files under site/ are yours to edit
   echo "Verifying bundle checksums..."
-  sha256sum --quiet -c SHA256SUMS
+  grep -E '  \./(images|docker|agents)/' SHA256SUMS | sha256sum --quiet -c -
 fi
 
 echo "Loading Docker images..."
@@ -108,17 +109,31 @@ setenv GRAFANA_ADMIN_PASSWORD "$(randpw)"
 setenv MONITOR_GLPI_PASSWORD "$(randpw)"
 server_name=${SERVER_NAME:-$(grep "^SERVER_NAME=" .env | cut -d= -f2)}
 host=${server_name:-${ip:-localhost}}
+setkey() { # key value  (always)
+  if grep -q "^$1=" .env; then sed -i "s#^$1=.*#$1=$2#" .env; else echo "$1=$2" >> .env; fi
+}
+envval() { local v; v=$(grep "^$1=" .env | cut -d= -f2 || true); echo "${v:-$2}"; }
+https_port=$(envval HTTPS_PORT 443)
+redirect_port=$(envval HTTP_REDIRECT_PORT 80)
+portal_tls_port=$(envval PORTAL_TLS_PORT 8443)
+https_suffix() { [ "$1" = 443 ] && echo "" || echo ":$1"; }
+# Public URLs follow SERVER_NAME and the ports on every run
 if [ "$tls" = yes ]; then
-  setenv GLPI_PUBLIC_URL "https://$host/"
-  setenv GRAFANA_ROOT_URL "https://$host:$(grep '^PORTAL_TLS_PORT=' .env | cut -d= -f2 | grep . || echo 8443)/grafana/"
+  setkey GLPI_PUBLIC_URL "https://$host$(https_suffix "$https_port")/"
+  setkey GRAFANA_ROOT_URL "https://$host:$portal_tls_port/grafana/"
   compose_file=docker-compose.yml:docker-compose.tls.yml
+  # nginx redirects must carry the host ports
+  printf '# Written by install-offline.sh from HTTPS_PORT\nreturn 301 https://$host%s$request_uri;\n' \
+    "$(https_suffix "$https_port")" > nginx/snippets/redirect-glpi.conf
+  printf '# Written by install-offline.sh from PORTAL_TLS_PORT\nerror_page 497 =301 https://$host:%s$request_uri;\n' \
+    "$portal_tls_port" > nginx/snippets/redirect-portal.conf
 else
-  setenv GLPI_PUBLIC_URL "http://$host$(port_suffix "$glpi_port")/"
-  setenv GRAFANA_ROOT_URL "http://$host$(port_suffix "${portal_port:-8080}")/grafana/"
+  setkey GLPI_PUBLIC_URL "http://$host$(port_suffix "$glpi_port")/"
+  setkey GRAFANA_ROOT_URL "http://$host$(port_suffix "${portal_port:-8080}")/grafana/"
   compose_file=docker-compose.yml
 fi
 if grep -q '^COMPOSE_FILE=' .env; then sed -i "s#^COMPOSE_FILE=.*#COMPOSE_FILE=$compose_file#" .env; else echo "COMPOSE_FILE=$compose_file" >> .env; fi
-for key in GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION MONITOR_EXCLUDE_STATES GLPI_LOCAL_PORT PORTAL_TLS_PORT; do
+for key in GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION MONITOR_EXCLUDE_STATES GLPI_LOCAL_PORT PORTAL_TLS_PORT HTTPS_PORT HTTP_REDIRECT_PORT; do
   grep -q "^$key=" .env || grep "^$key=" .env.example >> .env
 done
 chmod 600 .env
@@ -174,6 +189,41 @@ else
   [ "${GLPI_PORT:-80}" != "80" ] && glpi_url="$glpi_url + ':$GLPI_PORT'"
 fi
 sed -i "s#^  glpiUrl: .*#  glpiUrl: $glpi_url,#" viewer/config.js
+
+# Is something listening on this TCP port (any address, IPv4 or IPv6)?
+# Reads /proc directly, so it works even where ss/netstat aren't installed.
+port_listening() {
+  local files=() f
+  for f in /proc/net/tcp /proc/net/tcp6; do [ -r "$f" ] && files+=("$f"); done
+  awk -v h="$(printf ':%04X' "$1")" 'FNR > 1 && $4 == "0A" && toupper(substr($2, length($2) - 4)) == h { f = 1 } END { exit !f }' \
+    "${files[@]}"
+}
+port_owner() { { ss -Hltnp "sport = :$1" 2>/dev/null | grep -o 'users:(("[^"]*' | head -1 | cut -d'"' -f2; } || true; }
+# Stop here with a clear message if another program holds one of our ports
+if [ "$tls" = yes ]; then want="$redirect_port $https_port $portal_tls_port 127.0.0.1:${GLPI_LOCAL_PORT:-8081}"
+else want="${GLPI_PORT:-80} ${PORTAL_PORT:-8080}"; fi
+ours=$(docker ps --filter label=com.docker.compose.project=dc --format '{{.Ports}}' 2>/dev/null)
+busy=""
+for p in $want; do
+  port=${p##*:}
+  grep -qE "[:.]$port->" <<<"$ours" && continue      # already ours (re-run / upgrade)
+  if port_listening "$port"; then
+    who=$(port_owner "$port")
+    busy="$busy $port${who:+ ($who)}"
+  fi
+done
+if [ -n "$busy" ]; then
+  cat >&2 <<MSG
+
+Ports already in use by another program:$busy
+Either stop that program (e.g. systemctl disable --now apache2 nginx), or move this
+stack to free ports in $KIT/.env, for example:
+  HTTPS_PORT=9443
+  HTTP_REDIRECT_PORT=8880
+then run ./install-offline.sh again. Nothing was started.
+MSG
+  exit 1
+fi
 
 echo "Starting containers..."
 docker compose up -d
@@ -232,7 +282,7 @@ case "${DISABLE_DEMO_USERS:-no}" in
 esac
 
 if [ "$tls" = yes ]; then
-  glpi_link="https://$host/"; portal="https://$host:${PORTAL_TLS_PORT:-8443}"
+  glpi_link="https://$host$(https_suffix "$https_port")/"; portal="https://$host:$portal_tls_port"
 else
   glpi_link="http://$host$(port_suffix "${GLPI_PORT:-80}")/"; portal="http://$host:${PORTAL_PORT:-8080}"
 fi

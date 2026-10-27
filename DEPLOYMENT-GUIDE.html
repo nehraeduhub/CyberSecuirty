@@ -230,8 +230,26 @@ SERVER_OS=ubuntu:24.04 ./datacenter-offline/scripts/prepare-offline-bundle.sh
 <pre><code class="language-bash">cd /opt/dc/dc-offline-bundle-YYYYMMDD
 sudo ./site/datacenter-offline/scripts/preflight.sh
 </code></pre>
-<p>It checks the OS, CPU, RAM, disk, Docker (or the bundled packages), free ports and NTP, and verifies every bundle file against its checksum. It changes nothing.</p>
-<p><strong>Check:</strong> <code>Result: ready to install</code>. Fix every <strong>[FAIL]</strong> first, and read the <strong>[WARN]</strong> items.</p>
+<p>It checks the OS, CPU, RAM, disk, Docker (or the bundled packages), free ports and NTP, and verifies the images, Docker packages and agents against their checksums. It changes nothing.</p>
+<p><strong>Check:</strong> <code>Result: ready to install</code>. Fix every <strong>[FAIL]</strong> first, and read the <strong>[WARN]</strong> items. <strong>Don't start the install while pre-flight shows a FAIL.</strong></p>
+<h3 id="if-ports-80-or-443-are-already-in-use">If ports 80 or 443 are already in use</h3>
+<p>Another web server on this machine (often Apache or nginx from the OS install) holds the port. See what it is:</p>
+<pre><code class="language-bash">ss -ltnp | grep -E ':(80|443)\b'
+</code></pre>
+<ul>
+<li><strong>You don't need it</strong> (e.g. the default Apache "It works" page): stop it for good, then run pre-flight again.
+  <code>bash
+  systemctl disable --now apache2      # or: nginx</code></li>
+<li><strong>You need it</strong>: move this stack to free ports. Run the installer once so it creates <code>.env</code>; it stops at the port check without starting anything. Then set the ports and run pre-flight again:
+  <code>bash
+  cd /opt/dc/dc-offline-bundle-YYYYMMDD
+  nano site/datacenter-offline/.env
+  #   HTTPS_PORT=9443          GLPI          -&gt; https://&lt;server&gt;:9443/
+  #   HTTP_REDIRECT_PORT=8880  redirect      -&gt; http://&lt;server&gt;:8880/
+  #   PORTAL_TLS_PORT=8443     viewer/Grafana (change too if 8443 is taken)
+  sudo ./site/datacenter-offline/scripts/preflight.sh</code>
+  The installer puts the ports into every link and redirect. Open your firewall for the new ports instead of 443/80, and give users and agents the GLPI address with the port (e.g. <code>https://dc.example.lan:9443/</code>).</li>
+</ul>
 <hr />
 <h2 id="step-5-install">Step 5: Install</h2>
 <pre><code class="language-bash">cd /opt/dc/dc-offline-bundle-YYYYMMDD
@@ -313,7 +331,8 @@ python3 scripts/import_layout.py --url http://127.0.0.1:8081 --user glpi \
 <p>Copy <code>monitoring/manual/your-services.yml.disabled</code> to <code>your-services.yml</code>. Fill in the addresses of the Sophos web admin, Alteon VIPs, vCenter, the VME Manager and the Accesleron portal. These are picked up within a minute.</p>
 <h3 id="75-glpi-agents-optional">7.5 GLPI Agents (optional)</h3>
 <p>Only needed for servers you don't inventory over SSH or WinRM. Copy <code>/opt/dc/dc-offline-bundle-*/agents/</code> to the server. It already contains <code>server-ca.crt</code>, so agents trust your HTTPS certificate. Then:</p>
-<pre><code class="language-bash">sudo ./install-agent-linux.sh https://dc.nehraeduhub.lan/       # Linux
+<pre><code class="language-bash"># with HTTPS_PORT other than 443, include it: https://dc.nehraeduhub.lan:9443/
+sudo ./install-agent-linux.sh https://dc.nehraeduhub.lan/       # Linux
 install-agent-windows.cmd https://dc.nehraeduhub.lan/           # Windows, as Administrator
 </code></pre>
 <hr />
@@ -414,7 +433,7 @@ sudo ./scripts/backup.sh            # database + GLPI files + .env -&gt; backups
 </ol>
 <p><strong>Rollback:</strong> run <code>install-offline.sh</code> from the <strong>old</strong> folder, then restore the backup from step 2 (see README <em>Restore</em>). A database that GLPI has already upgraded can't be used by the older version without that restore.</p>
 <h3 id="switching-between-http-and-https">Switching between HTTP and HTTPS</h3>
-<p>Set <code>TLS=yes</code> or <code>TLS=no</code> in <code>.env</code>, and clear <code>GLPI_PUBLIC_URL=</code> and <code>GRAFANA_ROOT_URL=</code> so they're recalculated. Then re-run <code>sudo ./install-offline.sh</code> from the bundle folder.</p>
+<p>Set <code>TLS=yes</code> or <code>TLS=no</code> (and the ports, if needed) in <code>.env</code>, then re-run <code>sudo ./install-offline.sh</code> from the bundle folder. The public URLs are recalculated from <code>SERVER_NAME</code> and the ports on every run.</p>
 <h3 id="uninstall">Uninstall</h3>
 <pre><code class="language-bash">sudo docker compose down          # stop and remove containers (data volumes are kept)
 sudo docker compose down -v       # ALSO deletes all data: database, files, history
@@ -431,9 +450,9 @@ sudo docker compose down -v       # ALSO deletes all data: database, files, hist
 </thead>
 <tbody>
 <tr>
-<td><code>preflight.sh</code>: port 80/443/8443 in use</td>
+<td><code>preflight.sh</code> or the installer: port 80/443/8443 in use</td>
 <td>Another web server is installed</td>
-<td>Stop or remove it (<code>systemctl disable --now apache2 nginx</code>) or change <code>PORTAL_TLS_PORT</code></td>
+<td>Stop it (<code>systemctl disable --now apache2 nginx</code>), or set <code>HTTPS_PORT</code>, <code>HTTP_REDIRECT_PORT</code>, <code>PORTAL_TLS_PORT</code> in <code>.env</code> (step 4)</td>
 </tr>
 <tr>
 <td>Install stops at "Waiting for GLPI"</td>

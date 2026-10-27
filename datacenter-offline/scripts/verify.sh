@@ -16,7 +16,7 @@ prom() { docker compose exec -T prometheus wget -qO- "http://localhost:9090/api/
 
 tls=$(tr 'A-Z' 'a-z' <<<"${TLS:-no}")
 if [ "$tls" = yes ]; then
-  glpi_local="http://127.0.0.1:${GLPI_LOCAL_PORT:-8081}"; glpi_user="https://127.0.0.1"; portal="https://127.0.0.1:${PORTAL_TLS_PORT:-8443}"
+  glpi_local="http://127.0.0.1:${GLPI_LOCAL_PORT:-8081}"; glpi_user="https://127.0.0.1:${HTTPS_PORT:-443}"; portal="https://127.0.0.1:${PORTAL_TLS_PORT:-8443}"
 else
   glpi_local="http://127.0.0.1:${GLPI_PORT:-80}"; glpi_user="$glpi_local"; portal="http://127.0.0.1:${PORTAL_PORT:-8080}"
 fi
@@ -41,8 +41,8 @@ c=$(code "$portal/viewer/"); [ "$c" = 200 ] && pass "DC Viewer: $portal/viewer/"
 c=$(code "$portal/glpi-datacenter-library.html"); [ "$c" = 200 ] && pass "Learning library" || fail "Learning library returned ${c:-nothing}"
 c=$(code "$portal/grafana/api/health"); [ "$c" = 200 ] && pass "Grafana" || fail "Grafana returned ${c:-nothing}"
 if [ "$tls" = yes ]; then
-  c=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://127.0.0.1/ 2>/dev/null)
-  [ "$c" = 301 ] && pass "HTTP redirects to HTTPS" || warn "HTTP on port 80 returned ${c:-nothing} (expected a redirect)"
+  c=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "http://127.0.0.1:${HTTP_REDIRECT_PORT:-80}/" 2>/dev/null)
+  [ "$c" = 301 ] && pass "HTTP (port ${HTTP_REDIRECT_PORT:-80}) redirects to HTTPS" || warn "HTTP on port ${HTTP_REDIRECT_PORT:-80} returned ${c:-nothing} (expected a redirect)"
   if command -v openssl >/dev/null; then
     end=$(openssl x509 -in tls/server.crt -noout -enddate 2>/dev/null | cut -d= -f2)
   else

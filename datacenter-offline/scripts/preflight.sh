@@ -83,13 +83,31 @@ command -v python3 >/dev/null && pass "python3 (for import_layout.py)" || warn "
 
 echo
 echo "Network"
-tls=$(grep -s '^TLS=' "$KIT/.env" "$KIT/.env.example" | head -1 | cut -d= -f2)
-if [ "${tls:-yes}" = yes ]; then ports="80 443 ${PORTAL_TLS_PORT:-8443}"; else ports="80 8080"; fi
-listening=$(ss -Hltn 2>/dev/null | awk '{print $4}' || netstat -ltn 2>/dev/null | awk 'NR>2 {print $4}')
+# Settings from .env (after a first run) or the defaults in .env.example
+setting() {
+  local v
+  v=$(cat "$KIT/.env" "$KIT/.env.example" 2>/dev/null | grep "^$1=" | head -1 | cut -d= -f2)
+  echo "${v:-$2}"
+}
+tls=$(setting TLS yes)
+if [ "$tls" = yes ]; then ports="$(setting HTTP_REDIRECT_PORT 80) $(setting HTTPS_PORT 443) $(setting PORTAL_TLS_PORT 8443)"
+else ports="$(setting GLPI_PORT 80) $(setting PORTAL_PORT 8080)"; fi
+# Is something listening on this TCP port (any address, IPv4 or IPv6)?
+# Reads /proc directly, so it works even where ss/netstat aren't installed.
+port_listening() {
+  local files=() f
+  for f in /proc/net/tcp /proc/net/tcp6; do [ -r "$f" ] && files+=("$f"); done
+  awk -v h="$(printf ':%04X' "$1")" 'FNR > 1 && $4 == "0A" && toupper(substr($2, length($2) - 4)) == h { f = 1 } END { exit !f }' \
+    "${files[@]}"
+}
+port_owner() { { ss -Hltnp "sport = :$1" 2>/dev/null | grep -o 'users:(("[^"]*' | head -1 | cut -d'"' -f2; } || true; }
 for p in $ports; do
-  if grep -qE "[:.]$p\$" <<<"$listening"; then
+  if port_listening "$p"; then
     if docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^dc-portal-1$'; then pass "Port $p in use by this stack (upgrade)"
-    else fail "Port $p is already in use by another service"; fi
+    else
+      who=$(port_owner "$p")
+      fail "Port $p is already in use${who:+ by '$who'}: stop it, or set other ports in .env (DEPLOYMENT-GUIDE, step 4)"
+    fi
   else
     pass "Port $p free"
   fi
@@ -104,7 +122,8 @@ fi
 echo
 echo "Bundle"
 if [ -f "$BUNDLE/SHA256SUMS" ]; then
-  (cd "$BUNDLE" && sha256sum --quiet -c SHA256SUMS 2>/dev/null) && pass "All bundle files intact (SHA256SUMS)" \
+  (cd "$BUNDLE" && grep -E '  \./(images|docker|agents)/' SHA256SUMS | sha256sum --quiet -c - 2>/dev/null) \
+    && pass "Images, Docker packages and agents intact (SHA256SUMS)" \
     || fail "Bundle files damaged: copy the archive again"
 else
   warn "No SHA256SUMS found next to the bundle"
