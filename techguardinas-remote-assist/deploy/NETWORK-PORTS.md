@@ -16,7 +16,7 @@ from the internal CA with both names as SANs. Endpoints and technician PCs must 
 | 6 | Server | AD domain controllers | TCP 636 (LDAPS) | Only if AD login is enabled |
 | 7 | Server, technician PCs | NTP | UDP 123 | TOTP MFA requires correct clocks on server and phones/PCs |
 | 8 | Server | internal DNS | UDP/TCP 53 | Name resolution |
-| — | Any browser | server | TCP 80 | Optional: redirect to HTTPS only |
+| — | Any browser | server | TCP 80 (or `HTTP_PORT`, e.g. 8008) | Optional: redirect to HTTPS only |
 
 **Relay traffic** is flow 4 (agent side) and flow 2 (technician side): MeshCentral relays every
 desktop, terminal and file session between the two TLS connections on TCP 443. WebRTC/peer-to-peer

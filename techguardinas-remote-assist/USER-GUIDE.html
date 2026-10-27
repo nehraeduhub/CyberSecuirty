@@ -157,7 +157,7 @@ Add-DnsServerResourceRecordA -ZoneName &quot;techguardinas.local&quot; -Name &qu
 <tr>
 <td>All MPLS subnets</td>
 <td>Server</td>
-<td>TCP 80 (optional)</td>
+<td>TCP 80 (optional; <strong>8008</strong> if 80 is already used on the server)</td>
 <td>Redirects to HTTPS only</td>
 </tr>
 <tr>
@@ -186,6 +186,7 @@ sudo ./setup.sh install
 2. <strong>Engine host name</strong> — press Enter to accept <code>mesh.remote.techguardinas.local</code>
 3. <strong>Server IP</strong> — detected automatically; confirm
 4. <strong>Administrator user name</strong> — default <code>tgadmin</code></p>
+<p>If TCP 80 is already used by another program, the installer uses <strong>TCP 8008</strong> for the HTTP→HTTPS redirect (or set <code>HTTP_PORT=&lt;port&gt;</code> before running it). HTTPS always stays on 443.</p>
 <p>The installer then checks the server, loads the images, writes <code>.env</code> with random secrets, creates or uses the certificate, generates the engine key, opens the firewall, starts all services and confirms that the portal and engine respond. The first administrator password is written to <strong><code>ADMIN-CREDENTIALS.txt</code></strong> (readable by root only) — note it, then delete the file.</p>
 <p>Unattended example:</p>
 <pre><code class="language-bash">sudo ASSUME_YES=1 PORTAL_HOSTNAME=remote.techguardinas.local MESH_HOSTNAME=mesh.remote.techguardinas.local SERVER_IP=10.20.30.40 ./setup.sh install

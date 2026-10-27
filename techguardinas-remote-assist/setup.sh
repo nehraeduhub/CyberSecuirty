@@ -45,6 +45,10 @@ build_images() {
 }
 
 # ------------------------------------------------------------------ install
+port_busy() { # true when another program (not our NGINX container) listens on TCP $1
+  ss -ltn "( sport = :$1 )" 2>/dev/null | grep -q LISTEN && ! docker ps --format '{{.Names}}' | grep -q techguardinas-remote-nginx
+}
+
 check_host() {
   [ "$(uname -s)" = Linux ] || die "Linux is required"
   command -v docker >/dev/null || die "Docker Engine is not installed. See USER-GUIDE §2 (offline packages for Ubuntu/RHEL)."
@@ -56,12 +60,16 @@ check_host() {
   [ "$mem" -ge 3 ] || c_warn "Only ${mem} GB RAM; 4 GB or more is recommended"
   local free; free=$(df -Pk . | awk 'NR==2 {print int($4/1024/1024)}')
   [ "$free" -ge 10 ] || c_warn "Only ${free} GB free disk; 20 GB or more is recommended"
-  for p in 80 443; do
-    if ss -ltn "( sport = :$p )" 2>/dev/null | grep -q LISTEN && ! docker ps --format '{{.Names}}' | grep -q techguardinas-remote-nginx; then
-      die "TCP port $p is already in use on this server. Stop that service first."
-    fi
+  # HTTP port only redirects to HTTPS. Default 80; if 80 is taken by another service, use 8008.
+  [ -z "${HTTP_PORT:-}" ] && [ -f .env ] && HTTP_PORT=$(sed -n 's/^HTTP_PORT=//p' .env)
+  if [ -z "${HTTP_PORT:-}" ]; then
+    if port_busy 80; then HTTP_PORT=8008; c_warn "TCP 80 is in use by another service; using TCP 8008 for the HTTP redirect"; else HTTP_PORT=80; fi
+  fi
+  export HTTP_PORT
+  for p in "$HTTP_PORT" 443; do
+    port_busy "$p" && die "TCP port $p is already in use on this server. Stop that service, or set HTTP_PORT=<free port> for the HTTP redirect."
   done
-  c_ok "Host checks passed"
+  c_ok "Host checks passed (HTTPS 443, HTTP redirect $HTTP_PORT)"
 }
 
 load_images() {
@@ -87,7 +95,10 @@ load_images() {
 }
 
 write_env() {
-  if [ -f .env ]; then c_ok ".env exists — keeping it"; set -a; . ./.env; set +a; return; fi
+  if [ -f .env ]; then
+    grep -q '^HTTP_PORT=' .env || echo "HTTP_PORT=$HTTP_PORT" >> .env
+    c_ok ".env exists — keeping it"; set -a; . ./.env; set +a; return
+  fi
   local ip; ip=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}' || true)
   [ -n "$ip" ] || ip=$(hostname -I 2>/dev/null | awk '{print $1}')
   ask PORTAL_HOSTNAME "Portal host name (internal DNS)" "remote.techguardinas.local"
@@ -108,6 +119,7 @@ write_env() {
       -e "s/^BOOTSTRAP_ADMIN_PASSWORD=.*/BOOTSTRAP_ADMIN_PASSWORD=$ADMIN_PASSWORD/" \
       .env.example > .env
   echo "SERVER_IP=$SERVER_IP" >> .env
+  echo "HTTP_PORT=$HTTP_PORT" >> .env
   chmod 600 .env
   printf 'Portal: https://%s\nUser: %s\nPassword: %s\n(Change it after first login. Delete this file afterwards.)\n' \
     "$PORTAL_HOSTNAME" "$ADMIN_USER" "$ADMIN_PASSWORD" > ADMIN-CREDENTIALS.txt
@@ -145,9 +157,9 @@ make_certs() {
 
 open_firewall() {
   if command -v ufw >/dev/null && ufw status 2>/dev/null | grep -q "Status: active"; then
-    ufw allow 443/tcp >/dev/null; ufw allow 80/tcp >/dev/null; c_ok "ufw: opened TCP 443 and 80"
+    ufw allow 443/tcp >/dev/null; ufw allow "$HTTP_PORT/tcp" >/dev/null; c_ok "ufw: opened TCP 443 and $HTTP_PORT"
   elif command -v firewall-cmd >/dev/null && firewall-cmd --state >/dev/null 2>&1; then
-    firewall-cmd -q --permanent --add-service=https --add-service=http && firewall-cmd -q --reload; c_ok "firewalld: opened https and http"
+    firewall-cmd -q --permanent --add-service=https --add-port="$HTTP_PORT/tcp" && firewall-cmd -q --reload; c_ok "firewalld: opened TCP 443 and $HTTP_PORT"
   else
     c_info "No active host firewall detected (ufw/firewalld); make sure TCP 443 is allowed to this server"
   fi

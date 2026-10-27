@@ -124,7 +124,7 @@ Choose one:
 | From | To | Port | Why |
 |---|---|---|---|
 | All MPLS user and PC subnets | Server | **TCP 443** | Portal, console, agents and relay — everything |
-| All MPLS subnets | Server | TCP 80 (optional) | Redirects to HTTPS only |
+| All MPLS subnets | Server | TCP 80 (optional; **8008** if 80 is already used on the server) | Redirects to HTTPS only |
 | Server | Domain controllers | TCP 636 | Only if AD login is enabled |
 | Server, PCs | NTP server | UDP 123 | Correct time is required for MFA codes |
 
@@ -146,6 +146,8 @@ You will be asked for:
 2. **Engine host name** — press Enter to accept `mesh.remote.techguardinas.local`
 3. **Server IP** — detected automatically; confirm
 4. **Administrator user name** — default `tgadmin`
+
+If TCP 80 is already used by another program, the installer uses **TCP 8008** for the HTTP→HTTPS redirect (or set `HTTP_PORT=<port>` before running it). HTTPS always stays on 443.
 
 The installer then checks the server, loads the images, writes `.env` with random secrets, creates or uses the certificate, generates the engine key, opens the firewall, starts all services and confirms that the portal and engine respond. The first administrator password is written to **`ADMIN-CREDENTIALS.txt`** (readable by root only) — note it, then delete the file.
 
