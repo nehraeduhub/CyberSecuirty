@@ -107,12 +107,14 @@ glpi_port=$(grep '^GLPI_PORT=' .env | cut -d= -f2)
 portal_port=$(grep '^PORTAL_PORT=' .env | cut -d= -f2)
 setenv GRAFANA_ADMIN_PASSWORD "$(randpw)"
 setenv MONITOR_GLPI_PASSWORD "$(randpw)"
-server_name=${SERVER_NAME:-$(grep "^SERVER_NAME=" .env | cut -d= -f2)}
+server_name=${SERVER_NAME:-$(grep "^SERVER_NAME=" .env | cut -d= -f2 || true)}
 host=${server_name:-${ip:-localhost}}
 setkey() { # key value  (always)
   if grep -q "^$1=" .env; then sed -i "s#^$1=.*#$1=$2#" .env; else echo "$1=$2" >> .env; fi
 }
 envval() { local v; v=$(grep "^$1=" .env | cut -d= -f2 || true); echo "${v:-$2}"; }
+# Remember a SERVER_NAME given on the command line for later runs and upgrades
+[ -n "$server_name" ] && setkey SERVER_NAME "$server_name"
 https_port=$(envval HTTPS_PORT 443)
 redirect_port=$(envval HTTP_REDIRECT_PORT 80)
 portal_tls_port=$(envval PORTAL_TLS_PORT 8443)
