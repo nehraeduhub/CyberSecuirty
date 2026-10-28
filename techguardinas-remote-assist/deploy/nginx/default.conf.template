@@ -8,6 +8,18 @@ server {
     return 301 https://$host:${HTTPS_PORT}$request_uri;
 }
 
+# Any other host name or the bare IP address (e.g. https://10.20.30.40:7443): send the browser to the portal
+# name. The portal and the console only work under their DNS names (certificate, cookies, Django host check).
+server {
+    listen ${HTTPS_PORT} ssl default_server;
+    server_name _;
+    ssl_certificate     /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    server_tokens off;
+    return 301 https://${PORTAL_HOSTNAME}:${HTTPS_PORT}$request_uri;
+}
+
 # ---------------------------------------------------------------- portal
 server {
     listen ${HTTPS_PORT} ssl;

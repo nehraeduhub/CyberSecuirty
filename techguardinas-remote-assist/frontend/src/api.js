@@ -19,7 +19,10 @@ async function request(method, path, body) {
   let data = null;
   try { data = await res.json(); } catch { data = null; }
   if (!res.ok) {
-    const msg = (data && (data.detail || data.error)) || `Request failed (${res.status})`;
+    let msg = (data && (data.detail || data.error)) || `Request failed (${res.status})`;
+    if (!data && res.status === 400) {
+      msg = 'Bad request: open the portal by its DNS name (as configured at install), not by IP address or another name.';
+    }
     throw new ApiError(msg, res.status);
   }
   return data;

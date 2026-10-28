@@ -274,6 +274,7 @@ Schedule a nightly backup: `echo '30 1 * * * root cd /opt/techguardinas-remote-a
 
 | Symptom | Check |
 |---|---|
+| "Request failed (400)" / "Bad Request (400)" | You opened the portal by IP or by a name that was not configured. Use the portal name chosen at install (with `:port` if not 443); add the DNS records (4.2), or for a quick test a hosts-file entry on the PC: `<server IP>  <portal name>  mesh.<portal name>`. |
 | Browser shows a certificate warning | The CA is not trusted on that PC (4.3), or you opened the IP instead of the host name. |
 | Page does not open from a remote site | DNS record (`nslookup`), routing/firewall to TCP 443, proxy bypass for both names. |
 | Console area stays blank | `mesh.remote…` blocked or not resolving from the technician's PC. |
