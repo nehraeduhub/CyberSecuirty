@@ -5,9 +5,10 @@
 #   On the MPLS server (no Internet needed):   sudo ./setup.sh install
 #   Day-2:                                     sudo ./setup.sh status | start | stop | restart | logs [svc]
 #                                              sudo ./setup.sh backup | export-ca | reset-admin-password | uninstall
+#                                              sudo ./setup.sh set-ports --https 7443 --http 8008
 #
-# Non-interactive install: set PORTAL_HOSTNAME, MESH_HOSTNAME, SERVER_IP (optional), ADMIN_USER and
-# ASSUME_YES=1 in the environment.
+# Non-interactive install: set PORTAL_HOSTNAME, MESH_HOSTNAME, SERVER_IP (optional), ADMIN_USER,
+# HTTPS_PORT / HTTP_PORT (optional) and ASSUME_YES=1 in the environment.
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
 ROOT=$(pwd)
@@ -49,6 +50,20 @@ port_busy() { # true when another program (not our NGINX container) listens on T
   ss -ltn "( sport = :$1 )" 2>/dev/null | grep -q LISTEN && ! docker ps --format '{{.Names}}' | grep -q techguardinas-remote-nginx
 }
 
+pick_port() { # pick_port VAR default fallback label
+  local var=$1 def=$2 alt=$3 label=$4
+  [ -z "${!var:-}" ] && [ -f .env ] && printf -v "$var" '%s' "$(sed -n "s/^$var=//p" .env)"
+  if [ -z "${!var:-}" ]; then
+    if port_busy "$def"; then printf -v "$var" '%s' "$alt"; c_warn "TCP $def is in use by another program; using TCP $alt for $label"
+    else printf -v "$var" '%s' "$def"; fi
+  fi
+  export "${var?}"
+}
+
+url_for() { # https URL for a host name on HTTPS_PORT (no ":443" when default)
+  if [ "${HTTPS_PORT:-443}" = 443 ]; then echo "https://$1"; else echo "https://$1:$HTTPS_PORT"; fi
+}
+
 check_host() {
   [ "$(uname -s)" = Linux ] || die "Linux is required"
   command -v docker >/dev/null || die "Docker Engine is not installed. See USER-GUIDE §2 (offline packages for Ubuntu/RHEL)."
@@ -60,16 +75,15 @@ check_host() {
   [ "$mem" -ge 3 ] || c_warn "Only ${mem} GB RAM; 4 GB or more is recommended"
   local free; free=$(df -Pk . | awk 'NR==2 {print int($4/1024/1024)}')
   [ "$free" -ge 10 ] || c_warn "Only ${free} GB free disk; 20 GB or more is recommended"
-  # HTTP port only redirects to HTTPS. Default 80; if 80 is taken by another service, use 8008.
-  [ -z "${HTTP_PORT:-}" ] && [ -f .env ] && HTTP_PORT=$(sed -n 's/^HTTP_PORT=//p' .env)
-  if [ -z "${HTTP_PORT:-}" ]; then
-    if port_busy 80; then HTTP_PORT=8008; c_warn "TCP 80 is in use by another service; using TCP 8008 for the HTTP redirect"; else HTTP_PORT=80; fi
-  fi
-  export HTTP_PORT
-  for p in "$HTTP_PORT" 443; do
-    port_busy "$p" && die "TCP port $p is already in use on this server. Stop that service, or set HTTP_PORT=<free port> for the HTTP redirect."
+  # HTTPS (everything) defaults to 443, HTTP (redirect only) to 80. If another program already uses
+  # one of them, 7443 / 8008 are used instead. Values in .env (earlier install) are kept.
+  pick_port HTTPS_PORT 443 7443 "HTTPS"
+  pick_port HTTP_PORT 80 8008 "the HTTP redirect"
+  [ "$HTTPS_PORT" != "$HTTP_PORT" ] || die "HTTPS_PORT and HTTP_PORT must differ"
+  for p in "$HTTPS_PORT" "$HTTP_PORT"; do
+    port_busy "$p" && die "TCP port $p is already in use on this server. Choose another: HTTPS_PORT=<port> HTTP_PORT=<port> ./setup.sh install"
   done
-  c_ok "Host checks passed (HTTPS 443, HTTP redirect $HTTP_PORT)"
+  c_ok "Host checks passed (HTTPS port $HTTPS_PORT, HTTP redirect port $HTTP_PORT)"
 }
 
 load_images() {
@@ -96,6 +110,7 @@ load_images() {
 
 write_env() {
   if [ -f .env ]; then
+    grep -q '^HTTPS_PORT=' .env || echo "HTTPS_PORT=$HTTPS_PORT" >> .env
     grep -q '^HTTP_PORT=' .env || echo "HTTP_PORT=$HTTP_PORT" >> .env
     c_ok ".env exists — keeping it"; set -a; . ./.env; set +a; return
   fi
@@ -111,18 +126,19 @@ write_env() {
       -e "s/^MESH_HOSTNAME=.*/MESH_HOSTNAME=$MESH_HOSTNAME/" \
       -e "s|^DJANGO_SECRET_KEY=.*|DJANGO_SECRET_KEY=$(rand 50)|" \
       -e "s/^DJANGO_ALLOWED_HOSTS=.*/DJANGO_ALLOWED_HOSTS=$PORTAL_HOSTNAME/" \
-      -e "s|^CSRF_TRUSTED_ORIGINS=.*|CSRF_TRUSTED_ORIGINS=https://$PORTAL_HOSTNAME|" \
-      -e "s|^PORTAL_PUBLIC_URL=.*|PORTAL_PUBLIC_URL=https://$PORTAL_HOSTNAME|" \
-      -e "s|^MESH_PUBLIC_URL=.*|MESH_PUBLIC_URL=https://$MESH_HOSTNAME|" \
+      -e "s|^CSRF_TRUSTED_ORIGINS=.*|CSRF_TRUSTED_ORIGINS=$(url_for "$PORTAL_HOSTNAME")|" \
+      -e "s|^PORTAL_PUBLIC_URL=.*|PORTAL_PUBLIC_URL=$(url_for "$PORTAL_HOSTNAME")|" \
+      -e "s|^MESH_PUBLIC_URL=.*|MESH_PUBLIC_URL=$(url_for "$MESH_HOSTNAME")|" \
       -e "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(rand 32)/" \
       -e "s/^BOOTSTRAP_ADMIN_USERNAME=.*/BOOTSTRAP_ADMIN_USERNAME=$ADMIN_USER/" \
       -e "s/^BOOTSTRAP_ADMIN_PASSWORD=.*/BOOTSTRAP_ADMIN_PASSWORD=$ADMIN_PASSWORD/" \
       .env.example > .env
   echo "SERVER_IP=$SERVER_IP" >> .env
+  echo "HTTPS_PORT=$HTTPS_PORT" >> .env
   echo "HTTP_PORT=$HTTP_PORT" >> .env
   chmod 600 .env
-  printf 'Portal: https://%s\nUser: %s\nPassword: %s\n(Change it after first login. Delete this file afterwards.)\n' \
-    "$PORTAL_HOSTNAME" "$ADMIN_USER" "$ADMIN_PASSWORD" > ADMIN-CREDENTIALS.txt
+  printf 'Portal: %s\nUser: %s\nPassword: %s\n(Change it after first login. Delete this file afterwards.)\n' \
+    "$(url_for "$PORTAL_HOSTNAME")" "$ADMIN_USER" "$ADMIN_PASSWORD" > ADMIN-CREDENTIALS.txt
   chmod 600 ADMIN-CREDENTIALS.txt
   set -a; . ./.env; set +a
   c_ok "Configuration written to .env (secrets generated)"
@@ -155,13 +171,17 @@ make_certs() {
   c_warn "Distribute TechGuardinas-Remote-Internal-CA.crt to every PC by GPO (USER-GUIDE §4). Keep deploy/certs/ca.key offline/safe."
 }
 
-open_firewall() {
+open_firewall() { # open_firewall [old_https old_http] — opens the current ports (and closes old ones if given)
+  local p
   if command -v ufw >/dev/null && ufw status 2>/dev/null | grep -q "Status: active"; then
-    ufw allow 443/tcp >/dev/null; ufw allow "$HTTP_PORT/tcp" >/dev/null; c_ok "ufw: opened TCP 443 and $HTTP_PORT"
+    for p in "$@"; do ufw delete allow "$p/tcp" >/dev/null 2>&1 || true; done
+    ufw allow "$HTTPS_PORT/tcp" >/dev/null; ufw allow "$HTTP_PORT/tcp" >/dev/null; c_ok "ufw: opened TCP $HTTPS_PORT and $HTTP_PORT"
   elif command -v firewall-cmd >/dev/null && firewall-cmd --state >/dev/null 2>&1; then
-    firewall-cmd -q --permanent --add-service=https --add-port="$HTTP_PORT/tcp" && firewall-cmd -q --reload; c_ok "firewalld: opened TCP 443 and $HTTP_PORT"
+    for p in "$@"; do firewall-cmd -q --permanent --remove-port="$p/tcp" 2>/dev/null || true; done
+    firewall-cmd -q --permanent --add-port="$HTTPS_PORT/tcp" --add-port="$HTTP_PORT/tcp" && firewall-cmd -q --reload
+    c_ok "firewalld: opened TCP $HTTPS_PORT and $HTTP_PORT"
   else
-    c_info "No active host firewall detected (ufw/firewalld); make sure TCP 443 is allowed to this server"
+    c_info "No active host firewall detected (ufw/firewalld); make sure TCP $HTTPS_PORT is allowed to this server"
   fi
 }
 
@@ -169,8 +189,8 @@ wait_healthy() {
   c_info "Waiting for the services to come up…"
   local i code1 code2
   for i in $(seq 1 90); do
-    code1=$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' --cacert deploy/certs/ca.crt --resolve "$PORTAL_HOSTNAME:443:127.0.0.1" "https://$PORTAL_HOSTNAME/api/health/" || true)
-    code2=$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' --cacert deploy/certs/ca.crt --resolve "$MESH_HOSTNAME:443:127.0.0.1" "https://$MESH_HOSTNAME/" || true)
+    code1=$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' --cacert deploy/certs/ca.crt --resolve "$PORTAL_HOSTNAME:${HTTPS_PORT:-443}:127.0.0.1" "$(url_for "$PORTAL_HOSTNAME")/api/health/" || true)
+    code2=$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' --cacert deploy/certs/ca.crt --resolve "$MESH_HOSTNAME:${HTTPS_PORT:-443}:127.0.0.1" "$(url_for "$MESH_HOSTNAME")/" || true)
     if [ "$code1" = 200 ] && [ "$code2" = 200 ]; then c_ok "Portal and remote engine are answering on HTTPS"; return 0; fi
     sleep 2
   done
@@ -202,9 +222,10 @@ print('engine control channel OK')" >/dev/null 2>&1 && c_ok "Portal can control 
       $PORTAL_HOSTNAME   ->  ${SERVER_IP:-<server IP>}
       $MESH_HOSTNAME     ->  ${SERVER_IP:-<server IP>}
  2. Trust the CA on every PC (GPO): deploy/certs/ca.crt
- 3. Open https://$PORTAL_HOSTNAME and sign in with the account in
+ 3. Firewall: allow TCP $HTTPS_PORT (and optionally $HTTP_PORT) from all sites to this server
+ 4. Open $(url_for "$PORTAL_HOSTNAME") and sign in with the account in
       $ROOT/ADMIN-CREDENTIALS.txt
- 4. Continue with USER-GUIDE §5 (first login and setup).
+ 5. Continue with USER-GUIDE §5 (first login and setup).
 ────────────────────────────────────────────────────────────────────
 EOF
 }
@@ -212,10 +233,50 @@ EOF
 status() {
   set -a; . ./.env; set +a
   dc ps
-  ./deploy/healthcheck.sh 2>/dev/null || wait_healthy
+  wait_healthy
 }
 
 backup() { need_root backup; ./deploy/backup-postgres.sh; }
+
+set_ports() {
+  need_root set-ports
+  [ -f .env ] || die "Not installed yet. Use: HTTPS_PORT=<port> HTTP_PORT=<port> ./setup.sh install"
+  set -a; . ./.env; set +a
+  local old_https=${HTTPS_PORT:-443} old_http=${HTTP_PORT:-80} new_https="" new_http=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --https) new_https=${2:-}; shift 2 ;;
+      --http) new_http=${2:-}; shift 2 ;;
+      *) die "Usage: sudo ./setup.sh set-ports [--https <port>] [--http <port>]" ;;
+    esac
+  done
+  new_https=${new_https:-$old_https}; new_http=${new_http:-$old_http}
+  for p in "$new_https" "$new_http"; do [[ "$p" =~ ^[0-9]+$ ]] && [ "$p" -ge 1 ] && [ "$p" -le 65535 ] || die "Invalid port: $p"; done
+  [ "$new_https" != "$new_http" ] || die "HTTPS and HTTP ports must differ"
+  [ "$new_https" = "$old_https" ] && [ "$new_http" = "$old_http" ] && { c_ok "Ports unchanged (HTTPS $old_https, HTTP $old_http)"; return; }
+  for p in "$new_https" "$new_http"; do
+    if [ "$p" != "$old_https" ] && [ "$p" != "$old_http" ] && ss -ltn "( sport = :$p )" 2>/dev/null | grep -q LISTEN; then die "TCP $p is already in use"; fi
+  done
+  if [ "$new_https" != "$old_https" ]; then
+    c_warn "Changing the HTTPS port from $old_https to $new_https."
+    c_warn "Agents already installed on PCs have the old port built in and will go offline:"
+    c_warn "re-download the installers (Groups & Agents) and reinstall them (or keep the old port)."
+    local a=y; [ "${ASSUME_YES:-0}" = 1 ] || read -r -p "Continue? [y/N]: " a
+    case "$a" in y|Y|yes) ;; *) die "Cancelled" ;; esac
+  fi
+  HTTPS_PORT=$new_https; HTTP_PORT=$new_http
+  local portal mesh; portal=$(url_for "$PORTAL_HOSTNAME"); mesh=$(url_for "$MESH_HOSTNAME")
+  sed -i -e '/^HTTPS_PORT=/d' -e '/^HTTP_PORT=/d' \
+      -e "s|^CSRF_TRUSTED_ORIGINS=.*|CSRF_TRUSTED_ORIGINS=$portal|" \
+      -e "s|^PORTAL_PUBLIC_URL=.*|PORTAL_PUBLIC_URL=$portal|" \
+      -e "s|^MESH_PUBLIC_URL=.*|MESH_PUBLIC_URL=$mesh|" .env
+  printf 'HTTPS_PORT=%s\nHTTP_PORT=%s\n' "$HTTPS_PORT" "$HTTP_PORT" >> .env
+  export HTTPS_PORT HTTP_PORT
+  open_firewall "$old_https" "$old_http"
+  dc up -d --no-build
+  wait_healthy || true
+  c_ok "Ports now: HTTPS $HTTPS_PORT, HTTP redirect $HTTP_PORT. Portal: $portal"
+}
 
 reset_admin() {
   need_root reset-admin-password
@@ -240,8 +301,9 @@ case "${1:-}" in
   restart) need_root restart; dc restart ;;
   logs) shift; dc logs --tail=200 -f "$@" ;;
   backup) backup ;;
+  set-ports) shift; set_ports "$@" ;;
   export-ca) cat deploy/certs/ca.crt ;;
   reset-admin-password) reset_admin ;;
   uninstall) uninstall ;;
-  *) sed -n 2,11p "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
+  *) sed -n 2,12p "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
 esac

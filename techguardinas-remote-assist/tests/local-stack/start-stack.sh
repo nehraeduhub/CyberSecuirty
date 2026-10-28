@@ -48,7 +48,7 @@ mkdir -p "$M/meshcentral-data" "$M/meshcentral-recordings"
 # --- NGINX from the production template; upstreams on localhost, SPA served from disk
 python3 - "$REPO/deploy/nginx/default.conf.template" "$WORK/nginx.conf" <<PY
 import sys
-t=open(sys.argv[1]).read().replace('\${PORTAL_HOSTNAME}','$PORTAL_HOST').replace('\${MESH_HOSTNAME}','$MESH_HOST')
+t=open(sys.argv[1]).read().replace('\${PORTAL_HOSTNAME}','$PORTAL_HOST').replace('\${MESH_HOSTNAME}','$MESH_HOST').replace('\${HTTPS_PORT}','443')
 t=t.replace('http://web:8000','http://127.0.0.1:8000').replace('http://meshcentral:4430','http://127.0.0.1:4430')
 t=t.replace('/etc/nginx/certs/','$PKI/').replace('alias /static/;','alias $REPO/backend/staticfiles/;')
 t=t.replace('''        proxy_pass http://frontend:80;

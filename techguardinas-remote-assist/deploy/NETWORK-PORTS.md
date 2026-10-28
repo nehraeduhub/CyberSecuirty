@@ -6,6 +6,8 @@ from the internal CA with both names as SANs. Endpoints and technician PCs must 
 
 ## Required flows
 
+TCP 443 below means the configured `HTTPS_PORT` (443 by default; the installer uses 7443 if 443 is taken; change with `setup.sh set-ports`).
+
 | # | From | To | Port | Purpose |
 |---|---|---|---|---|
 | 1 | Technician / admin / auditor browsers | portal name | TCP 443 (HTTPS) | Portal UI and API |

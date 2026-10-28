@@ -40,7 +40,7 @@ const config = {
     '': {
       title: env('MESH_TITLE', 'TechGuardinas Remote'),
       title2: env('MESH_TITLE2', 'Remote Console'),
-      certUrl: env('MESH_CERT_URL', 'https://' + host + ':443/'),
+      certUrl: env('MESH_CERT_URL', 'https://' + host + ':' + int('MESH_ALIAS_PORT', 443) + '/'),
       newAccounts: false,
       userConsentFlags: int('MESH_DOMAIN_CONSENT_FLAGS', 64), // always show the connection bar to the local user
       userSessionIdleTimeout: int('MESH_IDLE_TIMEOUT_MINUTES', 15),

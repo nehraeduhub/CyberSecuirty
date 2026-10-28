@@ -123,7 +123,7 @@ Choose one:
 ### 4.4 Firewall rules
 | From | To | Port | Why |
 |---|---|---|---|
-| All MPLS user and PC subnets | Server | **TCP 443** | Portal, console, agents and relay — everything |
+| All MPLS user and PC subnets | Server | **TCP 443** (or your `HTTPS_PORT`, e.g. 7443) | Portal, console, agents and relay — everything |
 | All MPLS subnets | Server | TCP 80 (optional; **8008** if 80 is already used on the server) | Redirects to HTTPS only |
 | Server | Domain controllers | TCP 636 | Only if AD login is enabled |
 | Server, PCs | NTP server | UDP 123 | Correct time is required for MFA codes |
@@ -147,7 +147,9 @@ You will be asked for:
 3. **Server IP** — detected automatically; confirm
 4. **Administrator user name** — default `tgadmin`
 
-If TCP 80 is already used by another program, the installer uses **TCP 8008** for the HTTP→HTTPS redirect (or set `HTTP_PORT=<port>` before running it). HTTPS always stays on 443.
+**Ports.** By default HTTPS (everything) uses TCP 443 and the HTTP→HTTPS redirect uses TCP 80. If another program already uses one of them, the installer picks **7443** for HTTPS and/or **8008** for HTTP and tells you. To choose yourself: `sudo HTTPS_PORT=7443 HTTP_PORT=8008 ./setup.sh install`. With a non-standard port, users open the portal with the port in the address, e.g. `https://remote.techguardinas.local:7443`; agents and join links include it automatically.
+
+**Change ports later:** `sudo ./setup.sh set-ports --https 9443 --http 8009` (either option alone is fine). It updates the settings, firewall and services and checks health. ⚠ Agents already installed on PCs have the HTTPS port built in: after changing the HTTPS port, download the group installers again and reinstall them (attended sessions are not affected).
 
 The installer then checks the server, loads the images, writes `.env` with random secrets, creates or uses the certificate, generates the engine key, opens the firewall, starts all services and confirms that the portal and engine respond. The first administrator password is written to **`ADMIN-CREDENTIALS.txt`** (readable by root only) — note it, then delete the file.
 
@@ -255,6 +257,7 @@ All commands run in the `techguardinas-remote-assist` folder on the server.
 | Backup (database + engine data) | `sudo ./setup.sh backup` (to `/var/backups/techguardinas-remote`; set `BACKUP_DIR=` to change) |
 | Restore database | `sudo ./deploy/restore-postgres.sh /var/backups/techguardinas-remote/portal-<date>.dump` |
 | Print the CA certificate | `./setup.sh export-ca` |
+| Change ports | `sudo ./setup.sh set-ports --https <port> --http <port>` (reinstall agents after an HTTPS port change) |
 | Reset the bootstrap admin password | `sudo ./setup.sh reset-admin-password` |
 | Emergency: stop all remote access | `sudo docker compose stop meshcentral` |
 | Remove (keeps data unless you type PURGE) | `sudo ./setup.sh uninstall` |

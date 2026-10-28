@@ -151,7 +151,7 @@ Add-DnsServerResourceRecordA -ZoneName &quot;techguardinas.local&quot; -Name &qu
 <tr>
 <td>All MPLS user and PC subnets</td>
 <td>Server</td>
-<td><strong>TCP 443</strong></td>
+<td><strong>TCP 443</strong> (or your <code>HTTPS_PORT</code>, e.g. 7443)</td>
 <td>Portal, console, agents and relay — everything</td>
 </tr>
 <tr>
@@ -186,7 +186,8 @@ sudo ./setup.sh install
 2. <strong>Engine host name</strong> — press Enter to accept <code>mesh.remote.techguardinas.local</code>
 3. <strong>Server IP</strong> — detected automatically; confirm
 4. <strong>Administrator user name</strong> — default <code>tgadmin</code></p>
-<p>If TCP 80 is already used by another program, the installer uses <strong>TCP 8008</strong> for the HTTP→HTTPS redirect (or set <code>HTTP_PORT=&lt;port&gt;</code> before running it). HTTPS always stays on 443.</p>
+<p><strong>Ports.</strong> By default HTTPS (everything) uses TCP 443 and the HTTP→HTTPS redirect uses TCP 80. If another program already uses one of them, the installer picks <strong>7443</strong> for HTTPS and/or <strong>8008</strong> for HTTP and tells you. To choose yourself: <code>sudo HTTPS_PORT=7443 HTTP_PORT=8008 ./setup.sh install</code>. With a non-standard port, users open the portal with the port in the address, e.g. <code>https://remote.techguardinas.local:7443</code>; agents and join links include it automatically.</p>
+<p><strong>Change ports later:</strong> <code>sudo ./setup.sh set-ports --https 9443 --http 8009</code> (either option alone is fine). It updates the settings, firewall and services and checks health. ⚠ Agents already installed on PCs have the HTTPS port built in: after changing the HTTPS port, download the group installers again and reinstall them (attended sessions are not affected).</p>
 <p>The installer then checks the server, loads the images, writes <code>.env</code> with random secrets, creates or uses the certificate, generates the engine key, opens the firewall, starts all services and confirms that the portal and engine respond. The first administrator password is written to <strong><code>ADMIN-CREDENTIALS.txt</code></strong> (readable by root only) — note it, then delete the file.</p>
 <p>Unattended example:</p>
 <pre><code class="language-bash">sudo ASSUME_YES=1 PORTAL_HOSTNAME=remote.techguardinas.local MESH_HOSTNAME=mesh.remote.techguardinas.local SERVER_IP=10.20.30.40 ./setup.sh install
@@ -328,6 +329,10 @@ When the session ends the technician has no further access. Close the support ag
 <tr>
 <td>Print the CA certificate</td>
 <td><code>./setup.sh export-ca</code></td>
+</tr>
+<tr>
+<td>Change ports</td>
+<td><code>sudo ./setup.sh set-ports --https &lt;port&gt; --http &lt;port&gt;</code> (reinstall agents after an HTTPS port change)</td>
 </tr>
 <tr>
 <td>Reset the bootstrap admin password</td>

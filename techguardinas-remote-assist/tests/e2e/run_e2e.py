@@ -281,8 +281,8 @@ def main():
         browser = pw.chromium.launch(executable_path=CHROMIUM)
 
         external = []
-        internal_hosts = {re.sub(r'^https?://', '', PORTAL).split('/')[0],
-                          re.sub(r'^https?://', '', os.environ.get('MESH_PUBLIC_URL', '')).split('/')[0]}
+        internal_hosts = {re.sub(r'^https?://', '', PORTAL).split('/')[0].split(':')[0],
+                          re.sub(r'^https?://', '', os.environ.get('MESH_PUBLIC_URL', '')).split('/')[0].split(':')[0]}
 
         def note_request(req):
             host = re.sub(r'^[a-z]+://', '', req.url).split('/')[0].split(':')[0]
