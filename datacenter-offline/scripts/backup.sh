@@ -1,31 +1,21 @@
 #!/usr/bin/env bash
-# Back up the GLPI database and files (documents, config, plugins) to ./backups
+# Back up the DC NOC: device list, settings (networks, SNMP credentials),
+# SSH host keys, collector.conf, .env and the HTTPS certificate, to ./backups
 #   ./backup.sh            keep the last 14 backups
 #   KEEP=30 ./backup.sh
-# Restore: see README.md "Backup and restore".
+# Restore: see README.md "Backup and restore". Prometheus history is not included.
 set -euo pipefail
-umask 077  # backups contain the GLPI encryption key and DB password
+umask 077  # backups contain credentials
 cd "$(dirname "$0")/.."
-# shellcheck disable=SC1091
-set -a; . ./.env; set +a
 
 KEEP=${KEEP:-14}
 stamp=$(date +%Y%m%d-%H%M%S)
 dest=backups/$stamp
 mkdir -p "$dest"
 
-echo "Dumping database..."
-docker compose exec -T db mariadb-dump --single-transaction --routines \
-  -u"$GLPI_DB_USER" -p"$GLPI_DB_PASSWORD" "$GLPI_DB_NAME" | gzip > "$dest/glpi-db.sql.gz"
-
-echo "Archiving GLPI files..."
-docker compose exec -T glpi tar -C /var/glpi -czf - . > "$dest/glpi-data.tar.gz"
-
-# DC Viewer settings (networks, SNMP credentials, features)
-docker compose exec -T manager cat /settings/settings.json > "$dest/dc-settings.json" 2>/dev/null || rm -f "$dest/dc-settings.json"
-
-cp .env "$dest/env.backup"
-chmod 600 "$dest/env.backup"
+echo "Saving the device list and settings..."
+docker compose exec -T manager tar -C /settings -czf - . > "$dest/dc-settings.tar.gz"
+tar -czf "$dest/kit-config.tar.gz" .env collector/collector.conf collector/ssh tls monitoring/manual 2>/dev/null || true
 
 ls -1d backups/*/ | sort | head -n -"$KEEP" | xargs -r rm -rf
 echo "Backup written to $dest"

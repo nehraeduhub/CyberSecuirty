@@ -25,7 +25,7 @@ SNMP_RANGES="
 # per line. Also used by the monitoring to poll ports and hardware health.
 SNMP_CREDENTIALS="
 # version:2c,community:CHANGE-ME
-# version:3,username:glpi,authprotocol:sha,authpassword:CHANGE,privprotocol:aes,privpassword:CHANGE
+# version:3,username:dcmon,authprotocol:sha,authpassword:CHANGE,privprotocol:aes,privpassword:CHANGE
 "
 
 # ------------------------------------------------- Agentless servers
@@ -42,5 +42,5 @@ REMOTES="
 # ESXi hosts or vCenter: host user password (one per line, read-only role).
 # For HPE SimpliVity, list the vCenter that manages the federation.
 ESX_HOSTS="
-# 10.10.2.10 svc-glpi@vsphere.local CHANGE
+# 10.10.2.10 svc-dcnoc@vsphere.local CHANGE
 "

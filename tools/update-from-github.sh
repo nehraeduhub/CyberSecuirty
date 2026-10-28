@@ -19,7 +19,7 @@ SRC=${SRC:-/opt/dc/dc-kit-git}
 command -v git >/dev/null || { echo "git is not installed (apt install git)." >&2; exit 1; }
 
 # The installed kit: from the running stack, or KIT=/path/to/site/datacenter-offline
-KIT=${KIT:-$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' dc-glpi-1 2>/dev/null || true)}
+KIT=${KIT:-$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' dc-portal-1 2>/dev/null || true)}
 [ -n "$KIT" ] && [ -f "$KIT/docker-compose.yml" ] || { echo "Installed kit not found; set KIT=/opt/dc/<bundle>/site/datacenter-offline" >&2; exit 1; }
 SITE=$(dirname "$KIT")
 BUNDLE=$(dirname "$SITE")
@@ -38,6 +38,9 @@ snap="$BUNDLE/kit-before-update-$(date +%Y%m%d-%H%M%S).tar.gz"
 tar -C "$SITE" --exclude=./datacenter-offline/backups -czf "$snap" .
 echo "Previous kit saved to $snap"
 
+# Program folders hold nothing of yours: replace them whole, so files removed
+# in the new version (old pages and scripts) disappear too
+rm -rf "$KIT/viewer" "$KIT/scripts" "$KIT/manager"
 # Kit files, minus everything that is yours
 tar -C "$SRC/datacenter-offline" \
   --exclude=./.env --exclude=./collector/collector.conf --exclude=./collector/ssh \

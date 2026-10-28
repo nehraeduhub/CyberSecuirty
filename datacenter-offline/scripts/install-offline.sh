@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Install the data centre stack on an OFFLINE server from the bundle.
-# Requires Docker Engine with the compose plugin already installed on the server.
+# Install (or upgrade) the DC NOC monitoring stack on an OFFLINE server from
+# the bundle. Installs Docker Engine from the bundle when it is missing.
 #
 #   tar -xzf dc-offline-bundle-YYYYMMDD.tar.gz
 #   cd dc-offline-bundle-YYYYMMDD && sudo ./install-offline.sh
 #
-# Non-interactive: ADMIN_PASSWORD='...' DISABLE_DEMO_USERS=yes sudo -E ./install-offline.sh
+# Upgrading from a version with GLPI: the device list is copied out of GLPI,
+# then the GLPI and MariaDB containers are removed (their data volumes stay
+# until you delete them, see the end of this script's output).
 set -euo pipefail
 
 BUNDLE=$(cd "$(dirname "$0")" && pwd)
@@ -47,7 +49,7 @@ systemctl is-active --quiet docker 2>/dev/null || systemctl start docker 2>/dev/
 if [ -f SHA256SUMS ]; then
   # Only the downloaded payload: kit files under site/ are yours to edit
   echo "Verifying bundle checksums..."
-  grep -E '  \./(images|docker|agents)/' SHA256SUMS | sha256sum --quiet -c -
+  grep -E '  \./(images|docker)/' SHA256SUMS | sha256sum --quiet -c -
 fi
 
 echo "Loading Docker images..."
@@ -64,7 +66,7 @@ bash scripts/patch-collector.sh --no-restart
 
 # Upgrade from a bundle extracted into another folder: carry over that
 # installation's settings, keys and certificates (its data lives in Docker volumes)
-prev=$(docker inspect dc-glpi-1 -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' 2>/dev/null || true)
+prev=$(docker inspect dc-portal-1 -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' 2>/dev/null || true)
 if [ -n "$prev" ] && [ "$prev" != "$KIT" ] && [ -f "$prev/.env" ] && [ ! -f .env ]; then
   echo "Existing installation found in $prev - carrying its settings over to this version."
   cp -p "$prev/.env" .env
@@ -72,7 +74,6 @@ if [ -n "$prev" ] && [ "$prev" != "$KIT" ] && [ -f "$prev/.env" ] && [ ! -f .env
   [ -d "$prev/collector/ssh" ] && cp -rp "$prev/collector/ssh" collector/
   [ -d "$prev/tls" ] && cp -rp "$prev/tls" .
   cp -p "$prev"/monitoring/manual/*.yml monitoring/manual/ 2>/dev/null || true
-  for f in "$prev"/layout/*.csv; do [ -f "$f" ] && cp -p "$f" layout/; done
   echo "  Backups stay in $prev/backups. Keep that folder until this version is verified."
 fi
 
@@ -80,13 +81,11 @@ first_install=no
 if [ ! -f .env ]; then
   first_install=yes
   cp .env.example .env
-  pw=$(head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)
-  sed -i "s/^GLPI_DB_PASSWORD=.*/GLPI_DB_PASSWORD=$pw/" .env
   chmod 600 .env
-  echo "Created .env with a random database password."
+  echo "Created .env."
 fi
 # Image versions always follow the bundle (this is how upgrades happen)
-for key in GLPI_VERSION MARIADB_VERSION NGINX_VERSION AGENT_VERSION GRAFANA_VERSION PROMETHEUS_VERSION BLACKBOX_VERSION SNMP_EXPORTER_VERSION; do
+for key in NGINX_VERSION AGENT_VERSION GRAFANA_VERSION PROMETHEUS_VERSION BLACKBOX_VERSION SNMP_EXPORTER_VERSION; do
   val=$(grep "^$key=" .env.example | cut -d= -f2-)
   if grep -q "^$key=" .env; then
     sed -i "s/^$key=.*/$key=$val/" .env
@@ -112,10 +111,8 @@ setenv() { # key value  (only when empty or missing)
 randpw() { head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24; }
 ip=$(hostname -I 2>/dev/null | awk '{print $1}')
 port_suffix() { [ "${1:-80}" = 80 ] && echo "" || echo ":$1"; }
-glpi_port=$(grep '^GLPI_PORT=' .env | cut -d= -f2)
 portal_port=$(grep '^PORTAL_PORT=' .env | cut -d= -f2)
 setenv GRAFANA_ADMIN_PASSWORD "$(randpw)"
-setenv MONITOR_GLPI_PASSWORD "$(randpw)"
 server_name=${SERVER_NAME:-$(grep "^SERVER_NAME=" .env | cut -d= -f2 || true)}
 host=${server_name:-${ip:-localhost}}
 setkey() { # key value  (always)
@@ -130,21 +127,21 @@ portal_tls_port=$(envval PORTAL_TLS_PORT 8443)
 https_suffix() { [ "$1" = 443 ] && echo "" || echo ":$1"; }
 # Public URLs follow SERVER_NAME and the ports on every run
 if [ "$tls" = yes ]; then
-  setkey GLPI_PUBLIC_URL "https://$host$(https_suffix "$https_port")/"
+  setkey PUBLIC_URL "https://$host$(https_suffix "$https_port")"
   setkey GRAFANA_ROOT_URL "https://$host:$portal_tls_port/grafana/"
   compose_file=docker-compose.yml:docker-compose.tls.yml
   # nginx redirects must carry the host ports
   printf '# Written by install-offline.sh from HTTPS_PORT\nreturn 301 https://$host%s$request_uri;\n' \
-    "$(https_suffix "$https_port")" > nginx/snippets/redirect-glpi.conf
+    "$(https_suffix "$https_port")" > nginx/snippets/redirect-https.conf
   printf '# Written by install-offline.sh from PORTAL_TLS_PORT\nerror_page 497 =301 https://$host:%s$request_uri;\n' \
     "$portal_tls_port" > nginx/snippets/redirect-portal.conf
 else
-  setkey GLPI_PUBLIC_URL "http://$host$(port_suffix "$glpi_port")/"
+  setkey PUBLIC_URL "http://$host$(port_suffix "${portal_port:-8080}")"
   setkey GRAFANA_ROOT_URL "http://$host$(port_suffix "${portal_port:-8080}")/grafana/"
   compose_file=docker-compose.yml
 fi
 if grep -q '^COMPOSE_FILE=' .env; then sed -i "s#^COMPOSE_FILE=.*#COMPOSE_FILE=$compose_file#" .env; else echo "COMPOSE_FILE=$compose_file" >> .env; fi
-for key in GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION MONITOR_EXCLUDE_STATES GLPI_LOCAL_PORT PORTAL_TLS_PORT HTTPS_PORT HTTP_REDIRECT_PORT; do
+for key in GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION PORTAL_TLS_PORT HTTPS_PORT HTTP_REDIRECT_PORT; do
   grep -q "^$key=" .env || grep "^$key=" .env.example >> .env
 done
 chmod 600 .env
@@ -179,27 +176,13 @@ if [ "$tls" = yes ] && { [ ! -s tls/server.crt ] || [ ! -s tls/server.key ]; }; 
   if command -v openssl >/dev/null; then
     openssl "${cert_args[@]}" -keyout tls/server.key -out tls/server.crt 2>/dev/null
   else
-    docker run --rm --user 0:0 -v "$KIT/tls:/t:z" --entrypoint openssl "glpi/glpi:$GLPI_VERSION" \
+    docker run --rm --user 0:0 -v "$KIT/tls:/t:z" --entrypoint openssl "dc-collector:$AGENT_VERSION" \
       "${cert_args[@]}" -keyout /t/server.key -out /t/server.crt 2>/dev/null
   fi
   chmod 600 tls/server.key
   echo "Created a self-signed HTTPS certificate for: $san"
   echo "  (replace tls/server.crt and tls/server.key with one from your internal CA, then: docker compose restart portal)"
 fi
-
-# Agents installed on servers need to trust the HTTPS certificate
-if [ "$tls" = yes ] && [ -d "$BUNDLE/agents" ]; then
-  cp tls/server.crt "$BUNDLE/agents/server-ca.crt" 2>/dev/null || true
-fi
-
-# "Open in GLPI" links in the DC Viewer
-if [ "$tls" = yes ]; then
-  glpi_url="'https://' + location.hostname"
-else
-  glpi_url="'http://' + location.hostname"
-  [ "${GLPI_PORT:-80}" != "80" ] && glpi_url="$glpi_url + ':$GLPI_PORT'"
-fi
-sed -i "s#^  glpiUrl: .*#  glpiUrl: $glpi_url,#" viewer/config.js
 
 # Is something listening on this TCP port (any address, IPv4 or IPv6)?
 # Reads /proc directly, so it works even where ss/netstat aren't installed.
@@ -211,8 +194,8 @@ port_listening() {
 }
 port_owner() { { ss -Hltnp "sport = :$1" 2>/dev/null | grep -o 'users:(("[^"]*' | head -1 | cut -d'"' -f2; } || true; }
 # Stop here with a clear message if another program holds one of our ports
-if [ "$tls" = yes ]; then want="$redirect_port $https_port $portal_tls_port 127.0.0.1:${GLPI_LOCAL_PORT:-8081}"
-else want="${GLPI_PORT:-80} ${PORTAL_PORT:-8080}"; fi
+if [ "$tls" = yes ]; then want="$redirect_port $https_port $portal_tls_port"
+else want="${PORTAL_PORT:-8080}"; fi
 ours=$(docker ps --filter label=com.docker.compose.project=dc --format '{{.Ports}}' 2>/dev/null)
 busy=""
 for p in $want; do
@@ -236,89 +219,54 @@ MSG
   exit 1
 fi
 
+# Upgrade from a version with GLPI: copy its device list into the DC NOC device
+# list before GLPI is removed (only if there is no device list yet)
+if docker ps --format '{{.Names}}' | grep -qx dc-glpi-1; then
+  echo "Copying the device list out of GLPI (this version no longer uses GLPI)..."
+  docker volume create dc_dc_settings >/dev/null
+  if ! docker run --rm --network dc_default -e GLPI_PASSWORD="${MONITOR_GLPI_PASSWORD:-}" \
+       -v dc_dc_settings:/settings -v "$KIT/scripts/migrate-from-glpi.pl:/m.pl:ro,z" \
+       --entrypoint perl "dc-collector:$AGENT_VERSION" /m.pl; then
+    echo "WARNING: could not copy the devices from GLPI; scan again from Scan & settings." >&2
+  fi
+  # Monitoring without passwords, as the rest of the DC NOC
+  setkey GRAFANA_ANONYMOUS true
+  GRAFANA_ANONYMOUS=true
+  glpi_removed=yes
+fi
+
 echo "Starting containers..."
-docker compose up -d
+# --remove-orphans stops and removes services this version no longer has (GLPI, MariaDB)
+docker compose up -d --remove-orphans
 # Containers that mount single config files keep the old file after an upgrade
 # replaces it; recreate them (they hold no data) so they read the new versions
-docker compose up -d --force-recreate --no-deps portal blackbox prometheus monitor-sync snmp-exporter manager collector >/dev/null
+docker compose up -d --force-recreate --no-deps portal blackbox prometheus monitor-sync snmp-exporter manager collector grafana >/dev/null
 
-echo "Waiting for GLPI (first start installs the database, ~1-3 minutes)..."
-if [ "$tls" = yes ]; then local_glpi="http://127.0.0.1:${GLPI_LOCAL_PORT:-8081}"; else local_glpi="http://127.0.0.1:${GLPI_PORT:-80}"; fi
-for _ in $(seq 1 90); do
-  code=$(curl -s -o /dev/null -w '%{http_code}' "$local_glpi/" || true)
-  [ "$code" = 200 ] || [ "$code" = 302 ] && break
-  sleep 4
+if [ "$tls" = yes ]; then portal="https://$host:$portal_tls_port"; noc="https://$host$(https_suffix "$https_port")"
+else portal="http://$host:${PORTAL_PORT:-8080}"; noc="$portal"; fi
+echo "Waiting for the DC NOC to answer..."
+for _ in $(seq 1 30); do
+  curl -sk -o /dev/null --max-time 5 "${portal/$host/127.0.0.1}/api/features" && break
+  sleep 2
 done
 
-./scripts/configure-glpi.sh
-
-console() { docker compose exec -T glpi php bin/console --no-interaction "$@"; }
-sql() { docker compose exec -T db mariadb -u"$GLPI_DB_USER" -p"$GLPI_DB_PASSWORD" "$GLPI_DB_NAME" -N -e "$1"; }
-
-# Admin password and demo accounts: asked on first install; on upgrades only
-# when ADMIN_PASSWORD / DISABLE_DEMO_USERS are given explicitly
-if [ -z "${ADMIN_PASSWORD:-}" ] && [ "$first_install" = yes ] && [ -t 0 ]; then
-  read -rsp "New password for the GLPI super-admin 'glpi' (empty = keep default, NOT recommended): " ADMIN_PASSWORD; echo
-fi
-if [ -n "${ADMIN_PASSWORD:-}" ]; then
-  if console user:reset_password glpi --password="$ADMIN_PASSWORD" >/dev/null 2>&1; then
-    echo "Password for 'glpi' changed."
-  else
-    echo "Password for 'glpi' not changed (GLPI refused it: already in use or too recent)."
-  fi
-elif [ "$first_install" = yes ]; then
-  echo "WARNING: 'glpi' still uses the default password 'glpi'. Change it at first login."
-fi
-
-if [ -z "${DISABLE_DEMO_USERS:-}" ] && [ "$first_install" = yes ] && [ -t 0 ]; then
-  read -rp "Disable the demo accounts tech, normal and post-only? [Y/n] " DISABLE_DEMO_USERS
-  DISABLE_DEMO_USERS=${DISABLE_DEMO_USERS:-yes}
-fi
-
-# Read-only GLPI account the monitoring uses to list devices and their IPs
-if [ -z "$(sql "SELECT id FROM glpi_users WHERE name='dc-monitor'")" ]; then
-  console user:create dc-monitor --password="$MONITOR_GLPI_PASSWORD" >/dev/null
-fi
-profile=$(sql "SELECT id FROM glpi_profiles WHERE name IN ('Read-Only','Observer') ORDER BY name='Read-Only' DESC LIMIT 1")
-granted=$(sql "SELECT pu.id FROM glpi_profiles_users pu JOIN glpi_users u ON u.id=pu.users_id
-               WHERE u.name='dc-monitor' AND pu.profiles_id=${profile:-0} AND pu.entities_id=0 LIMIT 1")
-if [ -n "$profile" ] && [ -z "$granted" ]; then
-  console user:grant dc-monitor --profile="$profile" --entity=0 --recursive >/dev/null
-fi
-# Read-Only cannot list unidentified (Unmanaged) devices by default; the status
-# needs their names
-[ -n "$profile" ] && sql "UPDATE glpi_profilerights SET rights = rights | 1 WHERE profiles_id=$profile AND name='unmanaged'"
-docker compose restart monitor-sync >/dev/null
-echo "Monitoring account 'dc-monitor' (read-only) ready."
-
-case "${DISABLE_DEMO_USERS:-no}" in
-  [Yy]*) for u in tech normal post-only; do console user:disable "$u" >/dev/null && echo "Disabled $u"; done ;;
-esac
-
-if [ "$tls" = yes ]; then
-  glpi_link="https://$host$(https_suffix "$https_port")/"; portal="https://$host:$portal_tls_port"
-else
-  glpi_link="http://$host$(port_suffix "${GLPI_PORT:-80}")/"; portal="http://$host:${PORTAL_PORT:-8080}"
-fi
 cat <<MSG
 
-Data centre stack is running.
-  GLPI (manage assets, racks, rooms):   $glpi_link
-  DC Viewer - Monitor (no sign-in):      $portal/viewer/
-  DC Viewer - Manage devices:            $portal/viewer/devices.html
-  DC Viewer - Scan & settings:           $portal/viewer/scan.html
-      (sign in with a GLPI Admin/Super-Admin account to add networks and SNMP credentials)
-  Grafana (turn on the Status tab in Scan & settings): $portal/grafana/
-      Grafana login: admin / password in $KIT/.env (GRAFANA_ADMIN_PASSWORD)
-  Learning library:                     $portal/glpi-datacenter-library.html
-  GLPI Agent installers:                $BUNDLE/agents/
-  GLPI for scripts on this server:      $local_glpi
+DC NOC monitoring is running (no sign-in needed: keep these ports on the management network).
+  Monitor (live up/down by category):  $noc/viewer/     (also $portal/viewer/)
+  Manage devices (edit, add):          $portal/viewer/devices.html
+  Scan & settings (networks, SNMP):    $portal/viewer/scan.html
+  Grafana dashboards (Status tab):     $portal/grafana/
+  Learning library:                    $portal/glpi-datacenter-library.html
 
-Automatic collection: add networks and SNMP credentials on the Scan & settings
-page and press Scan now. Servers over SSH/WinRM and VMware still use
-$KIT/collector/collector.conf (then: cd $KIT && docker compose restart collector).
-Collect now:               cd $KIT && docker compose exec collector collect.sh once
-Check everything:          $KIT/scripts/verify.sh
-
-Next steps: see DEPLOYMENT-GUIDE.md
+Next: open Scan & settings, add your networks and SNMP read-only credential,
+Save, then Scan now. Check everything: $KIT/scripts/verify.sh
 MSG
+if [ "${glpi_removed:-no}" = yes ]; then
+  cat <<MSG
+
+GLPI and MariaDB were removed. Their data is still in the Docker volumes
+dc_glpi_data and dc_db_data; when you no longer need it:
+  docker volume rm dc_glpi_data dc_db_data
+MSG
+fi

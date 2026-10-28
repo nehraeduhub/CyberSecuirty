@@ -1,14 +1,14 @@
 # Your equipment: what the kit does with it
 
-What is collected into GLPI and monitored in Grafana for each kind of device in the NehraEduHub data centre, and what to set up on the device.
+What the scans put in the device list and what is monitored for each kind of device in the NehraEduHub data centre, and what to set up on the device.
 
-| Equipment | Inventory in GLPI | Up / down (ping) | Network & hardware dashboard | How it is reached |
+| Equipment | In the device list | Up / down (ping) | Network & hardware dashboard | How it is reached |
 |---|---|---|---|---|
 | **Sophos Firewall** (XG/XGS, SFOS) | Model, serial (appliance key), firmware, interfaces | Yes | Ports, traffic, memory/disk/swap, live users, **HA state** | SNMP |
 | **Radware Alteon** SLB | Model, serial, firmware, interfaces | Yes | Ports, traffic, errors, uptime | SNMP |
 | **HPE SimpliVity** (VMware) | Each node and every VM, via vCenter; node hardware via iLO | Yes | Per-node iLO health: power supplies, temperatures, drives | vSphere API + iLO SNMP |
 | **HPE VM Essentials** (VME) | Each KVM host: hardware, OS, software, VMs | Yes | Host iLO health | SSH + iLO SNMP |
-| **Accesleron cloud** | Added by hand in GLPI (monitor only) | Yes | – | Ping + HTTPS checks |
+| **Accesleron cloud** | Added by hand under Manage devices (monitor only) | Yes | – | Ping + HTTPS checks |
 | **HP / HPE ProLiant** servers | Server via SSH/WinRM or agent; iLO via SNMP | Yes | iLO health, hottest sensor | SSH/WinRM + iLO SNMP |
 | **Dell PowerEdge** servers | Server via SSH/WinRM or agent; iDRAC via SNMP | Yes | iDRAC global and storage status, temperatures | SSH/WinRM + iDRAC SNMP |
 | **Cisco** switches and routers | Model, serial, IOS version, ports, VLANs, **CDP/LLDP neighbours** | Yes | Ports, traffic, errors, **CPU** | SNMP |
@@ -17,27 +17,27 @@ What is collected into GLPI and monitored in Grafana for each kind of device in 
 
 How it fits together:
 
-- The **collector** reads every device in your `SNMP_RANGES` into GLPI, and every server in `REMOTES` / `ESX_HOSTS`.
-- **monitor-sync** turns what is in GLPI into monitoring. Everything with an IP is pinged. Every network device, iLO and iDRAC is also polled over SNMP. It tries your SNMP credentials in order, reads the vendor from the device, and adds that vendor's health metrics (Sophos, Cisco, HPE, Dell).
-- GLPI dictionary rules rename **Compaq → Hewlett Packard Enterprise** (iLO) and **Nortel/Alteon → Radware**, so manufacturers read correctly.
+- The **collector** scans the networks set under *Scan & settings* (and `SNMP_RANGES`) into the device list, plus the servers in `REMOTES` / `ESX_HOSTS` when switched on.
+- **monitor-sync** turns the device list into monitoring. Everything with an IP is pinged. Every network device, iLO and iDRAC is also polled over SNMP. It tries your SNMP credentials in order, reads the vendor from the device, and adds that vendor's health metrics (Sophos, Cisco, HPE, Dell).
+- Scans rename **Compaq → Hewlett Packard Enterprise** (iLO) and **Nortel/Alteon → Radware**, so makes read correctly, and set a category from make and model (change it under Manage devices).
 
-Before you start, allow these from the GLPI server to your management networks: **ICMP**, **UDP 161** (SNMP), **TCP 22** (SSH), **TCP 5985/5986** (WinRM) and **TCP 443** (vCenter and HTTPS checks).
+Before you start, allow these from the DC server to your management networks: **ICMP**, **UDP 161** (SNMP), **TCP 22** (SSH), **TCP 5985/5986** (WinRM) and **TCP 443** (vCenter and HTTPS checks).
 
-> Use one **read-only SNMPv3 user** everywhere if you can (SHA + AES), restricted to the GLPI server's IP. Put it first in `SNMP_CREDENTIALS`. Menu names below are for current firmware and may differ slightly on yours.
+> Use one **read-only SNMPv3 user** everywhere if you can (SHA + AES), restricted to the DC server's IP. Put it first in the SNMP credentials list. Menu names below are for current firmware and may differ slightly on yours.
 
 ---
 
 ## Sophos Firewall (SFOS)
 
-1. **Administration → SNMP**: enable the SNMP agent, then add an SNMPv3 user (or a v2c community) with the GLPI server as the allowed manager.
-2. **Administration → Device access**: tick **SNMP** for the zone the GLPI server sits in (usually LAN or a management zone).
+1. **Administration → SNMP**: enable the SNMP agent, then add an SNMPv3 user (or a v2c community) with the DC server as the allowed manager.
+2. **Administration → Device access**: tick **SNMP** for the zone the DC server sits in (usually LAN or a management zone).
 3. Add the firewall's management IP to `SNMP_RANGES`.
 
 The Network & hardware dashboard shows the **HA state** (Primary, Auxiliary, Standalone, Faulty in red), memory, disk and swap usage, and live users, from the SFOS MIB. To also check the web admin console, add an HTTPS check (see `monitoring/manual/your-services.yml.disabled`).
 
 ## Radware Alteon (SLB)
 
-1. On the management interface, enable SNMP with a read-only v2c community or v3 user, and allow access from the GLPI server.
+1. On the management interface, enable SNMP with a read-only v2c community or v3 user, and allow access from the DC server.
 2. Add the Alteon management IP to `SNMP_RANGES`.
 
 You get ports, traffic, errors and uptime. Ping and port monitoring don't cover **virtual service health**. Add an `http_2xx` or `tcp_connect` check for each important VIP in `monitoring/manual/` so you see when a service stops answering behind the load balancer.
@@ -47,12 +47,12 @@ You get ports, traffic, errors and uptime. Ping and port monitoring don't cover 
 1. In vCenter, create a user with the **Read-only** role on the top-level vCenter object, then add vCenter to `ESX_HOSTS`:
    ```
    ESX_HOSTS="
-   10.10.2.10 svc-glpi@vsphere.local <password>
+   10.10.2.10 svc-dcnoc@vsphere.local <password>
    "
    ```
-   Each OmniStack node and all its VMs appear in GLPI.
+   Each OmniStack node appears in the device list (switch on *Collect VMware* under Features).
 2. On **each node's iLO** (iLO 5/6: **Management → SNMP Settings**): set a read community or v3 user. Keep **Agentless Management** enabled so iLO reports power supplies, temperatures and drives. Add the iLO IPs to `SNMP_RANGES`.
-3. The OmniStack Virtual Controllers (OVC) and vCenter are pinged automatically once they're in GLPI. Add an HTTPS check for vCenter.
+3. The OmniStack Virtual Controllers (OVC) and vCenter are pinged automatically once they're in the device list (add them under Manage devices if the scan does not cover their network). Add an HTTPS check for vCenter.
 
 SimpliVity's own federation and storage health (data protection, replication) is shown by HPE's vCenter plug-in. This kit covers the hardware, the hosts and the VMs.
 
@@ -75,7 +75,7 @@ VME hosts are Linux KVM hypervisors, so they're inventoried over SSH with no age
 
 As agreed, Accesleron is monitored but not inventoried in depth:
 
-1. In GLPI, add its management endpoints by hand (**Assets → Computers** or **Network devices**) with their IP addresses. They're then pinged automatically.
+1. Under **Manage devices → Add devices**, add its management endpoints by IP (category *Other* or *Server*). They're then pinged automatically.
 2. Add HTTPS checks for the portal and API in `monitoring/manual/` (template in `your-services.yml.disabled`).
 
 If you later find out what it runs on, switch to fuller inventory: VMware → `ESX_HOSTS`, KVM/Linux → `REMOTES` over SSH, Hyper-V → `REMOTES` over WinRM.
@@ -83,9 +83,9 @@ If you later find out what it runs on, switch to fuller inventory: VMware → `E
 ## HP / HPE ProLiant servers
 
 - **iLO**: enable SNMP as for SimpliVity and add the iLO IPs to `SNMP_RANGES`. This gives hardware health and the hottest temperature sensor.
-- **Operating system**: Linux over SSH or Windows over WinRM in `REMOTES`, or install the GLPI Agent.
+- **Operating system** (optional): Linux over SSH or Windows over WinRM in `REMOTES`, with *Collect servers* switched on.
 
-The server and its iLO appear as two GLPI assets: the server under Computers, the iLO under Network devices. Put both in the same rack position, or link them in GLPI.
+The server and its iLO appear as two devices (categories *Server* and *Management*); give them the same location under Manage devices.
 
 ## Dell PowerEdge servers
 
@@ -94,7 +94,7 @@ The server and its iLO appear as two GLPI assets: the server under Computers, th
 
 ## Windows servers (WinRM)
 
-The GLPI agent logs in to WinRM with **Basic authentication only**. Windows has Basic turned off by default, and Basic never works with **domain** accounts, so a domain login always fails with "wrong credentials" even when the password is right. On each Windows server (admin PowerShell), or for all of them with a GPO:
+The scanner (GLPI Agent tools) logs in to WinRM with **Basic authentication only**. Windows has Basic turned off by default, and Basic never works with **domain** accounts, so a domain login always fails with "wrong credentials" even when the password is right. On each Windows server (admin PowerShell), or for all of them with a GPO:
 
 ```powershell
 # local inventory account (use your own strong password)
@@ -103,21 +103,21 @@ net localgroup Administrators inventory /add
 winrm quickconfig -q
 winrm set winrm/config/service/auth '@{Basic="true"}'
 winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-# allow only the GLPI server to reach WinRM
-New-NetFirewallRule -DisplayName "WinRM from GLPI" -Direction Inbound -Protocol TCP -LocalPort 5985 -RemoteAddress <GLPI-server-IP> -Action Allow
+# allow only the DC server to reach WinRM
+New-NetFirewallRule -DisplayName "WinRM from DC NOC" -Direction Inbound -Protocol TCP -LocalPort 5985 -RemoteAddress <DC-server-IP> -Action Allow
 ```
 
 Then list it as `winrm://inventory:PASSWORD@<ip>` in `REMOTES` (or use `check-unidentified.sh --write --winrm-user inventory`). Test one server with `./scripts/test-remote.sh <ip>`: it says whether the port is open, whether Basic is offered and whether the login works.
 
-`AllowUnencrypted` sends the login only base64-encoded over port 5985. Keep it to the management network, firewalled to the GLPI server, with a dedicated account. To encrypt it, add an HTTPS listener (port 5986) with a certificate and use `winrm://inventory:PASSWORD@<ip>:5986/?mode=ssl` instead; then `AllowUnencrypted` is not needed.
+`AllowUnencrypted` sends the login only base64-encoded over port 5985. Keep it to the management network, firewalled to the DC server, with a dedicated account. To encrypt it, add an HTTPS listener (port 5986) with a certificate and use `winrm://inventory:PASSWORD@<ip>:5986/?mode=ssl` instead; then `AllowUnencrypted` is not needed.
 
 ## Cisco switches and routers (IOS / IOS-XE)
 
 ```
-! read-only SNMPv3, limited to the GLPI server
-ip access-list standard GLPI-SNMP
- permit <glpi-server-ip>
-snmp-server group DCMON v3 priv access GLPI-SNMP
+! read-only SNMPv3, limited to the DC server
+ip access-list standard DCNOC-SNMP
+ permit <dc-server-ip>
+snmp-server group DCMON v3 priv access DCNOC-SNMP
 snmp-server user dcmon DCMON v3 auth sha <auth-pass> priv aes 128 <priv-pass>
 ! neighbours for the network map
 cdp run
@@ -145,6 +145,7 @@ LLDP is on by default on OS10. For SNMPv3, create a group and user with the `snm
 
 ## If a device doesn't appear
 
-- **Administration → Inventory → Refused equipment** in GLPI: GLPI refuses network devices that report **neither a serial number nor a MAC address** (rule "NetworkEquipment import denied"). This usually means the device's SNMP view is too restricted. Allow the ENTITY-MIB and IF-MIB.
-- **Inventory dashboard → Automatic collection** shows each collector run and its errors.
-- **Network & hardware → Not answering SNMP**: the device is in GLPI, but none of your credentials work from the GLPI server. Check the ACL or allowed hosts on the device, and the order of `SNMP_CREDENTIALS`.
+- **Scan & settings → Scan**: each step shows how many devices it found and saved, or why it failed.
+- A device that answers ping but not SNMP is added with its IP only (category *Unknown*): check the device's SNMP access list allows the DC server, and the credential under Scan & settings.
+- **Network & hardware → Not answering SNMP**: none of your credentials work from the DC server. Check the ACL or allowed hosts on the device, and the order of the SNMP credentials.
+- A device that blocks ping shows as Offline: add a `tcp_connect` or `http_2xx` check in `monitoring/manual/`.

@@ -18,7 +18,7 @@
     "list": [
       {
         "name": "type",
-        "label": "Type",
+        "label": "Category",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -46,7 +46,7 @@
       },
       {
         "name": "rack",
-        "label": "Rack",
+        "label": "Location",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -93,7 +93,7 @@
     {
       "type": "stat",
       "title": "Devices monitored",
-      "description": "Every device in GLPI with an IPv4 address, plus manual checks.",
+      "description": "Every device in the DC NOC device list, plus manual checks.",
       "targets": [
         {
           "datasource": {
@@ -458,8 +458,8 @@
             },
             "renameByName": {
               "name": "Name",
-              "type": "Type",
-              "rack": "Rack",
+              "type": "Category",
+              "rack": "Location",
               "instance": "Address",
               "Value #B": "Down for"
             },
@@ -510,7 +510,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "title": "Open in GLPI",
+                    "title": "Edit in DC NOC",
                     "url": "${__data.fields.glpi_url}",
                     "targetBlank": true
                   }
@@ -617,7 +617,7 @@
     {
       "type": "table",
       "title": "All devices",
-      "description": "Status on the last check, current ping time and availability over 24 hours. Click a name to open it in GLPI.",
+      "description": "Status on the last check, current ping time and availability over 24 hours. Click a name to edit it in the DC NOC.",
       "targets": [
         {
           "datasource": {
@@ -677,8 +677,8 @@
             },
             "renameByName": {
               "name": "Name",
-              "type": "Type",
-              "rack": "Rack",
+              "type": "Category",
+              "rack": "Location",
               "instance": "Address",
               "Value #A": "Status",
               "Value #B": "Ping",
@@ -800,7 +800,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "title": "Open in GLPI",
+                    "title": "Edit in DC NOC",
                     "url": "${__data.fields.glpi_url}",
                     "targetBlank": true
                   }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSH | DC NOC</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%276%27 fill=%27%2300e5d4%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="vendor/xterm.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body class="noc ssh-page">
+  <div id="app-view" class="ssh-app">
+    <header class="topbar noc-bar">
+      <div class="brand">SSH</div>
+      <strong id="target" class="mono"></strong>
+      <span id="state" class="state st-unknown"><span class="sico s-unknown" aria-hidden="true">?</span><span id="state-text">Not connected</span></span>
+      <div class="spacer"></div>
+      <button id="reconnect" class="btn ghost" type="button" hidden>Connect again</button>
+    </header>
+
+    <!-- Device login -->
+    <form id="ssh-form" class="card ssh-login" autocomplete="off">
+      <h2>Log in to <span id="target2" class="mono"></span></h2>
+      <div id="hostkey" class="hostkey" hidden></div>
+      <label>User name <input name="user" required autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <label>Password <input name="password" type="password" autocomplete="off"></label>
+      <button id="ssh-go" class="btn" type="submit" disabled>Connect</button>
+      <p id="ssh-error" class="error" role="alert"></p>
+      <p class="muted small">The DC server connects to the device for you; the password is sent over this HTTPS page and is never stored.</p>
+    </form>
+
+    <div id="term" class="term" hidden></div>
+  </div>
+
+  <script src="vendor/xterm.js"></script>
+  <script src="vendor/addon-fit.js"></script>
+  <script src="dc.js"></script>
+  <script src="ssh.js"></script>
+</body>
+</html>

@@ -8,17 +8,13 @@
   var el = DC.el, $ = DC.$;
 
   var FEATURES = [
-    ['public_monitor', 'Monitor page without sign-in', 'Anyone who can open the portal sees the live status (read-only); changes always need sign-in'],
-    ['monitor_unidentified', 'Show status of unidentified devices', 'Ping devices that did not answer SNMP too'],
-    ['inventory', 'Inventory tab', 'Charts, network map and collection details'],
-    ['grafana', 'Status tab (Grafana)', 'Up/down history, ports, traffic and hardware health dashboards'],
-    ['racks', 'Racks tab', 'Rooms and rack elevations from GLPI'],
+    ['grafana', 'Status tab (Grafana)', 'Up/down history by category, ports, traffic and hardware health dashboards'],
     ['library', 'Learning library link', 'Back link to the NehraEduHub website'],
     ['servers', 'Collect servers over SSH / WinRM', 'Uses REMOTES in collector/collector.conf'],
     ['vmware', 'Collect VMware (ESXi / vCenter)', 'Uses ESX_HOSTS in collector/collector.conf']
   ];
 
-  var st = { s: null, admin: false, dirty: false, poll: null, waitingScan: false };
+  var st = { s: null, admin: true, dirty: false, poll: null, waitingScan: false };
 
   function markDirty() {
     st.dirty = true;
@@ -28,19 +24,34 @@
 
   // ------------------------------------------------------------- load
   function load() {
-    return Promise.all([DC.mgr('settings'), DC.mgr('whoami')]).then(function (r) {
-      st.s = r[0];
-      st.admin = !!r[1].admin;
-      $('who').textContent = r[1].name + ' (' + r[1].profile + ')';
-      $('readonly').hidden = st.admin;
+    return DC.mgr('settings').then(function (r) {
+      st.s = r;
       st.dirty = false;
       $('dirty').textContent = '';
       $('save').disabled = true;
       render();
     }).catch(function (e) {
-      if (e.status === 401) { DC.logout(true); return; }
       $('save-error').textContent = 'Could not load the settings: ' + e.message;
     });
+  }
+
+  function loadKeys() {
+    return DC.mgr('ssh-keys').then(function (k) {
+      var tb = $('keys');
+      tb.textContent = '';
+      var names = Object.keys(k || {}).sort();
+      names.forEach(function (hp) {
+        tb.appendChild(el('tr', {}, [
+          el('td', { class: 'mono', text: hp.replace(/:22$/, '') }),
+          el('td', { class: 'mono small', text: k[hp] }),
+          el('td', {}, [el('button', { type: 'button', class: 'link-btn', text: 'Remove', onclick: function () {
+            if (!confirm('Remove the saved SSH key of ' + hp + '?\nThe next SSH connection will trust whatever key the device shows.')) return;
+            DC.mgr('ssh-keys/' + hp, { method: 'DELETE' }).then(loadKeys, function (e) { DC.toast(e.message, true); });
+          } })])
+        ]));
+      });
+      $('keys-empty').hidden = names.length > 0;
+    }).catch(function () {});
   }
 
   // ------------------------------------------------------------- render
@@ -247,8 +258,8 @@
     }).catch(function (e) { DC.toast('Could not start the scan: ' + e.message, true); });
   });
 
-  DC.initAuth({
-    onReady: function () { load(); pollStatus(); },
-    onLogout: function () { clearTimeout(st.poll); }
-  });
+  DC.applyFeatures();
+  load();
+  loadKeys();
+  pollStatus();
 })();

@@ -1,17 +1,17 @@
-# NehraEduHub Data Centre Kit: Production Deployment Guide (Offline)
+# NehraEduHub DC NOC: Production Deployment Guide (Offline)
 
-This guide takes you from the zip file to a running, verified, backed-up system in your data centre, on a server with **no internet access**. Follow the steps in order. Each step ends with a check.
+This guide takes you from the bundle to a running, verified, backed-up network monitor in your data centre, on a server with **no internet access**. Follow the steps in order. Each step ends with a check.
 
-- **You get:** GLPI 11 (assets, racks, rooms, tickets), automatic network collection, the DC Viewer (racks, inventory dashboard), Grafana device status and network/hardware health, and the learning library.
-- **Time:** about 1 hour to build the bundle, 30 minutes to install, then 1–2 hours to connect your equipment.
-- **People:** a Linux administrator (server and install), plus a network engineer to enable SNMP on devices.
+- **You get:** a device list filled by network scans and edited in the browser, a live **Monitor** (online/offline by category), **SSH in a browser tab**, RDP and web shortcuts, Grafana dashboards (up/down history, ports, traffic, hardware health) and the learning library. No sign-in.
+- **Time:** about 30 minutes to build the bundle, 15 minutes to install, then about an hour to enable SNMP on your devices and scan.
+- **People:** a Linux administrator, plus a network engineer to enable SNMP on devices.
 
 ```
  Internet PC (Linux + Docker)              USB / internal share               Offline production server
  ┌────────────────────────────┐      ┌───────────────────────────┐       ┌──────────────────────────────┐
- │ Step 2: build the bundle   │ ───► │ dc-offline-bundle-*.tar.gz│ ───►  │ Steps 3–10: preflight,       │
- │ (images, Docker packages,  │      │ (~1.3 GB, with SHA256SUMS)│       │ install, verify, configure,  │
- │  agents, kit)              │      └───────────────────────────┘       │ back up, go live             │
+ │ Step 2: build the bundle   │ ───► │ dc-offline-bundle-*.tar.gz│ ───►  │ Steps 3–9: preflight,        │
+ │ (images, Docker packages,  │      │ (with SHA256SUMS)         │       │ install, verify, scan,       │
+ │  kit)                      │      └───────────────────────────┘       │ back up, go live             │
  └────────────────────────────┘                                          └──────────────────────────────┘
 ```
 
@@ -23,414 +23,235 @@ This guide takes you from the zip file to a running, verified, backed-up system 
 
 | Size | Devices | vCPU | RAM | Disk (`/var/lib/docker` + kit) |
 |---|---|---|---|---|
-| Small | up to 500 | 4 | 8 GB | 100 GB |
-| Medium | up to 3,000 | 8 | 16 GB | 250 GB |
-| Large | more than 3,000 | 16 | 32 GB | 500 GB, SSD |
+| Small | up to 1,000 | 2 | 4 GB | 40 GB |
+| Medium | up to 5,000 | 4 | 8 GB | 100 GB |
+| Large | more than 5,000 | 8 | 16 GB | 200 GB, SSD |
 
-- **Operating system** (tested): **Ubuntu Server 24.04 LTS** (recommended), Ubuntu 22.04, Debian 12, RHEL / Rocky / AlmaLinux 9. A minimal install is enough; x86_64 only.
-- A VM is fine. Give it a **static IP**, a **DNS name** (e.g. `dc.nehraeduhub.lan`) and **NTP** from your internal time server.
+- **Operating system** (tested): **Ubuntu Server 24.04 LTS** (recommended), Ubuntu 22.04, Debian 12, RHEL / Rocky / AlmaLinux 9. x86_64 only.
+- A VM is fine. Give it a **static IP**, a **DNS name** if you have one, and **NTP** from your internal time server.
 
 ### 1.2 Network access
 
-**Inbound to the server** (from admin and NOC networks only):
+**Inbound to the server** (from admin and NOC networks only — there is no sign-in):
 
 | Port | Used for |
 |---|---|
-| TCP 443 | GLPI (HTTPS) |
-| TCP 8443 | DC Viewer, learning library, Grafana (HTTPS) |
-| TCP 80 | Redirect to HTTPS, and GLPI Agents if you use HTTP |
-| TCP 22 | Your SSH administration |
+| TCP 443 (`HTTPS_PORT`) | DC NOC: opens the Monitor |
+| TCP 8443 (`PORTAL_TLS_PORT`) | DC NOC pages, Grafana, learning library |
+| TCP 80 (`HTTP_REDIRECT_PORT`) | Redirect to HTTPS |
+| TCP 22 | Your SSH administration of the server |
 
 **Outbound from the server** to your management networks:
 
 | Port | To | Used for |
 |---|---|---|
-| ICMP | all devices | up/down monitoring |
-| UDP 161 | switches, routers, Sophos, Alteon, iLO, iDRAC, PDUs | SNMP collection and monitoring |
-| TCP 22 | Linux / VME hosts | agentless inventory |
-| TCP 5985/5986 | Windows servers | agentless inventory (WinRM) |
-| TCP 443 | vCenter, portals | VMware inventory, HTTPS checks |
+| ICMP | all devices | up/down monitoring, scans |
+| UDP 161 | switches, routers, Sophos, Alteon, iLO, iDRAC, PDUs, UPS | SNMP scans and monitoring |
+| TCP 22 | devices you open with SSH | browser SSH terminal |
+| TCP 5985/5986, 443 | Windows servers, vCenter | optional server / VMware collection |
 
 ### 1.3 Gather beforehand
 
 - [ ] **Read-only SNMPv3 user** (SHA + AES) for network gear, iLO and iDRAC, or an SNMP v2c read community
-- [ ] **vCenter read-only user** (for SimpliVity)
-- [ ] An **`inventory` account** on Linux/VME hosts (SSH key login; the kit generates the key)
-- [ ] A **WinRM account** for Windows servers (if any)
-- [ ] An **HTTPS certificate** for the server name from your internal CA: `server.crt` (with the chain) and `server.key`. Without one, the kit makes a self-signed certificate, which works but browsers will warn
-- [ ] A **password vault** entry for the GLPI admin, the Grafana admin and the database (step 6)
+- [ ] The list of your **management networks** (or the IP of your core router: the kit can read them from it)
+- [ ] An **HTTPS certificate** from your internal CA (`server.crt` with chain, `server.key`), or accept the self-signed one
 
-See **`datacenter-offline/EQUIPMENT.md`** for what to enable on each kind of device (Sophos, Radware Alteon, HPE SimpliVity, HPE VME, HP/Dell servers, Cisco/Dell/HP switches and routers).
+See **`datacenter-offline/EQUIPMENT.md`** for what to enable on each kind of device.
 
 ---
 
 ## Step 2: Build the offline bundle (internet PC)
 
-You need a Linux PC or VM with internet access, **Docker** and about 10 GB of free disk. On Windows, use WSL2 with Docker Desktop.
+On a Linux PC with internet and Docker, from the extracted kit:
 
 ```bash
-unzip nehraeduhub-dc-kit-*.zip
-cd nehraeduhub-dc-kit
-
-# Set the OS of the PRODUCTION server (Docker packages are downloaded for it):
+cd datacenter-offline
+# The OS of the PRODUCTION server (Docker packages are downloaded for it):
 #   ubuntu:24.04 (default) | ubuntu:22.04 | debian:12 | rockylinux:9 | almalinux:9 (use for RHEL 9)
-SERVER_OS=ubuntu:24.04 ./datacenter-offline/scripts/prepare-offline-bundle.sh
+SERVER_OS=ubuntu:22.04 ./scripts/prepare-offline-bundle.sh
 ```
 
-This takes about 15–30 minutes and produces **`dc-offline-bundle-YYYYMMDD.tar.gz`** (about 1.3 GB), containing:
-
-| Folder | Contents |
-|---|---|
-| `images/` | 8 container images: GLPI, MariaDB, nginx, collector, Grafana, Prometheus, Blackbox exporter, SNMP exporter |
-| `docker/` | Docker Engine + Compose packages for your server's OS, with dependencies |
-| `agents/` | GLPI Agent for Linux and Windows, plus install scripts |
-| `site/` | The kit, viewer, dashboards and learning library |
-| `SHA256SUMS` | Checksums, verified on the server |
-
-**Check:** the script ends with `Bundle ready: …/dc-offline-bundle-YYYYMMDD.tar.gz (1.3G)`.
-
-Copy the file to the server over USB, your internal file share, or `scp` through your jump host. Follow your site's rules for bringing in removable media. To check the copy, run `sha256sum dc-offline-bundle-*.tar.gz` on both machines.
-
----
+**Check:** `dc-offline-bundle-YYYYMMDD.tar.gz` exists. Copy it to the server (USB stick, internal share).
 
 ## Step 3: Prepare the server
 
-1. Install the OS (minimal), set the static IP, hostname and DNS, and point NTP at your time server:
-   ```bash
-   sudo hostnamectl set-hostname dc.nehraeduhub.lan
-   timedatectl          # "System clock synchronized: yes"
-   ```
-2. Extract the bundle to a **permanent** location. The extracted folder *is* the installation, so don't use `/tmp`:
-   ```bash
-   sudo mkdir -p /opt/dc
-   sudo tar -xzf dc-offline-bundle-YYYYMMDD.tar.gz -C /opt/dc
-   cd /opt/dc/dc-offline-bundle-YYYYMMDD
-   ```
-3. If you have certificates from your internal CA, put them in place **now**:
-   ```bash
-   sudo mkdir -p site/datacenter-offline/tls
-   sudo cp server.crt site/datacenter-offline/tls/server.crt   # certificate + chain
-   sudo cp server.key site/datacenter-offline/tls/server.key
-   sudo chmod 600 site/datacenter-offline/tls/server.key
-   ```
+```bash
+sudo mkdir -p /opt/dc
+sudo tar -xzf dc-offline-bundle-YYYYMMDD.tar.gz -C /opt/dc
+cd /opt/dc/dc-offline-bundle-YYYYMMDD
+```
 
-**Check:** `ls /opt/dc/dc-offline-bundle-*/` shows `images docker agents site install-offline.sh SHA256SUMS`.
+Type commands one line at a time (pasting several lines can add stray characters such as `^[[200~`).
 
----
+**Check:** `ls` shows `install-offline.sh`, `images/`, `site/`, `SHA256SUMS`.
 
 ## Step 4: Pre-flight check
 
 ```bash
-cd /opt/dc/dc-offline-bundle-YYYYMMDD
 sudo ./site/datacenter-offline/scripts/preflight.sh
 ```
 
-It checks the OS, CPU, RAM, disk, Docker (or the bundled packages), free ports and NTP, and verifies the images, Docker packages and agents against their checksums. It changes nothing.
-
-**Check:** `Result: ready to install`. Fix every **[FAIL]** first, and read the **[WARN]** items. **Don't start the install while pre-flight shows a FAIL.**
+Fix every **FAIL**, then run it again. **WARN** lines are advice.
 
 ### If ports 80 or 443 are already in use
 
-Another web server on this machine (often Apache or nginx from the OS install) holds the port. See what it is:
+Find what uses them with `sudo ss -ltnp | grep -E ':(80|443|8443) '`. Either stop that program (`sudo systemctl disable --now apache2 nginx`), or give this stack other ports:
 
 ```bash
-ss -ltnp | grep -E ':(80|443)\b'
+cd /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline
+sudo cp -n .env.example .env
+sudo nano .env
+#   HTTPS_PORT=9443          the Monitor (change if 443 is taken)
+#   HTTP_REDIRECT_PORT=8880  redirect to HTTPS (change if 80 is taken)
+#   PORTAL_TLS_PORT=8443     DC NOC pages / Grafana (change too if 8443 is taken)
 ```
-
-- **You don't need it** (e.g. the default Apache "It works" page): stop it for good, then run pre-flight again.
-  ```bash
-  systemctl disable --now apache2      # or: nginx
-  ```
-- **You need it**: move this stack to free ports. Run the installer once so it creates `.env`; it stops at the port check without starting anything. Then set the ports and run pre-flight again:
-  ```bash
-  cd /opt/dc/dc-offline-bundle-YYYYMMDD
-  nano site/datacenter-offline/.env
-  #   HTTPS_PORT=9443          GLPI          -> https://<server>:9443/
-  #   HTTP_REDIRECT_PORT=8880  redirect      -> http://<server>:8880/
-  #   PORTAL_TLS_PORT=8443     viewer/Grafana (change too if 8443 is taken)
-  sudo ./site/datacenter-offline/scripts/preflight.sh
-  ```
-  The installer puts the ports into every link and redirect. Open your firewall for the new ports instead of 443/80, and give users and agents the GLPI address with the port (e.g. `https://dc.example.lan:9443/`).
-
----
 
 ## Step 5: Install
 
 ```bash
 cd /opt/dc/dc-offline-bundle-YYYYMMDD
-sudo SERVER_NAME=dc.nehraeduhub.lan ./install-offline.sh
+sudo SERVER_NAME=192.168.15.143 ./install-offline.sh     # your server's IP or DNS name
 ```
 
-`SERVER_NAME` is the name users type in the browser. It goes into links and the certificate. Leave it out to use the IP address.
-
-The installer asks for a **new GLPI super-admin password**, and whether to **disable the demo accounts** (answer **Y**). It then:
-
-1. installs Docker from the bundle if it is missing (nothing is downloaded)
-2. checks the bundle and loads the 8 images
-3. creates `.env` with random passwords (database, Grafana admin, read-only monitoring account)
-4. creates an HTTPS certificate if you didn't supply one, plus `collector/collector.conf` and the collector's SSH key
-5. starts the 9 containers and waits for GLPI to install its database (1–3 minutes)
-6. configures GLPI: inventory and API on, `url_base` set, API reachable only through this server (login always required), manufacturer rules (Compaq → HPE, Alteon → Radware), read-only `dc-monitor` account
-
-It ends with your URLs:
+It installs Docker from the bundle if needed, checks the bundle, loads the images, creates `.env` and an HTTPS certificate, and starts the containers. At the end it prints the addresses:
 
 ```
-GLPI (manage assets, racks, rooms):   https://dc.nehraeduhub.lan/
-DC Viewer - Monitor (no sign-in):      https://dc.nehraeduhub.lan:8443/viewer/
-DC Viewer - Manage devices:            https://dc.nehraeduhub.lan:8443/viewer/devices.html
-DC Viewer - Scan & settings:           https://dc.nehraeduhub.lan:8443/viewer/scan.html
-Learning library:                     https://dc.nehraeduhub.lan:8443/glpi-datacenter-library.html
+DC NOC monitoring is running (no sign-in needed: keep these ports on the management network).
+  Monitor (live up/down by category):  https://192.168.15.143/viewer/
+  Manage devices (edit, add):          https://192.168.15.143:8443/viewer/devices.html
+  Scan & settings (networks, SNMP):    https://192.168.15.143:8443/viewer/scan.html
+  Grafana dashboards (Status tab):     https://192.168.15.143:8443/grafana/
 ```
 
-Unattended install: `sudo ADMIN_PASSWORD='…' DISABLE_DEMO_USERS=yes SERVER_NAME=… ./install-offline.sh`
+**Upgrading an install that used GLPI:** run the new `install-offline.sh` the same way (or the GitHub updater, Day-2). It copies your devices out of GLPI first, then removes GLPI and MariaDB; their data volumes stay until you delete them.
 
----
-
-## Step 6: Verify and secure the credentials
+## Step 6: Verify
 
 ```bash
 sudo /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline/scripts/verify.sh
 ```
 
-It checks all containers, GLPI (locally and through HTTPS), the redirect, the certificate expiry, an API login, the default password, the collector, monitoring sync, Prometheus targets, backups and disk.
+**Check:** no **FAIL** lines. Open the Monitor address in a browser; with the self-signed certificate, accept the warning once (or install your CA certificate, Day-2).
 
-**Check:** `Result: all good`. The warnings "Collector has nothing to collect yet" and "No backup yet" are expected at this point. Steps 7 and 9 clear them.
+## Step 7: Scan your networks
 
-Then:
+### 7.1 Enable SNMP on devices
 
-1. Open `https://dc.nehraeduhub.lan/` and log in as **glpi** with the password from step 5.
-2. Open the Status tab and log in to Grafana as **admin**. Its password is `GRAFANA_ADMIN_PASSWORD` in `site/datacenter-offline/.env`.
-3. **Store in your vault**: the GLPI admin password, plus `GRAFANA_ADMIN_PASSWORD`, `GLPI_DB_PASSWORD` and `MONITOR_GLPI_PASSWORD` from `.env`. Keep `.env` at `chmod 600`, as the installer sets it.
-4. In GLPI, create **named accounts** for your team: **Administration → Users**. Give a read-only profile to people who only need the viewer.
+Follow **`EQUIPMENT.md`** for each device type: Sophos, Alteon, iLO, iDRAC, Cisco, Dell, HP/Aruba. Allow the DC server's IP in each device's SNMP access list.
 
----
+### 7.2 Scan from the browser
 
-## Step 7: Connect your equipment
-
-### 7.1 Enable SNMP / accounts on devices
-
-Follow **`EQUIPMENT.md`** for each device type: Sophos, Alteon, iLO, iDRAC, Cisco, Dell, HP/Aruba, vCenter, VME hosts.
-
-### 7.2 Scan your networks (in the browser)
-
-1. Open **`https://<server>:8443/viewer/scan.html`** and sign in as `glpi` (or another GLPI Admin/Super-Admin).
-2. **Networks to scan**: add every network, e.g. `192.168.15.0/24`, `192.168.1.0/24`, `192.168.16.0/24`. Don't know them all? Open *Find networks from a router*, type your core router's IP and add what it lists.
-3. **SNMP credentials**: add your read-only community or SNMPv3 user (as set up in 7.1).
+1. Open **Scan & settings** (`https://<server>:8443/viewer/scan.html`).
+2. **Networks to scan**: add every network, e.g. `192.168.15.0/24`, `192.168.1.0/24`, `192.168.16.0/24`. Don't know them all? Open *Find networks from a router*, type your core router's IP, and add what it lists.
+3. **SNMP credentials**: add your read-only community or SNMPv3 user.
 4. **Save changes**, then **Scan now**. The page shows progress; each /24 takes about 1–2 minutes.
-5. Open the **Monitor** (`https://<server>:8443/viewer/`, no sign-in): live online/offline per category and an *Offline now* list. Under **Manage devices** rename devices (click a name), set categories, and **Add devices** by IP (one `IP name` per line). **SSH / RDP / Web** buttons open a session.
+5. Open the **Monitor**: live online/offline per category and an *Offline now* list.
+6. Under **Manage devices**, **Edit** each important device: name, category, make, model, serial number, location, notes. Devices that only answered ping are in category *Unknown* until you edit them. **Add devices** adds devices by IP (one `IP name` per line).
 
-Racks, Inventory and the Grafana Status tab are off at first: turn them on under **Scan & settings → Features**.
+**Check:** the Monitor shows your devices; firewalls, load balancers, switches and servers are in the right categories (fix any under Manage devices).
 
-**Servers over SSH/WinRM and VMware** are set in `collector.conf` (below) and need *Collect servers* / *Collect VMware* switched on under Features. Networks and SNMP credentials can also go in `collector.conf`; they are used together with the ones from the browser.
+### 7.3 Servers and VMware (optional)
 
-```bash
-cd /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline
-sudo nano collector/collector.conf
-```
+For hardware details of servers (Linux over SSH, Windows over WinRM) and VMware hosts, list them in `collector/collector.conf` (`REMOTES`, `ESX_HOSTS`, see the comments in the file and EQUIPMENT.md), then switch on *Collect servers* / *Collect VMware* under **Scan & settings → Features**. Test one server's login with `sudo ./scripts/test-remote.sh <ip>`.
 
-```bash
-INTERVAL_MINUTES=60
-SNMP_RANGES="
-10.10.0.1-10.10.0.254      # network management: switches, routers, Sophos, Alteon
-10.10.9.1-10.10.9.254      # out-of-band: iLO, iDRAC
-"
-SNMP_CREDENTIALS="
-version:3,username:dcmon,authprotocol:sha,authpassword:XXXX,privprotocol:aes,privpassword:YYYY
-"
-REMOTES="
-ssh://inventory@10.10.3.21   # HPE VME host 1
-ssh://inventory@10.10.3.22   # HPE VME host 2
-"
-ESX_HOSTS="
-10.10.2.10 svc-glpi@vsphere.local ZZZZ   # vCenter (SimpliVity)
-"
-```
+### 7.4 Service checks (optional)
 
-On every Linux or VME host listed in `REMOTES`, authorise the collector's key: `cat collector/ssh/id_ed25519.pub` (EQUIPMENT.md shows how).
-
-**Don't know every subnet? Let the kit find them.** `discover-networks.sh` lists this server's own networks and asks your core router / L3 switch / firewall over SNMP for its interfaces and routing table, so you get every subnet the data centre routes. Put your read-only community (or SNMPv3 user) in `SNMP_CREDENTIALS` first, or pass `--community`:
-
-```bash
-sudo ./scripts/discover-networks.sh                          # asks the default gateway; shows only
-sudo ./scripts/discover-networks.sh 10.10.0.1 10.10.0.2      # ask these routers / core switches
-sudo ./scripts/discover-networks.sh --community YOUR-RO --write   # add new ranges to collector.conf
-```
-
-It skips networks larger than /16 (summary routes such as 10.0.0.0/8; change with `--max-prefix`), skips ranges already listed, and keeps a backup `collector.conf.bak.*`. Remove any line you don't want scanned (guest Wi-Fi, user VLANs) before collecting.
-
-```bash
-sudo docker compose restart collector monitor-sync
-sudo docker compose exec collector collect.sh once     # first collection now (about 1-2 minutes per /24)
-```
-
-**Check:**
-- **Inventory dashboard → Automatic collection** shows each step **OK**.
-- **Status → Up / down** lists your devices within 5 minutes.
-- **Status → Network & hardware** shows them 1–2 minutes later.
-
-Nothing appearing? See *Troubleshooting* below.
-
-### 7.3 Racks and rooms
-
-Fill in `layout/racks.csv` and `layout/devices.csv`, and **use the real serial numbers**, so collected devices merge with the rack entries instead of duplicating. Then:
-
-```bash
-python3 scripts/import_layout.py --url http://127.0.0.1:8081 --user glpi \
-    --racks layout/racks.csv --devices layout/devices.csv --dry-run    # preview
-python3 scripts/import_layout.py --url http://127.0.0.1:8081 --user glpi \
-    --racks layout/racks.csv --devices layout/devices.csv
-```
-
-**Check:** **DC Viewer → Racks** shows the floor plan and your rack elevations.
-
-### 7.4 Service checks (optional, recommended)
-
-Copy `monitoring/manual/your-services.yml.disabled` to `your-services.yml`. Fill in the addresses of the Sophos web admin, Alteon VIPs, vCenter, the VME Manager and the Accesleron portal. These are picked up within a minute.
-
-### 7.5 GLPI Agents (optional)
-
-Only needed for servers you don't inventory over SSH or WinRM. Copy `/opt/dc/dc-offline-bundle-*/agents/` to the server. It already contains `server-ca.crt`, so agents trust your HTTPS certificate. Then:
-
-```bash
-# with HTTPS_PORT other than 443, include it: https://dc.nehraeduhub.lan:9443/
-sudo ./install-agent-linux.sh https://dc.nehraeduhub.lan/       # Linux
-install-agent-windows.cmd https://dc.nehraeduhub.lan/           # Windows, as Administrator
-```
-
----
+Ping says a device is up; for a web page, VIP or SSH service, add checks in `monitoring/manual/` (see `your-services.yml.disabled`).
 
 ## Step 8: Firewall the server
 
-Allow ports 443, 8443 and 80 only from admin and NOC networks, and port 22 from your admin hosts. On Ubuntu:
+There is no sign-in, so limit who can reach the pages. Example with ufw:
 
 ```bash
-sudo ufw allow from 10.10.100.0/24 to any port 443,8443,80 proto tcp   # admin/NOC network
-sudo ufw allow from 10.10.100.0/24 to any port 22 proto tcp
+sudo ufw allow from <admin-network>/24 to any port 443,8443,80 proto tcp
+sudo ufw allow from <admin-network>/24 to any port 22 proto tcp
 sudo ufw enable
 ```
-
-Docker publishes container ports through its own iptables rules, which **bypass ufw**. Enforce the restriction on your network firewall as well, or bind the ports to the admin interface only.
-
----
 
 ## Step 9: Backups
 
 ```bash
-cd /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline
-sudo ./scripts/backup.sh            # database + GLPI files + .env -> backups/<timestamp>/, keeps 14
+sudo /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline/scripts/backup.sh
+echo '30 2 * * * root /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline/scripts/backup.sh >/dev/null' | sudo tee /etc/cron.d/dc-backup
 ```
 
-Schedule it nightly at 02:00:
-
-```bash
-echo "0 2 * * * root /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline/scripts/backup.sh >> /var/log/dc-backup.log 2>&1" \
-  | sudo tee /etc/cron.d/dc-backup
-```
-
-**Copy `backups/` off the server** every day (backup server, NAS). It contains the GLPI encryption key and passwords, so protect it like the server.
-
-**Test a restore once before go-live**, on a test VM: install the same bundle, then follow *Restore* in `datacenter-offline/README.md`.
-
----
+Backups (device list, settings, SSH host keys, `.env`, `collector.conf`, certificate) go to `site/datacenter-offline/backups/`; copy them off the server regularly.
 
 ## Step 10: Go-live checklist
 
-- [ ] `verify.sh` → **all good**, no FAIL
-- [ ] Internal CA certificate installed; no browser warning
-- [ ] GLPI admin password changed, demo accounts disabled, named user accounts created
-- [ ] Passwords from `.env` stored in the vault
-- [ ] All equipment types appear in GLPI, the Status tab and Network & hardware
-- [ ] Rack layout imported; collected devices merged (no duplicates under **Administration → Inventory**)
-- [ ] Backups scheduled, copied off the server, and a restore tested
-- [ ] Server firewall and network firewall rules in place
-- [ ] NOC knows the URLs; the wall screen shows the Status tab (`GRAFANA_ANONYMOUS=true` only on a closed NOC network)
-- [ ] This guide and `.env` location recorded in your operations documentation
+- [ ] `verify.sh` shows no FAIL
+- [ ] All management networks added and scanned; the Monitor shows the expected number of devices
+- [ ] Categories, names and locations of critical devices checked under Manage devices
+- [ ] Offline devices explained (blocked ping? add a `tcp_connect` check in `monitoring/manual/`)
+- [ ] Server firewall limits access to the admin/NOC networks
+- [ ] Daily backup scheduled and copied off the server
+- [ ] Wall display: Monitor in full screen (button at the top right)
 
 ---
 
 ## Day-2 operations
 
-All commands are run in `/opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline` with `sudo`.
-
 | Task | How |
 |---|---|
-| Health check | `./scripts/verify.sh` (weekly, or after any change) |
-| Status of containers | `docker compose ps` |
-| Logs | `docker compose logs --tail 100 glpi` (or collector, monitor-sync, portal, grafana…) |
-| Collect now | `docker compose exec collector collect.sh once` |
-| Explain unidentified devices | `./scripts/check-unidentified.sh` (add `--csv > file.csv` for a spreadsheet) |
-| Find new subnets | `./scripts/discover-networks.sh --community NAME` (add `--write` to save) |
-| Change scan ranges / credentials | edit `collector/collector.conf`, then `docker compose restart collector monitor-sync` |
-| Add a service check | add a file to `monitoring/manual/` (no restart needed) |
-| Replace the HTTPS certificate | copy the new `tls/server.crt` + `tls/server.key`, then `docker compose restart portal`; also copy `server.crt` to the agents' `server-ca.crt` |
-| Stop / start everything | `docker compose stop` / `docker compose start` |
-| After a server reboot | nothing to do: Docker starts on boot and the containers restart automatically. Run `verify.sh` |
-| Disk space | Prometheus keeps 90 days (`PROMETHEUS_RETENTION` in `.env`); backups keep 14 (`KEEP=` for backup.sh) |
+| Scan now | Scan & settings → **Scan now** (or `docker compose exec collector collect.sh once`) |
+| Add / edit / delete devices | Manage devices |
+| Change scan networks or SNMP credentials | Scan & settings → Save changes |
+| SSH to a device | SSH button on the Monitor or Manage devices (opens a terminal tab) |
+| A device was replaced and SSH refuses its new key | Scan & settings → SSH host keys → Remove, after checking why |
+| Status of containers / logs | `cd site/datacenter-offline && docker compose ps` / `docker compose logs --tail 100 manager` (or collector, portal, grafana…) |
+| Check everything | `scripts/verify.sh` |
 
-### Upgrading
+### Updating from GitHub
 
-1. Build a new bundle (step 2) on the internet PC. It contains the newer versions set in `.env.example`.
-2. On the server, `sudo ./scripts/backup.sh` in the current installation.
-3. Extract the new bundle next to the old one: `sudo tar -xzf dc-offline-bundle-NEW.tar.gz -C /opt/dc`
-4. In the new folder, run `sudo ./site/datacenter-offline/scripts/preflight.sh`, then `sudo ./install-offline.sh`.
-   The installer **finds the running installation and carries over** its `.env`, collector settings, SSH key, certificates, service checks and rack CSVs. Your data stays in the Docker volumes, and GLPI upgrades its database automatically.
-5. Run `sudo ./site/datacenter-offline/scripts/verify.sh`. Update the backup cron path to the new folder.
-6. Keep the old folder (and its `backups/`) until you're satisfied, then delete it.
+If the server can reach github.com:
 
-**Rollback:** run `install-offline.sh` from the **old** folder, then restore the backup from step 2 (see README *Restore*). A database that GLPI has already upgraded can't be used by the older version without that restore.
+```bash
+sudo apt install -y git      # once
+sudo git clone -b ccr-1e4e396d-l3nt7b https://github.com/nehraeduhub/CyberSecuirty.git /opt/dc/dc-kit-git   # once
+sudo bash /opt/dc/dc-kit-git/tools/update-from-github.sh     # every update
+```
 
-### Switching between HTTP and HTTPS
+It saves the current kit (`kit-before-update-*.tar.gz`), copies the new kit over it, keeps your settings and data, and re-runs the installer. Press Ctrl+F5 in the browser afterwards. Without internet on the server, copy a new bundle or zip instead and run `install-offline.sh`.
 
-Set `TLS=yes` or `TLS=no` (and the ports, if needed) in `.env`, then re-run `sudo ./install-offline.sh` from the bundle folder. The public URLs are recalculated from `SERVER_NAME` and the ports on every run.
+### Replace the HTTPS certificate
+
+Put `server.crt` (with chain) and `server.key` in `site/datacenter-offline/tls/`, then `docker compose restart portal`.
 
 ### Uninstall
 
 ```bash
-sudo docker compose down          # stop and remove containers (data volumes are kept)
-sudo docker compose down -v       # ALSO deletes all data: database, files, history
+cd /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline
+sudo docker compose down          # add -v to also delete all data (device list, history)
 ```
-
----
 
 ## Troubleshooting
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `preflight.sh` or the installer: port 80/443/8443 in use | Another web server is installed | Stop it (`systemctl disable --now apache2 nginx`), or set `HTTPS_PORT`, `HTTP_REDIRECT_PORT`, `PORTAL_TLS_PORT` in `.env` (step 4) |
-| Install stops at "Waiting for GLPI" | Database still initialising on slow disk | `docker compose logs glpi db`; re-run `install-offline.sh` (safe to repeat) |
-| Browser certificate warning | Self-signed certificate | Install your internal CA certificate (Day-2: Replace the HTTPS certificate) |
-| Device not in GLPI | SNMP blocked or wrong credentials | Inventory dashboard → collection errors; test from the server: `docker compose exec collector glpi-netinventory --host <ip> --credentials version:2c,community:<c>` |
-| SNMPv3 devices not collected; logs say `Crypt::Rijndael perl module needs to be installed` | Collector image from a bundle built before 27 Oct 2026 lacks AES support | `sudo ./scripts/patch-collector.sh` (offline, adds it to the image) |
-| Servers in `REMOTES` fail with wrong password / can't authenticate | Windows: Basic auth off or a domain account; Linux: collector key not authorised | `sudo ./scripts/test-remote.sh <ip>` says which; Windows needs a local account with Basic on (EQUIPMENT.md) |
-| Many **Unidentified devices** on the Inventory dashboard | They answered ping/ARP but not SNMP: servers, PCs, devices without SNMP or with an ACL | `sudo ./scripts/check-unidentified.sh` says what each one is (SSH/Windows/ESXi/web device) and what to add to `collector.conf`; `--write --ssh-user U --winrm-user U --esx-user U` adds them |
-| Device in **Administration → Inventory → Refused equipment** | Device reports no serial and no MAC over SNMP | Widen the device's SNMP view (ENTITY-MIB, IF-MIB) |
-| Same device twice in GLPI | Imported from CSV without a serial, then collected | Put the serial in `devices.csv`, delete the duplicate, re-run the import |
-| Device "Not answering SNMP" in Network & hardware | Credential works for collection but not from monitoring | The first matching credential in `SNMP_CREDENTIALS` is used. Check the device's SNMP ACL allows the server |
-| Server shows DOWN but works | ICMP blocked by its firewall | Allow ping from the server, or replace it with a `tcp_connect` check and exclude its GLPI status (`MONITOR_EXCLUDE_STATES`) |
-| HPE iLO health "Unknown" | Agentless Management not enabled | Enable AMS in iLO (EQUIPMENT.md) |
-| Grafana asks to log in inside the Status tab | Separate Grafana account | Log in as admin once, or create Grafana viewer accounts; `GRAFANA_ANONYMOUS=true` for NOC screens |
-| `verify.sh`: "glpi still has the default password" | Password never changed | `docker compose exec glpi php bin/console user:reset_password glpi` |
-| `verify.sh`: container restarting | Configuration error | `docker compose logs <service>`; most often a typo in `collector.conf` or `monitoring/manual/*.yml` |
-
----
+| Installer: port 80/443/8443 in use | Another web server | Stop it, or set `HTTPS_PORT`, `HTTP_REDIRECT_PORT`, `PORTAL_TLS_PORT` in `.env` (step 4) |
+| Browser certificate warning | Self-signed certificate | Install your CA certificate (Day-2) |
+| Scan finds devices but no make/model/serial | SNMP blocked or wrong credential | Check the device's SNMP access list allows the server; check the credential under Scan & settings |
+| Scan step shows an error | Network unreachable or SNMP problem | The step detail on Scan & settings says why; `docker compose logs collector` |
+| Device shows Offline but works | It blocks ping | Add a `tcp_connect` or `http_2xx` check in `monitoring/manual/` |
+| SSH tab: "Login failed" | Wrong user/password, or password login disabled on the device | Use the device's local account; enable password login for SSH on the device |
+| SSH tab: "host key changed" | Device replaced or reinstalled — or interception | Check with the device owner, then remove the old key under Scan & settings |
+| Pages show "Connection lost" / 502 | manager container not running | `docker compose ps`, `docker compose logs manager`, `docker compose up -d` |
 
 ## Where things are
 
 ```
 /opt/dc/dc-offline-bundle-YYYYMMDD/
-├── install-offline.sh              installer (also used for upgrades)
-├── SHA256SUMS                      bundle checksums
-├── images/  docker/  agents/       container images, Docker packages, GLPI Agents (+ server-ca.crt)
+├── install-offline.sh, DEPLOYMENT-GUIDE.*, README-FIRST.txt
+├── images/                     container images (loaded by the installer)
+├── docker/                     Docker Engine packages for offline install
 └── site/
     ├── index.html, glpi-datacenter-library.html     website and learning library
-    └── datacenter-offline/                          the installation
-        ├── .env                    settings and generated passwords (chmod 600)
-        ├── tls/                    HTTPS certificate and key
-        ├── collector/collector.conf, collector/ssh/   what to scan, SSH key
-        ├── layout/*.csv            rack layout for import_layout.py
-        ├── monitoring/manual/      extra service checks
-        ├── backups/                nightly backups (copy off the server!)
-        ├── scripts/                preflight, verify, backup, import, configure
-        ├── EQUIPMENT.md            device-side setup
-        └── README.md               full reference
+    └── datacenter-offline/                          the kit
+        ├── .env                settings (ports, passwords)  - yours
+        ├── collector/collector.conf  optional scan settings / servers / VMware - yours
+        ├── tls/                HTTPS certificate - yours
+        ├── backups/            backup.sh output
+        ├── viewer/  manager/  monitoring/  nginx/  scripts/
+        └── docker-compose.yml
+Docker volume dc_dc_settings: devices.json, settings.json, SSH host keys
 ```

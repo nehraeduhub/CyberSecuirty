@@ -15,8 +15,6 @@
         <a href="index.html">Monitor</a>
         <a href="devices.html">Manage devices</a>
         <a href="scan.html">Scan &amp; settings</a>
-        <a href="racks.html" data-feature="racks">Racks</a>
-        <a href="inventory.html" data-feature="inventory">Inventory</a>
         <a href="status.html" data-feature="grafana" aria-current="page">Status</a>
       </nav>
     <div class="seg" role="group" aria-label="Dashboard">
@@ -27,7 +25,7 @@
     <a id="grafana-open" class="btn ghost" target="_blank" rel="noopener">Open in Grafana</a>
   </header>
   <iframe id="grafana" class="status-frame" title="Device status dashboard (Grafana)"></iframe>
-  <script src="glpi-client.js"></script>
+  <script src="dc.js"></script>
   <script>
     window.DC.applyFeatures();
     (function () {

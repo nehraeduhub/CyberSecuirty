@@ -155,7 +155,7 @@
     {
       "type": "stat",
       "title": "Not answering SNMP",
-      "description": "Reachable in GLPI but SNMP did not answer on the last poll.",
+      "description": "In the device list but SNMP did not answer on the last poll.",
       "targets": [
         {
           "datasource": {
@@ -419,7 +419,7 @@
     {
       "type": "table",
       "title": "Devices",
-      "description": "SNMP status, hardware health, uptime and port counts per device. Click a name to open it in GLPI.",
+      "description": "SNMP status, hardware health, uptime and port counts per device. Click a name to edit it in the DC NOC.",
       "targets": [
         {
           "datasource": {
@@ -667,7 +667,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "title": "Open in GLPI",
+                    "title": "Edit in DC NOC",
                     "url": "${__data.fields.glpi_url}",
                     "targetBlank": true
                   }
@@ -795,7 +795,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "title": "Open in GLPI",
+                    "title": "Edit in DC NOC",
                     "url": "${__data.fields.glpi_url}",
                     "targetBlank": true
                   }
@@ -888,7 +888,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "title": "Open in GLPI",
+                    "title": "Edit in DC NOC",
                     "url": "${__data.fields.glpi_url}",
                     "targetBlank": true
                   }
@@ -1243,7 +1243,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "title": "Open in GLPI",
+                    "title": "Edit in DC NOC",
                     "url": "${__data.fields.glpi_url}",
                     "targetBlank": true
                   }

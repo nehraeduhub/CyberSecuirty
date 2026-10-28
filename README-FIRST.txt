@@ -1,11 +1,12 @@
-NehraEduHub Data Centre Kit - offline production deployment
-=============================================================
+NehraEduHub DC NOC - offline data centre monitoring
+=====================================================
 
 What this is
-  GLPI asset management + automatic network collection + DC Viewer (racks,
-  inventory dashboard) + Grafana up/down and network/hardware monitoring +
-  the GLPI data centre learning library. Runs fully offline on one Linux
-  server with Docker.
+  Network scans + a device list you edit in the browser + a live Monitor
+  (online/offline by category) + SSH in a browser tab, RDP and web shortcuts
+  + Grafana up/down and network/hardware dashboards + the data centre
+  learning library. No sign-in. Runs fully offline on one Linux server with
+  Docker.
 
 Start here
   1. Read DEPLOYMENT-GUIDE.html (open it in a browser) or DEPLOYMENT-GUIDE.md.
@@ -15,13 +16,15 @@ Start here
        sudo mkdir -p /opt/dc && sudo tar -xzf dc-offline-bundle-*.tar.gz -C /opt/dc
        cd /opt/dc/dc-offline-bundle-*/
        sudo ./site/datacenter-offline/scripts/preflight.sh
-       sudo SERVER_NAME=dc.yourdomain.lan ./install-offline.sh
+       sudo SERVER_NAME=<server IP or DNS name> ./install-offline.sh
        sudo ./site/datacenter-offline/scripts/verify.sh
-  4. Connect your equipment: datacenter-offline/EQUIPMENT.md
+  4. Enable SNMP on your devices (datacenter-offline/EQUIPMENT.md), then open
+     https://<server>:8443/viewer/scan.html, add networks + SNMP credential,
+     Save, Scan now. The Monitor is at https://<server>/
 
 Contents
   DEPLOYMENT-GUIDE.md / .html     step-by-step production deployment (start here)
-  datacenter-offline/             the kit (scripts, dashboards, viewer, configs)
+  datacenter-offline/             the kit (scripts, dashboards, DC NOC pages, configs)
     EQUIPMENT.md                  device setup: Sophos, Radware, HPE SimpliVity/VME,
                                   Accesleron, HP/Dell servers, Cisco/Dell/HP network
     README.md                     full reference

@@ -1,6 +1,5 @@
 /* NOC Monitor: live up/down of every device by category, offline list and
- * device board. Read-only and open without sign-in (unless switched off on
- * the Scan & settings page). Data: /api/monitor (manager), every 10 s. */
+ * device board. Data: /api/monitor (manager), every 10 s. */
 (function () {
   'use strict';
 
@@ -63,19 +62,14 @@
 
   // ------------------------------------------------------------- data
   function poll() {
-    try { var t = sessionStorage.getItem('dcv-token'); if (t) DC.token = t; } catch (e) { /* no storage */ }
     DC.mgr('monitor').then(function (d) {
       st.data = d;
-      $('mon-error').textContent = d.error ? 'Device list: ' + d.error : '';
+      $('mon-error').textContent = '';
       live(true);
       notifyNewDown(d);
       render();
-    }).catch(function (e) {
-      live(false, e.status === 401 ? 'Sign in required' : 'Connection lost – retrying');
-      if (e.status === 401) {
-        $('mon-error').textContent = '';
-        $('mon-error').appendChild(el('span', {}, ['The public monitor is switched off. ', el('a', { href: 'devices.html', text: 'Sign in' }), ' first.']));
-      }
+    }).catch(function () {
+      live(false, 'Connection lost – retrying');
     }).then(function () {
       clearTimeout(st.timer);
       st.timer = setTimeout(poll, REFRESH_MS);
@@ -222,7 +216,7 @@
       el('div', { class: 'tile-name', title: x.name, text: x.name }),
       el('div', { class: 'mono small', text: x.ip }),
       el('div', { class: 'muted small tile-meta', title: meta, text: meta || ' ' }),
-      el('div', { class: 'tile-go' }, DC.connectButtons(x.ip, x.name, x.glpi_url))
+      el('div', { class: 'tile-go' }, DC.connectButtons(x.ip, x.name, 'devices.html?edit=' + x.id))
     ]);
   }
 

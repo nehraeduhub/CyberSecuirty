@@ -709,3 +709,28 @@ body.noc {
 .tile-go .go { margin: 0; }
 .foot { margin: 0; }
 .cat-select { padding: 3px 6px; font-size: 0.9em; }
+
+/* SSH terminal page */
+.ssh-page { height: 100vh; overflow: hidden; }
+.ssh-app { display: flex; flex-direction: column; height: 100vh; }
+.ssh-app #target { color: var(--text); }
+.ssh-login { width: min(440px, calc(100vw - 32px)); margin: 40px auto; display: grid; gap: 12px; background: var(--surface); }
+.ssh-login label { display: grid; gap: 4px; }
+.ssh-login .error { padding: 0; }
+.hostkey { font-size: 0.85em; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); overflow-wrap: anywhere; }
+.hostkey.new { border-color: var(--warning); }
+.hostkey code { font-family: Consolas, 'Courier New', monospace; }
+.term { flex: 1; min-height: 0; padding: 6px 8px; background: #05090c; }
+.term .xterm { height: 100%; }
+
+/* Edit device dialog */
+.dialog.wide { width: min(760px, calc(100vw - 32px)); }
+.form-grid { display: grid; gap: 10px 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.form-grid label { display: grid; gap: 4px; font-size: 0.85em; color: var(--muted); }
+.form-grid label.full { grid-column: 1 / -1; }
+.form-grid input, .form-grid select { width: 100%; }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 4px 0 0; font-size: 0.85em; }
+.facts:empty { display: none; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+body.noc .stats { padding: 14px 16px 0; }

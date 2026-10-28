@@ -10,7 +10,8 @@ set -euo pipefail
 
 KIT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$KIT"
-ver=$(grep '^AGENT_VERSION=' .env 2>/dev/null | tail -1 | cut -d= -f2)
+# .env does not exist yet on a first install: fall back to the kit's default
+ver=$(cat .env .env.example 2>/dev/null | grep '^AGENT_VERSION=' | head -1 | cut -d= -f2 || true)
 image=dc-collector:${ver:-1.17}
 
 docker image inspect "$image" >/dev/null 2>&1 || { echo "Image $image not found: run install-offline.sh first." >&2; exit 1; }

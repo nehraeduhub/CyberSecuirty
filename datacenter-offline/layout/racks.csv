@@ -1,4 +1,0 @@
-datacenter,room,room_cols,room_rows,rack,units,col,row,orientation,max_power_w,max_weight_kg,model
-DC-DELHI-01,Hall-A,10,6,DEL1-HALLA-R01,42,2,2,N,5000,1000,42U 600x1000
-DC-DELHI-01,Hall-A,10,6,DEL1-HALLA-R02,42,3,2,N,5000,1000,42U 600x1000
-DC-DELHI-01,Hall-A,10,6,DEL1-HALLA-R03,42,4,2,N,5000,1000,42U 600x1000

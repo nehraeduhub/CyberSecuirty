@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# Scheduled network collection into GLPI.
+# Scheduled network collection into the DC NOC device list.
 #   collect.sh loop   run every INTERVAL_MINUTES (container default)
 #   collect.sh once   run one collection now and exit
 set -uo pipefail
 
 CONF=${COLLECTOR_CONF:-/etc/collector/collector.conf}
-GLPI_URL=${GLPI_URL:-http://glpi/}
 STATUS_DIR=${STATUS_DIR:-/status}
 # Settings made in the DC Viewer (Scan & settings page), and its "Scan now" request
 SETTINGS=${SETTINGS_FILE:-/settings/settings.json}
@@ -38,15 +37,9 @@ JSON
   mv "$STATUS_DIR/status.json.tmp" "$STATUS_DIR/status.json"
 }
 
-# Send every inventory file in a directory to GLPI; echo "files sent"
+# Send what a step saved to the manager's device list; prints "<files> <devices>"
 inject() {
-  local dir=$1 files left
-  files=$(find "$dir" -type f | wc -l)
-  if [ "$files" -gt 0 ]; then
-    glpi-injector --recursive --directory "$dir" --url "$GLPI_URL" --remove >/dev/null 2>&1
-  fi
-  left=$(find "$dir" -type f | wc -l)
-  echo "$files $((files - left))"
+  perl /usr/local/bin/to-devices.pl "$1" "${2:-scan}" 2>>"$1.err"
 }
 
 collect_snmp() {
@@ -65,8 +58,8 @@ collect_snmp() {
     log "SNMP discovery $first - $last"
     if glpi-netdiscovery --first "$first" --last "$last" "${creds[@]}" \
         --threads "${THREADS:-16}" --timeout "${SNMP_TIMEOUT:-2}" --inventory --save "$out" >/dev/null 2>"$out.err"; then
-      read -r files sent < <(inject "$out")
-      log "  $files result file(s), $sent sent to GLPI"
+      read -r files sent < <(inject "$out" "scan $range")
+      log "  $files result file(s), $sent device(s) saved"
       step "SNMP $range" ok "$files" "$sent" ""
     else
       step "SNMP $range" error 0 0 "$(tail -3 "$out.err")"
@@ -106,7 +99,7 @@ collect_remotes() {
   trust_ssh_hosts "$list"
   glpi-agent --local "$out" --tasks remoteinventory --remote "$list" \
     --remote-workers "${THREADS:-16}" --force >/dev/null 2>"$out.err"
-  read -r files sent < <(inject "$out")
+  read -r files sent < <(inject "$out" servers)
   local total
   total=$(tr ',' '\n' <<<"$list" | wc -l)
   if [ "$files" -lt "$total" ]; then
@@ -114,7 +107,7 @@ collect_remotes() {
   else
     step "Servers (SSH/WinRM)" ok "$files" "$sent" ""
   fi
-  log "  $files of $total inventoried, $sent sent to GLPI"
+  log "  $files of $total inventoried, $sent device(s) saved"
 }
 
 collect_esx() {
@@ -126,7 +119,7 @@ collect_esx() {
     mkdir -p "$out"
     log "VMware inventory $host"
     if glpi-esx --host "$host" --user "$user" --password "$pass" --path "$out" --json >/dev/null 2>"$out.err"; then
-      read -r files sent < <(inject "$out")
+      read -r files sent < <(inject "$out" "vmware $host")
       step "VMware $host" ok "$files" "$sent" ""
     else
       step "VMware $host" error 0 0 "$(tail -2 "$out.err")"

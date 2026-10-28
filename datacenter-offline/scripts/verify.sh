@@ -16,13 +16,13 @@ prom() { docker compose exec -T prometheus wget -qO- "http://localhost:9090/api/
 
 tls=$(tr 'A-Z' 'a-z' <<<"${TLS:-no}")
 if [ "$tls" = yes ]; then
-  glpi_local="http://127.0.0.1:${GLPI_LOCAL_PORT:-8081}"; glpi_user="https://127.0.0.1:${HTTPS_PORT:-443}"; portal="https://127.0.0.1:${PORTAL_TLS_PORT:-8443}"
+  noc="https://127.0.0.1:${HTTPS_PORT:-443}"; portal="https://127.0.0.1:${PORTAL_TLS_PORT:-8443}"
 else
-  glpi_local="http://127.0.0.1:${GLPI_PORT:-80}"; glpi_user="$glpi_local"; portal="http://127.0.0.1:${PORTAL_PORT:-8080}"
+  portal="http://127.0.0.1:${PORTAL_PORT:-8080}"; noc="$portal"
 fi
 
 echo "Containers"
-for svc in db glpi portal manager collector monitor-sync blackbox snmp-exporter prometheus grafana; do
+for svc in portal manager collector monitor-sync blackbox snmp-exporter prometheus grafana; do
   state=$(docker compose ps --format '{{.State}} {{.Health}}' "$svc" 2>/dev/null | head -1)
   case "$state" in
     running*unhealthy*) fail "$svc is unhealthy" ;;
@@ -35,10 +35,9 @@ restarts=$(docker inspect -f '{{.Name}} {{.RestartCount}}' $(docker compose ps -
 
 echo
 echo "Web"
-c=$(code "$glpi_local/"); [[ $c =~ ^(200|302)$ ]] && pass "GLPI answers on $glpi_local" || fail "GLPI on $glpi_local returned ${c:-nothing}"
-c=$(code "$glpi_user/"); [[ $c =~ ^(200|302)$ ]] && pass "GLPI for users: ${GLPI_PUBLIC_URL:-$glpi_user}" || fail "GLPI for users ($glpi_user) returned ${c:-nothing}"
+c=$(code "$noc/viewer/"); [ "$c" = 200 ] && pass "DC NOC Monitor: ${PUBLIC_URL:-$noc}/viewer/" || fail "DC NOC on $noc returned ${c:-nothing}"
 c=$(code "$portal/viewer/"); [ "$c" = 200 ] && pass "DC Viewer: $portal/viewer/" || fail "DC Viewer returned ${c:-nothing}"
-c=$(code "$portal/api/features"); [ "$c" = 200 ] && pass "DC Viewer settings API (manager)" || fail "DC Viewer settings API returned ${c:-nothing} (docker compose logs manager)"
+c=$(code "$portal/api/features"); [ "$c" = 200 ] && pass "DC NOC API (manager)" || fail "DC Viewer settings API returned ${c:-nothing} (docker compose logs manager)"
 c=$(code "$portal/glpi-datacenter-library.html"); [ "$c" = 200 ] && pass "Learning library" || fail "Learning library returned ${c:-nothing}"
 c=$(code "$portal/grafana/api/health"); [ "$c" = 200 ] && pass "Grafana" || fail "Grafana returned ${c:-nothing}"
 if [ "$tls" = yes ]; then
@@ -47,7 +46,7 @@ if [ "$tls" = yes ]; then
   if command -v openssl >/dev/null; then
     end=$(openssl x509 -in tls/server.crt -noout -enddate 2>/dev/null | cut -d= -f2)
   else
-    end=$(docker run --rm --user 0:0 -v "$PWD/tls:/t:ro,z" --entrypoint openssl "glpi/glpi:$GLPI_VERSION" x509 -in /t/server.crt -noout -enddate 2>/dev/null | cut -d= -f2)
+    end=$(docker run --rm --user 0:0 -v "$PWD/tls:/t:ro,z" --entrypoint openssl "dc-collector:$AGENT_VERSION" x509 -in /t/server.crt -noout -enddate 2>/dev/null | cut -d= -f2)
   fi
   if [ -n "$end" ]; then
     days=$(( ( $(date -d "$end" +%s) - $(date +%s) ) / 86400 ))
@@ -58,25 +57,10 @@ if [ "$tls" = yes ]; then
 fi
 
 echo
-echo "GLPI API and accounts"
-tok=$(curl -s --max-time 15 -u "dc-monitor:${MONITOR_GLPI_PASSWORD:-}" "$glpi_local/apirest.php/initSession" | sed -n 's/.*"session_token":"\([^"]*\)".*/\1/p')
-if [ -n "$tok" ]; then
-  pass "REST API login (read-only account dc-monitor)"
-  n=$(curl -s -o /dev/null -D - -H "Session-Token: $tok" "$glpi_local/apirest.php/NetworkEquipment?range=0-0" | sed -n 's/^Content-Range: .*\/\([0-9]*\).*/\1/Ip' | tr -d '\r')
-  m=$(curl -s -o /dev/null -D - -H "Session-Token: $tok" "$glpi_local/apirest.php/Computer?range=0-0" | sed -n 's/^Content-Range: .*\/\([0-9]*\).*/\1/Ip' | tr -d '\r')
-  pass "Inventory: ${m:-0} computers, ${n:-0} network devices"
-  curl -s -o /dev/null -H "Session-Token: $tok" "$glpi_local/apirest.php/killSession"
-else
-  fail "REST API login failed for dc-monitor (scripts/configure-glpi.sh, then re-run install-offline.sh)"
-fi
-r=$(curl -s --max-time 15 -u glpi:glpi "$glpi_local/apirest.php/initSession")
-case "$r" in
-  *session_token*) fail "The super-admin 'glpi' still has the default password 'glpi' (change it: DEPLOYMENT-GUIDE step 6)" ;;
-  *ERROR_GLPI_LOGIN*|*"Incorrect username or password"*) pass "Default 'glpi' password is changed" ;;
-  *) warn "Could not check the 'glpi' password (API not answering yet)" ;;
-esac
+echo "Device list"
+n=$(curl -sk --max-time 10 "$portal/api/devices" | grep -oE '"ip" *: *"' | wc -l)
+[ "${n:-0}" -gt 0 ] && pass "$n device(s) in the list" || warn "No devices yet: add networks under Scan & settings and press Scan now"
 
-echo
 echo "Collection and monitoring"
 st=$(docker compose exec -T portal cat /usr/share/nginx/html/collector/status.json 2>/dev/null)
 if [ -z "$st" ]; then
@@ -85,8 +69,8 @@ else
   steps=$(grep -o '"name"' <<<"$st" | wc -l)
   errs=$(grep -o '"status":"error"' <<<"$st" | wc -l)
   fin=$(sed -n 's/.*"finished":"\([^"]*\)".*/\1/p' <<<"$st")
-  if [ "$steps" -eq 0 ]; then warn "Collector has nothing to collect yet: edit collector/collector.conf"
-  elif [ "$errs" -gt 0 ]; then warn "Collector: $errs of $steps step(s) failed on the last run (Inventory dashboard shows why)"
+  if [ "$steps" -eq 0 ]; then warn "Collector has nothing to scan yet: add networks under Scan & settings"
+  elif [ "$errs" -gt 0 ]; then warn "Collector: $errs of $steps step(s) failed on the last run (Scan & settings shows why)"
   else pass "Collector: last run finished ${fin:-?}, $steps step(s) OK"; fi
 fi
 sync=$(docker compose logs --tail 20 monitor-sync 2>/dev/null | grep -E "synced|failed" | tail -1)

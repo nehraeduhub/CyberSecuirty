@@ -2,16 +2,15 @@
 # Build the offline bundle on a machine WITH internet access and Docker.
 # Produces dc-offline-bundle-<date>.tar.gz containing:
 #   - this kit, the NehraEduHub site and learning library
-#   - Docker images (GLPI, MariaDB, nginx, network collector, Grafana, Prometheus,
+#   - Docker images (nginx, network collector/manager, Grafana, Prometheus,
 #     Blackbox and SNMP exporters) saved as tar files
-#   - GLPI Agent installers for Linux and Windows
 #   - Docker Engine packages for the server's OS (so the server needs no internet at all)
 # Copy the archive to the data centre server (USB / internal share) and run install-offline.sh.
 #
 #   ./scripts/prepare-offline-bundle.sh                         # server runs Ubuntu 24.04 (default)
 #   SERVER_OS=rockylinux:9 ./scripts/prepare-offline-bundle.sh  # or ubuntu:22.04, debian:12, almalinux:9 (RHEL 9)
 #   SERVER_OS=none ./scripts/prepare-offline-bundle.sh          # Docker is already on the server
-#   AGENT_VERSION=latest ./scripts/prepare-offline-bundle.sh    # newest GLPI Agent instead of .env.example's
+#   AGENT_VERSION=latest ./scripts/prepare-offline-bundle.sh    # newest GLPI Agent tools in the scanner image
 set -euo pipefail
 
 KIT=$(cd "$(dirname "$0")/.." && pwd)
@@ -26,9 +25,11 @@ name=dc-offline-bundle-$(date +%Y%m%d)
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 out=$work/$name
-mkdir -p "$out/images" "$out/agents" "$out/site"
+mkdir -p "$out/images" "$out/site"
+dl=$work/download
+mkdir -p "$dl"
 
-images=("glpi/glpi:$GLPI_VERSION" "mariadb:$MARIADB_VERSION" "nginx:$NGINX_VERSION"
+images=("nginx:$NGINX_VERSION"
         "grafana/grafana-oss:$GRAFANA_VERSION" "prom/prometheus:$PROMETHEUS_VERSION"
         "prom/blackbox-exporter:$BLACKBOX_VERSION" "prom/snmp-exporter:$SNMP_EXPORTER_VERSION")
 for img in "${images[@]}"; do
@@ -46,14 +47,12 @@ if [ -z "${AGENT_VERSION:-}" ]; then
   echo "Could not detect the latest GLPI Agent version; set AGENT_VERSION=x.y" >&2
   exit 1
 fi
-echo "Downloading GLPI Agent $AGENT_VERSION ..."
+echo "Downloading GLPI Agent $AGENT_VERSION (network scanner tools) ..."
 base=https://github.com/glpi-project/glpi-agent/releases/download/$AGENT_VERSION
-curl -fSL -o "$out/agents/glpi-agent-$AGENT_VERSION-linux-installer.pl" "$base/glpi-agent-$AGENT_VERSION-linux-installer.pl"
-curl -fSL -o "$out/agents/GLPI-Agent-$AGENT_VERSION-x64.msi" "$base/GLPI-Agent-$AGENT_VERSION-x64.msi"
-cp "$KIT"/agents/install-agent-* "$out/agents/"
+curl -fSL -o "$dl/glpi-agent-$AGENT_VERSION-linux-installer.pl" "$base/glpi-agent-$AGENT_VERSION-linux-installer.pl"
 
 echo "Building network collector image ..."
-cp "$out/agents/glpi-agent-$AGENT_VERSION-linux-installer.pl" "$KIT/collector/"
+cp "$dl/glpi-agent-$AGENT_VERSION-linux-installer.pl" "$KIT/collector/"
 docker build -q --platform linux/amd64 --build-arg AGENT_VERSION="$AGENT_VERSION" \
   -t "dc-collector:$AGENT_VERSION" "$KIT/collector"
 rm -f "$KIT/collector/glpi-agent-$AGENT_VERSION-linux-installer.pl"

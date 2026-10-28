@@ -54,7 +54,7 @@ check_disk() { # path min_fail_gb min_warn_gb label
   elif [ "$free" -lt "$3" ]; then warn "$4: ${free} GB free on $p ($3 GB recommended)"
   else pass "$4: ${free} GB free on $p"; fi
 }
-check_disk "$docker_root" 20 50 "Docker data (images, database, history)"
+check_disk "$docker_root" 10 30 "Docker data (images, monitoring history)"
 check_disk "$BUNDLE" 5 10 "Bundle folder (backups go next to the kit)"
 
 echo
@@ -91,7 +91,7 @@ setting() {
 }
 tls=$(setting TLS yes)
 if [ "$tls" = yes ]; then ports="$(setting HTTP_REDIRECT_PORT 80) $(setting HTTPS_PORT 443) $(setting PORTAL_TLS_PORT 8443)"
-else ports="$(setting GLPI_PORT 80) $(setting PORTAL_PORT 8080)"; fi
+else ports="$(setting PORTAL_PORT 8080)"; fi
 # Is something listening on this TCP port (any address, IPv4 or IPv6)?
 # Reads /proc directly, so it works even where ss/netstat aren't installed.
 port_listening() {
@@ -122,14 +122,14 @@ fi
 echo
 echo "Bundle"
 if [ -f "$BUNDLE/SHA256SUMS" ]; then
-  (cd "$BUNDLE" && grep -E '  \./(images|docker|agents)/' SHA256SUMS | sha256sum --quiet -c - 2>/dev/null) \
-    && pass "Images, Docker packages and agents intact (SHA256SUMS)" \
+  (cd "$BUNDLE" && grep -E '  \./(images|docker)/' SHA256SUMS | sha256sum --quiet -c - 2>/dev/null) \
+    && pass "Images and Docker packages intact (SHA256SUMS)" \
     || fail "Bundle files damaged: copy the archive again"
 else
   warn "No SHA256SUMS found next to the bundle"
 fi
 n=$(ls "$BUNDLE"/images/*.tar.gz 2>/dev/null | wc -l)
-[ "$n" -ge 8 ] && pass "$n container images in the bundle" || fail "Only $n container images in $BUNDLE/images (expected 8)"
+[ "$n" -ge 6 ] && pass "$n container images in the bundle" || fail "Only $n container images in $BUNDLE/images (expected 6)"
 
 echo
 if [ "$fails" -gt 0 ]; then

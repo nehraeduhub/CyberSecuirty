@@ -9,37 +9,19 @@
   <script src="config.js"></script>
 </head>
 <body class="noc">
-  <!-- Login -->
-  <main id="login-view" class="login" hidden>
-    <form id="login-form" class="card login-card" autocomplete="on">
-      <h1>DC Viewer</h1>
-      <p class="muted">Sign in with your GLPI account. Changing settings needs an Admin or Super-Admin profile.</p>
-      <label>Login <input name="user" autocomplete="username" required></label>
-      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
-      <button class="btn" type="submit">Sign in</button>
-      <p id="login-error" class="error" role="alert"></p>
-    </form>
-  </main>
-
   <!-- App -->
-  <div id="app-view" hidden>
+  <div id="app-view">
     <header class="topbar">
       <div class="brand">DC Viewer</div>
       <nav class="nav" aria-label="Views">
         <a href="index.html">Monitor</a>
         <a href="devices.html">Manage devices</a>
         <a href="scan.html" aria-current="page">Scan &amp; settings</a>
-        <a href="racks.html" data-feature="racks">Racks</a>
-        <a href="inventory.html" data-feature="inventory">Inventory</a>
         <a href="status.html" data-feature="grafana">Status</a>
       </nav>
       <div class="spacer"></div>
-      <span id="who" class="muted small"></span>
-      <a id="glpi-link" class="btn ghost" target="_blank" rel="noopener">Open GLPI</a>
-      <button id="logout" class="btn ghost" type="button">Sign out</button>
     </header>
 
-    <p id="readonly" class="note" hidden>Your GLPI profile can view these settings but not change them. Sign in with an Admin or Super-Admin account to change them.</p>
 
     <div class="settings">
       <!-- Scan -->
@@ -51,7 +33,7 @@
         <div id="scan-state" class="scan-state muted">Loading…</div>
         <ul id="scan-steps" class="steps"></ul>
         <p class="muted small">A scan checks every address of the networks below. Devices that answer SNMP are added with brand, model, serial number, MAC and ports;
-          the others are added as <em>Unidentified</em> with their IP (and MAC on the server's own networks). Each /24 network takes about 1&ndash;2 minutes.</p>
+          the others are added with their IP (and MAC on the server's own networks) in the category <em>Unknown</em>. Each /24 network takes about 1&ndash;2 minutes.</p>
       </section>
 
       <!-- Networks -->
@@ -119,6 +101,17 @@
         <h3 class="sub">Features</h3>
         <div id="features" class="toggles"></div>
       </section>
+
+      <!-- SSH host keys -->
+      <section class="card">
+        <div class="card-head"><h2>SSH host keys</h2></div>
+        <p class="muted small">Saved the first time each device is opened with SSH; a device whose key changes is refused. Remove a key only after checking that the device was really replaced or reinstalled.</p>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th scope="col">Device</th><th scope="col">Key fingerprint</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead>
+          <tbody id="keys"></tbody>
+        </table></div>
+        <p id="keys-empty" class="muted empty">No SSH sessions opened yet.</p>
+      </section>
     </div>
 
     <div class="savebar">
@@ -128,7 +121,7 @@
     </div>
   </div>
 
-  <script src="glpi-client.js"></script>
+  <script src="dc.js"></script>
   <script src="scan.js"></script>
 </body>
 </html>
