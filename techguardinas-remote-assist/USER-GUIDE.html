@@ -331,6 +331,10 @@ When the session ends the technician has no further access. Close the support ag
 <td><code>./setup.sh export-ca</code></td>
 </tr>
 <tr>
+<td>Repair portal ↔ engine link ("Remote engine error … noauth" / 502)</td>
+<td><code>sudo ./setup.sh repair-engine</code></td>
+</tr>
+<tr>
 <td>Change ports</td>
 <td><code>sudo ./setup.sh set-ports --https &lt;port&gt; --http &lt;port&gt;</code> (reinstall agents after an HTTPS port change)</td>
 </tr>
@@ -361,6 +365,10 @@ When the session ends the technician has no further access. Close the support ag
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>"Remote engine error: MeshCentral rejected the portal credentials (noauth)"</td>
+<td>Run <code>sudo ./setup.sh repair-engine</code> in the install folder (re-creates the engine service account and restarts the engine; prints diagnostics if it still fails).</td>
+</tr>
 <tr>
 <td>"Request failed (400)" / "Bad Request (400)"</td>
 <td>You opened the portal by IP or by a name that was not configured. Use the portal name chosen at install (with <code>:port</code> if not 443); add the DNS records (4.2), or for a quick test a hosts-file entry on the PC: <code>&lt;server IP&gt;  &lt;portal name&gt;  mesh.&lt;portal name&gt;</code>.</td>

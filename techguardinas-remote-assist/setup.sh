@@ -5,7 +5,7 @@
 #   On the MPLS server (no Internet needed):   sudo ./setup.sh install
 #   Day-2:                                     sudo ./setup.sh status | start | stop | restart | logs [svc]
 #                                              sudo ./setup.sh backup | export-ca | reset-admin-password | uninstall
-#                                              sudo ./setup.sh set-ports --https 7443 --http 8008
+#                                              sudo ./setup.sh set-ports --https 7443 --http 8008 | repair-engine
 #
 # Non-interactive install: set PORTAL_HOSTNAME, MESH_HOSTNAME, SERVER_IP (optional), ADMIN_USER,
 # HTTPS_PORT / HTTP_PORT (optional) and ASSUME_YES=1 in the environment.
@@ -249,6 +249,28 @@ status() {
 
 backup() { need_root backup; need_install; ./deploy/backup-postgres.sh; }
 
+repair_engine() {
+  need_root repair-engine
+  need_install
+  set -a; . ./.env; set +a
+  c_info "Restarting the remote engine (re-checks its service account) and NGINX…"
+  dc up -d --no-build meshcentral >/dev/null
+  dc restart meshcentral nginx >/dev/null
+  local i
+  for i in $(seq 1 60); do
+    dc exec -T web python manage.py shell -c "from remote_bridge.meshapi import MeshSession
+with MeshSession() as s: s.meshes()" >/dev/null 2>&1 && { c_ok "Portal can control the remote engine"; return 0; }
+    sleep 3
+  done
+  c_warn "Still failing. Diagnostics:"
+  dc logs --tail=20 meshcentral
+  echo "key (web):         $(dc exec -T web sha256sum /run/secrets/mesh_login_key | cut -c1-16)"
+  echo "key (meshcentral): $(dc exec -T meshcentral sha256sum /run/secrets/mesh_login_key | cut -c1-16)"
+  dc exec -T web python manage.py shell -c "from remote_bridge.meshapi import MeshSession
+with MeshSession() as s: s.meshes()" 2>&1 | tail -1
+  return 1
+}
+
 set_ports() {
   need_root set-ports
   [ -f .env ] || die "Not installed yet. Use: HTTPS_PORT=<port> HTTP_PORT=<port> ./setup.sh install"
@@ -314,6 +336,7 @@ case "${1:-}" in
   logs) shift; dc logs --tail=200 -f "$@" ;;
   backup) backup ;;
   set-ports) shift; set_ports "$@" ;;
+  repair-engine) repair_engine ;;
   export-ca) cat deploy/certs/ca.crt ;;
   reset-admin-password) reset_admin ;;
   uninstall) uninstall ;;

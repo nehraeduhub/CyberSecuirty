@@ -257,6 +257,7 @@ All commands run in the `techguardinas-remote-assist` folder on the server.
 | Backup (database + engine data) | `sudo ./setup.sh backup` (to `/var/backups/techguardinas-remote`; set `BACKUP_DIR=` to change) |
 | Restore database | `sudo ./deploy/restore-postgres.sh /var/backups/techguardinas-remote/portal-<date>.dump` |
 | Print the CA certificate | `./setup.sh export-ca` |
+| Repair portal ↔ engine link ("Remote engine error … noauth" / 502) | `sudo ./setup.sh repair-engine` |
 | Change ports | `sudo ./setup.sh set-ports --https <port> --http <port>` (reinstall agents after an HTTPS port change) |
 | Reset the bootstrap admin password | `sudo ./setup.sh reset-admin-password` |
 | Emergency: stop all remote access | `sudo docker compose stop meshcentral` |
@@ -274,6 +275,7 @@ Schedule a nightly backup: `echo '30 1 * * * root cd /opt/techguardinas-remote-a
 
 | Symptom | Check |
 |---|---|
+| "Remote engine error: MeshCentral rejected the portal credentials (noauth)" | Run `sudo ./setup.sh repair-engine` in the install folder (re-creates the engine service account and restarts the engine; prints diagnostics if it still fails). |
 | "Request failed (400)" / "Bad Request (400)" | You opened the portal by IP or by a name that was not configured. Use the portal name chosen at install (with `:port` if not 443); add the DNS records (4.2), or for a quick test a hosts-file entry on the PC: `<server IP>  <portal name>  mesh.<portal name>`. |
 | Browser shows a certificate warning | The CA is not trusted on that PC (4.3), or you opened the IP instead of the host name. |
 | Page does not open from a remote site | DNS record (`nslookup`), routing/firewall to TCP 443, proxy bypass for both names. |

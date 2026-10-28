@@ -78,6 +78,9 @@ services:
       - meshfiles:/opt/meshcentral/meshcentral-files
       - meshbackups:/opt/meshcentral/meshcentral-backups
       - meshrecordings:/opt/meshcentral/meshcentral-recordings
+      # Start-up scripts from this folder (updates apply with git pull + restart, no image rebuild)
+      - ./meshcentral/entrypoint.sh:/opt/meshcentral/entrypoint.sh:ro
+      - ./meshcentral/render-config.js:/opt/meshcentral/render-config.js:ro
     networks: [internal]
     restart: unless-stopped
 
