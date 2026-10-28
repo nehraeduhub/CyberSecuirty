@@ -28,6 +28,16 @@ ask() { # ask VAR "Question" default
 }
 rand() { openssl rand -base64 "$1" | tr -d '\n/+=' | cut -c1-"$1"; }
 need_root() { [ "$(id -u)" = 0 ] || die "Run as root: sudo $0 $*"; }
+need_install() { # day-2 commands must run in the folder where 'install' was run
+  [ -f .env ] && return
+  local where
+  where=$(docker ps -a --filter label=com.docker.compose.project=techguardinas-remote \
+          --format '{{.Label "com.docker.compose.project.working_dir"}}' 2>/dev/null | sort -u | head -1)
+  if [ -n "$where" ]; then
+    die "This folder is not the installed copy. The running install is in: $where  ->  cd $where"
+  fi
+  die "TechGuardinas Remote is not installed from this folder (no .env) and no running install was found. Run: sudo ./setup.sh install"
+}
 dc() { docker compose "$@"; }
 
 # ------------------------------------------------------------------ build-images (connected host)
@@ -231,12 +241,13 @@ EOF
 }
 
 status() {
+  need_install
   set -a; . ./.env; set +a
   dc ps
   wait_healthy
 }
 
-backup() { need_root backup; ./deploy/backup-postgres.sh; }
+backup() { need_root backup; need_install; ./deploy/backup-postgres.sh; }
 
 set_ports() {
   need_root set-ports
@@ -280,6 +291,7 @@ set_ports() {
 
 reset_admin() {
   need_root reset-admin-password
+  need_install
   set -a; . ./.env; set +a
   local pw; pw=$(rand 20)
   dc exec -T -e BOOTSTRAP_ADMIN_PASSWORD="$pw" -e BOOTSTRAP_ADMIN_RESET=true web python manage.py bootstrap_admin >/dev/null
