@@ -5,7 +5,7 @@
 #   On the MPLS server (no Internet needed):   sudo ./setup.sh install
 #   Day-2:                                     sudo ./setup.sh status | start | stop | restart | logs [svc]
 #                                              sudo ./setup.sh backup | export-ca | reset-admin-password | uninstall
-#                                              sudo ./setup.sh set-ports --https 7443 --http 8008 | repair-engine
+#                                              sudo ./setup.sh set-ports --https 7443 --http 8008 | repair-engine | doctor
 #
 # Non-interactive install: set PORTAL_HOSTNAME, MESH_HOSTNAME, SERVER_IP (optional), ADMIN_USER,
 # HTTPS_PORT / HTTP_PORT (optional) and ASSUME_YES=1 in the environment.
@@ -249,6 +249,56 @@ status() {
 
 backup() { need_root backup; need_install; ./deploy/backup-postgres.sh; }
 
+doctor() {
+  need_root doctor
+  need_install
+  set -a; . ./.env; set +a
+  local bad=0
+  echo "== Settings (.env)"
+  echo "   portal: $PORTAL_PUBLIC_URL"
+  echo "   engine: $MESH_PUBLIC_URL   (agents connect here: wss://$MESH_HOSTNAME:${HTTPS_PORT:-443}/agent.ashx)"
+  echo "== Containers"
+  dc ps --format '   {{.Service}}: {{.Status}}'
+  echo "== Engine certificate (agents pin the certificate NGINX serves)"
+  local certline; certline=$(dc logs meshcentral 2>/dev/null | grep -E "Loaded web certificate|Unable to load web certificate" | tail -1)
+  echo "   ${certline:-no certificate line in engine log}"
+  case "$certline" in
+    *"Loaded web certificate from \"https://$MESH_HOSTNAME:${HTTPS_PORT:-443}/\""*) c_ok "engine loaded the NGINX certificate on the right port" ;;
+    *) c_warn "engine did NOT load the certificate from https://$MESH_HOSTNAME:${HTTPS_PORT:-443}/ -> agents will be rejected. Fix: git pull && sudo docker compose up -d --no-build && sudo ./setup.sh repair-engine"; bad=1 ;;
+  esac
+  echo "== Engine reachable through NGINX with the engine name"
+  local code i
+  for i in $(seq 1 30); do  # give a just-started engine up to 90 s
+    code=$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' --cacert deploy/certs/ca.crt --resolve "$MESH_HOSTNAME:${HTTPS_PORT:-443}:127.0.0.1" "$MESH_PUBLIC_URL/" || true)
+    [ "$code" = 200 ] && break; sleep 3
+  done
+  code=$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' --cacert deploy/certs/ca.crt --resolve "$MESH_HOSTNAME:${HTTPS_PORT:-443}:127.0.0.1" "$MESH_PUBLIC_URL/agent.ashx" || true)
+  echo "   $MESH_PUBLIC_URL/agent.ashx -> HTTP $code (404/400 is normal for a plain request; 000/502 is a problem)"
+  case "$code" in 000|502|503|504) c_warn "engine not reachable through NGINX"; bad=1 ;; *) c_ok "engine answers through NGINX" ;; esac
+  echo "== Portal <-> engine link and agents seen by the engine"
+  dc exec -T web python manage.py shell -c "
+from remote_bridge import meshapi
+from remote_bridge.meshapi import MeshSession
+try:
+    with MeshSession() as s:
+        meshes = {m['_id']: m['name'] for m in s.meshes()}
+        nodes = s.nodes()
+    print('   link OK; device groups:', len(meshes))
+    for n in nodes:
+        print('   agent:', n.get('name'), '| group:', meshes.get(n.get('meshid'), '?'), '| online:', meshapi.connected(n), '| ip:', n.get('ip'))
+    if not nodes: print('   no agent has ever connected to the engine')
+except Exception as e:
+    print('   LINK ERROR:', e)
+" 2>/dev/null | grep -v "objects imported"
+  echo "== Session worker (binds attended agents to sessions)"
+  dc logs --since 10m worker 2>/dev/null | grep -i -E "error|failed|warning" | tail -5 | cut -c1-180 | sed 's/^/   /'
+  echo "== From a PC that should connect, run in PowerShell:"
+  echo "   Resolve-DnsName $MESH_HOSTNAME"
+  echo "   Test-NetConnection $MESH_HOSTNAME -Port ${HTTPS_PORT:-443}"
+  echo "   Both names must resolve to this server: $PORTAL_HOSTNAME and $MESH_HOSTNAME"
+  [ $bad = 0 ] && c_ok "Server side looks fine" || c_warn "Problems found above"
+}
+
 repair_engine() {
   need_root repair-engine
   need_install
@@ -337,6 +387,7 @@ case "${1:-}" in
   backup) backup ;;
   set-ports) shift; set_ports "$@" ;;
   repair-engine) repair_engine ;;
+  doctor) doctor ;;
   export-ca) cat deploy/certs/ca.crt ;;
   reset-admin-password) reset_admin ;;
   uninstall) uninstall ;;

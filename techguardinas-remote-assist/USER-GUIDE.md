@@ -257,6 +257,7 @@ All commands run in the `techguardinas-remote-assist` folder on the server.
 | Backup (database + engine data) | `sudo ./setup.sh backup` (to `/var/backups/techguardinas-remote`; set `BACKUP_DIR=` to change) |
 | Restore database | `sudo ./deploy/restore-postgres.sh /var/backups/techguardinas-remote/portal-<date>.dump` |
 | Print the CA certificate | `./setup.sh export-ca` |
+| Diagnose agents not connecting / engine problems | `sudo ./setup.sh doctor` |
 | Repair portal ↔ engine link ("Remote engine error … noauth" / 502) | `sudo ./setup.sh repair-engine` |
 | Change ports | `sudo ./setup.sh set-ports --https <port> --http <port>` (reinstall agents after an HTTPS port change) |
 | Reset the bootstrap admin password | `sudo ./setup.sh reset-admin-password` |
@@ -280,6 +281,7 @@ Schedule a nightly backup: `echo '30 1 * * * root cd /opt/techguardinas-remote-a
 | Browser shows a certificate warning | The CA is not trusted on that PC (4.3), or you opened the IP instead of the host name. |
 | Page does not open from a remote site | DNS record (`nslookup`), routing/firewall to TCP 443, proxy bypass for both names. |
 | Console area stays blank | `mesh.remote…` blocked or not resolving from the technician's PC. |
+| Attended: user clicked **Connect** but the session stays *Waiting* | The PC cannot reach the engine name. On the PC: `Resolve-DnsName mesh.<portal name>` and `Test-NetConnection mesh.<portal name> -Port <HTTPS port>` must both work (add the `mesh.` DNS record / hosts entry). On the server: `sudo ./setup.sh doctor`. |
 | PC never appears in Device Approval | On the PC: service *TechGuardinasRemoteAgent* running? `Test-NetConnection mesh.remote.techguardinas.local -Port 443`. |
 | "MFA is required" / "Invalid MFA code" | Enrol in Settings; check the phone's and server's clock (NTP). |
 | "You are not authorized for this device" | Device not approved, or no permission for the technician (Permissions page). |

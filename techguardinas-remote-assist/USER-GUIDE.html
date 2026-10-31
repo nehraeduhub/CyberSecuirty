@@ -331,6 +331,10 @@ When the session ends the technician has no further access. Close the support ag
 <td><code>./setup.sh export-ca</code></td>
 </tr>
 <tr>
+<td>Diagnose agents not connecting / engine problems</td>
+<td><code>sudo ./setup.sh doctor</code></td>
+</tr>
+<tr>
 <td>Repair portal ↔ engine link ("Remote engine error … noauth" / 502)</td>
 <td><code>sudo ./setup.sh repair-engine</code></td>
 </tr>
@@ -384,6 +388,10 @@ When the session ends the technician has no further access. Close the support ag
 <tr>
 <td>Console area stays blank</td>
 <td><code>mesh.remote…</code> blocked or not resolving from the technician's PC.</td>
+</tr>
+<tr>
+<td>Attended: user clicked <strong>Connect</strong> but the session stays <em>Waiting</em></td>
+<td>The PC cannot reach the engine name. On the PC: <code>Resolve-DnsName mesh.&lt;portal name&gt;</code> and <code>Test-NetConnection mesh.&lt;portal name&gt; -Port &lt;HTTPS port&gt;</code> must both work (add the <code>mesh.</code> DNS record / hosts entry). On the server: <code>sudo ./setup.sh doctor</code>.</td>
 </tr>
 <tr>
 <td>PC never appears in Device Approval</td>
