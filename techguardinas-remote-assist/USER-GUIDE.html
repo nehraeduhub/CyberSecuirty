@@ -134,6 +134,7 @@ Add-DnsServerResourceRecordA -ZoneName &quot;techguardinas.local&quot; -Name &qu
 <li><strong>Let the installer create one</strong> — if <code>deploy/certs/</code> is empty, <code>setup.sh</code> creates a dedicated "TechGuardinas Remote Internal CA" and the server certificate. You must then distribute the CA to every PC:</li>
 <li>Group Policy Management → edit a GPO linked to all computers → <em>Computer Configuration → Policies → Windows Settings → Security Settings → Public Key Policies → Trusted Root Certification Authorities</em> → <strong>Import</strong> <code>TechGuardinas-Remote-Internal-CA.crt</code> (created next to <code>setup.sh</code>).</li>
 <li>Single PC for testing: <code>certutil -addstore -f Root TechGuardinas-Remote-Internal-CA.crt</code> (administrator prompt).</li>
+<li><strong>Script (does Windows store + Firefox in one go):</strong> <code>deployment/gpo/Install-TechGuardinasCA.ps1 -CertPath &lt;path to .crt&gt;</code>. Use it as a GPO computer startup script for all PCs, or run it once as administrator on a test PC.</li>
 <li>Firefox: enable policy <em>Certificates → ImportEnterpriseRoots</em>.</li>
 <li>Keep <code>deploy/certs/ca.key</code> safe (copy it offline and remove it from the server once installation is complete).</li>
 </ul>

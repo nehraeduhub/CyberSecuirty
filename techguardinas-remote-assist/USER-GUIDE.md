@@ -117,6 +117,7 @@ Choose one:
 * **Let the installer create one** — if `deploy/certs/` is empty, `setup.sh` creates a dedicated "TechGuardinas Remote Internal CA" and the server certificate. You must then distribute the CA to every PC:
   * Group Policy Management → edit a GPO linked to all computers → *Computer Configuration → Policies → Windows Settings → Security Settings → Public Key Policies → Trusted Root Certification Authorities* → **Import** `TechGuardinas-Remote-Internal-CA.crt` (created next to `setup.sh`).
   * Single PC for testing: `certutil -addstore -f Root TechGuardinas-Remote-Internal-CA.crt` (administrator prompt).
+  * **Script (does Windows store + Firefox in one go):** `deployment/gpo/Install-TechGuardinasCA.ps1 -CertPath <path to .crt>`. Use it as a GPO computer startup script for all PCs, or run it once as administrator on a test PC.
   * Firefox: enable policy *Certificates → ImportEnterpriseRoots*.
   * Keep `deploy/certs/ca.key` safe (copy it offline and remove it from the server once installation is complete).
 
