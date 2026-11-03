@@ -10,6 +10,8 @@ use File::Find;
 use JSON::PP;
 use LWP::UserAgent;
 use Encode qw(decode);
+use lib '/opt/lib';
+use SnmpFacts;
 
 my ($dir, $source) = @ARGV;
 my $manager = ($ENV{MANAGER_URL} || 'http://manager:8090') =~ s{/+$}{}r;
@@ -81,6 +83,20 @@ find({ no_chdir => 1, wanted => sub {
     $files++;
     if ($text =~ /^\s*</) { xml_file($text) } elsif ($text =~ /^\s*\{/) { json_file($text) }
 } }, $dir) if -d $dir;
+
+# Devices that answered SNMP but that the scanner could not identify (no
+# make, model or serial): ask them directly (ENTITY-MIB, sysObjectID)
+my @creds = SnmpFacts::parse_credentials($ENV{SNMP_CREDENTIALS});
+if (@creds) {
+    for my $d (grep { $_->{snmp} && (!length($_->{manufacturer} // '') || !length($_->{model} // '') || !length($_->{serial} // '')) } values %dev) {
+        my ($f) = eval { SnmpFacts::probe($d->{ip}, \@creds, 2) };
+        next unless $f && %$f;
+        for my $k (qw(manufacturer model serial name description)) {
+            $d->{$k} = $f->{$k} if length($f->{$k} // '') && !length($d->{$k} // '');
+        }
+        $d->{location} = $f->{sys_location} if length($f->{sys_location} // '') && !length($d->{location} // '');
+    }
+}
 
 my $sent = 0;
 if (%dev) {

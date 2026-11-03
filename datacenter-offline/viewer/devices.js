@@ -24,7 +24,7 @@
   ];
   var STATE_LABEL = { up: 'Online', down: 'Offline', unknown: 'Not monitored' };
 
-  var st = { devices: [], status: {}, cats: [], sort: { key: 'ip', dir: 1 }, selected: {}, editing: null };
+  var st = { devices: [], status: {}, cats: [], locs: [], sort: { key: 'ip', dir: 1 }, selected: {}, editing: null };
   var params = new URLSearchParams(location.search);
   if (params.get('q')) $('q').value = params.get('q');
 
@@ -35,6 +35,7 @@
     return Promise.all([DC.mgr('devices'), loadStatus()]).then(function (r) {
       st.devices = r[0].devices || [];
       st.cats = r[0].category_list || [];
+      st.locs = r[0].location_list || [];
       fillLists();
       render();
       $('updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
@@ -73,12 +74,17 @@
       s.appendChild(el('option', { value: '', text: x[1] }));
       st.cats.forEach(function (c) { s.appendChild(el('option', { value: c, text: c })); });
     });
+    var bl = $('bulk-loc');
+    bl.length = 1;
+    bl.hidden = !st.locs.length;
+    bl.appendChild(el('option', { value: '__none', text: 'No location' }));
+    st.locs.forEach(function (l) { bl.appendChild(el('option', { value: l, text: l })); });
     var bulk = $('bulk-cat');
     bulk.length = 1;
     bulk.appendChild(el('option', { value: '__auto', text: 'Automatic' }));
     st.cats.forEach(function (c) { bulk.appendChild(el('option', { value: c, text: c })); });
     // Suggestions while typing make, model and location
-    [['dl-brand', 'brand'], ['dl-model', 'model'], ['dl-location', 'location']].forEach(function (x) {
+    [['dl-brand', 'brand'], ['dl-model', 'model']].forEach(function (x) {
       var dl = $(x[0]), seen = {};
       dl.textContent = '';
       st.devices.forEach(function (d) { if (d[x[1]] && !seen[d[x[1]]]) { seen[d[x[1]]] = 1; dl.appendChild(el('option', { value: d[x[1]] })); } });
@@ -149,6 +155,7 @@
     var n = Object.keys(st.selected).length;
     $('del').disabled = !n;
     $('bulk-cat').disabled = !n;
+    $('bulk-loc').disabled = !n;
     $('del').textContent = 'Delete selected' + (n ? ' (' + n + ')' : '');
   }
 
@@ -176,17 +183,34 @@
   // ------------------------------------------------------------- edit
   var FIELDS = ['name', 'ip', 'category', 'brand', 'model', 'serial', 'mac', 'location', 'notes'];
 
+  // Location: a list chosen by the admin, or free text while the list is empty
+  function locationField(cur) {
+    var wrap = $('loc-wrap');
+    wrap.textContent = '';
+    if (!st.locs.length) {
+      wrap.appendChild(el('input', { name: 'location', maxlength: '200', placeholder: 'DC1 / Hall A / Rack R12 U20' }));
+      return;
+    }
+    var sel = el('select', { name: 'location' });
+    sel.appendChild(el('option', { value: '', text: '— none —' }));
+    st.locs.forEach(function (l) { sel.appendChild(el('option', { value: l, text: l })); });
+    if (cur && st.locs.indexOf(cur) === -1) sel.appendChild(el('option', { value: cur, text: cur + ' (not in the list)' }));
+    wrap.appendChild(sel);
+  }
+
   function openEdit(d) {
     st.editing = d;
     var f = $('edit-form');
     f.reset();
+    locationField(d.location);
+    $('probe-result').hidden = true;
     $('edit-title').textContent = 'Edit ' + d.name;
     $('edit-error').textContent = '';
     FIELDS.forEach(function (k) { f[k].value = k === 'category' ? (d.locked && d.locked.category ? d.category : '') : (d[k] || ''); });
     var facts = $('edit-facts');
     facts.textContent = '';
     [['Automatic category', d.locked && d.locked.category ? '' : d.category], ['Found by scan', d.description], ['Firmware', d.firmware],
-     ['Device type', d.type], ['Answers SNMP', d.snmp ? 'yes' : ''], ['Added', [(d.first_seen || '').replace('T', ' ').slice(0, 16), d.source === 'glpi' ? 'copied from GLPI' : d.source === 'manual' ? 'by hand' : d.source].filter(Boolean).join(', ')],
+     ['Device type', d.type], ['Location reported by the device', d.sys_location], ['Answers SNMP', d.snmp ? 'yes' : ''], ['Added', [(d.first_seen || '').replace('T', ' ').slice(0, 16), d.source === 'glpi' ? 'copied from GLPI' : d.source === 'manual' ? 'by hand' : d.source].filter(Boolean).join(', ')],
      ['Last scan', (d.last_seen || '').replace('T', ' ').slice(0, 16)]].forEach(function (p) {
       if (!p[1]) return;
       facts.appendChild(el('dt', { text: p[0] }));
@@ -217,6 +241,52 @@
     }).then(function () { $('edit-save').disabled = false; });
   });
   $('edit-cancel').addEventListener('click', function () { $('edit-dialog').close(); });
+
+  // ------------------------------------------------------------- read from device
+  $('probe').addEventListener('click', function () {
+    var d = st.editing, box = $('probe-result');
+    box.hidden = false;
+    box.className = 'probe-result';
+    box.textContent = 'Asking ' + d.ip + ' over SNMP…';
+    $('probe').disabled = true;
+    DC.mgr('devices/' + d.id + '/probe', { method: 'POST', body: {} }).then(function (r) {
+      box.textContent = '';
+      var f = r.facts || {};
+      if (!f.credential) {
+        box.className = 'probe-result bad';
+        box.appendChild(el('strong', { text: r.error || 'No SNMP answer from ' + d.ip }));
+        var ul = el('ul');
+        (r.attempts || []).forEach(function (a) { ul.appendChild(el('li', { text: 'Credential ' + a.credential + ' (' + a.label + '): ' + (a.error || 'no answer') })); });
+        box.appendChild(ul);
+        box.appendChild(el('p', { class: 'small', text: 'Check that SNMP is enabled on the device, that its access list allows this server, and the credential under Scan & settings. You can still type make, model and serial by hand.' }));
+        return;
+      }
+      box.className = 'probe-result ok';
+      var dl = el('dl', { class: 'facts' });
+      [['Answered with', 'credential ' + f.credential], ['Name', f.name], ['Make', f.manufacturer], ['Model', f.model], ['Serial number', f.serial],
+       ['Description', f.description], ['Location reported', f.sys_location]].forEach(function (p) {
+        if (!p[1]) return;
+        dl.appendChild(el('dt', { text: p[0] }));
+        dl.appendChild(el('dd', { text: p[1] }));
+      });
+      box.appendChild(dl);
+      if (f.manufacturer || f.model || f.serial || f.name) {
+        box.appendChild(el('button', { type: 'button', class: 'btn', text: 'Fill the form with these', onclick: function () {
+          var form = $('edit-form');
+          if (f.manufacturer) form.brand.value = f.manufacturer;
+          if (f.model) form.model.value = f.model;
+          if (f.serial) form.serial.value = f.serial;
+          if (f.name && (!form.name.value || form.name.value === d.ip)) form.name.value = f.name;
+          DC.toast('Filled in: press Save to keep them');
+        } }));
+      } else {
+        box.appendChild(el('p', { class: 'small', text: 'The device answers SNMP but does not report make, model or serial number: type them by hand.' }));
+      }
+    }).catch(function (err) {
+      box.className = 'probe-result bad';
+      box.textContent = err.message;
+    }).then(function () { $('probe').disabled = false; });
+  });
 
   // ------------------------------------------------------------- add
   $('add').addEventListener('click', function () {
@@ -254,6 +324,17 @@
     if (!v || !ids.length) return;
     DC.mgr('devices/bulk', { method: 'POST', body: { ids: ids, category: v === '__auto' ? '' : v } }).then(function () {
       DC.toast(ids.length + ' device(s) set to ' + (v === '__auto' ? 'automatic' : v));
+      st.selected = {};
+      load();
+    }, function (err) { DC.toast(err.message, true); });
+  });
+
+  $('bulk-loc').addEventListener('change', function (e) {
+    var v = e.target.value, ids = selectedIds();
+    e.target.value = '';
+    if (!v || !ids.length) return;
+    DC.mgr('devices/bulk', { method: 'POST', body: { ids: ids, location: v === '__none' ? '' : v } }).then(function () {
+      DC.toast(ids.length + ' device(s): ' + (v === '__none' ? 'location cleared' : v));
       st.selected = {};
       load();
     }, function (err) { DC.toast(err.message, true); });

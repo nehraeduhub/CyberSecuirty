@@ -192,6 +192,8 @@ sudo SERVER_NAME=192.168.15.143 ./install-offline.sh     # your server's IP or D
   Monitor (live up/down by category):  https://192.168.15.143/viewer/
   Manage devices (edit, add):          https://192.168.15.143:8443/viewer/devices.html
   Scan &amp; settings (networks, SNMP):    https://192.168.15.143:8443/viewer/scan.html
+  Admin portal (name, logo, lists):    https://192.168.15.143:8443/admin
+      user: admin   first password: DC_ADMIN_PASSWORD in .../site/datacenter-offline/.env
   Grafana dashboards (Status tab):     https://192.168.15.143:8443/grafana/
 </code></pre>
 <p><strong>Upgrading an install that used GLPI:</strong> run the new <code>install-offline.sh</code> the same way (or the GitHub updater, Day-2). It copies your devices out of GLPI first, then removes GLPI and MariaDB; their data volumes stay until you delete them.</p>
@@ -199,6 +201,14 @@ sudo SERVER_NAME=192.168.15.143 ./install-offline.sh     # your server's IP or D
 <pre><code class="language-bash">sudo /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline/scripts/verify.sh
 </code></pre>
 <p><strong>Check:</strong> no <strong>FAIL</strong> lines. Open the Monitor address in a browser; with the self-signed certificate, accept the warning once (or install your CA certificate, Day-2).</p>
+<h3 id="61-admin-portal">6.1 Admin portal</h3>
+<p>Open <code>https://&lt;server&gt;:8443/admin</code>, sign in as <code>admin</code> with the <code>DC_ADMIN_PASSWORD</code> from <code>site/datacenter-offline/.env</code> (<code>sudo grep DC_ADMIN_PASSWORD site/datacenter-offline/.env</code>), then:</p>
+<ol>
+<li><strong>Admin account</strong>: set your own password (and user name if you like).</li>
+<li><strong>Branding</strong>: your organisation's name, subtitle and logo.</li>
+<li><strong>Device categories</strong> and <strong>Locations</strong>: the lists people pick from when they edit devices (e.g. <code>DC1 / Hall A / R05</code>).</li>
+</ol>
+<p>Forgot the admin password: <code>sudo ./site/datacenter-offline/scripts/admin-password.sh</code>.</p>
 <h2 id="step-7-scan-your-networks">Step 7: Scan your networks</h2>
 <h3 id="71-enable-snmp-on-devices">7.1 Enable SNMP on devices</h3>
 <p>Follow <strong><code>EQUIPMENT.md</code></strong> for each device type: Sophos, Alteon, iLO, iDRAC, Cisco, Dell, HP/Aruba. Allow the DC server's IP in each device's SNMP access list.</p>
@@ -209,7 +219,7 @@ sudo SERVER_NAME=192.168.15.143 ./install-offline.sh     # your server's IP or D
 <li><strong>SNMP credentials</strong>: add your read-only community or SNMPv3 user.</li>
 <li><strong>Save changes</strong>, then <strong>Scan now</strong>. The page shows progress; each /24 takes about 1–2 minutes.</li>
 <li>Open the <strong>Monitor</strong>: live online/offline per category and an <em>Offline now</em> list.</li>
-<li>Under <strong>Manage devices</strong>, <strong>Edit</strong> each important device: name, category, make, model, serial number, location, notes. Devices that only answered ping are in category <em>Unknown</em> until you edit them. <strong>Add devices</strong> adds devices by IP (one <code>IP name</code> per line).</li>
+<li>Under <strong>Manage devices</strong>, <strong>Edit</strong> each important device: name, category and location (from the admin lists), make, model, serial number, notes. <strong>Read from device (SNMP)</strong> fetches make, model and serial on the spot, or shows why the device does not answer. Devices that only answered ping are in category <em>Unknown</em> until you edit them. <strong>Add devices</strong> adds devices by IP (one <code>IP name</code> per line).</li>
 </ol>
 <p><strong>Check:</strong> the Monitor shows your devices; firewalls, load balancers, switches and servers are in the right categories (fix any under Manage devices).</p>
 <h3 id="73-servers-and-vmware-optional">7.3 Servers and VMware (optional)</h3>
@@ -258,6 +268,18 @@ echo '30 2 * * * root /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline
 <tr>
 <td>Change scan networks or SNMP credentials</td>
 <td>Scan &amp; settings → Save changes</td>
+</tr>
+<tr>
+<td>Brand name, logo, category and location lists</td>
+<td><code>/admin</code> (sign in)</td>
+</tr>
+<tr>
+<td>Forgot the admin password</td>
+<td><code>scripts/admin-password.sh</code></td>
+</tr>
+<tr>
+<td>Make/model/serial missing for a device</td>
+<td>Manage devices → Edit → <strong>Read from device (SNMP)</strong>: shows which credential answered, or why none did</td>
 </tr>
 <tr>
 <td>SSH to a device</td>

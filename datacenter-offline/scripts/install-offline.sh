@@ -113,6 +113,7 @@ ip=$(hostname -I 2>/dev/null | awk '{print $1}')
 port_suffix() { [ "${1:-80}" = 80 ] && echo "" || echo ":$1"; }
 portal_port=$(grep '^PORTAL_PORT=' .env | cut -d= -f2)
 setenv GRAFANA_ADMIN_PASSWORD "$(randpw)"
+setenv DC_ADMIN_PASSWORD "$(randpw)"
 server_name=${SERVER_NAME:-$(grep "^SERVER_NAME=" .env | cut -d= -f2 || true)}
 host=${server_name:-${ip:-localhost}}
 setkey() { # key value  (always)
@@ -141,7 +142,7 @@ else
   compose_file=docker-compose.yml
 fi
 if grep -q '^COMPOSE_FILE=' .env; then sed -i "s#^COMPOSE_FILE=.*#COMPOSE_FILE=$compose_file#" .env; else echo "COMPOSE_FILE=$compose_file" >> .env; fi
-for key in GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION PORTAL_TLS_PORT HTTPS_PORT HTTP_REDIRECT_PORT; do
+for key in DC_ADMIN_PASSWORD GRAFANA_ANONYMOUS MONITOR_SYNC_MINUTES PROMETHEUS_RETENTION PORTAL_TLS_PORT HTTPS_PORT HTTP_REDIRECT_PORT; do
   grep -q "^$key=" .env || grep "^$key=" .env.example >> .env
 done
 chmod 600 .env
@@ -256,6 +257,9 @@ DC NOC monitoring is running (no sign-in needed: keep these ports on the managem
   Monitor (live up/down by category):  $noc/viewer/     (also $portal/viewer/)
   Manage devices (edit, add):          $portal/viewer/devices.html
   Scan & settings (networks, SNMP):    $portal/viewer/scan.html
+  Admin portal (name, logo, lists):    $portal/admin
+      user: admin   first password: DC_ADMIN_PASSWORD in $KIT/.env
+      (change it there; reset: $KIT/scripts/admin-password.sh)
   Grafana dashboards (Status tab):     $portal/grafana/
   Learning library:                    $portal/glpi-datacenter-library.html
 

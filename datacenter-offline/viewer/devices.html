@@ -22,6 +22,7 @@
       <a href="devices.html" aria-current="page">Manage devices</a>
       <a href="scan.html">Scan &amp; settings</a>
       <a href="status.html" data-feature="grafana">Status</a>
+      <a href="admin.html">Admin</a>
     </nav>
     <div class="spacer"></div>
     <span id="updated" class="muted small"></span>
@@ -45,6 +46,8 @@
       <button id="add" class="btn" type="button">Add devices</button>
       <label><span class="sr-only">Category for the selected devices</span>
         <select id="bulk-cat" disabled><option value="">Set category for selected&hellip;</option></select></label>
+      <label><span class="sr-only">Location for the selected devices</span>
+        <select id="bulk-loc" disabled hidden><option value="">Set location for selected&hellip;</option></select></label>
       <button id="del" class="btn ghost" type="button" disabled>Delete selected</button>
       <button id="csv" class="btn ghost" type="button">Export CSV</button>
     </div>
@@ -71,9 +74,14 @@
         <label>Model <input name="model" maxlength="200" list="dl-model"></label>
         <label>Serial number <input name="serial" maxlength="200" class="mono"></label>
         <label>MAC address <input name="mac" maxlength="40" class="mono" placeholder="aa:bb:cc:dd:ee:ff"></label>
-        <label>Location <input name="location" maxlength="200" list="dl-location" placeholder="DC1 / Hall A / Rack R12 U20"></label>
+        <label>Location <span id="loc-wrap" class="field-wrap"></span></label>
         <label class="full">Notes <textarea name="notes" rows="3" maxlength="2000"></textarea></label>
       </div>
+      <div class="probe-row">
+        <button id="probe" class="btn ghost" type="button">Read from device (SNMP)</button>
+        <span class="muted small">Asks the device now for its name, make, model and serial number</span>
+      </div>
+      <div id="probe-result" class="probe-result" hidden></div>
       <dl id="edit-facts" class="facts"></dl>
       <p id="edit-error" class="error" role="alert"></p>
       <div class="row-end">
@@ -84,7 +92,6 @@
   </dialog>
   <datalist id="dl-brand"></datalist>
   <datalist id="dl-model"></datalist>
-  <datalist id="dl-location"></datalist>
 
   <!-- Add devices -->
   <dialog id="add-dialog" class="dialog">

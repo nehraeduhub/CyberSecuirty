@@ -47,8 +47,29 @@
     });
   };
 
+  // Name, subtitle and logo set in the admin portal, on every page
+  DC.applyBranding = function () {
+    return DC.mgr('branding').then(function (b) {
+      DC.branding = b;
+      document.querySelectorAll('.noc-brand .brand, .login-card .brand').forEach(function (n) { n.textContent = b.name; });
+      document.querySelectorAll('.noc-brand .brand + .muted').forEach(function (n) {
+        if (!n.hasAttribute('data-page')) n.setAttribute('data-page', n.textContent);
+        var page = n.getAttribute('data-page');
+        n.textContent = /^Network operations monitor$/.test(page) ? (b.subtitle || '') : page;
+      });
+      document.querySelectorAll('.noc-logo, .noc-logo-img').forEach(function (n) {
+        var repl = b.logo ? DC.el('img', { class: 'noc-logo-img', src: '../' + b.logo, alt: '' })
+                          : DC.el('span', { class: 'noc-logo', 'aria-hidden': 'true' });
+        n.replaceWith(repl);
+      });
+      document.title = document.title.replace(/DC NOC|DC Viewer/, b.name);
+      return b;
+    }).catch(function () { return {}; });
+  };
+
   // Hide the tabs switched off on the Scan & settings page (links marked data-feature)
   DC.applyFeatures = function () {
+    DC.applyBranding();
     return DC.mgr('features').then(function (f) {
       document.querySelectorAll('[data-feature]').forEach(function (a) {
         a.hidden = f[a.getAttribute('data-feature')] === false;

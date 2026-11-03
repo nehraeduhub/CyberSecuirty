@@ -106,13 +106,61 @@
     $('kpi-down').classList.toggle('alarm', t.down > 0);
     $('k-avail').textContent = pct(t.up, monitored);
     $('k-unknown').textContent = t.unknown;
-    document.title = (t.down ? '(' + t.down + ' DOWN) ' : '') + 'Network Monitor | DC NOC';
+    document.title = (t.down ? '(' + t.down + ' DOWN) ' : '') + 'Network Monitor | ' + ((DC.branding && DC.branding.name) || 'DC NOC');
     $('gen').textContent = 'Data from ' + new Date(d.generated * 1000).toLocaleTimeString() + '.';
 
     renderCats(d);
     renderDown(d);
     fillCatFilter(d);
     renderBoard(d);
+  }
+
+  // Ring chart: online / offline / not monitored, 2-unit gaps between parts,
+  // availability in the middle. Circumference 100 so lengths are percentages.
+  function ring(c, size, big) {
+    var svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 42 42');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('class', 'ring' + (big ? ' big' : ''));
+    svg.setAttribute('aria-hidden', 'true');
+    function circle(cls, len, off) {
+      var k = document.createElementNS(SVGNS, 'circle');
+      k.setAttribute('cx', '21'); k.setAttribute('cy', '21'); k.setAttribute('r', '15.915');
+      k.setAttribute('class', cls);
+      if (len != null) {
+        k.setAttribute('stroke-dasharray', len + ' ' + (100 - len));
+        k.setAttribute('stroke-dashoffset', String(25 - off));   // start at 12 o'clock
+      }
+      svg.appendChild(k);
+    }
+    circle('ring-track');
+    var parts = [['up', c.up], ['down', c.down], ['unknown', c.unknown]].filter(function (p) { return p[1] > 0; });
+    var gap = parts.length > 1 ? 2 : 0, off = 0;
+    parts.forEach(function (p) {
+      var len = Math.max(p[1] / c.total * 100 - gap, 1.5);
+      circle('ring-' + p[0], len, off);
+      off += p[1] / c.total * 100;
+    });
+    var monitored = c.up + c.down;
+    var t1 = document.createElementNS(SVGNS, 'text');
+    t1.setAttribute('x', '21'); t1.setAttribute('y', big ? '21' : '22.5'); t1.setAttribute('class', 'ring-pct');
+    t1.textContent = monitored ? Math.floor(c.up / monitored * 100) + '%' : '–';
+    svg.appendChild(t1);
+    if (big) {
+      var t2 = document.createElementNS(SVGNS, 'text');
+      t2.setAttribute('x', '21'); t2.setAttribute('y', '27.5'); t2.setAttribute('class', 'ring-sub');
+      t2.textContent = 'online';
+      svg.appendChild(t2);
+    }
+    return svg;
+  }
+
+  function countRow(state, n, label) {
+    return el('div', { class: 'cnt' + (n ? '' : ' zero') }, [
+      el('span', { class: 'sico s-' + state, 'aria-hidden': 'true', text: ICON_CHAR[state] }),
+      el('strong', { text: String(n) }), el('span', { class: 'muted', text: ' ' + label })
+    ]);
   }
 
   function renderCats(d) {
@@ -122,24 +170,31 @@
       box.appendChild(el('p', { class: 'muted', text: 'No devices yet: add networks on Scan & settings and press Scan now, or add devices under Manage devices.' }));
       return;
     }
+    // Whole estate first, then each category
+    var t = d.totals, all = { name: 'All devices', total: t.total, up: t.up, down: t.down, unknown: t.unknown };
+    box.appendChild(el('div', { class: 'cat-all' + (t.down ? ' has-down' : '') }, [
+      ring(all, 112, true),
+      el('div', { class: 'cat-info' }, [
+        el('div', { class: 'cat-title' }, [el('span', { class: 'cat-name', text: 'All devices' }), el('span', { class: 'muted small', text: ' ' + t.total + ' monitored' })]),
+        countRow('up', t.up, 'online'), countRow('down', t.down, 'offline'), countRow('unknown', t.unknown, 'not monitored yet')
+      ])
+    ]));
     d.categories.forEach(function (c) {
       var selected = st.filter.cat === c.name;
-      var chip = c.down ? el('span', { class: 'chip-st st-down' }, [el('span', { class: 'sico s-down', 'aria-hidden': 'true', text: '✕' }), c.down + ' offline'])
-        : c.up ? el('span', { class: 'chip-st st-up' }, [el('span', { class: 'sico s-up', 'aria-hidden': 'true', text: '✓' }), 'All online'])
-        : el('span', { class: 'chip-st st-unknown' }, [el('span', { class: 'sico s-unknown', 'aria-hidden': 'true', text: '?' }), 'Not monitored']);
-      if (c.down === 0 && c.up && c.unknown) chip = el('span', { class: 'chip-st st-up' }, [el('span', { class: 'sico s-up', 'aria-hidden': 'true', text: '✓' }), 'Online']);
-      var bar = el('div', { class: 'hbar-stack', 'aria-hidden': 'true' });
-      [['up', c.up], ['down', c.down], ['unknown', c.unknown]].forEach(function (p) {
-        if (p[1]) bar.appendChild(el('span', { class: 'seg-' + p[0], style: 'flex:' + p[1] }));
-      });
+      var state = c.down ? 'down' : c.up ? 'up' : 'unknown';
       box.appendChild(el('button', {
-        type: 'button', class: 'cat' + (c.down ? ' has-down' : '') + (selected ? ' sel' : ''), 'aria-pressed': String(selected),
+        type: 'button', class: 'cat cat-' + state + (selected ? ' sel' : ''), 'aria-pressed': String(selected),
         'aria-label': c.name + ': ' + c.up + ' online, ' + c.down + ' offline, ' + c.unknown + ' not monitored, of ' + c.total,
         onclick: function () { st.filter.cat = selected ? '' : c.name; $('f-cat').value = st.filter.cat; render(); }
       }, [
-        el('div', { class: 'cat-top' }, [icon(c.name), el('span', { class: 'cat-name', text: c.name }), chip]),
-        el('div', { class: 'cat-num' }, [el('strong', { text: String(c.up) }), el('span', { class: 'muted', text: ' / ' + c.total + ' online' })]),
-        bar
+        ring(c, 64, false),
+        el('div', { class: 'cat-info' }, [
+          el('div', { class: 'cat-title' }, [icon(c.name), el('span', { class: 'cat-name', text: c.name })]),
+          el('div', { class: 'cat-big' }, [el('strong', { text: String(c.up) }), el('span', { class: 'muted', text: ' / ' + c.total + ' online' })]),
+          c.down ? el('div', { class: 'cnt st-down' }, [el('span', { class: 'sico s-down', 'aria-hidden': 'true', text: '✕' }), el('strong', { text: String(c.down) }), ' offline'])
+            : c.up ? el('div', { class: 'cnt st-up' }, [el('span', { class: 'sico s-up', 'aria-hidden': 'true', text: '✓' }), c.unknown ? 'Online' : 'All online'])
+            : el('div', { class: 'cnt st-unknown' }, [el('span', { class: 'sico s-unknown', 'aria-hidden': 'true', text: '?' }), 'Not monitored yet'])
+        ])
       ]));
     });
   }

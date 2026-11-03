@@ -14,6 +14,8 @@
 #   SYNC_REQUEST    /settings/sync-request    (monitor-sync re-reads the devices when it appears)
 #   DISCOVER_SCRIPT /opt/discover-networks.pl
 #   SSH_KNOWN_HOSTS /settings/ssh_known_hosts.json
+#   DC_ADMIN_PASSWORD  first password of the /admin user 'admin' (set by install-offline.sh)
+#   COLLECTOR_CONF  /etc/collector/collector.conf  (SNMP credentials for Read from device)
 use strict;
 use warnings;
 use HTTP::Daemon;
@@ -28,6 +30,9 @@ use MIME::Base64 ();
 use Digest::SHA qw(sha1);
 use IO::Select;
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
+use Digest::SHA qw(hmac_sha256 sha256_hex);
+use lib '/opt/lib';
+use SnmpFacts;
 
 my $listen   = $ENV{LISTEN} || '0.0.0.0:8090';
 my $prom     = ($ENV{PROMETHEUS_URL} || 'http://prometheus:9090') =~ s{/+$}{}r;
@@ -36,11 +41,16 @@ my $scan_req = $ENV{SCAN_REQUEST} || '/status/scan-request';
 my $sync_req = $ENV{SYNC_REQUEST} || '/settings/sync-request';
 my $discover = $ENV{DISCOVER_SCRIPT} || '/opt/discover-networks.pl';
 my $dev_file = $ENV{DEVICES_FILE} || '/settings/devices.json';
+my $logo_file = $ENV{LOGO_FILE} || '/settings/branding-logo';
+my $collector_conf = $ENV{COLLECTOR_CONF} || '/etc/collector/collector.conf';
 my $known_hosts = $ENV{SSH_KNOWN_HOSTS} || '/settings/ssh_known_hosts.json';
 
 my $json = JSON::PP->new->utf8->canonical->pretty;
 my $ua   = LWP::UserAgent->new(timeout => 20, agent => 'dc-manager');
 my $MASK = '********';
+# Categories a fresh install starts with; the admin can change the list
+our @BUILTIN_CATEGORIES = ('Firewall', 'Load balancer', 'Router', 'Switch', 'Wireless', 'Server', 'Storage',
+                           'Management', 'Power', 'Printer', 'Phone', 'Other', 'Unknown');
 $| = 1;
 
 sub logmsg { printf "%s %s\n", strftime('%F %T', localtime), join('', @_) }
@@ -57,6 +67,9 @@ sub defaults {
             grafana => JSON::PP::false, library => JSON::PP::true,
             servers => JSON::PP::false, vmware => JSON::PP::false,
         },
+        # Chosen by the admin (/admin): what people pick from when editing devices
+        lists    => { categories => [ @BUILTIN_CATEGORIES ], locations => [] },
+        branding => { name => 'DC NOC', subtitle => 'Network operations monitor' },
     };
 }
 
@@ -70,6 +83,8 @@ sub load_settings {
     delete $s->{features}{$_} for grep { !exists $d->{features}{$_} } keys %{ $s->{features} };
     delete $s->{categories};
     for my $k (keys %{ $d->{scan} }) { $s->{scan}{$k} //= $d->{scan}{$k} }
+    for my $k (keys %{ $d->{lists} }) { $s->{lists}{$k} //= $d->{lists}{$k} }
+    for my $k (keys %{ $d->{branding} }) { $s->{branding}{$k} //= $d->{branding}{$k} }
     return $s;
 }
 
@@ -178,6 +193,7 @@ sub merge_settings {
         $s->{features}{$k} = ($new->{features} || {})->{$k} ? JSON::PP::true : JSON::PP::false
             if exists(($new->{features} || {})->{$k});
     }
+    $s->{$_} = $old->{$_} for grep { exists $old->{$_} } qw(lists branding admin);   # changed only in /admin
     return ($s, \@err);
 }
 
@@ -205,14 +221,29 @@ sub device_status {
 
 # ------------------------------------------------------------------ devices
 # Categories on the Monitor page, in display order
-my @CATEGORIES = ('Firewall', 'Load balancer', 'Router', 'Switch', 'Wireless', 'Server', 'Storage',
-                  'Management', 'Power', 'Printer', 'Phone', 'Other', 'Unknown');
-my %IS_CATEGORY = map { $_ => 1 } @CATEGORIES;
+# (the admin's list, refreshed from the settings on every request)
+my (@CATEGORIES, %IS_CATEGORY, @LOCATIONS, %IS_LOCATION);
+sub refresh_lists {
+    my $l = load_settings()->{lists};
+    @CATEGORIES = grep { length } @{ $l->{categories} || [] };
+    push @CATEGORIES, 'Unknown' unless grep { $_ eq 'Unknown' } @CATEGORIES;   # devices nobody identified
+    %IS_CATEGORY = map { $_ => 1 } @CATEGORIES;
+    @LOCATIONS = grep { length } @{ $l->{locations} || [] };
+    %IS_LOCATION = map { $_ => 1 } @LOCATIONS;
+}
+refresh_lists();
 # Fields people can edit; an edited field is never overwritten by a scan
 my @EDITABLE = qw(name ip category brand model serial mac location notes);
 
-# Best guess from what a scan found; people can override it per device
+# Best guess from what a scan found, limited to the admin's categories;
+# people can override it per device
 sub auto_category {
+    my $c = guess_category(@_);
+    return $c if $IS_CATEGORY{$c};
+    return $IS_CATEGORY{Other} && $_[0]{snmp} ? 'Other' : 'Unknown';
+}
+
+sub guess_category {
     my ($d) = @_;
     # (reading through map { $d->{$_} } so no empty keys are added to the device)
     my $t = lc join ' ', map { $d->{$_} // '' } qw(brand model type description name);
@@ -284,6 +315,9 @@ sub apply_edit {
             return "$v is already used by another device" if grep { $_->{ip} eq $v && $_ != $d } @{ $db->{devices} };
         }
         if ($k eq 'mac' && length $v) { my $m = clean_mac($v) or return "'$v' is not a MAC address"; $v = $m }
+        if ($k eq 'location' && length $v && @LOCATIONS && !$IS_LOCATION{$v}) {
+            return "'$v' is not in the location list (the admin adds locations under /admin)";
+        }
         if ($k eq 'category') {
             return "Unknown category '$v'" if length $v && !$IS_CATEGORY{$v};
             if (!length $v) { delete $d->{locked}{category}; $d->{category} = auto_category($d); next }   # back to automatic
@@ -337,7 +371,7 @@ sub import_devices {
         } else { $upd++ }
         $f->{$_} = fix_text($f->{$_}) for grep { defined $f->{$_} && !ref $f->{$_} } keys %$f;
         my %facts = (brand => brand_name(clean($f->{manufacturer}), clean($f->{model})), model => clean($f->{model}), serial => clean($f->{serial}, 80),
-                     mac => clean_mac($f->{mac}), location => clean($f->{location}), type => clean($f->{type}, 40),
+                     mac => clean_mac($f->{mac}), sys_location => clean($f->{location}), type => clean($f->{type}, 40),
                      description => clean($f->{description}, 300), firmware => clean($f->{firmware}, 120));
         for my $k (keys %facts) {
             next if $d->{locked}{$k} || !length $facts{$k};
@@ -384,6 +418,203 @@ sub monitor {
         category_list => \@CATEGORIES,
         devices    => \@out,
     };
+}
+
+# ------------------------------------------------------------------- admin
+# The /admin portal (branding, category and location lists) is the one part
+# with a sign-in: user name and password, PBKDF2-SHA256 hashed in
+# settings.json; sessions in memory (8 h), in an HttpOnly SameSite cookie.
+my %admin_sessions;   # token -> { user, expires }
+my %login_fails;      # client -> [count, first failure time]
+
+sub random_hex {
+    my ($n) = @_;
+    open my $r, '<:raw', '/dev/urandom' or die "urandom: $!\n";
+    my $b = '';
+    read $r, $b, $n;
+    close $r;
+    return unpack 'H*', $b;
+}
+
+sub pbkdf2 {   # PBKDF2-HMAC-SHA256, one 32-byte block
+    my ($pw, $salt, $iter) = @_;
+    my $u = hmac_sha256($salt . pack('N', 1), $pw);
+    my $t = $u;
+    for (2 .. $iter) { $u = hmac_sha256($u, $pw); $t ^= $u }
+    return unpack 'H*', $t;
+}
+
+sub set_admin_password {
+    my ($s, $user, $pw) = @_;
+    my $salt = random_hex(16);
+    $s->{admin} = { user => $user, salt => $salt, iter => 120000, hash => pbkdf2(Encode::encode('UTF-8', $pw), $salt, 120000) };
+}
+
+sub check_admin_password {
+    my ($user, $pw) = @_;
+    my $a = load_settings()->{admin} or return 0;
+    return 0 unless ($user // '') eq $a->{user};
+    my $h = pbkdf2(Encode::encode('UTF-8', $pw // ''), $a->{salt}, $a->{iter});
+    return sha256_hex($h) eq sha256_hex($a->{hash});   # compare digests, not the strings
+}
+
+sub admin_cookie {
+    my ($req) = @_;
+    my ($t) = ($req->header('Cookie') // '') =~ /(?:^|;\s*)dcadmin=([0-9a-f]{64})/ or return;
+    my $s = $admin_sessions{$t} or return;
+    if ($s->{expires} < time) { delete $admin_sessions{$t}; return }
+    return ($t, $s);
+}
+
+sub password_problem {
+    my $pw = shift // '';
+    return 'The password needs at least 10 characters' if length $pw < 10;
+    return 'Use letters and digits (or other characters) in the password' unless $pw =~ /[A-Za-z]/ && $pw =~ /[^A-Za-z]/;
+    return '';
+}
+
+# First start: user "admin" with DC_ADMIN_PASSWORD from .env, else a random
+# password written to the log once
+sub init_admin {
+    my $s = load_settings();
+    return if $s->{admin} && $s->{admin}{hash};
+    my $pw = $ENV{DC_ADMIN_PASSWORD} // '';
+    my $from_env = length $pw;
+    $pw = random_hex(9) unless $from_env;
+    set_admin_password($s, 'admin', $pw);
+    save_settings($s);
+    logmsg($from_env ? "admin portal: user 'admin' created with DC_ADMIN_PASSWORD from .env"
+                     : "admin portal: user 'admin' created with password $pw (change it under /admin)");
+}
+
+# Logo uploaded in /admin: PNG, JPEG, GIF, WebP or SVG, at most 512 KB
+my %LOGO_TYPES = ('image/png' => 1, 'image/jpeg' => 1, 'image/gif' => 1, 'image/webp' => 1, 'image/svg+xml' => 1);
+
+sub admin_api {
+    my ($c, $req, $m, $path) = @_;
+    my $client = $req->header('X-Real-IP') || 'browser';
+    if ($m eq 'POST' && $path eq '/admin/login') {
+        my $f = $login_fails{$client};
+        if ($f && $f->[0] >= 5 && time - $f->[1] < 300) {
+            return reply($c, 429, { error => 'Too many failed logins from this address: wait 5 minutes.' });
+        }
+        my $b = body($req) || {};
+        unless (check_admin_password($b->{user}, $b->{password})) {
+            $f = $login_fails{$client} = (!$f || time - $f->[1] >= 300) ? [0, time] : $f;
+            $f->[0]++;
+            logmsg("admin login FAILED from $client");
+            return reply($c, 401, { error => 'Wrong user name or password' });
+        }
+        delete $login_fails{$client};
+        %admin_sessions = map { $_ => $admin_sessions{$_} } grep { $admin_sessions{$_}{expires} > time } keys %admin_sessions;
+        my $t = random_hex(32);
+        $admin_sessions{$t} = { user => $b->{user}, expires => time + 8 * 3600 };
+        logmsg("admin login: $b->{user} from $client");
+        my $secure = ($req->header('X-Forwarded-Proto') // '') eq 'https' ? '; Secure' : '';
+        return reply($c, 200, { user => $b->{user} }, "dcadmin=$t; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800$secure");
+    }
+    my ($token, $sess) = admin_cookie($req);
+    return reply($c, 401, { error => 'Sign in to the admin portal first' }) unless $sess;
+    # Changes must come as JSON: a form on another site cannot send that
+    return reply($c, 415, { error => 'Send JSON' }) if $m ne 'GET' && ($req->header('Content-Type') // '') !~ m{^application/json};
+
+    return reply($c, 200, { user => $sess->{user} }) if $m eq 'GET' && $path eq '/admin/me';
+    if ($m eq 'POST' && $path eq '/admin/logout') {
+        delete $admin_sessions{$token};
+        return reply($c, 200, { ok => 1 }, 'dcadmin=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0');
+    }
+    if ($m eq 'PUT' && $path eq '/admin/branding') {
+        my $b = body($req) || {};
+        my $s = load_settings();
+        my $name = clean($b->{name}, 60);
+        return reply($c, 400, { error => 'The name may not be empty' }) unless length $name;
+        $s->{branding}{name} = $name;
+        $s->{branding}{subtitle} = clean($b->{subtitle}, 80);
+        if (exists $b->{logo}) {
+            if (!defined $b->{logo} || $b->{logo} eq '') { unlink $logo_file; delete $s->{branding}{logo_type} }
+            else {
+                my ($type, $data) = $b->{logo} =~ m{^data:([\w/+.-]+);base64,([A-Za-z0-9+/=\s]+)$}
+                    or return reply($c, 400, { error => 'The logo must be an image file' });
+                return reply($c, 400, { error => 'Use a PNG, JPEG, GIF, WebP or SVG logo' }) unless $LOGO_TYPES{$type};
+                my $raw = MIME::Base64::decode_base64($data);
+                return reply($c, 400, { error => 'The logo may be at most 512 KB' }) if length $raw > 512 * 1024;
+                open my $fh, '>:raw', "$logo_file.tmp" or die "write logo: $!\n";
+                print $fh $raw; close $fh;
+                rename "$logo_file.tmp", $logo_file;
+                $s->{branding}{logo_type} = $type;
+                $s->{branding}{logo_version} = time;
+            }
+        }
+        save_settings($s);
+        logmsg("admin $sess->{user} changed the branding");
+        return reply($c, 200, branding($s));
+    }
+    if ($m eq 'PUT' && $path eq '/admin/lists') {
+        my $b = body($req) || {};
+        my (%seen, @cats, @locs);
+        for my $v (@{ ref $b->{categories} eq 'ARRAY' ? $b->{categories} : [] }) { my $t = clean($v, 40); push @cats, $t if length $t && !$seen{"c$t"}++ }
+        for my $v (@{ ref $b->{locations} eq 'ARRAY' ? $b->{locations} : [] })  { my $t = clean($v, 120); push @locs, $t if length $t && !$seen{"l$t"}++ }
+        return reply($c, 400, { error => 'Keep at least one category' }) unless @cats;
+        push @cats, 'Unknown' unless $seen{cUnknown};
+        my $s = load_settings();
+        $s->{lists} = { categories => \@cats, locations => \@locs };
+        save_settings($s);
+        refresh_lists();
+        # Devices in a removed category go back to automatic; removed locations are cleared
+        my $db = load_devices();
+        for my $d (@{ $db->{devices} }) {
+            if (!$IS_CATEGORY{ $d->{category} // '' } || !$d->{locked}{category}) { delete $d->{locked}{category}; $d->{category} = auto_category($d) }
+            if (length($d->{location} // '') && @LOCATIONS && !$IS_LOCATION{ $d->{location} }) { $d->{location} = ''; delete $d->{locked}{location} }
+        }
+        save_devices($db);
+        logmsg("admin $sess->{user} saved ", scalar @cats, " categories and ", scalar @locs, " locations");
+        return reply($c, 200, { categories => \@CATEGORIES, locations => \@LOCATIONS });
+    }
+    if ($m eq 'PUT' && $path eq '/admin/password') {
+        my $b = body($req) || {};
+        return reply($c, 400, { error => 'The current password is wrong' }) unless check_admin_password($sess->{user}, $b->{current});
+        my $user = clean($b->{user} // $sess->{user}, 40);
+        return reply($c, 400, { error => 'User name: letters, digits, dot, dash or underscore' }) unless $user =~ /^[\w.-]{3,40}$/;
+        if (my $e = password_problem($b->{password})) { return reply($c, 400, { error => $e }) }
+        my $s = load_settings();
+        set_admin_password($s, $user, $b->{password});
+        save_settings($s);
+        %admin_sessions = ();   # sign in again everywhere
+        logmsg("admin password changed (user $user)");
+        return reply($c, 200, { ok => 1 }, 'dcadmin=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0');
+    }
+    return reply($c, 404, { error => "No such API: $m $path" });
+}
+
+sub branding {
+    my $b = (shift || load_settings())->{branding} || {};
+    return { name => $b->{name}, subtitle => $b->{subtitle}, logo => (-s $logo_file && $b->{logo_type}) ? 'api/branding/logo?v=' . ($b->{logo_version} // 0) : undef };
+}
+
+sub send_logo {
+    my ($c) = @_;
+    my $type = load_settings()->{branding}{logo_type};
+    return reply($c, 404, { error => 'No logo' }) unless $type && -s $logo_file;
+    open my $fh, '<:raw', $logo_file or return reply($c, 404, { error => 'No logo' });
+    local $/; my $raw = <$fh>; close $fh;
+    my $r = HTTP::Response->new(200);
+    # An SVG is an image here, never a page that runs scripts
+    $r->header('Content-Type' => $type, 'Cache-Control' => 'public, max-age=300', 'X-Content-Type-Options' => 'nosniff',
+               'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+    $r->content($raw);
+    $c->send_response($r);
+}
+
+# ------------------------------------------------------------- read from device
+sub all_credentials {
+    my @gui = grep { $_->{enabled} && $_->{version} } @{ load_settings()->{snmp} || [] };
+    my @conf;
+    if (open my $fh, '<', $collector_conf) {
+        local $/; my $t = <$fh>; close $fh;
+        my ($block) = $t =~ /^SNMP_CREDENTIALS="(.*?)"/ms;
+        @conf = SnmpFacts::parse_credentials($block) if defined $block;
+    }
+    return (@gui, @conf);
 }
 
 # ------------------------------------------------------------- find networks
@@ -586,9 +817,10 @@ sub ssh_upgrade {
 
 # ------------------------------------------------------------------ server
 sub reply {
-    my ($c, $code, $data) = @_;
+    my ($c, $code, $data, $cookie) = @_;
     my $r = HTTP::Response->new($code);
     $r->header('Content-Type' => 'application/json; charset=utf-8', 'Cache-Control' => 'no-store');
+    $r->header('Set-Cookie' => $cookie) if $cookie;
     $r->content($json->encode($data));
     $c->send_response($r);
 }
@@ -609,14 +841,29 @@ sub handle {
         ssh_upgrade($c, $req);
         return;
     }
+    refresh_lists();
+    return admin_api($c, $req, $m, $path) if $path =~ m{^/admin/};
     return reply($c, 200, load_settings()->{features}) if $m eq 'GET' && $path eq '/features';
+    return reply($c, 200, branding()) if $m eq 'GET' && $path eq '/branding';
+    return send_logo($c) if $m eq 'GET' && $path eq '/branding/logo';
+    return reply($c, 200, { categories => \@CATEGORIES, locations => \@LOCATIONS }) if $m eq 'GET' && $path eq '/lists';
+    if ($m eq 'POST' && $path =~ m{^/devices/(\d+)/probe$}) {   # "Read from device"
+        my $id = $1;
+        my ($d) = grep { $_->{id} == $id } @{ load_devices()->{devices} } or return reply($c, 404, { error => 'No such device' });
+        my @creds = all_credentials();
+        return reply($c, 200, { error => 'No SNMP credential yet: add one under Scan & settings', attempts => [] }) unless @creds;
+        my ($f, $tried) = SnmpFacts::probe($d->{ip}, \@creds, 2);
+        $f->{manufacturer} = brand_name($f->{manufacturer} // '', $f->{model} // '') if %$f;
+        logmsg("$from read $d->{ip} over SNMP: ", %$f ? 'answered' : 'no answer');
+        return reply($c, 200, { facts => $f, attempts => $tried });
+    }
     return reply($c, 200, monitor()) if $m eq 'GET' && $path eq '/monitor';
     return reply($c, 200, device_status()) if $m eq 'GET' && $path eq '/status';
     return reply($c, 200, masked(load_settings())) if $m eq 'GET' && $path eq '/settings';
 
     # Devices
     if ($m eq 'GET' && $path eq '/devices') {
-        return reply($c, 200, { devices => load_devices()->{devices}, category_list => \@CATEGORIES, editable => \@EDITABLE });
+        return reply($c, 200, { devices => load_devices()->{devices}, category_list => \@CATEGORIES, location_list => \@LOCATIONS, editable => \@EDITABLE });
     }
     if ($m eq 'POST' && $path eq '/devices') {   # add by hand: { devices: [ {ip, name, category, …} ] }
         my $b = body($req) || {};
@@ -661,8 +908,9 @@ sub handle {
             return reply($c, 200, { deleted => $before - @{ $db->{devices} } });
         }
         my $n = 0;
+        my %change = exists $b->{location} ? (location => $b->{location} // '') : (category => $b->{category} // '');
         for my $d (grep { $ids{ $_->{id} } } @{ $db->{devices} }) {
-            my $e = apply_edit($db, $d, { category => $b->{category} // '' });
+            my $e = apply_edit($db, $d, \%change);
             return reply($c, 400, { error => $e }) if $e;
             $n++;
         }
@@ -710,6 +958,16 @@ my ($host, $port) = split /:/, $listen;
 my $d = HTTP::Daemon->new(LocalAddr => $host, LocalPort => $port, ReuseAddr => 1, Timeout => 30)
     or die "Cannot listen on $listen: $!\n";
 save_settings(load_settings()) unless -e $file;
+init_admin();
+if (grep { $_ eq '--set-admin-password' } @ARGV) {   # scripts/admin-password.sh
+    my $pw = $ENV{NEW_PASSWORD} // '';
+    if (my $e = password_problem($pw)) { die "$e\n" }
+    my $s = load_settings();
+    set_admin_password($s, $ENV{NEW_USER} || ($s->{admin} || {})->{user} || 'admin', $pw);
+    save_settings($s);
+    print "Admin password changed.\n";
+    exit 0;
+}
 {   # Devices copied from GLPI or added by older versions: give each a category
     my $db = load_devices();
     my $changed = 0;
@@ -717,6 +975,8 @@ save_settings(load_settings()) unless -e $file;
         $d->{locked} ||= {};
         my @empty = grep { !defined $d->{$_} } keys %$d;   # left by an older version
         if (@empty) { delete @$d{@empty}; $changed++ }
+        # Older versions stored the device's SNMP sysLocation as its location
+        if (length($d->{location} // '') && !$d->{locked}{location}) { $d->{sys_location} = delete $d->{location}; $changed++ }
         next if $IS_CATEGORY{ $d->{category} // '' };
         $d->{category} = auto_category($d);
         $changed++;

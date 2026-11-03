@@ -11,6 +11,7 @@ Addresses below are for the default **HTTPS mode** (`TLS=yes` in `.env`). In HTT
 | **Monitor** | `https://<server>/` (or `:8443/viewer/`) | Live online/offline counts and availability, a card per **category** with its health, an **Offline now** list with how long, and every device as a tile with **SSH / RDP / Web / Edit**. Pinged every 15 s, page refreshes every 10 s, full screen for wall displays |
 | **Manage devices** | `…/viewer/devices.html` | Table of all devices with status. **Edit** a device (name, IP, category, make, model, serial, MAC, location, notes), **Add devices** by IP, set categories or delete in bulk, export CSV |
 | **Scan & settings** | `…/viewer/scan.html` | Networks to scan, SNMP credentials, scan interval, **Scan now** with progress, *Find networks from a router*, feature switches, saved SSH host keys |
+| **Admin** | `…:8443/admin` | **Sign-in** (user `admin`, first password `DC_ADMIN_PASSWORD` in `.env`): brand name, subtitle and logo shown on every page; the **category** and **location** lists people pick from when editing devices; admin user name and password |
 | **SSH** | `…/viewer/ssh.html?host=<ip>` | A terminal in a browser tab (opened by the SSH buttons); the DC server connects to the device for you |
 | **Status** (Grafana) | `…/viewer/status.html`, `…:8443/grafana/` | Up/down history and availability by category, ports, traffic, errors, CPU, firewall HA, server hardware health. Switch the tab on under *Features* |
 | Learning library | `…:8443/glpi-datacenter-library.html` | NehraEduHub data centre course, works offline |
@@ -77,6 +78,8 @@ docker compose exec collector collect.sh once    # scan now from the command lin
 docker compose logs -f collector                 # watch progress
 ```
 
+**Make, model and serial number.** For devices that answer SNMP, a scan takes them from the scanner and, when it cannot identify a device, reads them directly: ENTITY-MIB (switches, routers, firewalls, load balancers), and vendor MIBs for HPE iLO, Dell iDRAC, APC, Fortinet and Palo Alto. In **Manage devices → Edit**, **Read from device (SNMP)** asks the device on the spot, shows which credential answered (or why none did), and fills the form. Devices that do not answer SNMP keep what you type.
+
 ## 4. Monitor, edit, connect
 
 - **Monitor**: KPI tiles (monitored, online, offline, availability, not monitored yet), category cards (click one to filter), **Offline now** with how long, and device tiles grouped by category. The browser tab title shows "(3 DOWN)" and a message pops up when a device goes offline.
@@ -87,6 +90,15 @@ docker compose logs -f collector                 # watch progress
 ![SSH in a browser tab](docs/ssh.png)
 
 - **RDP** downloads a `.rdp` file that opens Remote Desktop (mstsc). **Web** opens `https://<ip>/`.
+
+### Admin portal
+
+Open `https://<server>:8443/admin` and sign in as `admin` with `DC_ADMIN_PASSWORD` from `.env` (the installer creates a random one and prints where it is). There you:
+
+- **Branding**: the name and subtitle in every page header and browser tab, and a logo (PNG, JPEG, GIF, WebP or SVG, up to 512 KB).
+- **Device categories**: the list (and order) people pick from and the Monitor shows; scans choose from it automatically until someone sets a device's category. *Unknown* is always kept.
+- **Locations**: sites/halls/racks people pick from. While the list is empty, location is free text. The location a device reports over SNMP is shown separately under Edit.
+- **Admin account**: change user name and password (at least 10 characters). Five wrong passwords lock the login for 5 minutes. Forgot it: `sudo ./scripts/admin-password.sh`.
 
 ## 5. Status dashboards (Grafana)
 
@@ -133,7 +145,8 @@ docker compose restart
 
 ## 7. Security checklist
 
-- [ ] There is **no sign-in**: anyone who can open the portal can edit devices, change settings and open SSH sessions (with the device's own password). Allow ports 80/443/8443 (or yours) only from admin and NOC networks on the server firewall
+- [ ] Change the admin password under `/admin` after the first sign-in
+- [ ] Apart from `/admin` there is **no sign-in**: anyone who can open the portal can edit devices, change settings and open SSH sessions (with the device's own password). Allow ports 80/443/8443 (or yours) only from admin and NOC networks on the server firewall
 - [ ] HTTPS on (`TLS=yes`) with a certificate from your internal CA in `tls/server.crt` / `tls/server.key`
 - [ ] Read-only SNMP credentials (SNMPv3 where possible), restricted to the server's IP on the devices
 - [ ] `collector/collector.conf` stays `chmod 600`; SNMP credentials entered in the browser are stored in the `dc_settings` volume
@@ -144,9 +157,9 @@ docker compose restart
 | Path | What |
 |---|---|
 | `docker-compose.yml`, `docker-compose.tls.yml` | The stack (portal, manager, collector, monitor-sync, Prometheus, Blackbox, SNMP exporter, Grafana) and HTTPS ports |
-| `manager/manager.pl` | API behind `/api/`: device list (`devices.json` in the `dc_settings` volume), settings, status, scan now, browser SSH |
+| `manager/manager.pl`, `SnmpFacts.pm` | API behind `/api/`: device list (`devices.json` in the `dc_settings` volume), settings, admin portal, status, scan now, browser SSH; SNMP make/model/serial reader (also used by the collector) |
 | `collector/` | Scanner image (`Dockerfile`), `collect.sh` (schedule), `to-devices.pl` (scan results → device list), `settings-env.pl`, `collector.conf.example` |
 | `monitoring/` | Prometheus, Blackbox, Grafana provisioning and dashboards, `targets/monitor-sync.pl` (device list → targets), `manual/` extra checks |
 | `viewer/` | Monitor (`index.html`), Manage devices, Scan & settings, SSH (xterm.js in `vendor/`, MIT), Status; plain HTML/JS/CSS, no external libraries |
 | `nginx/` | Portal configuration (HTTP and HTTPS) |
-| `scripts/` | `install-offline.sh`, `preflight.sh`, `verify.sh`, `backup.sh`, `prepare-offline-bundle.sh`, `download-docker-packages.sh`, `discover-networks.sh`, `test-remote.sh`, `patch-collector.sh`, `migrate-from-glpi.pl` |
+| `scripts/` | `install-offline.sh`, `preflight.sh`, `verify.sh`, `backup.sh`, `prepare-offline-bundle.sh`, `download-docker-packages.sh`, `discover-networks.sh`, `test-remote.sh`, `patch-collector.sh`, `admin-password.sh`, `migrate-from-glpi.pl` |

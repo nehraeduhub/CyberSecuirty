@@ -48,6 +48,7 @@ services:
       - ./collector/collect.sh:/usr/local/bin/collect.sh:ro,z
       - ./collector/settings-env.pl:/usr/local/bin/settings-env.pl:ro,z
       - ./collector/to-devices.pl:/usr/local/bin/to-devices.pl:ro,z
+      - ./manager/SnmpFacts.pm:/opt/lib/SnmpFacts.pm:ro,z
       - ./collector/ssh:/root/.ssh:z
       - collector_status:/status
       - dc_settings:/settings:ro
@@ -79,8 +80,11 @@ services:
     entrypoint: ["perl", "/opt/manager.pl"]
     environment:
       PROMETHEUS_URL: http://prometheus:9090
+      DC_ADMIN_PASSWORD: ${DC_ADMIN_PASSWORD:-}
     volumes:
       - ./manager/manager.pl:/opt/manager.pl:ro,z
+      - ./manager/SnmpFacts.pm:/opt/lib/SnmpFacts.pm:ro,z
+      - ./collector/collector.conf:/etc/collector/collector.conf:ro,z
       - ./scripts/discover-networks.pl:/opt/discover-networks.pl:ro,z
       - dc_settings:/settings
       - collector_status:/status

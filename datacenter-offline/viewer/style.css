@@ -734,3 +734,67 @@ body.noc {
 .facts dt { color: var(--muted); }
 .facts dd { margin: 0; overflow-wrap: anywhere; }
 body.noc .stats { padding: 14px 16px 0; }
+
+/* Category cards with ring charts */
+.cats { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.cat {
+  display: flex; align-items: center; gap: 14px; padding: 12px 14px;
+  background: linear-gradient(160deg, var(--surface-2), var(--surface)); border-radius: 12px; border-top: 3px solid var(--neutral);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.cat:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+.cat.cat-up { border-top-color: var(--good); }
+.cat.cat-down { border-top-color: var(--critical); background: linear-gradient(160deg, rgba(240, 68, 56, 0.14), var(--surface)); }
+.cat-all {
+  grid-column: 1 / -1; display: flex; align-items: center; gap: 22px; padding: 14px 18px; border-radius: 12px;
+  background: radial-gradient(400px 140px at 0% 50%, rgba(0, 229, 212, 0.08), transparent 70%), var(--surface-2);
+  border: 1px solid var(--border);
+}
+.cat-all.has-down { border-color: color-mix(in srgb, var(--critical) 55%, var(--border)); }
+.cat-all .cat-name { font-size: 1.15em; }
+.cat-all .cnt { font-size: 1em; }
+.cat-info { display: grid; gap: 4px; min-width: 0; flex: 1; }
+.cat-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cat-title .cat-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cat-big strong { font-size: 1.5em; font-variant-numeric: tabular-nums; }
+.cnt { display: flex; align-items: center; gap: 6px; font-size: 0.82em; font-weight: 600; }
+.cnt.zero { opacity: 0.45; }
+.ring { flex: none; transform: rotate(0deg); }
+.ring circle { fill: none; stroke-width: 4.2; }
+.ring.big circle { stroke-width: 3.6; }
+.ring .ring-track { stroke: var(--u-line); }
+.ring .ring-up { stroke: var(--good); }
+.ring .ring-down { stroke: var(--critical); }
+.ring .ring-unknown { stroke: var(--neutral); }
+.ring-pct { fill: var(--text); font-size: 8.5px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; font-variant-numeric: tabular-nums; }
+.ring.big .ring-pct { font-size: 9px; }
+.ring-sub { fill: var(--muted); font-size: 4px; text-anchor: middle; text-transform: uppercase; letter-spacing: 0.08em; }
+@media (prefers-reduced-motion: reduce) { .cat { transition: none; } .cat:hover { transform: none; } }
+
+/* Branding */
+.noc-logo-img { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; flex: none; }
+.login-card .noc-brand { margin-bottom: 4px; }
+
+/* Admin portal */
+.logo-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.logo-preview { width: 84px; height: 84px; border: 1px dashed var(--border); border-radius: 12px; display: grid; place-items: center; background: var(--bg); }
+.logo-preview img { max-width: 76px; max-height: 76px; object-fit: contain; }
+.logo-preview .noc-logo { width: 46px; height: 46px; }
+.logo-actions { display: grid; gap: 6px; justify-items: start; }
+.file-btn { display: inline-block; }
+.edit-list { list-style: none; padding: 0; margin: 0 0 8px; display: grid; gap: 6px; max-height: 360px; overflow-y: auto; }
+.edit-list li { display: flex; gap: 6px; align-items: center; }
+.edit-list input { flex: 1; min-width: 0; }
+.edit-list .link-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* Read from device */
+.probe-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.probe-result { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.9em; display: grid; gap: 6px; justify-items: start; }
+.probe-result.ok { border-color: color-mix(in srgb, var(--good) 55%, var(--border)); }
+.probe-result.bad { border-color: color-mix(in srgb, var(--critical) 60%, var(--border)); }
+.probe-result ul { margin: 0; padding-left: 18px; }
+.field-wrap { display: block; }
+.field-wrap input, .field-wrap select { width: 100%; }
+.form-grid { align-items: start; }
+.form-grid .full { grid-column: 1 / -1; }
+.form-grid .row-end { align-items: center; }

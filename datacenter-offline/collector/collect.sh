@@ -39,7 +39,7 @@ JSON
 
 # Send what a step saved to the manager's device list; prints "<files> <devices>"
 inject() {
-  perl /usr/local/bin/to-devices.pl "$1" "${2:-scan}" 2>>"$1.err"
+  SNMP_CREDENTIALS="${SNMP_CREDENTIALS:-}" perl /usr/local/bin/to-devices.pl "$1" "${2:-scan}" 2>>"$1.err"
 }
 
 collect_snmp() {

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | DC NOC</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%276%27 fill=%27%2300e5d4%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body class="noc">
+  <!-- Sign in -->
+  <main id="login-view" class="login" hidden>
+    <form id="login-form" class="card login-card" autocomplete="on">
+      <div class="noc-brand"><span class="noc-logo" aria-hidden="true"></span><div><div class="brand">DC NOC</div><div class="muted small">Admin portal</div></div></div>
+      <label>User name <input name="user" autocomplete="username" required autocapitalize="off"></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+      <p class="muted small"><a href="index.html">&larr; Back to the Monitor</a></p>
+    </form>
+  </main>
+
+  <div id="app-view" hidden>
+    <header class="topbar noc-bar">
+      <div class="noc-brand">
+        <span class="noc-logo" aria-hidden="true"></span>
+        <div><div class="brand">DC NOC</div><div class="muted small">Admin portal</div></div>
+      </div>
+      <nav class="nav" aria-label="Views">
+        <a href="index.html">Monitor</a>
+        <a href="devices.html">Manage devices</a>
+        <a href="scan.html">Scan &amp; settings</a>
+        <a href="admin.html" aria-current="page">Admin</a>
+      </nav>
+      <div class="spacer"></div>
+      <span id="who" class="muted small"></span>
+      <button id="logout" class="btn ghost" type="button">Sign out</button>
+    </header>
+
+    <div class="settings">
+      <!-- Branding -->
+      <section class="card">
+        <div class="card-head"><h2>Branding</h2></div>
+        <form id="brand-form" class="form-grid">
+          <label>Name shown on every page <input name="name" maxlength="60" required></label>
+          <label>Subtitle <input name="subtitle" maxlength="80"></label>
+          <div class="full logo-row">
+            <div id="logo-preview" class="logo-preview" aria-label="Logo preview"></div>
+            <div class="logo-actions">
+              <label class="btn ghost file-btn">Choose logo&hellip;
+                <input id="logo-file" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" hidden></label>
+              <button id="logo-remove" class="link-btn" type="button">Remove logo</button>
+              <p class="muted small">PNG, JPEG, GIF, WebP or SVG, at most 512 KB. Square logos look best.</p>
+            </div>
+          </div>
+          <div class="full row-end"><span id="brand-msg" class="muted small"></span><button class="btn" type="submit">Save branding</button></div>
+        </form>
+      </section>
+
+      <!-- Categories -->
+      <section class="card">
+        <div class="card-head"><h2>Device categories</h2></div>
+        <p class="muted small">What people choose from when they edit a device, in the order the Monitor shows them. Scans pick one of these automatically (from make and model) until someone sets it. <em>Unknown</em> is always kept for devices nobody identified.</p>
+        <ul id="cats" class="edit-list"></ul>
+        <form id="cat-add" class="inline-form"><label>New category <input name="v" maxlength="40" placeholder="e.g. Hypervisor"></label><button class="btn ghost" type="submit">Add</button></form>
+        <div class="row-end"><span id="cats-msg" class="muted small"></span><button id="cats-save" class="btn" type="button">Save categories</button></div>
+      </section>
+
+      <!-- Locations -->
+      <section class="card">
+        <div class="card-head"><h2>Locations</h2></div>
+        <p class="muted small">Sites, halls and racks people choose from when they edit a device. With an empty list, location is free text.</p>
+        <ul id="locs" class="edit-list"></ul>
+        <form id="loc-add" class="inline-form"><label>New location <input name="v" maxlength="120" placeholder="DC1 / Hall A / Rack R05"></label><button class="btn ghost" type="submit">Add</button></form>
+        <div class="row-end"><span id="locs-msg" class="muted small"></span><button id="locs-save" class="btn" type="button">Save locations</button></div>
+      </section>
+
+      <!-- Account -->
+      <section class="card">
+        <div class="card-head"><h2>Admin account</h2></div>
+        <form id="pw-form" class="form-grid" autocomplete="off">
+          <label>User name <input name="user" required pattern="[A-Za-z0-9_.\-]{3,40}" autocomplete="username"></label>
+          <label>Current password <input name="current" type="password" required autocomplete="current-password"></label>
+          <label>New password <input name="password" type="password" required minlength="10" autocomplete="new-password"></label>
+          <label>New password again <input name="password2" type="password" required minlength="10" autocomplete="new-password"></label>
+          <p class="full muted small">At least 10 characters, with letters and digits. You sign in again after the change.</p>
+          <div class="full row-end"><span id="pw-msg" class="error"></span><button class="btn" type="submit">Change</button></div>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <script src="dc.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

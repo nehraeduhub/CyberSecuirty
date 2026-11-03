@@ -8,14 +8,18 @@
   <link rel="stylesheet" href="style.css">
   <script src="config.js"></script>
 </head>
-<body class="status-page">
-  <header class="topbar">
-    <div class="brand">DC Viewer</div>
+<body class="noc status-page">
+  <header class="topbar noc-bar">
+    <div class="noc-brand">
+        <span class="noc-logo" aria-hidden="true"></span>
+        <div><div class="brand">DC NOC</div><div class="muted small">Status dashboards</div></div>
+      </div>
     <nav class="nav" aria-label="Views">
         <a href="index.html">Monitor</a>
         <a href="devices.html">Manage devices</a>
         <a href="scan.html">Scan &amp; settings</a>
         <a href="status.html" data-feature="grafana" aria-current="page">Status</a>
+        <a href="admin.html">Admin</a>
       </nav>
     <div class="seg" role="group" aria-label="Dashboard">
       <button type="button" data-dash="dc-device-status/device-status" aria-pressed="true">Up / down</button>

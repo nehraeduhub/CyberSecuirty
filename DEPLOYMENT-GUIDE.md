@@ -120,6 +120,8 @@ DC NOC monitoring is running (no sign-in needed: keep these ports on the managem
   Monitor (live up/down by category):  https://192.168.15.143/viewer/
   Manage devices (edit, add):          https://192.168.15.143:8443/viewer/devices.html
   Scan & settings (networks, SNMP):    https://192.168.15.143:8443/viewer/scan.html
+  Admin portal (name, logo, lists):    https://192.168.15.143:8443/admin
+      user: admin   first password: DC_ADMIN_PASSWORD in .../site/datacenter-offline/.env
   Grafana dashboards (Status tab):     https://192.168.15.143:8443/grafana/
 ```
 
@@ -132,6 +134,16 @@ sudo /opt/dc/dc-offline-bundle-YYYYMMDD/site/datacenter-offline/scripts/verify.s
 ```
 
 **Check:** no **FAIL** lines. Open the Monitor address in a browser; with the self-signed certificate, accept the warning once (or install your CA certificate, Day-2).
+
+### 6.1 Admin portal
+
+Open `https://<server>:8443/admin`, sign in as `admin` with the `DC_ADMIN_PASSWORD` from `site/datacenter-offline/.env` (`sudo grep DC_ADMIN_PASSWORD site/datacenter-offline/.env`), then:
+
+1. **Admin account**: set your own password (and user name if you like).
+2. **Branding**: your organisation's name, subtitle and logo.
+3. **Device categories** and **Locations**: the lists people pick from when they edit devices (e.g. `DC1 / Hall A / R05`).
+
+Forgot the admin password: `sudo ./site/datacenter-offline/scripts/admin-password.sh`.
 
 ## Step 7: Scan your networks
 
@@ -146,7 +158,7 @@ Follow **`EQUIPMENT.md`** for each device type: Sophos, Alteon, iLO, iDRAC, Cisc
 3. **SNMP credentials**: add your read-only community or SNMPv3 user.
 4. **Save changes**, then **Scan now**. The page shows progress; each /24 takes about 1–2 minutes.
 5. Open the **Monitor**: live online/offline per category and an *Offline now* list.
-6. Under **Manage devices**, **Edit** each important device: name, category, make, model, serial number, location, notes. Devices that only answered ping are in category *Unknown* until you edit them. **Add devices** adds devices by IP (one `IP name` per line).
+6. Under **Manage devices**, **Edit** each important device: name, category and location (from the admin lists), make, model, serial number, notes. **Read from device (SNMP)** fetches make, model and serial on the spot, or shows why the device does not answer. Devices that only answered ping are in category *Unknown* until you edit them. **Add devices** adds devices by IP (one `IP name` per line).
 
 **Check:** the Monitor shows your devices; firewalls, load balancers, switches and servers are in the right categories (fix any under Manage devices).
 
@@ -196,6 +208,9 @@ Backups (device list, settings, SSH host keys, `.env`, `collector.conf`, certifi
 | Scan now | Scan & settings → **Scan now** (or `docker compose exec collector collect.sh once`) |
 | Add / edit / delete devices | Manage devices |
 | Change scan networks or SNMP credentials | Scan & settings → Save changes |
+| Brand name, logo, category and location lists | `/admin` (sign in) |
+| Forgot the admin password | `scripts/admin-password.sh` |
+| Make/model/serial missing for a device | Manage devices → Edit → **Read from device (SNMP)**: shows which credential answered, or why none did |
 | SSH to a device | SSH button on the Monitor or Manage devices (opens a terminal tab) |
 | A device was replaced and SSH refuses its new key | Scan & settings → SSH host keys → Remove, after checking why |
 | Status of containers / logs | `cd site/datacenter-offline && docker compose ps` / `docker compose logs --tail 100 manager` (or collector, portal, grafana…) |
