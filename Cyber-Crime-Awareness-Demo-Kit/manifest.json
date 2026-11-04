@@ -1,0 +1,644 @@
+{
+"docs": [
+{
+"path": "00_START_HERE/DEMO_FLOW.md",
+"title": "Demo Flow \u2014 the story-first method"
+},
+{
+"path": "00_START_HERE/MASTER_SEMINAR_CHECKLIST.md",
+"title": "Master Seminar Checklist"
+},
+{
+"path": "00_START_HERE/PORTABLE_SETUP.md",
+"title": "Run as a Portable Toolkit (USB / Laptop) \u2014 Step by Step"
+},
+{
+"path": "00_START_HERE/QUICK_START.md",
+"title": "Quick Start"
+},
+{
+"path": "00_START_HERE/README.md",
+"title": "00 \u00b7 Start Here"
+},
+{
+"path": "00_START_HERE/REHEARSAL_RUNSHEET.md",
+"title": "Rehearsal Run-Sheet \u2014 test every step before you present"
+},
+{
+"path": "00_START_HERE/SAFETY_RULES.md",
+"title": "Safety & Authorisation Rules (READ FIRST)"
+},
+{
+"path": "01_SEMINAR_GUIDE/30_MINUTE_SEMINAR.md",
+"title": "30-Minute Seminar Run Sheet"
+},
+{
+"path": "01_SEMINAR_GUIDE/60_MINUTE_SEMINAR.md",
+"title": "60-Minute Seminar Run Sheet"
+},
+{
+"path": "01_SEMINAR_GUIDE/90_MINUTE_SEMINAR.md",
+"title": "90-Minute Seminar Run Sheet"
+},
+{
+"path": "01_SEMINAR_GUIDE/AUDIENCE_INTERACTION.md",
+"title": "Audience Interaction Playbook"
+},
+{
+"path": "01_SEMINAR_GUIDE/CLOSING_SCRIPT.md",
+"title": "Closing Script"
+},
+{
+"path": "01_SEMINAR_GUIDE/OPENING_SCRIPT.md",
+"title": "Opening Script"
+},
+{
+"path": "02_PEOPLE_EXPOSURE/CHECKLIST.md",
+"title": "People-Exposure Self-Audit Checklist"
+},
+{
+"path": "02_PEOPLE_EXPOSURE/DEMO.md",
+"title": "02 \u00b7 People Exposure \u2014 \"A name becomes a profile\""
+},
+{
+"path": "02_PEOPLE_EXPOSURE/STORY.md",
+"title": "Story \u2014 Aarav Mehta (FICTIONAL)"
+},
+{
+"path": "03_EMAIL_BREACH/DEMO.md",
+"title": "03 \u00b7 Email \u2014 \"Has your email already leaked?\""
+},
+{
+"path": "03_EMAIL_BREACH/SCREENSHOTS/README.md",
+"title": "Offline fallback screenshots (placeholders)"
+},
+{
+"path": "04_USERNAME_OSINT/DEMO.md",
+"title": "04 \u00b7 Username \u2014 \"One handle, many doors\""
+},
+{
+"path": "04_USERNAME_OSINT/SCREENSHOTS/README.md",
+"title": "Offline fallback screenshots (placeholders)"
+},
+{
+"path": "05_PHONE_NUMBER/DEMO.md",
+"title": "05 \u00b7 Phone Number \u2014 \"What a number reveals\""
+},
+{
+"path": "05_PHONE_NUMBER/SCREENSHOTS/README.md",
+"title": "Offline fallback screenshots (placeholders)"
+},
+{
+"path": "06_PHOTO_PRIVACY/DEMO.md",
+"title": "06 \u00b7 Photo \u2014 \"Your picture talks\""
+},
+{
+"path": "06_PHOTO_PRIVACY/SAMPLE_IMAGES/README.md",
+"title": "Sample images (bring your own)"
+},
+{
+"path": "07_LOCATION_EXPOSURE/DEMO.md",
+"title": "07 \u00b7 Location \u2014 \"You told them where you are\""
+},
+{
+"path": "07_LOCATION_EXPOSURE/SAMPLE_SOCIAL_POSTS/posts.md",
+"title": "FICTIONAL social posts for the location demo (read aloud)"
+},
+{
+"path": "08_PHISHING_AWARENESS/README.md",
+"title": "08 \u00b7 Phishing Awareness \u2014 Local Simulation"
+},
+{
+"path": "08_PHISHING_AWARENESS/instructor_notes.md",
+"title": "Instructor Notes \u2014 Phishing Simulation"
+},
+{
+"path": "08_PHISHING_AWARENESS/screenshots/README.md",
+"title": "Offline screenshots (placeholders)"
+},
+{
+"path": "09_QR_CODE_SCAM/DEMO.md",
+"title": "09 \u00b7 QR Code Scam \u2014 \"Receive money\" vs \"Authorise payment\""
+},
+{
+"path": "09_QR_CODE_SCAM/SAMPLE_MESSAGES/flows.md",
+"title": "Mock UPI QR flows (FICTIONAL \u2014 no real payment)"
+},
+{
+"path": "09_QR_CODE_SCAM/SAMPLE_QR/README.md",
+"title": "Sample QR (generate locally \u2014 all harmless)"
+},
+{
+"path": "10_WHATSAPP_SCAM/DEMO.md",
+"title": "10 \u00b7 WhatsApp Scam \u2014 \"Account takeover & contact targeting\""
+},
+{
+"path": "10_WHATSAPP_SCAM/INSTRUCTOR_SCRIPT.md",
+"title": "Instructor Script \u2014 WhatsApp Scam"
+},
+{
+"path": "10_WHATSAPP_SCAM/MOCK_MESSAGES/chats.md",
+"title": "Mock WhatsApp chats (FICTIONAL)"
+},
+{
+"path": "11_DIGITAL_ARREST/RED_FLAGS.md",
+"title": "Digital Arrest \u2014 Red Flags & Correct Response"
+},
+{
+"path": "11_DIGITAL_ARREST/ROLEPLAY_SCRIPT.md",
+"title": "Digital Arrest \u2014 Role-Play Script (FICTIONAL)"
+},
+{
+"path": "11_DIGITAL_ARREST/SAMPLE_NOTICE/README.md",
+"title": "Sample \"notice\" prop"
+},
+{
+"path": "11_DIGITAL_ARREST/STORY.md",
+"title": "11 \u00b7 Digital Arrest \u2014 Story"
+},
+{
+"path": "12_UPI_FRAUD/DEMO.md",
+"title": "12 \u00b7 UPI Fraud \u2014 \"Refund, collect request & fake support\""
+},
+{
+"path": "12_UPI_FRAUD/MOCK_PAYMENT_SCREENS/screens.md",
+"title": "Mock UPI screens (FICTIONAL \u2014 no real payment)"
+},
+{
+"path": "12_UPI_FRAUD/SAFETY_RULES.md",
+"title": "UPI Safety Rules (handout-ready)"
+},
+{
+"path": "13_FAKE_APK/APK_ANALYSIS.md",
+"title": "APK Analysis \u2014 Step-by-Step (read-only, no malware)"
+},
+{
+"path": "13_FAKE_APK/PERMISSION_CHECKLIST.md",
+"title": "Android Permission Checklist \u2014 \"Why would THIS app need it?\""
+},
+{
+"path": "13_FAKE_APK/README.md",
+"title": "13 \u00b7 Fake APK \u2014 Harmless APK-Analysis Demo"
+},
+{
+"path": "13_FAKE_APK/SAMPLE_APK_INFO/fake_app_story.md",
+"title": "Fake app stories (FICTIONAL \u2014 for the slide)"
+},
+{
+"path": "14_PASSWORD_AWARENESS/DEMO.md",
+"title": "14 \u00b7 Password Awareness \u2014 \"Weak, reused, breached\""
+},
+{
+"path": "14_PASSWORD_AWARENESS/PASSWORD_SAFETY.md",
+"title": "Password Safety (handout-ready)"
+},
+{
+"path": "15_BROWSER_PRIVACY/DEMO.md",
+"title": "15 \u00b7 Browser Privacy \u2014 \"Your browser is talking about you\""
+},
+{
+"path": "15_BROWSER_PRIVACY/PRIVACY_CHECKLIST.md",
+"title": "Browser Privacy Checklist"
+},
+{
+"path": "16_SUSPICIOUS_URL/DEMO.md",
+"title": "16 \u00b7 Suspicious URL \u2014 \"Read the link before you click\""
+},
+{
+"path": "16_SUSPICIOUS_URL/INVESTIGATION_FLOW.md",
+"title": "URL Investigation Flow"
+},
+{
+"path": "17_DOMAIN_OSINT/DEMO.md",
+"title": "17 \u00b7 Domain OSINT \u2014 \"What a domain reveals (authorised)\""
+},
+{
+"path": "17_DOMAIN_OSINT/INVESTIGATION_CHECKLIST.md",
+"title": "Domain OSINT Checklist (authorised targets only)"
+},
+{
+"path": "18_SHODAN_AWARENESS/DEMO.md",
+"title": "18 \u00b7 Shodan Awareness \u2014 \"The search engine for exposed devices\""
+},
+{
+"path": "18_SHODAN_AWARENESS/SAFETY_GUIDELINES.md",
+"title": "Shodan \u2014 Safety & Ethics Guidelines"
+},
+{
+"path": "19_NETWORK_AWARENESS/DEMO.md",
+"title": "19 \u00b7 Network Awareness \u2014 \"Encrypted vs plaintext\""
+},
+{
+"path": "19_NETWORK_AWARENESS/SAMPLE_PCAP_INFO/README.md",
+"title": "Making a safe sample PCAP (your OWN traffic only)"
+},
+{
+"path": "20_DIGITAL_FORENSICS/CASE_01/README.md",
+"title": "Case 01 \u2014 Phishing Email Analysis (FICTIONAL)"
+},
+{
+"path": "20_DIGITAL_FORENSICS/CASE_02/README.md",
+"title": "Case 02 \u2014 Suspicious APK Triage (FICTIONAL)"
+},
+{
+"path": "20_DIGITAL_FORENSICS/INVESTIGATION_GUIDE.md",
+"title": "20 \u00b7 Digital Forensics \u2014 Investigation Guide"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/AEPS_AADHAAR_FRAUD.md",
+"title": "AEPS / Aadhaar Biometric Fraud"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/AI_VOICE_SCAM.md",
+"title": "AI Voice Clone Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/CARD_SKIMMING.md",
+"title": "Card Skimming / ATM Fraud"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/COURIER_SCAM.md",
+"title": "Courier / Parcel Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/DATA_BREACH.md",
+"title": "Data Breach"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/DEEPFAKE_SCAM.md",
+"title": "Deepfake Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/DIGITAL_ARREST.md",
+"title": "Digital Arrest"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/ELECTRICITY_SCAM.md",
+"title": "Electricity Bill Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/EVIL_TWIN_WIFI.md",
+"title": "Evil Twin / Fake Public Wi-Fi"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/FAKE_CHARITY_SCAM.md",
+"title": "Fake Charity / Disaster Donation Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/FAKE_CUSTOMER_CARE.md",
+"title": "Fake Customer Care"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/FAKE_ECHALLAN_SCAM.md",
+"title": "Fake e-Challan / Traffic Fine Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/FAKE_JOB_SCAM.md",
+"title": "Fake Job / Task Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/FAKE_SHOPPING_SITE.md",
+"title": "Fake Shopping Website / Festive Sale Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/FAKE_TECH_SUPPORT.md",
+"title": "Fake Tech Support / Pop-up Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/FAKE_TRADING_APP.md",
+"title": "Fake Trading App"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/IDENTITY_THEFT.md",
+"title": "Identity Theft"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/INVESTMENT_SCAM.md",
+"title": "Investment / Trading Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/JUICE_JACKING.md",
+"title": "Juice Jacking (Public USB Charging)"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/KYC_SCAM.md",
+"title": "KYC Update Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/LOAN_APP_SCAM.md",
+"title": "Instant Loan App Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/LOTTERY_KBC_SCAM.md",
+"title": "Lottery / KBC Lucky Draw Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/MALICIOUS_APK.md",
+"title": "Malicious APK"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/MATRIMONIAL_FRAUD.md",
+"title": "Matrimonial / Dating Fraud"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/OTP_SCAM.md",
+"title": "OTP Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/PHISHING.md",
+"title": "Phishing (Email/Web)"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/PIG_BUTCHERING.md",
+"title": "Pig Butchering (Romance + Crypto Investment)"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/QR_SCAM.md",
+"title": "QR Scam"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/RANSOMWARE_AWARENESS.md",
+"title": "Ransomware (Awareness)"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/SEXTORTION_AWARENESS.md",
+"title": "Sextortion Awareness"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/SIM_SWAP.md",
+"title": "SIM Swap"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/SMISHING.md",
+"title": "Smishing (SMS Phishing)"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/SOCIAL_MEDIA_IMPERSONATION.md",
+"title": "Social Media Impersonation"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/UPI_FRAUD.md",
+"title": "UPI Fraud"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/VISHING.md",
+"title": "Vishing (Voice Phishing)"
+},
+{
+"path": "21_INDIAN_CYBER_CRIMES/WHATSAPP_SCAM.md",
+"title": "WhatsApp Scam / Takeover"
+},
+{
+"path": "22_KALI_TOOLS/ANDROID_ANALYSIS/APKTOOL.md",
+"title": "Apktool (APK Unpacker)"
+},
+{
+"path": "22_KALI_TOOLS/ANDROID_ANALYSIS/JADX.md",
+"title": "JADX (APK Decompiler)"
+},
+{
+"path": "22_KALI_TOOLS/ANDROID_ANALYSIS/MOBSF.md",
+"title": "MobSF (Mobile Security Framework)"
+},
+{
+"path": "22_KALI_TOOLS/FORENSICS/AUTOPSY.md",
+"title": "Autopsy (Disk Forensics)"
+},
+{
+"path": "22_KALI_TOOLS/FORENSICS/BINWALK.md",
+"title": "Binwalk (File / Firmware Carving)"
+},
+{
+"path": "22_KALI_TOOLS/FORENSICS/EXIFTOOL.md",
+"title": "ExifTool (Metadata)"
+},
+{
+"path": "22_KALI_TOOLS/FORENSICS/STEGHIDE.md",
+"title": "Steghide (Steganography Awareness)"
+},
+{
+"path": "22_KALI_TOOLS/FORENSICS/VOLATILITY.md",
+"title": "Volatility (Memory Forensics \u2014 concepts)"
+},
+{
+"path": "22_KALI_TOOLS/NETWORK/DNSRECON.md",
+"title": "DNSRecon (DNS Enumeration)"
+},
+{
+"path": "22_KALI_TOOLS/NETWORK/NMAP.md",
+"title": "Nmap (Network Discovery)"
+},
+{
+"path": "22_KALI_TOOLS/NETWORK/WIRESHARK.md",
+"title": "Wireshark (Packet Analysis)"
+},
+{
+"path": "22_KALI_TOOLS/OSINT/HOLEHE.md",
+"title": "Holehe (Email \u2192 Account Discovery)"
+},
+{
+"path": "22_KALI_TOOLS/OSINT/MAIGRET.md",
+"title": "Maigret (Username OSINT, richer report)"
+},
+{
+"path": "22_KALI_TOOLS/OSINT/PHONEINFOGA.md",
+"title": "PhoneInfoga (Phone Number OSINT)"
+},
+{
+"path": "22_KALI_TOOLS/OSINT/RECON-NG.md",
+"title": "Recon-ng (OSINT Framework)"
+},
+{
+"path": "22_KALI_TOOLS/OSINT/SHERLOCK.md",
+"title": "Sherlock (Username OSINT)"
+},
+{
+"path": "22_KALI_TOOLS/OSINT/SPIDERFOOT.md",
+"title": "SpiderFoot (OSINT Automation)"
+},
+{
+"path": "22_KALI_TOOLS/OSINT/SUBLIST3R.md",
+"title": "Sublist3r (Subdomain Discovery)"
+},
+{
+"path": "22_KALI_TOOLS/OSINT/THEHARVESTER.md",
+"title": "theHarvester (Email/Domain OSINT)"
+},
+{
+"path": "22_KALI_TOOLS/PHISHING_AWARENESS/GOPHISH.md",
+"title": "Gophish (Authorised Awareness Campaigns)"
+},
+{
+"path": "22_KALI_TOOLS/README.md",
+"title": "22 \u00b7 Kali Tools \u2014 Beginner-Friendly Cards"
+},
+{
+"path": "22_KALI_TOOLS/WEB_SECURITY/NIKTO.md",
+"title": "Nikto (Web Server Awareness Scanner)"
+},
+{
+"path": "22_KALI_TOOLS/WEB_SECURITY/OWASP_ZAP.md",
+"title": "OWASP ZAP (Web Security Awareness)"
+},
+{
+"path": "22_KALI_TOOLS/WEB_SECURITY/WHATWEB.md",
+"title": "WhatWeb (Web Fingerprint)"
+},
+{
+"path": "23_ONLINE_TOOLS/DOMAIN_OSINT.md",
+"title": "Online Tools \u2014 Domain / DNS / Internet Exposure"
+},
+{
+"path": "23_ONLINE_TOOLS/EMAIL_OSINT.md",
+"title": "Online Tools \u2014 Email / Breach"
+},
+{
+"path": "23_ONLINE_TOOLS/IMAGE_OSINT.md",
+"title": "Online Tools \u2014 Photo / Image"
+},
+{
+"path": "23_ONLINE_TOOLS/INDIA_CYBER_RESOURCES.md",
+"title": "Online Tools \u2014 Indian Cyber-Crime Resources (Official)"
+},
+{
+"path": "23_ONLINE_TOOLS/PEOPLE_OSINT.md",
+"title": "Online Tools \u2014 People / Username OSINT"
+},
+{
+"path": "23_ONLINE_TOOLS/PHONE_OSINT.md",
+"title": "Online Tools \u2014 Phone"
+},
+{
+"path": "23_ONLINE_TOOLS/PRIVACY_TOOLS.md",
+"title": "Online Tools \u2014 Browser Privacy / Fingerprinting"
+},
+{
+"path": "23_ONLINE_TOOLS/URL_ANALYSIS.md",
+"title": "Online Tools \u2014 URL / Phishing / File"
+},
+{
+"path": "24_SAMPLE_DATA/PHISHING_MESSAGES/messages.md",
+"title": "FICTIONAL phishing messages (email/SMS)"
+},
+{
+"path": "24_SAMPLE_DATA/QR_CODES/README.md",
+"title": "Sample QR (generate harmless demo codes)"
+},
+{
+"path": "24_SAMPLE_DATA/README.md",
+"title": "24 \u00b7 Sample Data (ALL FICTIONAL)"
+},
+{
+"path": "24_SAMPLE_DATA/SAMPLE_IMAGES/README.md",
+"title": "Sample images"
+},
+{
+"path": "24_SAMPLE_DATA/WHATSAPP_MESSAGES/messages.md",
+"title": "FICTIONAL WhatsApp scam messages"
+},
+{
+"path": "25_INCIDENT_RESPONSE/EVIDENCE_COLLECTION.md",
+"title": "Evidence Collection Checklist"
+},
+{
+"path": "25_INCIDENT_RESPONSE/FIRST_15_MINUTES.md",
+"title": "If You're Scammed \u2014 First 15 Minutes"
+},
+{
+"path": "25_INCIDENT_RESPONSE/FIRST_HOUR.md",
+"title": "First Hour & Beyond"
+},
+{
+"path": "25_INCIDENT_RESPONSE/REPORTING_IN_INDIA.md",
+"title": "Reporting Cyber Crime in India"
+},
+{
+"path": "26_HANDOUTS/10_CYBER_SAFETY_RULES.md",
+"title": "10 Cyber Safety Rules (Print & Share)"
+},
+{
+"path": "26_HANDOUTS/GOVERNMENT_EMPLOYEE_HANDOUT.md",
+"title": "Government Employee Handout"
+},
+{
+"path": "26_HANDOUTS/SENIOR_CITIZEN_HANDOUT.md",
+"title": "Senior Citizen Handout (Large, Simple)"
+},
+{
+"path": "26_HANDOUTS/STUDENT_HANDOUT.md",
+"title": "Student Handout"
+},
+{
+"path": "27_PRESENTATION/DEMO_ORDER.md",
+"title": "Recommended Demo Order (builds intensity)"
+},
+{
+"path": "27_PRESENTATION/SLIDE_OUTLINE.md",
+"title": "Slide Outline"
+},
+{
+"path": "27_PRESENTATION/SPEAKER_NOTES.md",
+"title": "Speaker Notes"
+},
+{
+"path": "28_MEDIA/POSTER_CONTENT/poster.md",
+"title": "Poster Content (for printing / display)"
+},
+{
+"path": "28_MEDIA/QR/README.md",
+"title": "QR images for slides"
+},
+{
+"path": "28_MEDIA/SAMPLE_IMAGES/README.md",
+"title": "Sample images for slides"
+},
+{
+"path": "28_MEDIA/SCREENSHOTS/README.md",
+"title": "Offline screenshots (fallback for every online demo)"
+},
+{
+"path": "28_MEDIA/VIDEO/POST_CAPTIONS.md",
+"title": "Social Post Kit \u2014 Awareness Video"
+},
+{
+"path": "ACCESS_CONTROL/README.md",
+"title": "Access Control \u2014 Lock the Kit to You"
+},
+{
+"path": "HOSTING/HOSTINGER_STEP_BY_STEP.md",
+"title": "Host the Kit on Hostinger (Shared / Unlimited Web Hosting) \u2014 Step by Step"
+},
+{
+"path": "PROJECT_GUIDE.md",
+"title": "Project Guide \u2014 Everything in One Place"
+},
+{
+"path": "README.md",
+"title": "Cyber Crime Awareness Live Demo Kit"
+}
+],
+"walkthrough": [
+"00_START_HERE/README.md",
+"02_PEOPLE_EXPOSURE/DEMO.md",
+"03_EMAIL_BREACH/DEMO.md",
+"04_USERNAME_OSINT/DEMO.md",
+"05_PHONE_NUMBER/DEMO.md",
+"06_PHOTO_PRIVACY/DEMO.md",
+"07_LOCATION_EXPOSURE/DEMO.md",
+"08_PHISHING_AWARENESS/README.md",
+"09_QR_CODE_SCAM/DEMO.md",
+"12_UPI_FRAUD/DEMO.md",
+"10_WHATSAPP_SCAM/DEMO.md",
+"11_DIGITAL_ARREST/STORY.md",
+"13_FAKE_APK/README.md",
+"14_PASSWORD_AWARENESS/DEMO.md",
+"16_SUSPICIOUS_URL/DEMO.md",
+"15_BROWSER_PRIVACY/DEMO.md",
+"17_DOMAIN_OSINT/DEMO.md",
+"18_SHODAN_AWARENESS/DEMO.md",
+"19_NETWORK_AWARENESS/DEMO.md",
+"20_DIGITAL_FORENSICS/INVESTIGATION_GUIDE.md",
+"25_INCIDENT_RESPONSE/REPORTING_IN_INDIA.md",
+"26_HANDOUTS/10_CYBER_SAFETY_RULES.md"
+]
+}

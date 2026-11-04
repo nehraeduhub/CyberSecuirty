@@ -1,0 +1,11 @@
+# FICTIONAL sample emails for demonstration ONLY.
+# These are illustrative strings, not real inboxes. Do not send mail to them.
+# Prefer using YOUR OWN email in the live breach-lookup demo.
+
+aarav.demo@example.com
+priya.sample@example.net
+demo.user01@example.org
+testseminar+hibp@example.com
+
+# Note: example.com / example.net / example.org are reserved for documentation
+# (RFC 2606) and cannot receive mail — perfectly safe to show on screen.

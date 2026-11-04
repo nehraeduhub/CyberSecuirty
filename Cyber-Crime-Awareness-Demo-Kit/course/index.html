@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Tech Guardians — Cyber Crime Awareness Course</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png" />
+<script>
+(function(){
+  var HASH="0cb668dc5a30f28874c110ed84c1014e04a9f306610a3b6a7cf37367b3786dd5";
+  try{ if(sessionStorage.getItem("tg_access")!==HASH) location.replace("../ACCESS_CONTROL/LOGIN.html"); }
+  catch(e){ location.replace("../ACCESS_CONTROL/LOGIN.html"); }
+})();
+</script>
+<style>
+  :root{--bg:#070b11;--panel:#0e1724;--line:#1e2a3a;--txt:#eef4fb;--muted:#9fb3c8;
+    --navy:#103f6e;--orange:#f2971c;--green:#2ba24c;--blue:#3aa0ff}
+  *{box-sizing:border-box;margin:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;color:var(--txt);min-height:100vh;
+    background:radial-gradient(70vmax 50vmax at 50% -10%,#12314d 0,#0a1420 55%,#070b11 85%)}
+  header{padding:24px 22px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header img{height:54px}
+  header h1{font-size:1.4rem}header .sub{color:var(--muted);font-size:.84rem;margin-top:2px}
+  header .theme{color:var(--orange);font-weight:700;margin-top:4px;font-size:.92rem}
+  header .sp{flex:1}
+  header a.btn{background:var(--navy);color:#fff;text-decoration:none;border-radius:9px;padding:9px 14px;font-weight:700;font-size:.82rem;margin-left:6px}
+  .prog{max-width:1180px;margin:16px auto 0;padding:0 22px}
+  .prog .bar{height:12px;background:#0d141d;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .prog .bar>div{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--blue));transition:.3s}
+  .prog .lbl{display:flex;justify-content:space-between;color:var(--muted);font-size:.82rem;margin-top:6px}
+  .prog .lbl b{color:var(--green)}
+  main{max-width:1180px;margin:0 auto;padding:12px 22px 70px}
+  .how{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--orange);border-radius:12px;padding:14px 18px;margin:16px 0;font-size:.92rem;line-height:1.5;color:#dbe7f2}
+  .how b{color:var(--orange)}
+  .mod{margin:26px 0 8px}
+  .mod h2{font-size:1.1rem}
+  .mod .mh{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .lesson{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin:9px 0}
+  .lesson.done{border-left:4px solid var(--green)}
+  .chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:transparent}
+  .lesson.done .chk{background:var(--green);border-color:var(--green);color:#042}
+  .lmeta{flex:1;min-width:0}
+  .lmeta .t{font-weight:700;font-size:1.02rem}
+  .lmeta .d{color:var(--muted);font-size:.84rem;line-height:1.3}
+  .tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px}
+  .tag{font-size:.66rem;font-weight:800;letter-spacing:.4px;border-radius:9px;padding:2px 8px}
+  .tag.kali{background:#101f14;color:#9fe6bd;border:1px solid #2ba24c}
+  .tag.net{background:#122b45;color:#b7d7f5;border:1px solid #3a5f86}
+  .tag.aw{background:#2a2033;color:#ffd9a6;border:1px solid #5a4322}
+  .start{background:linear-gradient(90deg,#2ba24c,#1d7e3a);color:#fff;text-decoration:none;border-radius:9px;padding:10px 16px;font-weight:800;font-size:.9rem;flex:0 0 auto}
+  .prac{flex:0 0 auto;background:#16202c;border:1px solid var(--line);color:#cfe0f0;border-radius:9px;padding:10px 12px;font-weight:700;font-size:.82rem;cursor:pointer}
+  .practice{display:none;background:#0a1016;border:1px solid #20351f;border-radius:10px;padding:12px 14px;margin:-2px 0 9px 40px}
+  .practice.show{display:block}
+  .practice .h{color:var(--green);font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .practice .cmd{display:flex;gap:9px;align-items:center;margin:6px 0}
+  .practice code{flex:1;background:#060a0f;border:1px solid #1c2a1c;border-radius:7px;padding:8px 11px;font-family:"DejaVu Sans Mono",monospace;font-size:.86rem;color:#c7f0cf;overflow-x:auto;white-space:pre}
+  .practice .cp{background:#1d7e3a;border:0;color:#fff;border-radius:6px;padding:7px 10px;font-weight:700;cursor:pointer;font-size:.76rem}
+  .practice .show-note{color:var(--muted);font-size:.82rem;margin-top:6px}
+  .lab{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:8px}
+  .labcard{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--orange);border-radius:12px;padding:12px 14px}
+  .labcard .t{font-weight:800}
+  .labcard code{display:block;background:#060a0f;border:1px solid #1c2a1c;border-radius:7px;padding:7px 10px;margin:7px 0;font-family:"DejaVu Sans Mono",monospace;font-size:.82rem;color:#c7f0cf;overflow-x:auto}
+  .labcard a{color:var(--blue);font-size:.82rem;text-decoration:none}
+  footer{color:var(--muted);text-align:center;font-size:.78rem;padding:20px;border-top:1px solid var(--line);margin-top:30px}
+  .toolcat{color:var(--orange);font-weight:800;font-size:.78rem;letter-spacing:1px;margin:16px 0 6px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<header>
+  <img src="../assets/tech-guardians-logo-small.png" alt="Tech Guardians"/>
+  <div>
+    <h1>Cyber Crime Awareness — Online Course</h1>
+    <div class="sub">Tech Guardians · Rj Nehra — Master in Cyber Security · 37 lessons + Kali practical lab</div>
+    <div class="theme">Think Like a Hacker — Protect Like a Defender</div>
+  </div>
+  <span class="sp"></span>
+  <a class="btn" href="../presentation/index.html">🎤 All decks</a>
+  <a class="btn" href="../MASTER_DASHBOARD.html">⌂ Dashboard</a>
+</header>
+
+<div class="prog">
+  <div class="bar"><div id="pbar"></div></div>
+  <div class="lbl"><span>Course progress</span><span><b id="pdone">0</b> / <span id="ptot">37</span> lessons complete · <a href="#" id="reset" style="color:#9fb3c8">reset</a></span></div>
+</div>
+
+<main>
+  <div class="how">
+    <b>How to teach each lesson:</b> click <b>Start lesson</b> to open the deck — it has the Hinglish script (tap to reveal),
+    the animated diagram, the mockups and the red flags. Where a lesson shows a <span class="tag kali" style="font-size:.66rem">🐧 KALI</span> tag,
+    click <b>Practical</b> to get the exact commands to run on your Kali laptop, and what to show the audience. Tick the circle when done — your progress is saved on this device.
+  </div>
+  <div id="modules"></div>
+
+  <div class="mod"><h2>Module 7 · 🧰 Kali Practical Lab (hands-on)</h2>
+    <div class="mh">Run these on your own Kali laptop, on fictional / authorised data only. Each links to the full tool card.</div></div>
+  <div id="lab"></div>
+</main>
+<footer>Tech Guardians · Awareness &amp; defence only · Progress is stored only in this browser</footer>
+
+<script>
+var MODULES=[
+ ["Module 1 · Foundations — how you get exposed","Start here: the data behind every scam",
+   ["people-exposure","data-breach","identity-theft","social-media-impersonation"]],
+ ["Module 2 · Money scams — the big ones","India's largest losses",
+   ["digital-arrest","upi-fraud","qr-scam","fake-trading-app","investment-scam","aeps-aadhaar","pig-butchering"]],
+ ["Module 3 · Money scams — message &amp; call lures","The everyday SMS/call traps",
+   ["fake-customer-care","electricity-scam","courier-scam","kyc-scam","fake-echallan","lottery-kbc","fake-shopping","fake-charity","fake-job","loan-app","card-skimming"]],
+ ["Module 4 · Social engineering &amp; accounts","Phishing in all its forms",
+   ["phishing","smishing","vishing","whatsapp-scam","otp-scam","fake-tech-support","matrimonial-fraud"]],
+ ["Module 5 · Device &amp; network","Phones, apps, SIMs and Wi-Fi",
+   ["sim-swap","malicious-apk","juice-jacking","evil-twin-wifi","ransomware"]],
+ ["Module 6 · Advanced &amp; AI","Deepfakes, cloned voices, sextortion",
+   ["sextortion","deepfake","ai-voice"]]
+];
+// topic -> Kali practical commands + what to show
+var KALI={
+ "people-exposure":{cmds:["sherlock your_handle","maigret your_handle --html"],show:"Show how one username maps to many sites. Use a FICTIONAL handle."},
+ "malicious-apk":{cmds:["apktool d app.apk -o out","sed -n '1,40p' out/AndroidManifest.xml","jadx-gui app.apk"],show:"On an authorised/benign APK: list permissions, then read the code (SMS/Accessibility)."},
+ "data-breach":{cmds:["holehe you@example.com"],show:"Show which sites YOUR OWN email is registered on."},
+ "identity-theft":{cmds:["holehe you@example.com","exiftool leaked.docx"],show:"Email footprint + document metadata (author/company) that identifies a leak source."},
+ "evil-twin-wifi":{cmds:["wireshark demo.pcap"],show:"Open a SAMPLE capture: HTTP stream is readable, TLS stream is encrypted."},
+ "phishing":{cmds:["whatweb https://example.com"],show:"Fingerprint a site; then open the local phishing SIMULATION from the deck (safe)."},
+ "sim-swap":{cmds:["# telecom/process attack — no offensive tool"],show:"Teach the defence: app-based MFA + SIM lock; check Sanchar Saathi."}
+};
+var ONLINE={ "qr-scam":1,"upi-fraud":1,"digital-arrest":1,"otp-scam":1,"whatsapp-scam":1 };
+
+var LAB=[
+ ["OSINT",[
+   ["Sherlock","sherlock your_handle","OSINT/SHERLOCK"],
+   ["Maigret","maigret your_handle --html","OSINT/MAIGRET"],
+   ["theHarvester","theHarvester -d yourdomain -b duckduckgo","OSINT/THEHARVESTER"],
+   ["SpiderFoot","sf.py -l 127.0.0.1:5001","OSINT/SPIDERFOOT"],
+   ["PhoneInfoga","phoneinfoga scan -n \"+91 99999 00001\"","OSINT/PHONEINFOGA"],
+   ["Holehe","holehe you@example.com","OSINT/HOLEHE"],
+   ["Recon-ng","recon-ng","OSINT/RECON-NG"],
+   ["Sublist3r","sublist3r -d yourdomain","OSINT/SUBLIST3R"]]],
+ ["Network",[
+   ["Nmap","nmap -F 127.0.0.1","NETWORK/NMAP"],
+   ["Wireshark","wireshark demo.pcap","NETWORK/WIRESHARK"],
+   ["DNSRecon","dnsrecon -d yourdomain","NETWORK/DNSRECON"]]],
+ ["Web security",[
+   ["WhatWeb","whatweb https://example.com","WEB_SECURITY/WHATWEB"],
+   ["OWASP ZAP","zaproxy &","WEB_SECURITY/OWASP_ZAP"],
+   ["Nikto","nikto -h http://127.0.0.1:8080","WEB_SECURITY/NIKTO"]]],
+ ["Forensics",[
+   ["ExifTool","exiftool sample.jpg","FORENSICS/EXIFTOOL"],
+   ["Autopsy","autopsy &","FORENSICS/AUTOPSY"],
+   ["Volatility","vol -f sample.mem windows.pslist","FORENSICS/VOLATILITY"],
+   ["Steghide","steghide extract -sf cover.jpg","FORENSICS/STEGHIDE"],
+   ["Binwalk","binwalk -e sample.bin","FORENSICS/BINWALK"]]],
+ ["Android analysis",[
+   ["JADX","jadx-gui app.apk","ANDROID_ANALYSIS/JADX"],
+   ["Apktool","apktool d app.apk -o out","ANDROID_ANALYSIS/APKTOOL"],
+   ["MobSF","docker run -p 8000:8000 opensecurity/mobile-security-framework-mobsf","ANDROID_ANALYSIS/MOBSF"]]]
+];
+
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+var DONE=load();
+function load(){try{return JSON.parse(localStorage.getItem("tg_course_done")||"[]");}catch(e){return [];}}
+function save(){try{localStorage.setItem("tg_course_done",JSON.stringify(DONE));}catch(e){}}
+var IDX={};
+fetch("../presentation/topics/_index.json").then(function(r){return r.json();}).then(function(data){
+  data.forEach(function(x){IDX[x.id]=x;});
+  document.getElementById("ptot").textContent=data.length;
+  renderModules(); renderLab(); updateProgress();
+}).catch(function(){document.getElementById("modules").innerHTML='<p style="color:#ff6b82">Could not load course data.</p>';});
+
+function lessonRow(id){
+  var x=IDX[id]; if(!x) return "";
+  var done=DONE.indexOf(id)>=0;
+  var tag = KALI[id]?'<span class="tag kali">🐧 KALI PRACTICAL</span>'
+          : (ONLINE[id]?'<span class="tag net">🌐 LIVE DEMO</span>':'<span class="tag aw">🎙 AWARENESS DEMO</span>');
+  var prac = KALI[id]?'<button class="prac" data-id="'+id+'">Practical ▾</button>':'';
+  var h='<div class="lesson'+(done?' done':'')+'" id="L_'+id+'">'+
+    '<div class="chk" data-id="'+id+'">✓</div>'+
+    '<div class="lmeta"><div class="t">'+esc(x.name)+'</div><div class="d">'+esc(x.tagline)+'</div>'+
+    '<div class="tags">'+tag+'</div></div>'+
+    prac+
+    '<a class="start" href="../presentation/present.html?topic='+id+'">Start lesson ▶</a></div>';
+  if(KALI[id]){
+    var k=KALI[id];
+    h+='<div class="practice" id="P_'+id+'"><div class="h">🐧 On your Kali laptop</div>'+
+       k.cmds.map(function(c){return '<div class="cmd"><code>'+esc(c)+'</code><button class="cp" data-cmd="'+encodeURIComponent(c)+'">Copy</button></div>';}).join("")+
+       '<div class="show-note">👁 <b>Show the audience:</b> '+esc(k.show)+'</div></div>';
+  }
+  return h;
+}
+function renderModules(){
+  var host=document.getElementById("modules"); host.innerHTML="";
+  MODULES.forEach(function(m){
+    var h='<div class="mod"><h2>'+m[0]+'</h2><div class="mh">'+m[1]+' · '+m[2].length+' lessons</div></div>';
+    h+=m[2].map(lessonRow).join("");
+    host.insertAdjacentHTML("beforeend",h);
+  });
+  host.querySelectorAll(".chk").forEach(function(c){c.onclick=function(){toggle(c.dataset.id);};});
+  host.querySelectorAll(".prac").forEach(function(b){b.onclick=function(){
+    var p=document.getElementById("P_"+b.dataset.id); p.classList.toggle("show");
+    b.textContent=p.classList.contains("show")?"Practical ▴":"Practical ▾";};});
+  host.querySelectorAll(".cp").forEach(function(b){b.onclick=function(){
+    navigator.clipboard&&navigator.clipboard.writeText(decodeURIComponent(b.dataset.cmd));
+    b.textContent="Copied ✓"; setTimeout(function(){b.textContent="Copy";},1100);};});
+}
+function renderLab(){
+  document.getElementById("lab").innerHTML=LAB.map(function(cat){
+    return '<div class="toolcat">'+cat[0]+'</div><div class="lab">'+cat[1].map(function(t){
+      return '<div class="labcard"><div class="t">'+esc(t[0])+'</div><code>'+esc(t[1])+'</code>'+
+        '<a href="../view.html?doc='+encodeURIComponent("22_KALI_TOOLS/"+t[2]+".md")+'">Open full tool card →</a></div>';
+    }).join("")+'</div>';
+  }).join("");
+}
+function toggle(id){
+  var i=DONE.indexOf(id); if(i>=0)DONE.splice(i,1); else DONE.push(id);
+  save(); var el=document.getElementById("L_"+id); if(el)el.classList.toggle("done",DONE.indexOf(id)>=0); updateProgress();
+}
+function updateProgress(){
+  var tot=Object.keys(IDX).length||37, d=DONE.filter(function(x){return IDX[x];}).length;
+  document.getElementById("pbar").style.width=(d/tot*100)+"%";
+  document.getElementById("pdone").textContent=d;
+}
+document.getElementById("reset").onclick=function(e){e.preventDefault();DONE=[];save();renderModules();
+  document.querySelectorAll(".chk").forEach(function(c){c.onclick=function(){toggle(c.dataset.id);};});updateProgress();};
+</script>
+</body>
+</html>

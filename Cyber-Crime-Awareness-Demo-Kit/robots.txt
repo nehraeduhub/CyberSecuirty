@@ -1,0 +1,3 @@
+# Awareness kit — do not index (contains a phishing-awareness simulation page)
+User-agent: *
+Disallow: /

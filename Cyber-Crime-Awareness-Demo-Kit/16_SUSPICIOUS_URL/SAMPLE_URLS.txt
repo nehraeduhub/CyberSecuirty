@@ -1,0 +1,26 @@
+# SAMPLE suspicious-looking URLs for teaching. Uses reserved 'example' domains so
+# NONE of these are real/clickable targets. Do not visit real lookalikes.
+
+# 1) Subdomain trick — real domain is account-verify.example (NOT sbi)
+http://sbi.account-verify.example/login
+
+# 2) Lookalike / typosquat spelling
+http://paytm-kyc.exampl3.example/update        # note the "3" in exampl3
+
+# 3) Wrong TLD pretending to be official
+http://incometax-refund.example.co/claim        # not .gov.in
+
+# 4) @ trick — everything before @ is ignored by the browser
+http://www.realbank.example@account-verify.example/
+
+# 5) Shortener hiding the destination
+https://exmpl.link/x9Fk2    # expand with a scanner before trusting
+
+# 6) Too many hyphens / urgency words
+http://secure-verify-now-login-update.example/
+
+# 7) Homoglyph (looks like 'nimbupay' with a tricky character) — teach, don't click
+http://nimbupаy.example/      # the 'а' may be a Cyrillic look-alike
+
+# For each: find the REAL domain (just before the first single '/'),
+# then scan with URLScan / VirusTotal before ever considering a click.

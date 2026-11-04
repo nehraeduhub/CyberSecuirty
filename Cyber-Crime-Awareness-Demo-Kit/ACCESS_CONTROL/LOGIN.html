@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tech Guardians — Secure Access</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png" />
+<style>
+  :root{--bg:#0a0e14;--panel:#111823;--line:#1e2a3a;--txt:#e6edf3;--muted:#8aa0b6;
+    --accent:#2ba24c;--accent2:#3aa0ff;--orange:#f2971c;--danger:#ff5c7a;--navy:#103f6e}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,Arial,sans-serif;color:var(--txt);
+    background:radial-gradient(1000px 500px at 50% -10%,#10324a 0,var(--bg) 60%);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:30px 28px;max-width:420px;width:100%;text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  img.logo{height:120px;width:auto;margin-bottom:10px}
+  h1{font-size:1.25rem;margin:6px 0 2px}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:18px}
+  .lock{font-size:.8rem;color:var(--accent);margin-bottom:16px}
+  input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:10px;
+    background:#0d141d;color:var(--txt);font-size:1rem;outline:none;text-align:center}
+  input:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(58,160,255,.15)}
+  button{width:100%;margin-top:14px;padding:13px;border:0;border-radius:10px;
+    background:var(--navy);color:#fff;font-size:1.02rem;font-weight:700;cursor:pointer}
+  button:hover{background:#17568f}
+  .msg{min-height:20px;margin-top:12px;font-size:.86rem;color:var(--danger)}
+  .foot{margin-top:18px;font-size:.72rem;color:var(--muted);line-height:1.5}
+  .brand{color:var(--orange);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="card">
+    <img class="logo" src="../assets/tech-guardians-logo-small.png" alt="Tech Guardians" />
+    <h1>Secure Access</h1>
+    <div class="sub">Cyber Crime Awareness Live Demo Kit</div>
+    <div class="lock">🔒 Authorised presenters only</div>
+
+    <form id="f" autocomplete="off">
+      <input id="pw" type="password" placeholder="Enter access passphrase" autofocus />
+      <button type="submit">Unlock Dashboard</button>
+    </form>
+    <div class="msg" id="msg"></div>
+
+    <div class="foot">
+      Presented by <span class="brand">Tech Guardians</span> · Rj Nehra (Master in Cyber Security)<br/>
+      “Think Like a Hacker — Protect Like a Defender.”
+    </div>
+  </div>
+
+<script>
+/* Tech Guardians access gate.
+   Convenience lock: verifies a salted SHA-256 of the passphrase, then marks this
+   browser tab as authorised and opens the dashboard. Change the passphrase with
+   ACCESS_CONTROL/set_password.sh (or .bat). See ACCESS_CONTROL/README.md for the
+   STRONG (encrypted-package) option that truly prevents running without the password. */
+(function(){
+  "use strict";
+  var SALT = "TG-KIT-SALT-9f3a";
+  // SHA-256( SALT + passphrase ). Default passphrase: TechGuardians@1930  (CHANGE IT)
+  var HASH = "0cb668dc5a30f28874c110ed84c1014e04a9f306610a3b6a7cf37367b3786dd5";
+  var f = document.getElementById("f"),
+      pw = document.getElementById("pw"),
+      msg = document.getElementById("msg");
+
+  async function sha256(str){
+    var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+  f.addEventListener("submit", async function(e){
+    e.preventDefault();
+    try{
+      var h = await sha256(SALT + pw.value);
+      if(h === HASH){
+        try{ sessionStorage.setItem("tg_access", HASH); }catch(_){}
+        msg.style.color = "#2ba24c"; msg.textContent = "Access granted. Opening…";
+        location.replace("../MASTER_DASHBOARD.html");
+      }else{
+        msg.style.color = "#ff5c7a"; msg.textContent = "Incorrect passphrase. Access denied.";
+        pw.value = ""; pw.focus();
+      }
+    }catch(err){
+      // crypto.subtle needs a secure/localhost context; if unavailable, tell the presenter.
+      msg.style.color = "#ffcf5c";
+      msg.textContent = "Open via the launcher (http://127.0.0.1) so the lock can run.";
+    }
+  });
+})();
+</script>
+</body>
+</html>

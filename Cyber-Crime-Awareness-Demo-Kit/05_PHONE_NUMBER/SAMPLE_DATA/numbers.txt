@@ -1,0 +1,6 @@
+# FICTIONAL numbers for demonstration ONLY. Do NOT call or message these.
+# Indian mobile numbering for teaching uses the reserved 999999xxxx style.
++91 99999 00001
++91 99999 00002
++1 555 0100        # 555-01xx is reserved for fiction (North America)
++44 7700 900123    # Ofcom drama/reserved range (UK)

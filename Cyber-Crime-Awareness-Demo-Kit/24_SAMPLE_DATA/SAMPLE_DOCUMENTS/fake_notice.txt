@@ -1,0 +1,4 @@
+*** SIMULATED — FAKE DOCUMENT — AWARENESS DEMO ONLY ***
+This is a fictional "official notice" prop for the digital-arrest demo.
+See 11_DIGITAL_ARREST/SAMPLE_NOTICE/fake_notice.txt for the full watermarked prop.
+No real agency, logo, or officer. Do not reuse as a real document.

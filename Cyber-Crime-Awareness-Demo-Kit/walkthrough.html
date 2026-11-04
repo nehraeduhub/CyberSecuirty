@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Tech Guardians — Live Walkthrough</title>
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<script>
+(function(){
+  var HASH="0cb668dc5a30f28874c110ed84c1014e04a9f306610a3b6a7cf37367b3786dd5";
+  try{ if(sessionStorage.getItem("tg_access")!==HASH) location.replace("ACCESS_CONTROL/LOGIN.html"); }
+  catch(e){ location.replace("ACCESS_CONTROL/LOGIN.html"); }
+})();
+</script>
+<style>
+  :root{--bg:#0a0e14;--panel:#111823;--line:#1e2a3a;--txt:#e6edf3;--muted:#8aa0b6;
+    --accent:#2ba24c;--accent2:#3aa0ff;--orange:#f2971c;--navy:#103f6e}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  header{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#0c1420;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  header img{height:40px}
+  header .sp{flex:1}
+  .prog{height:6px;background:#0d141d}
+  .prog>div{height:100%;background:linear-gradient(90deg,#2ba24c,#3aa0ff);width:0;transition:width .3s}
+  .stepinfo{text-align:center;color:var(--muted);font-size:.82rem;padding:8px}
+  .stepinfo b{color:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:10px 20px 120px}
+  .doc h1{color:#fff;border-bottom:2px solid var(--accent);padding-bottom:8px}
+  .doc h2{color:var(--accent);margin-top:24px}
+  .doc h3{color:var(--accent2)}
+  .doc p,.doc li{line-height:1.6}
+  .doc a{color:var(--accent2)}
+  .doc code{background:#0d141d;border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+  .doc pre{background:#0d141d;border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto}
+  .doc blockquote{border-left:4px solid var(--orange);padding:6px 14px;background:rgba(242,151,28,.08);color:#ffe4bd;border-radius:6px}
+  .doc table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.92rem}
+  .doc th,.doc td{border:1px solid var(--line);padding:8px 10px}
+  .doc th{background:var(--navy);color:#fff}
+  .doc img{max-width:140px}
+  /* reveal animation: sections fade/slide in one by one */
+  .doc>*{opacity:0;transform:translateY(10px);animation:rise .5s forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .bar{position:fixed;bottom:0;left:0;right:0;background:#0c1420;border-top:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;padding:12px 16px;z-index:6}
+  .bar button,.bar a{border:0;border-radius:9px;padding:11px 16px;font-size:.92rem;font-weight:700;cursor:pointer;text-decoration:none}
+  .nav{background:var(--navy);color:#fff}
+  .nav:hover{background:#17568f}
+  .nav[disabled]{opacity:.4;cursor:default}
+  .play{background:linear-gradient(90deg,#2ba24c,#3aa0ff);color:#fff}
+  .open{background:#1b2d41;color:#cfe0f0}
+  .bar .sp{flex:1}
+  .count{color:var(--muted);font-size:.84rem}
+  .err{color:#ff7a90}
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/tech-guardians-logo-small.png" alt="Tech Guardians"/>
+  <b>Live Walkthrough</b>
+  <span class="sp"></span>
+  <a class="open" style="padding:8px 12px;border-radius:8px" href="MASTER_DASHBOARD.html">⌂ Dashboard</a>
+</header>
+<div class="prog"><div id="pbar"></div></div>
+<div class="stepinfo" id="stepinfo"></div>
+
+<div class="wrap"><div id="content" class="doc"></div></div>
+
+<div class="bar">
+  <button class="nav" id="prev">◀ Previous</button>
+  <button class="play" id="play">▶ Auto-play</button>
+  <a class="open" id="openfull" href="#" target="_blank" rel="noopener">Open full page ↗</a>
+  <span class="sp"></span>
+  <span class="count" id="count"></span>
+  <button class="nav" id="next">Next ▶</button>
+</div>
+
+<script src="assets/md.js"></script>
+<script>
+(function(){
+  var steps=[], idx=0, playing=false, timer=null;
+  var content=document.getElementById("content"), pbar=document.getElementById("pbar"),
+      stepinfo=document.getElementById("stepinfo"), count=document.getElementById("count"),
+      prev=document.getElementById("prev"), next=document.getElementById("next"),
+      play=document.getElementById("play"), openfull=document.getElementById("openfull");
+
+  function dirname(p){ var i=p.lastIndexOf("/"); return i<0?"":p.slice(0,i); }
+
+  function show(n){
+    idx=Math.max(0,Math.min(steps.length-1,n));
+    var p=steps[idx];
+    openfull.href="view.html?doc="+encodeURIComponent(p);
+    count.textContent=(idx+1)+" / "+steps.length;
+    pbar.style.width=((idx+1)/steps.length*100)+"%";
+    prev.disabled=idx===0; next.disabled=idx===steps.length-1;
+    content.innerHTML='<p class="muted">Loading…</p>';
+    fetch(p).then(r=>r.text()).then(function(md){
+      content.innerHTML=TGMarkdown.render(md,{baseDir:dirname(p)});
+      // stagger the reveal of each block
+      var kids=content.children, d=0;
+      for(var i=0;i<kids.length;i++){ kids[i].style.animationDelay=(d)+"ms"; d+=70; }
+      var h1=content.querySelector("h1");
+      stepinfo.innerHTML='Step <b>'+(idx+1)+'</b> of '+steps.length+' — '+(h1?h1.textContent:p);
+      window.scrollTo(0,0);
+    }).catch(function(){ content.innerHTML='<p class="err">Could not load '+p+' (host the kit or use the launcher).</p>'; });
+  }
+  function go(n){ show(n); }
+  function stopPlay(){ playing=false; play.textContent="▶ Auto-play"; if(timer){clearTimeout(timer);timer=null;} }
+  function tick(){ if(!playing) return; if(idx<steps.length-1){ show(idx+1); timer=setTimeout(tick,9000);} else stopPlay(); }
+
+  prev.onclick=function(){ stopPlay(); go(idx-1); };
+  next.onclick=function(){ stopPlay(); go(idx+1); };
+  play.onclick=function(){ if(playing){stopPlay();} else {playing=true; play.textContent="⏸ Pause"; timer=setTimeout(tick,9000);} };
+  document.addEventListener("keydown",function(e){
+    if(e.key==="ArrowRight"){stopPlay();go(idx+1);} if(e.key==="ArrowLeft"){stopPlay();go(idx-1);}
+  });
+
+  fetch("manifest.json").then(r=>r.json()).then(function(m){
+    steps=m.walkthrough&&m.walkthrough.length?m.walkthrough:m.docs.map(d=>d.path);
+    show(0);
+  }).catch(function(){ content.innerHTML='<p class="err">Could not load manifest.json</p>'; });
+})();
+</script>
+</body>
+</html>

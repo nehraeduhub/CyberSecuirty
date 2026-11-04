@@ -1,0 +1,5 @@
+# FICTIONAL emails (reserved domains — cannot receive mail)
+aarav.demo@example.com
+priya.sample@example.net
+demo.user01@example.org
+seminar+test@example.com

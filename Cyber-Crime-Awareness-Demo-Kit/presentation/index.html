@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Tech Guardians — Presentations</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png" />
+<script>
+(function(){
+  var HASH="0cb668dc5a30f28874c110ed84c1014e04a9f306610a3b6a7cf37367b3786dd5";
+  try{ if(sessionStorage.getItem("tg_access")!==HASH) location.replace("../ACCESS_CONTROL/LOGIN.html"); }
+  catch(e){ location.replace("../ACCESS_CONTROL/LOGIN.html"); }
+})();
+</script>
+<style>
+  :root{--bg:#070b11;--panel:#0e1724;--line:#1e2a3a;--txt:#eef4fb;--muted:#9fb3c8;
+    --navy:#103f6e;--orange:#f2971c;--green:#2ba24c;--blue:#3aa0ff}
+  *{box-sizing:border-box;margin:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;color:var(--txt);min-height:100vh;
+    background:radial-gradient(70vmax 50vmax at 50% -10%,#12314d 0,#0a1420 55%,#070b11 85%)}
+  header{padding:24px 22px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header img{height:52px}
+  header h1{font-size:1.35rem}header .sub{color:var(--muted);font-size:.84rem;margin-top:2px}
+  header .theme{color:var(--orange);font-weight:700;margin-top:4px;font-size:.92rem}
+  header .sp{flex:1}
+  header a.dash{background:var(--navy);color:#fff;text-decoration:none;border-radius:9px;padding:9px 14px;font-weight:700;font-size:.85rem}
+  .searchbar{padding:14px 22px 0}
+  .searchbar input{width:100%;max-width:520px;padding:11px 15px;border:1px solid var(--line);border-radius:10px;background:#0b121c;color:#fff;font-size:1rem;outline:none}
+  .searchbar input:focus{border-color:var(--blue)}
+  main{padding:10px 22px 60px;max-width:1240px;margin:0 auto}
+  .sect{margin:24px 0 8px;display:flex;align-items:baseline;gap:12px}
+  .sect h2{font-size:1.02rem;letter-spacing:.4px}
+  .sect .hint{color:var(--muted);font-size:.78rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:12px}
+  a.card{display:block;text-decoration:none;color:var(--txt);background:var(--panel);border:1px solid var(--line);
+    border-left:4px solid var(--green);border-radius:12px;padding:13px 15px;transition:.15s;position:relative}
+  a.card:hover{border-color:var(--green);transform:translateY(-2px)}
+  a.card.tool{border-left-color:var(--orange)}
+  .card .num{font-size:.68rem;color:var(--blue);font-weight:800;letter-spacing:.5px}
+  .card .t{font-size:1rem;font-weight:700;margin:3px 0}
+  .card .d{font-size:.8rem;color:var(--muted);line-height:1.35}
+  .badge{position:absolute;top:10px;right:10px;font-size:.58rem;font-weight:800;padding:2px 7px;border-radius:10px;background:#11351f;color:#9fe6bd;border:1px solid #2ba24c}
+  .toolcat{color:var(--orange);font-weight:800;font-size:.76rem;letter-spacing:1px;margin:14px 0 6px;text-transform:uppercase}
+  footer{color:var(--muted);text-align:center;font-size:.78rem;padding:20px;border-top:1px solid var(--line);margin-top:30px}
+</style>
+</head>
+<body>
+<header>
+  <img src="../assets/tech-guardians-logo-small.png" alt="Tech Guardians"/>
+  <div>
+    <h1>Cyber Crime — Live Presentations</h1>
+    <div class="sub">Tech Guardians · Rj Nehra — Master in Cyber Security · 37 self-contained decks</div>
+    <div class="theme">Think Like a Hacker — Protect Like a Defender</div>
+  </div>
+  <span class="sp"></span>
+  <a class="dash" href="../course/index.html" style="background:linear-gradient(90deg,#2ba24c,#1d7e3a)">🎓 Online Course</a>
+  <a class="dash" href="../MASTER_DASHBOARD.html">⌂ Dashboard</a>
+</header>
+<div class="searchbar">
+  <input id="q" placeholder="🔎 Search a crime (e.g. UPI, OTP, Aadhaar, deepfake)…"/>
+  <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+    <a id="coreBtn" href="#" style="background:linear-gradient(90deg,#2ba24c,#1d7e3a);color:#fff;text-decoration:none;font-weight:800;padding:11px 18px;border-radius:10px">▶ Play core seminar (10 decks)</a>
+    <a id="allBtn" href="#" style="background:var(--navy);color:#fff;text-decoration:none;font-weight:800;padding:11px 18px;border-radius:10px">▶ Play all (37, back-to-back)</a>
+    <span style="color:var(--muted);font-size:.8rem;align-self:center">Decks chain automatically — one "Next" flows into the next deck.</span>
+  </div>
+</div>
+<main>
+  <div id="decks"></div>
+  <div class="sect"><h2>🧰 Kali &amp; OSINT tool cards</h2><span class="hint">Decks link to these automatically — shown after the awareness</span></div>
+  <div id="tools"></div>
+</main>
+<footer>Tech Guardians · Awareness &amp; defence only · Each deck has the script, visuals, links &amp; steps built in</footer>
+
+<script>
+var GROUPS=["Financial / money scams","Social engineering & accounts","Device & network","Identity & data","Advanced / AI"];
+var TOOLS=[
+ ["OSINT",[["OSINT/SHERLOCK","Sherlock"],["OSINT/MAIGRET","Maigret"],["OSINT/THEHARVESTER","theHarvester"],["OSINT/SPIDERFOOT","SpiderFoot"],["OSINT/PHONEINFOGA","PhoneInfoga"],["OSINT/HOLEHE","Holehe"],["OSINT/RECON-NG","Recon-ng"],["OSINT/SUBLIST3R","Sublist3r"]]],
+ ["Network",[["NETWORK/NMAP","Nmap"],["NETWORK/WIRESHARK","Wireshark"],["NETWORK/DNSRECON","DNSRecon"]]],
+ ["Web security",[["WEB_SECURITY/WHATWEB","WhatWeb"],["WEB_SECURITY/OWASP_ZAP","OWASP ZAP"],["WEB_SECURITY/NIKTO","Nikto"]]],
+ ["Forensics",[["FORENSICS/EXIFTOOL","ExifTool"],["FORENSICS/AUTOPSY","Autopsy"],["FORENSICS/VOLATILITY","Volatility"],["FORENSICS/STEGHIDE","Steghide"],["FORENSICS/BINWALK","Binwalk"]]],
+ ["Android analysis",[["ANDROID_ANALYSIS/JADX","JADX"],["ANDROID_ANALYSIS/APKTOOL","Apktool"],["ANDROID_ANALYSIS/MOBSF","MobSF"]]],
+ ["Phishing awareness",[["PHISHING_AWARENESS/GOPHISH","Gophish"]]]
+];
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+var ALL=[];
+var CORE=["people-exposure","phishing","digital-arrest","upi-fraud","qr-scam","otp-scam","whatsapp-scam","malicious-apk","sim-swap","fake-trading-app"];
+fetch("topics/_index.json").then(function(r){return r.json();}).then(function(data){
+  ALL=data; renderDecks("");
+  document.getElementById("coreBtn").href="present.html?seq="+CORE.join(",");
+  document.getElementById("allBtn").href="present.html?seq="+ALL.map(function(x){return x.id;}).join(",");
+}).catch(function(){document.getElementById("decks").innerHTML='<p style="color:#ff6b82">Could not load topics/_index.json</p>';});
+
+function renderDecks(filter){
+  var host=document.getElementById("decks"); host.innerHTML="";
+  GROUPS.forEach(function(g){
+    var items=ALL.filter(function(x){return x.group===g && (!filter ||
+       (x.name+" "+x.tagline).toLowerCase().indexOf(filter)>=0);});
+    if(!items.length) return;
+    var h='<div class="sect"><h2>'+g+'</h2><span class="hint">'+items.length+' decks</span></div><div class="grid">';
+    h+=items.map(function(d){
+      return '<a class="card" href="present.html?topic='+d.id+'"><span class="badge">LIVE</span>'+
+        '<div class="num">'+esc(d.number)+'</div><div class="t">'+esc(d.name)+'</div>'+
+        '<div class="d">'+esc(d.tagline)+'</div></a>';
+    }).join("")+'</div>';
+    host.insertAdjacentHTML("beforeend",h);
+  });
+  if(!host.innerHTML) host.innerHTML='<p class="hint" style="color:#9fb3c8">No crime matches "'+esc(filter)+'".</p>';
+}
+document.getElementById("tools").innerHTML=TOOLS.map(function(cat){
+  return '<div class="toolcat">'+cat[0]+'</div><div class="grid">'+cat[1].map(function(t){
+    return '<a class="card tool" href="../view.html?doc='+encodeURIComponent("22_KALI_TOOLS/"+t[0]+".md")+'">'+
+      '<div class="t">'+esc(t[1])+'</div><div class="d">Tool card · purpose → run → safety</div></a>';
+  }).join("")+'</div>';
+}).join("");
+document.getElementById("q").addEventListener("input",function(){renderDecks(this.value.trim().toLowerCase());});
+</script>
+</body>
+</html>

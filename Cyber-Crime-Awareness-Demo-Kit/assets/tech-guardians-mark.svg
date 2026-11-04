@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="360" viewBox="0 0 300 360" role="img" aria-label="Tech Guardians">
+  <path d="M150 12 L282 54 V196 C282 268 224 318 150 348 C76 318 18 268 18 196 V54 Z" fill="#103f6e"/>
+  <!-- T (orange) -->
+  <rect x="92" y="96" width="116" height="34" fill="#f2971c"/>
+  <rect x="134" y="96" width="32" height="118" fill="#f2971c"/>
+  <!-- G (green) -->
+  <path d="M150 150 a58 58 0 1 0 0 116 a58 58 0 0 0 52 -32 h-52 v-28 h82 v16 a82 82 0 1 1 -24 -58"
+        fill="#2ba24c"/>
+</svg>

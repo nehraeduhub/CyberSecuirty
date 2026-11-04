@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cyber Crime Awareness — Master Dashboard</title>
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<script>
+/* Tech Guardians access guard: if this tab was not unlocked via LOGIN.html,
+   send the presenter to the lock screen. (Convenience lock — see
+   ACCESS_CONTROL/README.md for the strong encrypted-package option.) */
+(function(){
+  var HASH = "0cb668dc5a30f28874c110ed84c1014e04a9f306610a3b6a7cf37367b3786dd5";
+  try{
+    if(sessionStorage.getItem("tg_access") !== HASH){
+      location.replace("ACCESS_CONTROL/LOGIN.html");
+    }
+  }catch(e){ location.replace("ACCESS_CONTROL/LOGIN.html"); }
+})();
+</script>
+<style>
+  :root{
+    --bg:#0a0e14; --panel:#111823; --panel2:#0d141d; --line:#1e2a3a;
+    --txt:#e6edf3; --muted:#8aa0b6; --accent:#28e0b0; --accent2:#3aa0ff;
+    --warn:#ffcf5c; --danger:#ff5c7a; --chip:#16202c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 20% -10%,#0f2030 0,var(--bg) 55%);
+    color:var(--txt);min-height:100vh}
+  header{padding:30px 22px 14px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(40,224,176,.06),transparent)}
+  .brandline{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .logo-img{height:62px;width:auto;border-radius:10px;
+    box-shadow:0 0 18px rgba(40,224,176,.25)}
+  @media (max-width:520px){ .logo-img{height:48px} }
+  h1{font-size:1.5rem;margin:0;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:.9rem;margin-top:2px}
+  .theme{margin-top:12px;font-size:1.05rem;color:var(--accent);font-weight:600;
+    letter-spacing:.4px}
+  .meta{color:var(--muted);font-size:.82rem;margin-top:6px}
+  .safety{margin:16px 22px 0;padding:12px 16px;border:1px solid var(--warn);
+    border-radius:10px;background:rgba(255,207,92,.07);color:#ffe4a3;font-size:.86rem}
+  .safety b{color:var(--warn)}
+  main{padding:18px 22px 60px}
+  .section-title{margin:26px 0 10px;font-size:.78rem;text-transform:uppercase;
+    letter-spacing:2px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .card{display:block;text-decoration:none;color:var(--txt);background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:15px 16px;transition:.15s;
+    position:relative;overflow:hidden}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px);
+    box-shadow:0 8px 26px rgba(0,0,0,.4)}
+  .card .num{font-size:.72rem;color:var(--accent2);font-weight:700;letter-spacing:1px}
+  .card .t{font-size:1.02rem;font-weight:650;margin:5px 0 4px}
+  .card .d{font-size:.82rem;color:var(--muted);line-height:1.35}
+  .tags{margin-top:9px;display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-size:.66rem;padding:2px 8px;border-radius:999px;background:var(--chip);
+    border:1px solid var(--line);color:var(--muted)}
+  .tag.net{color:var(--accent)} .tag.on{color:var(--accent2)} .tag.off{color:#9be6c4}
+  .tag.kali{color:var(--warn)}
+  footer{padding:24px 22px;border-top:1px solid var(--line);color:var(--muted);
+    font-size:.82rem;text-align:center}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 22px 0;font-size:.78rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:9px;height:9px;border-radius:50%}
+  @media (prefers-color-scheme: light){
+    /* kept dark intentionally: cyber theme, readable on projectors */
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brandline">
+    <img class="logo-img" src="assets/tech-guardians-logo.png" alt="Tech Guardians" />
+    <div>
+      <h1>Cyber Crime Awareness — Live Demo Dashboard</h1>
+      <div class="sub">Tech Guardians · Mentor: Rj Nehra — Master in Cyber Security</div>
+    </div>
+  </div>
+  <div class="theme">“Think Like a Hacker — Protect Like a Defender.”</div>
+  <div class="meta">Awareness-only · Fictional &amp; authorised data only · For schools, colleges &amp; government organisations</div>
+  <div style="margin-top:14px">
+    <a href="walkthrough.html" style="display:inline-block;background:linear-gradient(90deg,#2ba24c,#3aa0ff);
+       color:#fff;text-decoration:none;font-weight:800;padding:11px 20px;border-radius:10px;
+       box-shadow:0 6px 20px rgba(43,162,76,.35)">▶ Start Live Walkthrough (one-by-one)</a>
+  </div>
+</header>
+
+<div class="safety">
+  <b>⚠ AUTHORISED DEMONSTRATION ONLY.</b>
+  Every demo uses fictional identities, dummy credentials, your own devices/accounts,
+  public test data, or explicitly authorised systems. Nothing here steals real
+  credentials, OTPs or tokens. Read <b>00_START_HERE/SAFETY_RULES.md</b> before any session.
+</div>
+
+<div class="legend">
+  <span><span class="dot" style="background:#9be6c4"></span> Offline</span>
+  <span><span class="dot" style="background:var(--accent2)"></span> Internet required</span>
+  <span><span class="dot" style="background:var(--warn)"></span> Kali tool</span>
+</div>
+
+<main>
+
+  <div class="section-title">Start here</div>
+  <div class="grid">
+    <a class="card" href="00_START_HERE/README.md"><div class="num">00</div><div class="t">Start Here</div><div class="d">How to run the whole kit, offline-first.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="00_START_HERE/QUICK_START.md"><div class="num">00</div><div class="t">Quick Start</div><div class="d">Three steps to your first demo.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="00_START_HERE/PORTABLE_SETUP.md"><div class="num">00</div><div class="t">Portable Setup</div><div class="d">Run from USB/laptop — Windows, Mac, Linux.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="course/index.html"><div class="num">🎓</div><div class="t">Online Course</div><div class="d">37 lessons + Kali practical lab, with progress tracking.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="presentation/index.html"><div class="num">▶</div><div class="t">Guided Presentation</div><div class="d">12 live crime decks + all tools, in one menu.</div><div class="tags"><span class="tag off">offline</span><span class="tag on">live links</span></div></a>
+    <a class="card" href="00_START_HERE/REHEARSAL_RUNSHEET.md"><div class="num">00</div><div class="t">Rehearsal Run-Sheet</div><div class="d">Dry-run every demo: action → result → fallback.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="ACCESS_CONTROL/README.md"><div class="num">🔒</div><div class="t">Access Control</div><div class="d">Lock the kit: passphrase + encrypted package.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="00_START_HERE/DEMO_FLOW.md"><div class="num">00</div><div class="t">Demo Flow</div><div class="d">The story-first presentation method.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="00_START_HERE/SAFETY_RULES.md"><div class="num">00</div><div class="t">Safety Rules</div><div class="d">Authorisation &amp; ethics policy.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="00_START_HERE/MASTER_SEMINAR_CHECKLIST.md"><div class="num">00</div><div class="t">Seminar Checklist</div><div class="d">Before / during / after.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="01_SEMINAR_GUIDE/60_MINUTE_SEMINAR.md"><div class="num">01</div><div class="t">Seminar Guides</div><div class="d">30 / 60 / 90-minute run sheets + scripts.</div><div class="tags"><span class="tag off">offline</span></div></a>
+  </div>
+
+  <div class="section-title">Exposure demonstrations — how ordinary data leaks</div>
+  <div class="grid">
+    <a class="card" href="02_PEOPLE_EXPOSURE/DEMO.md"><div class="num">02</div><div class="t">People Exposure</div><div class="d">How a name becomes a full profile.</div><div class="tags"><span class="tag off">offline</span><span class="tag on">internet</span></div></a>
+    <a class="card" href="03_EMAIL_BREACH/DEMO.md"><div class="num">03</div><div class="t">Email</div><div class="d">Breach exposure: what leaked &amp; why it matters.</div><div class="tags"><span class="tag on">internet</span></div></a>
+    <a class="card" href="05_PHONE_NUMBER/DEMO.md"><div class="num">05</div><div class="t">Phone</div><div class="d">A number &amp; the social-engineering risk.</div><div class="tags"><span class="tag on">internet</span><span class="tag kali">kali</span></div></a>
+    <a class="card" href="06_PHOTO_PRIVACY/DEMO.md"><div class="num">06</div><div class="t">Photo</div><div class="d">Reverse image search + hidden metadata.</div><div class="tags"><span class="tag kali">kali</span><span class="tag on">internet</span></div></a>
+    <a class="card" href="07_LOCATION_EXPOSURE/DEMO.md"><div class="num">07</div><div class="t">Location</div><div class="d">How posts reveal where you are.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="04_USERNAME_OSINT/DEMO.md"><div class="num">04</div><div class="t">Username</div><div class="d">One handle, many profiles, one identity.</div><div class="tags"><span class="tag kali">kali</span><span class="tag on">internet</span></div></a>
+  </div>
+
+  <div class="section-title">Social-engineering &amp; scam demonstrations</div>
+  <div class="grid">
+    <a class="card" href="08_PHISHING_AWARENESS/local_demo/index.html"><div class="num">08</div><div class="t">Phishing</div><div class="d">Local simulated login page (stores nothing).</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="09_QR_CODE_SCAM/DEMO.md"><div class="num">09</div><div class="t">QR Code Scam</div><div class="d">“Receive” vs “Authorise payment”.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="12_UPI_FRAUD/DEMO.md"><div class="num">12</div><div class="t">UPI Fraud</div><div class="d">Fake refund, collect request, fake support.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="10_WHATSAPP_SCAM/DEMO.md"><div class="num">10</div><div class="t">WhatsApp Scam</div><div class="d">Mock takeover &amp; contact targeting.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="11_DIGITAL_ARREST/STORY.md"><div class="num">11</div><div class="t">Digital Arrest</div><div class="d">Full role-play: fake police / CBI fear scam.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="13_FAKE_APK/README.md"><div class="num">13</div><div class="t">Fake APK</div><div class="d">Harmless APK-analysis workflow.</div><div class="tags"><span class="tag kali">kali</span></div></a>
+  </div>
+
+  <div class="section-title">Technical awareness</div>
+  <div class="grid">
+    <a class="card" href="14_PASSWORD_AWARENESS/DEMO.md"><div class="num">14</div><div class="t">Password</div><div class="d">Reuse, breaches, MFA, passphrases.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="15_BROWSER_PRIVACY/DEMO.md"><div class="num">15</div><div class="t">Browser Privacy</div><div class="d">Fingerprinting: what your browser reveals.</div><div class="tags"><span class="tag on">internet</span></div></a>
+    <a class="card" href="16_SUSPICIOUS_URL/DEMO.md"><div class="num">16</div><div class="t">URL Investigation</div><div class="d">Spotting lookalike &amp; malicious links.</div><div class="tags"><span class="tag on">internet</span></div></a>
+    <a class="card" href="17_DOMAIN_OSINT/DEMO.md"><div class="num">17</div><div class="t">Domain OSINT</div><div class="d">WHOIS, DNS, certificates (authorised).</div><div class="tags"><span class="tag on">internet</span><span class="tag kali">kali</span></div></a>
+    <a class="card" href="18_SHODAN_AWARENESS/DEMO.md"><div class="num">18</div><div class="t">Shodan</div><div class="d">Why exposed devices are findable.</div><div class="tags"><span class="tag on">internet</span></div></a>
+    <a class="card" href="19_NETWORK_AWARENESS/DEMO.md"><div class="num">19</div><div class="t">Network</div><div class="d">Encrypted vs plaintext (sample PCAPs).</div><div class="tags"><span class="tag kali">kali</span><span class="tag off">offline</span></div></a>
+    <a class="card" href="20_DIGITAL_FORENSICS/INVESTIGATION_GUIDE.md"><div class="num">20</div><div class="t">Forensics</div><div class="d">Fictional investigation cases.</div><div class="tags"><span class="tag kali">kali</span><span class="tag off">offline</span></div></a>
+  </div>
+
+  <div class="section-title">Reference &amp; audience material</div>
+  <div class="grid">
+    <a class="card" href="21_INDIAN_CYBER_CRIMES/"><div class="num">21</div><div class="t">Indian Cyber Crimes</div><div class="d">24 India-specific scam awareness sheets.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="22_KALI_TOOLS/"><div class="num">22</div><div class="t">Kali Tools</div><div class="d">Beginner-friendly tool cards.</div><div class="tags"><span class="tag kali">kali</span></div></a>
+    <a class="card" href="23_ONLINE_TOOLS/"><div class="num">23</div><div class="t">Online Tools</div><div class="d">Categorised directory of safe services.</div><div class="tags"><span class="tag on">internet</span></div></a>
+    <a class="card" href="25_INCIDENT_RESPONSE/REPORTING_IN_INDIA.md"><div class="num">25</div><div class="t">Reporting (India)</div><div class="d">1930, cybercrime.gov.in, first steps.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="26_HANDOUTS/10_CYBER_SAFETY_RULES.md"><div class="num">26</div><div class="t">Handouts</div><div class="d">Printable: students, staff, seniors.</div><div class="tags"><span class="tag off">offline</span></div></a>
+    <a class="card" href="27_PRESENTATION/SLIDE_OUTLINE.md"><div class="num">27</div><div class="t">Presentation</div><div class="d">Slide outline, speaker notes, demo order.</div><div class="tags"><span class="tag off">offline</span></div></a>
+  </div>
+
+</main>
+
+<footer>
+  <img src="assets/tech-guardians-logo.png" alt="Tech Guardians" style="height:52px;width:auto;opacity:.9;margin-bottom:10px"/><br/>
+  Cyber Crime Awareness Live Demo Kit · <b>Tech Guardians</b> · Rj Nehra (Master in Cyber Security)<br/>
+  Awareness &amp; defence only. Links open local Markdown/HTML files in this kit.
+  Some tools require the internet and are marked accordingly.
+</footer>
+<script>
+/* On a web server, route card links through the in-browser viewer so Markdown
+   renders nicely (clicking a raw .md would otherwise just show plain text). */
+(function(){
+  document.querySelectorAll("a.card").forEach(function(a){
+    var href=a.getAttribute("href")||"";
+    if(/^[a-z]+:\/\//i.test(href)) return;            // external
+    if(/\.md$/i.test(href)){ a.setAttribute("href","view.html?doc="+encodeURIComponent(href)); }
+    else if(/\/$/.test(href)){ a.setAttribute("href","view.html?dir="+encodeURIComponent(href.replace(/\/$/,""))); }
+    // .html links (e.g. the live phishing demo) are left as-is
+  });
+})();
+</script>
+</body>
+</html>

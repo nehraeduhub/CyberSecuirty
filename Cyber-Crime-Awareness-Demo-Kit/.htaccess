@@ -1,0 +1,30 @@
+# Tech Guardians — Cyber Crime Awareness Live Kit (shared hosting)
+# Safe defaults for Hostinger / Apache. Directives are guarded so a missing
+# module will not 500 the site.
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Force HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Open .md / .eml as plain text if accessed directly (they normally render via view.html)
+AddType text/plain .md
+AddType text/plain .eml
+
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "no-referrer"
+</IfModule>
+
+# Never serve sensitive files from the web (defence in depth)
+<FilesMatch "\.(sh|bat|command|zip|b64)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "(?i)User_Guide\.pdf$">
+  Require all denied
+</FilesMatch>

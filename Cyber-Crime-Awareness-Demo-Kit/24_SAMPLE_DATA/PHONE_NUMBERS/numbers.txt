@@ -1,0 +1,5 @@
+# FICTIONAL numbers (reserved ranges) — do NOT call/message
++91 99999 00001
++91 99999 00002
++1 555 0100
++44 7700 900123

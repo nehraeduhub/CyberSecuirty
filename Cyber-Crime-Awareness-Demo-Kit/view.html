@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Tech Guardians — Viewer</title>
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<script>
+/* Access guard: require the same unlock as the dashboard. */
+(function(){
+  var HASH="0cb668dc5a30f28874c110ed84c1014e04a9f306610a3b6a7cf37367b3786dd5";
+  try{ if(sessionStorage.getItem("tg_access")!==HASH) location.replace("ACCESS_CONTROL/LOGIN.html"); }
+  catch(e){ location.replace("ACCESS_CONTROL/LOGIN.html"); }
+})();
+</script>
+<style>
+  :root{--bg:#0a0e14;--panel:#111823;--line:#1e2a3a;--txt:#e6edf3;--muted:#8aa0b6;
+    --accent:#2ba24c;--accent2:#3aa0ff;--orange:#f2971c;--navy:#103f6e}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;
+    padding:10px 16px;background:#0c1420;border-bottom:1px solid var(--line)}
+  header img{height:40px}
+  header .ttl{font-weight:700;font-size:.95rem}
+  header .sp{flex:1}
+  header a.btn,header button{background:var(--navy);color:#fff;border:0;border-radius:8px;
+    padding:8px 12px;font-size:.84rem;font-weight:600;text-decoration:none;cursor:pointer}
+  header a.btn:hover,header button:hover{background:#17568f}
+  .wrap{max-width:900px;margin:0 auto;padding:26px 20px 70px}
+  .doc h1{color:#fff;border-bottom:2px solid var(--accent);padding-bottom:8px;margin-top:6px}
+  .doc h2{color:var(--accent);margin-top:26px}
+  .doc h3{color:var(--accent2);margin-top:18px}
+  .doc p,.doc li{line-height:1.6}
+  .doc a{color:var(--accent2)}
+  .doc code{background:#0d141d;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.9em}
+  .doc pre{background:#0d141d;border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto}
+  .doc pre code{border:0;padding:0;background:none}
+  .doc blockquote{border-left:4px solid var(--orange);margin:12px 0;padding:6px 14px;
+    background:rgba(242,151,28,.08);color:#ffe4bd;border-radius:6px}
+  .doc table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.92rem}
+  .doc th,.doc td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+  .doc th{background:var(--navy);color:#fff}
+  .doc tr:nth-child(even) td{background:#0f1620}
+  .doc img{max-width:140px;height:auto}
+  .doc hr{border:0;border-top:1px solid var(--line);margin:22px 0}
+  .crumbs{color:var(--muted);font-size:.8rem;margin-bottom:14px}
+  .crumbs a{color:var(--muted)}
+  .list a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:10px;
+    margin:8px 0;color:var(--txt);text-decoration:none;background:var(--panel)}
+  .list a:hover{border-color:var(--accent)}
+  .err{color:#ff7a90;background:#2a0f15;border:1px solid #512; padding:14px;border-radius:10px}
+  footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;
+    padding:16px;font-size:.78rem}
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/tech-guardians-logo-small.png" alt="Tech Guardians"/>
+  <span class="ttl">Cyber Crime Awareness — Live Kit</span>
+  <span class="sp"></span>
+  <a class="btn" href="MASTER_DASHBOARD.html">⌂ Dashboard</a>
+  <a class="btn" href="walkthrough.html">▶ Live Walkthrough</a>
+</header>
+
+<div class="wrap">
+  <div class="crumbs" id="crumbs"></div>
+  <div id="content" class="doc"></div>
+</div>
+
+<footer>Tech Guardians · Rj Nehra (Master in Cyber Security) · “Think Like a Hacker — Protect Like a Defender.”</footer>
+
+<script src="assets/md.js"></script>
+<script>
+(function(){
+  var qs=new URLSearchParams(location.search);
+  var doc=qs.get("doc"), dir=qs.get("dir");
+  var content=document.getElementById("content"), crumbs=document.getElementById("crumbs");
+
+  function dirname(p){ var i=p.lastIndexOf("/"); return i<0?"":p.slice(0,i); }
+
+  if(dir){
+    // folder listing from manifest.json
+    fetch("manifest.json").then(r=>r.json()).then(function(m){
+      var d=dir.replace(/\/$/,"");
+      var items=m.docs.filter(x=>x.path.indexOf(d+"/")===0);
+      crumbs.innerHTML='<a href="MASTER_DASHBOARD.html">Dashboard</a> / '+d;
+      if(!items.length){ content.innerHTML='<p class="err">No documents found in '+d+'</p>'; return; }
+      var h='<h1>'+d.replace(/^\d+_/,"").replace(/_/g," ")+'</h1><div class="list">';
+      items.forEach(function(x){ h+='<a href="view.html?doc='+encodeURIComponent(x.path)+'">'+x.title+'</a>'; });
+      content.innerHTML=h+'</div>';
+    }).catch(function(){ content.innerHTML='<p class="err">Could not load manifest.json</p>'; });
+    return;
+  }
+
+  if(!doc){ content.innerHTML='<p class="err">No document specified.</p>'; return; }
+  crumbs.innerHTML='<a href="MASTER_DASHBOARD.html">Dashboard</a> / '+doc;
+  fetch(doc).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(md){
+    content.innerHTML=TGMarkdown.render(md,{baseDir:dirname(doc)});
+    document.title="TG — "+(content.querySelector("h1")?content.querySelector("h1").textContent:"Viewer");
+  }).catch(function(){
+    content.innerHTML='<p class="err">Could not load: '+doc+'<br/>On a web server this renders fine; if opened as a local file, use the launcher instead.</p>';
+  });
+})();
+</script>
+</body>
+</html>

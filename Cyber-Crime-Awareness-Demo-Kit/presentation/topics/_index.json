@@ -1,0 +1,261 @@
+[
+{
+"id": "people-exposure",
+"number": "02",
+"name": "People Exposure",
+"group": "Identity & data",
+"tagline": "A name becomes a full profile — and a crime."
+},
+{
+"id": "digital-arrest",
+"number": "11",
+"name": "Digital Arrest",
+"group": "Financial / money scams",
+"tagline": "The fake-police fear scam that empties savings."
+},
+{
+"id": "upi-fraud",
+"number": "12",
+"name": "UPI Fraud",
+"group": "Financial / money scams",
+"tagline": "PIN = PAY. One rule defeats most of it."
+},
+{
+"id": "fake-trading-app",
+"number": "21",
+"name": "Fake Trading / Investment App",
+"group": "Financial / money scams",
+"tagline": "India's single biggest fraud category."
+},
+{
+"id": "investment-scam",
+"number": "INV",
+"name": "Investment Scam",
+"group": "Financial / money scams",
+"tagline": "Guaranteed returns = guaranteed scam."
+},
+{
+"id": "qr-scam",
+"number": "09",
+"name": "QR Code Scam",
+"group": "Financial / money scams",
+"tagline": "You never scan a QR to RECEIVE money."
+},
+{
+"id": "fake-customer-care",
+"number": "FCC",
+"name": "Fake Customer Care",
+"group": "Financial / money scams",
+"tagline": "The 'support number' you Googled is the trap."
+},
+{
+"id": "electricity-scam",
+"number": "ELEC",
+"name": "Electricity Bill Scam",
+"group": "Financial / money scams",
+"tagline": "'Power cut tonight' — pay now or else."
+},
+{
+"id": "courier-scam",
+"number": "COUR",
+"name": "Courier / Parcel Scam",
+"group": "Financial / money scams",
+"tagline": "A held parcel that leads to a bigger scam."
+},
+{
+"id": "kyc-scam",
+"number": "KYC",
+"name": "KYC Update Scam",
+"group": "Financial / money scams",
+"tagline": "'KYC expires today' — the oldest new trick."
+},
+{
+"id": "loan-app",
+"number": "LOAN",
+"name": "Instant Loan App",
+"group": "Financial / money scams",
+"tagline": "Fast cash, then blackmail with your data."
+},
+{
+"id": "fake-job",
+"number": "JOB",
+"name": "Fake Job / Task Scam",
+"group": "Financial / money scams",
+"tagline": "Pay to earn? That is the scam."
+},
+{
+"id": "lottery-kbc",
+"number": "LOTT",
+"name": "Lottery / KBC Scam",
+"group": "Financial / money scams",
+"tagline": "You can't win a lottery you never entered."
+},
+{
+"id": "fake-shopping",
+"number": "SHOP",
+"name": "Fake Shopping Website",
+"group": "Financial / money scams",
+"tagline": "Unbelievable discount, no delivery."
+},
+{
+"id": "fake-charity",
+"number": "CHAR",
+"name": "Fake Charity / Donation Scam",
+"group": "Financial / money scams",
+"tagline": "Compassion weaponised after a disaster."
+},
+{
+"id": "card-skimming",
+"number": "SKIM",
+"name": "Card Skimming / ATM Fraud",
+"group": "Financial / money scams",
+"tagline": "Your card cloned at the ATM."
+},
+{
+"id": "aeps-aadhaar",
+"number": "AEPS",
+"name": "AEPS / Aadhaar Biometric Fraud",
+"group": "Financial / money scams",
+"tagline": "Money gone — with no OTP at all."
+},
+{
+"id": "fake-echallan",
+"number": "ECHL",
+"name": "Fake e-Challan Scam",
+"group": "Financial / money scams",
+"tagline": "A traffic fine that fines you twice."
+},
+{
+"id": "phishing",
+"number": "08",
+"name": "Phishing",
+"group": "Social engineering & accounts",
+"tagline": "Read the domain before you type a password."
+},
+{
+"id": "smishing",
+"number": "SMS",
+"name": "Smishing (SMS Phishing)",
+"group": "Social engineering & accounts",
+"tagline": "A link in an SMS is a trap."
+},
+{
+"id": "vishing",
+"number": "VISH",
+"name": "Vishing (Voice Phishing)",
+"group": "Social engineering & accounts",
+"tagline": "Caller ID is not identity."
+},
+{
+"id": "whatsapp-scam",
+"number": "10",
+"name": "WhatsApp Takeover",
+"group": "Social engineering & accounts",
+"tagline": "One 6-digit code = your whole contact list."
+},
+{
+"id": "otp-scam",
+"number": "OTP",
+"name": "OTP Scam",
+"group": "Social engineering & accounts",
+"tagline": "OTP = your approval. Never share it."
+},
+{
+"id": "fake-tech-support",
+"number": "TECH",
+"name": "Fake Tech Support / Pop-up",
+"group": "Social engineering & accounts",
+"tagline": "'Your PC is infected' — no it isn't."
+},
+{
+"id": "sim-swap",
+"number": "SIM",
+"name": "SIM Swap",
+"group": "Device & network",
+"tagline": "Lose signal suddenly? Your number was hijacked."
+},
+{
+"id": "malicious-apk",
+"number": "13",
+"name": "Malicious APK",
+"group": "Device & network",
+"tagline": "SMS + Accessibility + overlay = OTP theft."
+},
+{
+"id": "juice-jacking",
+"number": "JUICE",
+"name": "Juice Jacking (Public USB)",
+"group": "Device & network",
+"tagline": "Free charging can cost you everything."
+},
+{
+"id": "evil-twin-wifi",
+"number": "WIFI",
+"name": "Evil Twin / Fake Wi-Fi",
+"group": "Device & network",
+"tagline": "Free Wi-Fi that reads your traffic."
+},
+{
+"id": "ransomware",
+"number": "RANS",
+"name": "Ransomware",
+"group": "Device & network",
+"tagline": "Your files, held hostage."
+},
+{
+"id": "data-breach",
+"number": "BRCH",
+"name": "Data Breach",
+"group": "Identity & data",
+"tagline": "A leak you forgot, used against you."
+},
+{
+"id": "identity-theft",
+"number": "IDTH",
+"name": "Identity Theft",
+"group": "Identity & data",
+"tagline": "Your documents, someone else's crime."
+},
+{
+"id": "social-media-impersonation",
+"number": "IMP",
+"name": "Social Media Impersonation",
+"group": "Identity & data",
+"tagline": "A clone of you, asking your friends for money."
+},
+{
+"id": "matrimonial-fraud",
+"number": "MATR",
+"name": "Matrimonial / Dating Fraud",
+"group": "Social engineering & accounts",
+"tagline": "A perfect match with an emergency."
+},
+{
+"id": "pig-butchering",
+"number": "PIG",
+"name": "Pig Butchering (Romance+Crypto)",
+"group": "Financial / money scams",
+"tagline": "Grooming, then a fake investment app."
+},
+{
+"id": "sextortion",
+"number": "SEXT",
+"name": "Sextortion",
+"group": "Advanced / AI",
+"tagline": "Don't pay · preserve evidence · it's not your fault."
+},
+{
+"id": "deepfake",
+"number": "DEEP",
+"name": "Deepfake Scam",
+"group": "Advanced / AI",
+"tagline": "Seeing is no longer believing."
+},
+{
+"id": "ai-voice",
+"number": "VOICE",
+"name": "AI Voice Clone Scam",
+"group": "Advanced / AI",
+"tagline": "A familiar voice, crying for money."
+}
+]

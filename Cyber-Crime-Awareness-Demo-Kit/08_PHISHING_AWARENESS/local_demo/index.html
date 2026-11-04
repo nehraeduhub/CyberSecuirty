@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--
+  PHISHING AWARENESS SIMULATION — AUTHORISED DEMONSTRATION ONLY
+  Tech Guardians · Rj Nehra (Master in Cyber Security)
+
+  This page imitates a login screen for a FICTIONAL brand ("NimbuPay") to teach
+  people what a phishing page looks like. It is a SIMULATION:
+    - It NEVER transmits what you type (there is no server call, no network, no form action).
+    - It NEVER stores what you type (values are read then immediately discarded).
+  The moment you click "Sign in", it reveals the truth and teaches the red flags.
+-->
+<title>NimbuPay — Sign in</title>
+<link rel="icon" type="image/png" href="../../assets/favicon.png" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== Fake "bank/wallet" login (intentionally realistic-looking) ===== -->
+<div id="fake" class="wrap">
+  <div class="topbar">
+    <!-- Deliberately suspicious URL shown as a teaching prop -->
+    <div class="fakeurl" id="fakeUrlBar" aria-label="browser address bar (simulated)">
+      <span class="lock">🔓</span>
+      <span class="url">http://nimbupay-secure-login.verify-account.example/login</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="brand">
+      <div class="brand-mark">₦</div>
+      <div class="brand-name">NimbuPay</div>
+    </div>
+
+    <div class="urgent">⚠ Your account will be <b>suspended in 10:00 minutes</b>. Verify now to avoid blocking.</div>
+
+    <h1>Sign in to continue</h1>
+    <p class="muted">Enter your NimbuPay credentials to verify your account.</p>
+
+    <form id="loginForm" autocomplete="off" novalidate>
+      <label for="user">Mobile number / Email</label>
+      <input id="user" name="user" type="text" placeholder="you@example.com" />
+
+      <label for="pass">Password</label>
+      <input id="pass" name="pass" type="password" placeholder="Password" />
+
+      <div class="row">
+        <label class="remember"><input type="checkbox" /> Keep me signed in</label>
+        <a href="#" class="link" onclick="return false;">Forgot password?</a>
+      </div>
+
+      <button type="submit" id="signin">Sign in &amp; Verify</button>
+    </form>
+
+    <div class="foot muted">© 2026 NimbuPay (fictional). This is a training simulation.</div>
+  </div>
+</div>
+
+<!-- ===== The reveal (shown after "submit") ===== -->
+<div id="reveal" class="wrap hidden">
+  <div class="card reveal-card">
+    <div class="stamp">SIMULATED PHISHING PAGE</div>
+    <h1 class="big">🛑 This was a simulated phishing page.</h1>
+    <p class="lead">
+      Nothing you typed was sent or saved. There is <b>no server</b>, <b>no storage</b>,
+      and <b>no network request</b> behind this page. In a real attack, the moment
+      you pressed "Sign in", your username and password would be in a criminal's hands.
+    </p>
+
+    <h2>🎣 How the attacker would try to trick you</h2>
+    <ul class="flags">
+      <li><b>Lookalike URL:</b> <code>nimbupay-secure-login.verify-account.example</code> —
+        the real brand name is only a <i>subdomain word</i>; the actual domain is
+        <code>verify-account.example</code>, which the attacker owns.</li>
+      <li><b>No padlock / HTTP:</b> the address starts with <code>http://</code> (🔓) — no encryption.</li>
+      <li><b>Urgency &amp; fear:</b> a countdown and "account suspended" to make you rush.</li>
+      <li><b>Authority &amp; branding:</b> a familiar-looking logo and colours to feel official.</li>
+      <li><b>Credential capture:</b> it asks for your password directly on a page you reached from a link.</li>
+    </ul>
+
+    <h2>🛡️ How to protect yourself</h2>
+    <ul class="protect">
+      <li><b>Read the domain right-to-left:</b> find the real domain (the part just
+        before the first single <code>/</code>). Here that's <code>verify-account.example</code>, not NimbuPay.</li>
+      <li><b>Never log in from a link</b> in SMS/email/WhatsApp. Open the official app
+        or type the known website address yourself.</li>
+      <li><b>Check for HTTPS</b> and the correct spelling of the domain — but remember,
+        HTTPS alone does not mean "safe".</li>
+      <li><b>Slow down.</b> Urgency is the scam. Real services let you verify at your own pace.</li>
+      <li><b>Turn on MFA.</b> Even a stolen password is far less useful with a second factor.</li>
+      <li><b>When unsure, call the official number</b> on the back of your card / official site.</li>
+    </ul>
+
+    <div class="whatyoutyped muted" id="echo"></div>
+
+    <button type="button" id="again">↺ Run the demo again</button>
+
+    <div class="tg-badge">
+      <img src="../../assets/tech-guardians-logo-small.png" alt="Tech Guardians" />
+      <span>Awareness simulation by <b>Tech Guardians</b> · Rj Nehra (Master in Cyber Security)<br/>
+      “Think Like a Hacker — Protect Like a Defender.”</span>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

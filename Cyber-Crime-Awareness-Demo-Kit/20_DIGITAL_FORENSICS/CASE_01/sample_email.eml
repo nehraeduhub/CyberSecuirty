@@ -1,0 +1,28 @@
+From: "IT Helpdesk" <helpdesk@nimbuatech.example>
+Reply-To: "Support" <recover-login@account-verify.example>
+Return-Path: <bounce@mailer-xyz.example>
+Received: from mailer-xyz.example (unknown [203.0.113.45])
+Authentication-Results: mx.nimbuatech.example;
+  spf=fail smtp.mailfrom=mailer-xyz.example;
+  dkim=none; dmarc=fail
+Subject: [ACTION REQUIRED] Your mailbox will be deactivated in 2 hours
+Date: Wed, 15 Jan 2026 09:14:00 +0530
+To: aarav.demo@nimbuatech.example
+Content-Type: text/plain; charset=UTF-8
+
+Dear User,
+
+Your mailbox has exceeded its storage quota and will be DEACTIVATED within
+2 hours. To keep your account active, verify your credentials immediately:
+
+   http://nimbuatech.account-verify.example/login
+
+Failure to verify will result in permanent loss of email.
+
+IT Helpdesk
+NimbuaTech
+
+----
+[ FICTIONAL TEACHING SAMPLE — inert. Red flags: Reply-To/From mismatch,
+  spf=fail / dkim=none / dmarc=fail, urgency, lookalike domain
+  (real domain = account-verify.example, NOT nimbuatech). Do not click. ]

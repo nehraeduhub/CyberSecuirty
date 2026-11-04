@@ -1,0 +1,19 @@
+# Example ExifTool output (FICTIONAL) — use as an offline slide.
+
+$ exiftool sample.jpg
+File Name                       : sample.jpg
+Make                            : DemoCam
+Camera Model Name               : SeminarPhone
+Date/Time Original              : 2026:01:15 10:42:30
+GPS Latitude                    : 28 deg 36' 50.04" N
+GPS Longitude                   : 77 deg 12' 32.40" E
+GPS Position                    : 28.6139 N, 77.2090 E   <-- pinpoint location!
+Image Size                      : 4032x3024
+
+# After stripping:
+$ exiftool -all= sample.jpg
+    1 image files updated
+$ exiftool sample.jpg
+File Name                       : sample.jpg
+Image Size                      : 4032x3024
+# (No camera, date or GPS — clean.)
