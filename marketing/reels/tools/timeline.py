@@ -7,7 +7,7 @@ topics, num, work, out = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4]
 t = next(x for x in json.load(open(topics, encoding='utf-8')) if x['num'] == num)
 vo = json.load(open(os.path.join(work, 'vo.json')))
 # scene: (gap before the voice, minimum scene length)
-PLAN = [('hook', .5, 5.5), ('learn', .35, 9), ('book', .35, 8.5), ('ctf', .35, 10.5), ('cta', .35, 6)]
+PLAN = [('hook', .5, 5.5), ('learn', .35, 9), ('book', .35, 8.5), ('ctf', .35, 11.5), ('cta', .35, 6)]
 TAIL = .6        # breath after each clip
 END = 3.2        # end card, music only
 scenes, clips, cur = {}, [], 0.0
@@ -46,7 +46,9 @@ for c in clips:
 cl = {c['scene']: c for c in clips}
 marks = {
     'cards': [round(cl['learn']['at'] + cl['learn']['dur'] * (.2 + i * .27), 3) for i in range(3)],
-    'free': round(cl['ctf']['at'] + cl['ctf']['dur'] * .78, 3),
+    # "Task 1 FREE" pops when the voice says पहला टास्क फ़्री; the account card when it says सीटीएफ़ एक्सेस (by position in the text)
+    'free': round(cl['ctf']['at'] + cl['ctf']['dur'] * max(0, t['vo']['ctf'].find('पहला')) / len(t['vo']['ctf']) + .4, 3),
+    'account': round(cl['ctf']['at'] + cl['ctf']['dur'] * max(0, t['vo']['ctf'].find('सीटीएफ़ एक्सेस')) / len(t['vo']['ctf']), 3),
     'url': round(scenes['cta'][0] + 1.2, 3),
     'enroll': round(cl['cta']['at'] + cl['cta']['dur'] * .55, 3),
 }
@@ -67,6 +69,7 @@ Humare saath seekhenge: {' · '.join(strip(p) for p in t['points'])}
 
 📘 Pehle seekho: {t['title']} Handbook (PDF, {t['pages']} pages)
 🚩 Phir practice karo: CTF Room {t['num']} · {t['tasks']} hands-on tasks · Task 1 FREE
+👤 CTF access ke liye apna account zaroor banayein
 
 👉 Abhi enroll karo aur seekhna start karo: techguardians.in (link in bio)
 Keep Learning · Keep Sharing 🇮🇳

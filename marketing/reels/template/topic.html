@@ -185,7 +185,8 @@ function ctf(t, lt, d) {
       <div class="stat" style="${fadeUp(lt, 1, .5, 40)}"><small>Room</small><b>${T.num} · ${T.difficulty}</b></div>
       <div class="stat" style="${fadeUp(lt, 1.4, .5, 40)}"><small>Hands-on</small><b>${T.tasks} tasks</b></div>
       <div class="stat" style="${fadeUp(lt, 1.8, .5, 40)}"><small>Labs + hints</small><b>In browser</b></div>
-      <div class="stat free" style="position:relative;overflow:hidden;${pop(lt, M.free - SC.ctf[0], .5)};box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(47,191,47,.7)"><small>Start now</small><b>Task 1 FREE ✅</b>${shine(lt, M.free - SC.ctf[0] + .5, .8)}</div></div>`;
+      <div class="stat free" style="position:relative;overflow:hidden;${pop(lt, M.free - SC.ctf[0], .5)};box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(47,191,47,.7)"><small>Start now</small><b>Task 1 FREE ✅</b>${shine(lt, M.free - SC.ctf[0] + .5, .8)}</div>
+      <div class="stat" style="position:relative;overflow:hidden;background:linear-gradient(90deg,#ff9933,#ffcc4d);border-color:#ffcc4d;color:#140c02;${pop(lt, M.account - SC.ctf[0], .5)};transform-origin:center;box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)"><small style="color:#5a3300;white-space:nowrap;letter-spacing:2px;font-size:22px">👤 CTF access ke liye</small><b style="font-size:36px">Account banayein</b>${shine(lt, M.account - SC.ctf[0] + .5, .8)}</div></div>`;
 }
 function cta(t, lt) {
   const ue = M.url - SC.cta[0], en = M.enroll - SC.cta[0], typed = 'techguardians.in'.slice(0, Math.floor(clamp((lt - ue) / .7) * 16));

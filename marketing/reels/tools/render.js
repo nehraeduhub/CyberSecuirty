@@ -23,7 +23,7 @@ const TEMPLATE = path.join(__dirname, '..', 'template', 'topic.html');
   if (arg === 'cover') {
     await p.evaluate(() => window.renderCover()); await p.waitForTimeout(300);
     await p.screenshot({ path: coverFile, type: 'jpeg', quality: 92 });
-  } else if (arg && arg.includes(';')) {
+  } else if (arg && !arg.includes(',')) {
     for (const t of arg.split(';').map(Number)) {
       await p.evaluate((t) => window.render(t), t);
       await p.screenshot({ path: path.join(OUT, `t${String(t).replace('.', '_')}.jpg`), type: 'jpeg', quality: 85 });

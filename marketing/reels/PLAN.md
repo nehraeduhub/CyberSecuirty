@@ -163,6 +163,7 @@ with one Core/Networking topic; post daily at 7–9 pm IST; reuse each reel on S
    music sits ~9 dB under the voice while speaking, full level between lines (`MUSIC_VOL`, default 0.75).
    Voice wording (owner, v2): learn scene says "Humare saath aap seekhenge, kaise …"; the CTA ends with
    "techguardians.in par abhi enroll karo, aur seekhna start karo!".
+   CTF scene ends with "CTF access ke liye apna account zaroor bana lein" (v3) + an "Account banayein" card.
 7. More animation (v2): diagonal swipe transitions, drifting binary particles + scan line, hook glitch + shake,
    cards sliding in with shine, floating book with shine, karaoke captions, confetti on "Task 1 FREE",
    the enroll button and the logo, pulsing "Abhi Enroll karo" button with tap. Synced sound effects from
