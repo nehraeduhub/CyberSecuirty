@@ -1,0 +1,177 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>CTF enroll reel</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:#06152b;font-family:'Inter','Inter Display',system-ui,sans-serif;color:#fff}
+  #bg{position:absolute;inset:0;background:radial-gradient(1200px 900px at 80% 10%,#123a73 0%,transparent 60%),radial-gradient(900px 900px at 0% 100%,#0e2f5c 0%,transparent 60%),linear-gradient(180deg,#071a33,#0a2348 55%,#061428)}
+  #grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:60px 60px}
+  .tri{position:absolute;left:0;right:0;top:0;height:14px;display:flex}
+  .tri i{flex:1}.tri i:nth-child(1){background:#ff9933}.tri i:nth-child(2){background:#fff}.tri i:nth-child(3){background:#138808}
+  #brand{position:absolute;top:70px;left:70px;display:flex;align-items:center;gap:20px}
+  #brand img{width:84px;height:84px;border-radius:18px;background:#fff;padding:6px}
+  #brand b{display:block;font-size:40px;font-weight:800;letter-spacing:-.5px}
+  #brand small{display:block;font-size:22px;color:#ffb366;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin-top:2px}
+  #dots{position:absolute;top:100px;right:70px;display:flex;gap:12px}
+  #dots i{width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,255,255,.35)}
+  #dots i.on{background:#ff9933;border-color:#ff9933}
+  #dots i.done{background:#138808;border-color:#2fbf2f}
+  .scene{position:absolute;inset:0}
+  .head{position:absolute;left:70px;right:70px;top:230px}
+  .pill{display:inline-flex;align-items:center;gap:12px;background:#ff9933;color:#1a1206;font-weight:900;font-size:30px;letter-spacing:3px;padding:12px 26px;border-radius:999px}
+  .h1{font-size:76px;line-height:1.04;font-weight:900;letter-spacing:-1.5px;margin-top:26px}
+  .h1 em{font-style:normal;color:#ffb366}
+  .sub{font-size:36px;line-height:1.3;color:#cfe0ff;margin-top:20px;font-weight:500}
+  .sub b{color:#fff}
+  .phone{position:absolute;left:250px;top:680px;width:580px;height:1260px;border-radius:70px;background:#0b0f17;padding:18px;box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 3px #2a3550,inset 0 0 0 2px #1b2233}
+  .screen{position:relative;width:544px;height:1224px;border-radius:54px;overflow:hidden;background:#fff}
+  .screen img{position:absolute;left:0;top:64px;width:544px;will-change:transform}
+  .status{position:absolute;left:0;right:0;top:0;height:64px;background:#fff;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:8px 44px 0;font:700 22px Inter,sans-serif;color:#0b0f17}
+  .status span:last-child{letter-spacing:2px;font-size:18px}
+  .notch{position:absolute;left:50%;top:30px;transform:translateX(-50%);width:150px;height:40px;border-radius:24px;background:#0b0f17;z-index:5}
+  .ring{position:absolute;border:6px solid #ff9933;border-radius:18px;box-shadow:0 0 0 9999px rgba(6,21,43,.0),0 0 40px rgba(255,153,51,.8);z-index:4;pointer-events:none}
+  .tap{position:absolute;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;background:rgba(255,153,51,.55);border:5px solid #fff;z-index:6}
+  .tapwave{position:absolute;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;border:6px solid #ff9933;z-index:6}
+  .center{position:absolute;left:70px;right:70px;text-align:center}
+  .bigflag{font-size:170px;line-height:1}
+  .chip{display:inline-block;margin:10px 8px;padding:16px 28px;border-radius:999px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);font-size:34px;font-weight:700}
+  .chip.sf{background:#ff9933;color:#1a1206;border-color:#ff9933}
+  .url{display:inline-block;margin-top:30px;padding:24px 44px;border-radius:24px;background:#fff;color:#0a2348;font-size:54px;font-weight:900;letter-spacing:-.5px}
+  .glow{position:absolute;width:900px;height:900px;left:90px;top:450px;border-radius:50%;background:radial-gradient(circle,rgba(255,153,51,.25),transparent 65%)}
+</style></head>
+<body>
+<div id="bg"></div><div id="grid"></div>
+<div class="tri"><i></i><i></i><i></i></div>
+<div id="brand"><img src="shots/logo.png" alt=""><span><b>Tech Guardians</b><small>CTF Portal</small></span></div>
+<div id="dots"></div>
+<div id="stage"></div>
+<script>
+const META = window.META; // injected
+const S = 544 / 390; // css px of the site -> px on the phone screen
+const ease = (x) => x < 0 ? 0 : x > 1 ? 1 : x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerpKeys = (keys, t) => { // keys: [[time, value], ...] with eased segments
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) {
+    const [t0, v0] = keys[i-1], [t1, v1] = keys[i]; return v0 + (v1 - v0) * ease((t - t0) / (t1 - t0));
+  }
+  return keys[keys.length - 1][1];
+};
+const R = (shot, k) => (META[shot] && META[shot].rects[k]) || null;
+
+// Each step: time window, text, and shots shown on the phone with scroll keys and taps (times relative to the step).
+const STEPS = [
+  { t0: 5, t1: 13, n: 1, title: 'Open the <em>CTF Portal</em>', sub: 'Go to <b>techguardians.in</b>, open the menu and tap <b>CTF Portal</b>.',
+    shots: [{ img: 'menu', from: 0, to: 8, scroll: [[0, 0]], ring: { k: 'ctf', at: 2.2 }, tap: { k: 'ctf', at: 3.2 } }] },
+  { t0: 13, t1: 21, n: 2, title: 'Create your <em>student account</em>', sub: 'Tap <b>Request account</b>. A nickname and alias email are fine — then <b>sign in</b>.',
+    shots: [{ img: 'register', from: 0, to: 8, scroll: [[0, 0], [3.2, 0], [6, 260]], tap: { k: 'tab', at: 1.6 }, ring: { k: 'tab', at: 1.2, until: 3 } }] },
+  { t0: 21, t1: 29, n: 3, title: 'Start for <em>FREE</em>', sub: '<b>Task 1 of every room is free.</b> 43 rooms · 432 hands-on tasks.',
+    shots: [{ img: 'ctfhome', from: 0, to: 8, scroll: [[0, 0], [1.2, 0], [3.4, 300], [5.2, 300], [6.8, 840]], ring: { k: 'free', at: 1.4, until: 4.6 }, tap: { k: 'room', at: 7.0 } }] },
+  { t0: 29, t1: 37, n: 4, title: 'Unlock <em>every room</em>', sub: '<b>₹99 / month</b> or <b>₹999 / year</b> — labs, hints and debriefs included.',
+    shots: [{ img: 'plans', from: 0, to: 8, scroll: [[0, 0], [1, 0], [2.6, 380], [4.8, 380], [6.4, 760]], ring: { k: 'monthly', pad: 30, at: 2.8, until: 4.8 } }] },
+  { t0: 37, t1: 45, n: 5, title: 'Checkout + <em>coupon</em>', sub: 'Pick your plan, fill your details and apply a <b>coupon code</b> if you have one.',
+    shots: [{ img: 'checkout', from: 0, to: 8, scroll: [[0, 0], [0.8, 0], [2.2, 330], [4.2, 330], [5.6, 800], [8, 1080]], ring: { k: 'coupon', at: 2.3, until: 4.2 }, ring2: { k: 'plans', at: 5.7, until: 7.4 } }] },
+  { t0: 45, t1: 55, n: 6, title: 'Pay by <em>UPI</em> & confirm', sub: 'Scan the QR, pay, then enter the <b>UTR / transaction ID</b>. We verify and unlock everything.',
+    shots: [
+      { img: 'upi', from: 0, to: 5, scroll: [[0, 0], [0.6, 0], [2, 690], [5, 690]], ring: { k: 'qr', at: 2.1, until: 3.9 }, blur: { k: 'qr' }, tap: { k: 'paid', at: 4.2 } },
+      { img: 'utr', from: 5, to: 10, scroll: [[0, 560], [1.4, 640], [5, 640]], ring: { k: 'utr', at: 0.6, until: 2.6 }, tap: { k: 'submit', at: 3.4 } },
+    ] },
+];
+
+const stage = document.getElementById('stage');
+const dots = document.getElementById('dots');
+dots.innerHTML = STEPS.map(() => '<i></i>').join('');
+const imgCache = {};
+['menu','register','ctfhome','plans','checkout','upi','utr'].forEach((k) => { const i = new Image(); i.src = 'shots/' + k + '.png'; imgCache[k] = i; });
+
+const fadeUp = (t, start, dur = .6) => { const p = ease(clamp((t - start) / dur)); return `opacity:${p};transform:translateY(${(1 - p) * 40}px)`; };
+
+function phoneHTML(shot, lt) {
+  const y = lerpKeys(shot.scroll, lt);
+  let h = `<div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮ ◔</span></div><img src="shots/${shot.img}.png" style="transform:translateY(${-y * S}px)">`;
+  const rect = (o) => o.r || R(shot.img, o.k);
+  for (const key of ['ring', 'ring2']) {
+    const o = shot[key]; if (!o) continue; const r = rect(o); if (!r) continue;
+    const on = clamp((lt - o.at) / .35) * (o.until ? clamp((o.until - lt) / .35 + 1, 0, 1) * (lt < o.until + .35 ? 1 : 0) : 1);
+    if (on <= 0) continue;
+    const pad = (o.pad || 8);
+    const pulse = 1 + .03 * Math.sin((lt - o.at) * 7);
+    h += `<div class="ring" style="opacity:${on};left:${(r.x - pad) * S}px;top:${(r.y - pad - y) * S + 64}px;width:${(r.w + pad * 2) * S}px;height:${(r.h + pad * 2) * S}px;transform:scale(${pulse})"></div>`;
+  }
+  if (shot.blur) { // keep the real payment QR unscannable in the video
+    const r = rect(shot.blur);
+    if (r) h += `<div style="position:absolute;z-index:3;left:${r.x * S}px;top:${(r.y - y) * S + 64}px;width:${r.w * S}px;height:${r.h * S}px;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border-radius:8px"></div>`;
+  }
+  if (shot.tap) {
+    const r = rect(shot.tap);
+    const d = lt - shot.tap.at;
+    if (r && d > -.5 && d < 1.1) {
+      const cx = (r.x + r.w / 2) * S, cy = (r.y + r.h / 2 - y) * S + 64;
+      const press = d < 0 ? 1 + (-d) * .6 : d < .15 ? 1 - d * 2 : .7 + Math.min(.3, (d - .15));
+      const op = d < -.3 ? (d + .5) / .2 : d > .8 ? (1.1 - d) / .3 : 1;
+      h += `<div class="tap" style="left:${cx}px;top:${cy}px;opacity:${op};transform:scale(${press})"></div>`;
+      if (d > 0) h += `<div class="tapwave" style="left:${cx}px;top:${cy}px;opacity:${clamp(1 - d)};transform:scale(${1 + d * 2.4})"></div>`;
+    }
+  }
+  return h + '</div>';
+}
+
+window.render = function (t) {
+  document.getElementById('grid').style.transform = `translate(${(t * 6) % 60}px, ${(t * 10) % 60}px)`;
+  const brandOp = t < 4.6 ? 0 : clamp((t - 4.6) / .5);
+  document.getElementById('brand').style.opacity = t > 55 ? clamp((55.6 - t) / .5) : brandOp;
+  let html = '';
+  // Intro
+  if (t < 5.4) {
+    const out = clamp((t - 4.7) / .6);
+    const logoS = .6 + .4 * ease(clamp(t / .9));
+    html += `<div class="scene" style="opacity:${1 - out}"><div class="glow"></div>
+      <div class="center" style="top:430px;${fadeUp(t, 0)}"><img src="shots/logo.png" style="width:260px;height:260px;border-radius:50px;background:#fff;padding:14px;transform:scale(${logoS});box-shadow:0 30px 90px rgba(255,153,51,.35)"></div>
+      <div class="center" style="top:780px;${fadeUp(t, .6)}"><div class="pill">TECH GUARDIANS · CTF PORTAL</div></div>
+      <div class="center" style="top:900px;${fadeUp(t, 1)}"><div class="h1" style="font-size:112px">How to <em>enroll</em></div></div>
+      <div class="center" style="top:1150px;${fadeUp(t, 1.6)}"><div class="sub" style="font-size:42px">Learn cyber security by <b>capturing flags</b> 🚩</div></div>
+      <div class="center" style="top:1300px;${fadeUp(t, 2.3)}"><span class="chip">43 rooms</span><span class="chip">432 tasks</span><span class="chip sf">6 easy steps</span></div>
+    </div>`;
+  }
+  // Steps
+  for (const st of STEPS) {
+    if (t < st.t0 - .6 || t > st.t1 + .6) continue;
+    const lt = t - st.t0;
+    const inP = ease(clamp((lt + .5) / .6)), outP = ease(clamp((t - st.t1 + .1) / .6));
+    const shot = st.shots.find((s) => lt < s.to) || st.shots[st.shots.length - 1];
+    // cross-fade between shots inside a step
+    const next = st.shots[st.shots.indexOf(shot) + 1];
+    const slt = lt - shot.from;
+    let phone = phoneHTML(shot, slt);
+    if (next && lt > shot.to - .4) {
+      const p = clamp((lt - (shot.to - .4)) / .4);
+      phone += `<div style="position:absolute;inset:18px;opacity:${p}">${phoneHTML(next, lt - next.from)}</div>`;
+    }
+    const pTop = 680 + (1 - inP) * 900 - outP * 0;
+    html += `<div class="scene" style="opacity:${1 - outP};transform:translateX(${-outP * 120}px)">
+      <div class="head">
+        <div style="${fadeUp(lt, -.2)}"><span class="pill">STEP ${st.n} OF 6</span></div>
+        <div class="h1" style="${fadeUp(lt, .05)}">${st.title}</div>
+        <div class="sub" style="${fadeUp(lt, .35)}">${st.sub}</div>
+      </div>
+      <div class="phone" style="top:${pTop}px">${phone}</div>
+    </div>`;
+  }
+  // Outro
+  if (t > 54.6) {
+    const lt = t - 55;
+    html += `<div class="scene" style="opacity:${clamp((t - 54.6) / .6)}"><div class="glow" style="top:380px"></div>
+      <div class="center" style="top:300px;${fadeUp(lt, 0)}"><div class="bigflag" style="transform:rotate(${Math.sin(lt * 3) * 6}deg)">🚩</div></div>
+      <div class="center" style="top:520px;${fadeUp(lt, .3)}"><div class="h1" style="font-size:100px">Start capturing <em>flags</em> today</div></div>
+      <div class="center" style="top:860px;${fadeUp(lt, .7)}"><span class="chip sf">Task 1 of every room FREE</span><br><span class="chip">₹99 / month</span><span class="chip">₹999 / year</span></div>
+      <div class="center" style="top:1130px;${fadeUp(lt, 1.1)}"><div class="url">techguardians.in → CTF Portal</div></div>
+      <div class="center" style="top:1330px;${fadeUp(lt, 1.5)}"><div class="sub">Keep Learning and Keep Sharing 🇮🇳</div></div>
+    </div>`;
+  }
+  stage.innerHTML = html;
+  const cur = STEPS.findIndex((s) => t >= s.t0 - .3 && t < s.t1 - .3);
+  document.getElementById('dots').style.opacity = t < 4.6 || t > 55 ? 0 : 1;
+  Array.prototype.forEach.call(dots.children, (d, i) => { d.className = i === cur ? 'on' : (cur > i || t >= 55) ? 'done' : ''; });
+};
+window.ready = () => Promise.all(Object.values(imgCache).map((i) => i.decode()));
+</script>
+</body></html>

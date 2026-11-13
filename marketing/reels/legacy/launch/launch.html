@@ -1,0 +1,233 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Tech Guardians launch intro</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1920px;height:1080px;overflow:hidden;background:#040b1d;font-family:'Inter','Inter Display',system-ui,sans-serif;color:#fff}
+  #bg{position:absolute;inset:0}
+  canvas{position:absolute;inset:0}
+  #stage{position:absolute;inset:0}
+  .abs{position:absolute}
+  .center{position:absolute;left:0;right:0;text-align:center}
+  .tri{position:absolute;left:0;right:0;height:10px;display:flex}
+  .tri i{flex:1}.tri i:nth-child(1){background:#ff9933}.tri i:nth-child(2){background:#fff}.tri i:nth-child(3){background:#138808}
+  .kicker{display:inline-block;padding:12px 30px;border-radius:999px;border:2px solid rgba(255,204,77,.7);color:#ffcc4d;font-weight:800;letter-spacing:8px;font-size:26px;text-transform:uppercase;background:rgba(255,204,77,.08)}
+  .big{font-weight:900;letter-spacing:-3px;line-height:.95}
+  .grad{background:linear-gradient(90deg,#ff9933,#ffd27a 45%,#ffffff 50%,#7be07b 55%,#2fbf2f);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .gold{background:linear-gradient(180deg,#fff3c4,#ffcc4d 45%,#ff9933);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{font-size:40px;color:#d6e4ff;font-weight:500;line-height:1.35}
+  .sub b{color:#fff}
+  .card{border-radius:28px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.12)}
+  .browser{position:absolute;width:1360px;height:900px;border-radius:22px;overflow:hidden;background:#0d1426;box-shadow:0 50px 140px rgba(0,0,0,.65),0 0 0 2px rgba(255,255,255,.12)}
+  .browser .bar{height:56px;background:#e9edf5;display:flex;align-items:center;gap:12px;padding:0 22px}
+  .browser .bar i{width:16px;height:16px;border-radius:50%;display:inline-block}
+  .browser .url{margin-left:24px;flex:1;height:34px;border-radius:17px;background:#fff;color:#334;font:600 19px Inter,sans-serif;display:flex;align-items:center;padding:0 18px;gap:10px}
+  .browser .view{position:relative;height:844px;overflow:hidden}
+  .browser .view img{position:absolute;left:0;top:0;width:1360px}
+  .chip{display:inline-flex;align-items:center;gap:14px;padding:12px 26px 12px 14px;border-radius:20px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.16);font-size:30px;font-weight:700;margin:7px 0}
+  .chip .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:32px;background:#0b2a5b;border:2px solid rgba(255,153,51,.6)}
+  .pill{display:inline-flex;align-items:center;gap:18px;padding:22px 48px;border-radius:999px;background:#fff;color:#0b2153;font-weight:900;font-size:64px;box-shadow:0 0 0 6px rgba(255,153,51,.35),0 30px 80px rgba(0,0,0,.5)}
+  .pillar{position:absolute;width:300px;text-align:center}
+  .pillar .ic{width:150px;height:150px;margin:0 auto;border-radius:36px;display:grid;place-items:center;font-size:76px;background:linear-gradient(160deg,#123a73,#0a2348);border:3px solid rgba(255,204,77,.7);box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .pillar b{display:block;margin-top:26px;font-size:34px;line-height:1.2}
+  .tag{position:absolute;left:60px;bottom:60px;padding:14px 26px;border-radius:14px;background:rgba(4,11,29,.75);border:2px solid rgba(255,153,51,.6);font-size:34px;font-weight:800}
+  .tag small{display:block;font-size:22px;color:#ffcc4d;letter-spacing:4px;text-transform:uppercase;font-weight:800}
+</style></head>
+<body>
+<div id="bg"></div>
+<canvas id="fx" width="1920" height="1080"></canvas>
+<div id="stage"></div>
+<canvas id="fx2" width="1920" height="1080"></canvas>
+<script>
+const ease = (x) => x <= 0 ? 0 : x >= 1 ? 1 : x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+const back = (x) => { x = Math.max(0, Math.min(1, x)); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const win = (t, a, b, f = .6) => clamp((t - a) / f) * clamp((b - t) / f); // fade in at a, out at b
+const up = (t, a, d = .7, dist = 50) => { const p = ease(clamp((t - a) / d)); return `opacity:${p};transform:translateY(${(1 - p) * dist}px)`; };
+const pop = (t, a, d = .7) => { const p = clamp((t - a) / d); return `opacity:${clamp(p * 2)};transform:scale(${.6 + .4 * back(p)})`; };
+const rand = (s) => { let x = Math.sin(s * 9301 + 49297) * 233280; return x - Math.floor(x); };
+
+/* ---------- Fireworks and embers on canvas, all from t (deterministic) ---------- */
+const COLORS = ['#ff9933', '#ffd27a', '#ffffff', '#2fbf2f', '#ff5e7a', '#7cc8ff', '#ffcc4d'];
+const BURSTS = [];
+const burst = (t, x, y, c, n = 90, sp = 360) => BURSTS.push({ t, x, y, c, n, sp });
+[[4.5, 960, 380, 0], [5.2, 520, 300, 3], [5.6, 1420, 280, 1], [6.4, 760, 220, 5], [6.9, 1180, 330, 4],
+ [11.2, 400, 260, 1], [11.6, 1520, 240, 0], [12.4, 960, 180, 3], [17.6, 300, 300, 6], [18, 1620, 320, 4],
+ [54.2, 960, 300, 0], [54.7, 520, 240, 3], [55.1, 1400, 260, 1], [55.9, 760, 200, 5], [56.4, 1200, 300, 6], [57.3, 420, 330, 4], [57.8, 1520, 220, 2]]
+  .forEach(([t, x, y, c], i) => burst(t, x, y, COLORS[c], 80 + (i % 3) * 20, 300 + (i % 4) * 40));
+
+function drawFx(ctx, t, embers) {
+  ctx.clearRect(0, 0, 1920, 1080);
+  ctx.globalCompositeOperation = 'lighter';
+  if (embers) for (let i = 0; i < 70; i++) { // rising diya embers
+    const sp = 40 + rand(i) * 70, life = 1080 / sp;
+    const ph = ((t + rand(i + 3) * life) % life) / life;
+    const x = rand(i + 7) * 1920 + Math.sin(t * .8 + i) * 30, y = 1100 - ph * 1180;
+    const a = Math.sin(ph * Math.PI) * (.35 + rand(i + 9) * .5);
+    ctx.fillStyle = `rgba(255,${170 + Math.round(rand(i) * 70)},80,${a})`;
+    ctx.beginPath(); ctx.arc(x, y, 1.5 + rand(i + 11) * 3, 0, 7); ctx.fill();
+  }
+  for (const b of BURSTS) {
+    const d = t - b.t;
+    if (d < -.6 || d > 2.4) continue;
+    if (d < 0) { // rocket trail
+      const p = (d + .6) / .6, y = 1080 - (1080 - b.y) * ease(p);
+      ctx.fillStyle = 'rgba(255,220,150,.9)'; ctx.beginPath(); ctx.arc(b.x, y, 4, 0, 7); ctx.fill();
+      for (let k = 1; k < 8; k++) { ctx.fillStyle = `rgba(255,170,80,${.5 - k * .06})`; ctx.beginPath(); ctx.arc(b.x + Math.sin(k) * 2, y + k * 14, 3, 0, 7); ctx.fill(); }
+      continue;
+    }
+    if (d < .12) { ctx.fillStyle = `rgba(255,255,255,${.5 - d * 4})`; ctx.beginPath(); ctx.arc(b.x, b.y, 90 * (d / .12), 0, 7); ctx.fill(); }
+    for (let i = 0; i < b.n; i++) {
+      const ang = (i / b.n) * Math.PI * 2 + rand(i + b.t) * .2;
+      const v = b.sp * (.55 + rand(i * 3 + b.t) * .45);
+      const drag = (1 - Math.exp(-d * 1.8)) / 1.8;
+      const x = b.x + Math.cos(ang) * v * drag, y = b.y + Math.sin(ang) * v * drag + 60 * d * d;
+      const a = clamp(1 - d / 2.2) * (d > 1.4 ? (.6 + .4 * Math.sin(d * 40 + i)) : 1);
+      ctx.fillStyle = b.c; ctx.globalAlpha = a;
+      ctx.beginPath(); ctx.arc(x, y, 3.2 * (1 - d / 3), 0, 7); ctx.fill();
+      ctx.globalAlpha = a * .35; ctx.beginPath(); ctx.arc(x, y, 9 * (1 - d / 3), 0, 7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+/* ---------- Background ---------- */
+function bg(t) {
+  const warm = clamp((t - 18.6) / 1) * clamp((28.6 - t) / 1); // Diwali scene warms the background
+  const glowX = 960 + Math.sin(t * .3) * 300, glowY = 420 + Math.cos(t * .25) * 120;
+  return `radial-gradient(1100px 700px at ${glowX}px ${glowY}px, rgba(${Math.round(18 + 140 * warm)},${Math.round(58 + 40 * warm)},${Math.round(115 - 80 * warm)},.85), transparent 70%),
+    radial-gradient(900px 600px at 0% 100%, rgba(19,136,8,.18), transparent 70%),
+    radial-gradient(900px 600px at 100% 0%, rgba(255,153,51,${.16 + .2 * warm}), transparent 70%),
+    linear-gradient(180deg, #050d22, #081a3d 55%, #040b1d)`;
+}
+
+const rays = (t, op) => `<div class="abs" style="left:960px;top:470px;width:0;height:0;opacity:${op}">${
+  Array.from({ length: 16 }, (_, i) => `<div class="abs" style="left:-6px;top:-1000px;width:12px;height:1000px;transform-origin:6px 1000px;transform:rotate(${i * 22.5 + t * 8}deg);background:linear-gradient(0deg,rgba(255,204,77,.35),transparent)"></div>`).join('')}</div>`;
+
+const SITES = [
+  { img: 'home', url: 'techguardians.in', title: 'Homepage', note: 'News, live tools & training' },
+  { img: 'training', url: 'techguardians.in/training', title: 'Training Programs', note: 'Live, mentor-led, hands-on' },
+  { img: 'ctf', url: 'techguardians.in/ctf', title: 'CTF Portal', note: '43 rooms · 432 tasks' },
+  { img: 'pdf', url: 'techguardians.in/pdf-store', title: 'Handbook Series', note: '43 cyber security handbooks' },
+  { img: 'portal', url: 'techguardians.in/cyber-portal', title: 'Free Cyber Tools', note: '150+ tools for everyone' },
+];
+const PILLARS = [['🛡️', 'Cyber Security Learning'], ['💻', 'Hands-on Training'], ['👥', 'Skill Development'], ['🏆', 'CTF Challenges'], ['📜', 'Certifications & More']];
+const CTF_FEATS = [['🚩', 'Real-World CTF Challenges'], ['🧪', 'Hands-on Practice Labs'], ['🛡️', 'Offensive & Defensive Security'], ['📶', 'Beginner to Advanced Tracks'], ['🎓', 'Earn Certificates']];
+
+window.render = function (t) {
+  document.getElementById('bg').style.background = bg(t);
+  let h = '';
+  const flash = (at, d = .5) => { const x = t - at; return x >= 0 && x < d ? `<div class="abs" style="inset:0;background:#fff;opacity:${(1 - x / d) * .9};z-index:9"></div>` : ''; };
+
+  // A. Countdown 0 - 4.4
+  if (t < 4.6) {
+    const n = t < 1.4 ? 3 : t < 2.8 ? 2 : 1, lt = t - (3 - n) * 1.4, p = clamp(lt / 1.4);
+    h += `<div class="center" style="top:150px;${up(t, .1)}"><span class="kicker">The wait is over</span></div>
+      <div class="abs" style="left:760px;top:340px;width:400px;height:400px;opacity:${t > 4.2 ? 0 : 1}">
+        <svg width="400" height="400" viewBox="0 0 400 400"><circle cx="200" cy="200" r="180" stroke="rgba(255,255,255,.12)" stroke-width="10" fill="none"/>
+        <circle cx="200" cy="200" r="180" stroke="#ff9933" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="${1131 * p} 1131" transform="rotate(-90 200 200)"/></svg>
+        <div class="abs big gold" style="inset:0;display:grid;place-items:center;font-size:260px;transform:scale(${1.3 - .3 * ease(clamp(lt / .35))});opacity:${clamp(lt / .2) * clamp((1.4 - lt) / .2 + .2)}">${n}</div>
+      </div>
+      <div class="center sub" style="top:800px;${up(t, .4)}">Grand launch of <b>techguardians.in</b></div>`;
+  }
+  h += flash(4.4, .7);
+
+  // B. Logo reveal 4.4 - 11
+  if (t > 4.4 && t < 11.4) {
+    const o = clamp((11.4 - t) / .6);
+    h += `<div style="opacity:${o}">${rays(t, clamp((t - 4.4) / .8) * .9)}
+      <div class="abs" style="left:780px;top:150px;width:360px;height:360px;${pop(t, 4.45, 1)}"><div style="width:360px;height:360px;border-radius:70px;background:#f5e9e3;display:grid;place-items:center;box-shadow:0 0 120px rgba(255,204,77,.55)"><img src="img/shield.png" style="height:290px"></div></div>
+      <div class="center big" style="top:590px;font-size:150px;${up(t, 5.1, .8, 80)}"><span style="color:#fff">TECH</span><span style="color:#2fbf2f">GUARDIANS</span><sup style="font-size:40px;vertical-align:top;color:#fff">®</sup></div>
+      <div class="center" style="top:780px;${up(t, 5.8)}"><div style="display:inline-block;font-size:48px;font-weight:700;color:#ffd27a">Keep Learning · Keep Sharing</div>
+        <div style="margin:18px auto 0;height:6px;border-radius:3px;width:${560 * ease(clamp((t - 6.1) / .8))}px;background:linear-gradient(90deg,#ff9933,#fff,#138808)"></div></div>
+      <div class="center sub" style="top:900px;${up(t, 6.6)}">Cyber Security · Awareness · Digital Forensics</div></div>`;
+  }
+
+  // C. Now live 11 - 19
+  if (t > 10.8 && t < 19.2) {
+    const lt = t - 11, o = win(t, 10.8, 19.2);
+    h += `<div style="opacity:${o}">
+      <div class="center" style="top:170px;${up(lt, .1)}"><span class="kicker">✨ Grand Launch · Diwali 2026 ✨</span></div>
+      <div class="center big" style="top:300px;font-size:120px;${up(lt, .4, .8, 70)}">Our new website is</div>
+      <div class="center big gold" style="top:430px;font-size:270px;${pop(lt, .9, .8)};text-shadow:0 0 80px rgba(255,204,77,.3)">LIVE!</div>
+      <div class="center" style="top:760px;${pop(lt, 1.8, .8)}"><span class="pill">🌐 techguardians.in</span></div>
+      <div class="center sub" style="top:930px;${up(lt, 2.6)}">One home for learning, training, tools and CTF — built for every Indian learner</div></div>`;
+  }
+
+  // D. Diwali greeting 19 - 28.6
+  if (t > 18.8 && t < 28.8) {
+    const lt = t - 19, o = win(t, 18.8, 28.8), z = 1 + lt * .012;
+    h += `<div style="opacity:${o}">
+      <div class="abs card" style="left:1000px;top:90px;width:860px;height:860px;${pop(lt, .1, 1)}"><img src="img/diwali.png" style="width:860px;height:860px;transform:scale(${z});transform-origin:50% 60%"></div>
+      <div class="abs" style="left:110px;top:200px;width:820px">
+        <div style="${up(lt, .5)}"><span class="kicker">Festival of Lights</span></div>
+        <div class="big gold" style="font-size:150px;margin-top:40px;font-style:italic;${up(lt, .9, .8, 60)}">Happy Diwali</div>
+        <div class="sub" style="margin-top:40px;${up(lt, 1.6)}">May this Festival of Lights bring <b>happiness, good health, prosperity</b> and <b>new learning opportunities</b> for everyone.</div>
+        <div class="sub" style="margin-top:36px;font-size:36px;color:#ffd27a;${up(lt, 2.4)}">🪔 From all of us at Tech Guardians 🪔</div>
+      </div></div>`;
+  }
+
+  // E. Website tour 28.6 - 38.6
+  if (t > 28.4 && t < 38.8) {
+    const lt = t - 28.6, o = win(t, 28.4, 38.8);
+    const per = 2, i = Math.min(SITES.length - 1, Math.floor(Math.max(0, lt) / per)), st = lt - i * per;
+    h += `<div style="opacity:${o}">
+      <div class="abs" style="left:90px;top:120px;width:380px">
+        <div style="${up(lt, .1)}"><span class="kicker" style="letter-spacing:5px">Take a tour</span></div>
+        <div class="big" style="font-size:62px;letter-spacing:-1.5px;line-height:1.05;margin-top:30px;${up(lt, .3)}">Everything<br>in <span class="gold">one place</span></div>
+        ${SITES.map((s, k) => `<div style="margin-top:${k ? 14 : 44}px;font-size:30px;font-weight:${k === i ? 800 : 600};color:${k === i ? '#fff' : 'rgba(255,255,255,.45)'};display:flex;gap:14px;align-items:center;${up(lt, .5 + k * .12)}"><span style="width:14px;height:14px;border-radius:50%;background:${k === i ? '#ff9933' : 'rgba(255,255,255,.25)'}"></span>${s.title}</div>`).join('')}
+      </div>
+      <div class="browser" style="left:500px;top:${90 + (1 - ease(clamp((lt + .2) / .9))) * 900}px">
+        <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><div class="url">🔒 ${SITES[i].url}</div></div>
+        <div class="view">${SITES.map((s, k) => {
+          const vis = k === i ? clamp(st / .35) : k === i - 1 ? clamp(1 - st / .35) : 0;
+          return vis > 0 ? `<img src="img/${s.img}.jpg" style="opacity:${vis};transform:translateY(${-Math.max(0, (k === i ? st : per) - .4) * 22}px) scale(${1 + (k === i ? st : per) * .006})">` : '';
+        }).join('')}</div>
+        <div class="tag" style="opacity:${clamp((st - .3) / .4)}"><small>${SITES[i].title}</small>${SITES[i].note}</div>
+      </div></div>`;
+  }
+
+  // F. CTF poster 38.6 - 48.6
+  if (t > 38.4 && t < 48.8) {
+    const lt = t - 38.6, o = win(t, 38.4, 48.8);
+    const z = 1.02 + lt * .01, py = -lt * 6;
+    h += `<div style="opacity:${o}">
+      <div class="abs card" style="left:120px;top:70px;width:712px;height:940px;${pop(lt, .1, 1)}"><img src="img/ctf-poster.png" style="width:712px;transform:translateY(${py}px) scale(${z});transform-origin:50% 30%"></div>
+      <div class="abs" style="left:930px;top:120px;width:900px">
+        <div style="${up(lt, .4)}"><span class="kicker">🚩 TG CTF Portal</span></div>
+        <div class="big" style="font-size:80px;letter-spacing:-2px;margin-top:26px;${up(lt, .7)}">Learn Cyber Security<br><span class="gold">by doing CTF</span></div>
+        <div style="margin-top:22px">${CTF_FEATS.map(([ic, txt], k) => `<div style="${up(lt, 1.4 + k * .3, .6, 30)}"><span class="chip"><span class="ic">${ic}</span>${txt}</span></div>`).join('')}</div>
+        <div class="sub" style="margin-top:22px;${up(lt, 3.2)}"><b style="color:#ffcc4d">Task 1 of every room FREE</b> · 432 tasks</div>
+      </div></div>`;
+  }
+
+  // G. Pillars 48.6 - 54.4
+  if (t > 48.4 && t < 54.6) {
+    const lt = t - 48.6, o = win(t, 48.4, 54.6);
+    h += `<div style="opacity:${o}">
+      <div class="center" style="top:150px;${up(lt, .1)}"><span class="kicker">What we offer</span></div>
+      <div class="center big" style="top:260px;font-size:100px;${up(lt, .3)}">Built to make India <span class="grad">cyber safe</span></div>
+      ${PILLARS.map(([ic, txt], k) => `<div class="pillar" style="left:${150 + k * 340}px;top:520px;${pop(lt, .8 + k * .22, .7)}"><div class="ic">${ic}</div><b>${txt}</b></div>`).join('')}</div>`;
+  }
+
+  // H. Finale 54.4 - 60
+  if (t > 54.2) {
+    const lt = t - 54.4, o = clamp((t - 54.2) / .5) * clamp((60 - t) / .9);
+    h += `<div style="opacity:${o}">${rays(t, .6)}
+      <div class="abs" style="left:850px;top:90px;width:220px;height:220px;${pop(lt, .1, .8)}"><div style="width:220px;height:220px;border-radius:44px;background:#f5e9e3;display:grid;place-items:center;box-shadow:0 0 90px rgba(255,204,77,.5)"><img src="img/shield.png" style="height:176px"></div></div>
+      <div class="center big" style="top:350px;font-size:110px;${up(lt, .5)}">Start Your Cyber Security</div>
+      <div class="center big gold" style="top:470px;font-size:130px;${up(lt, .8)}">Journey Today!</div>
+      <div class="center" style="top:680px;${pop(lt, 1.3)}"><span class="pill">🌐 techguardians.in</span></div>
+      <div class="center" style="top:880px;${up(lt, 1.9)}"><div style="font-size:42px;font-weight:700;color:#ffd27a">Keep Learning · Keep Sharing 🇮🇳</div></div></div>`;
+  }
+  h += flash(54.3, .5);
+  document.getElementById('stage').innerHTML = h;
+  drawFx(document.getElementById('fx').getContext('2d'), t, true);
+  const c2 = document.getElementById('fx2').getContext('2d'); c2.clearRect(0, 0, 1920, 1080);
+  // top/bottom tricolour hairlines come in after the countdown
+  const tri = clamp((t - 4.6) / .6) * clamp((59.6 - t) / .4);
+  c2.globalAlpha = tri; [['#ff9933', 0], ['#ffffff', 640], ['#138808', 1280]].forEach(([c, x]) => { c2.fillStyle = c; c2.fillRect(x, 0, 640, 8); c2.fillRect(x, 1072, 640, 8); }); c2.globalAlpha = 1;
+};
+window.ready = () => Promise.all(Array.from(document.images).map((i) => i.decode().catch(() => {}))).then(() => Promise.all(['shield.png', 'diwali.png', 'ctf-poster.png', 'home.jpg', 'training.jpg', 'ctf.jpg', 'pdf.jpg', 'portal.jpg'].map((f) => { const i = new Image(); i.src = 'img/' + f; return i.decode(); })));
+</script>
+</body></html>

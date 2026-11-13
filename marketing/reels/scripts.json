@@ -1,0 +1,65 @@
+{
+ "12": {
+  "icon": "firewall",
+  "hook": "Kya ek <em>Firewall</em> har attack rok sakta hai? 🤔",
+  "points": ["<b>Default-deny</b> policy banana", "<b>Zones</b> aur segmentation", "<b>Stateful inspection</b> & NAT rules"],
+  "showTasks": [2, 5, 6],
+  "vo": {
+   "hook": "क्या एक फ़ायरवॉल हर अटैक को रोक सकता है? जवाब है, नहीं! अगर उसके रूल्स सही नहीं हैं।",
+   "learn": "इस टॉपिक में आप सीखोगे, डिफ़ॉल्ट डिनाई पॉलिसी कैसे बनाते हैं, ज़ोन्स और सेगमेंटेशन, और स्टेटफ़ुल इंस्पेक्शन के साथ नैट रूल्स।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। फ़ायरवॉल सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर बारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है।",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। अभी विज़िट करो, टेक गार्डियन्स डॉट इन।"
+  },
+  "sub": {
+   "hook": "Kya ek Firewall har attack rok sakta hai? Jawab hai — nahi! Agar uske rules sahi nahi hain.",
+   "learn": "Is topic me aap seekhoge — default-deny policy kaise banate hain, zones aur segmentation, aur stateful inspection ke saath NAT rules.",
+   "book": "Pehle handbook se concept clear karo. Firewall Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 12 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai.",
+   "cta": "Pehle seekho, phir practice karo. Abhi visit karo — techguardians.in"
+  },
+  "tags": ["#firewall", "#networksecurity", "#cybersecurity", "#ngfw", "#defaultdeny"]
+ },
+ "18": {
+  "icon": "packets",
+  "hook": "Aapke network me <em>asal me</em> kya chal raha hai? 👀",
+  "points": ["<b>Capture</b> vs <b>display</b> filters", "<b>Follow TCP stream</b> se data padho", "Wire par <b>attack</b> pakdo"],
+  "showTasks": [2, 5, 8],
+  "vo": {
+   "hook": "आपके नेटवर्क में असल में क्या चल रहा है? हर पैकेट सच बताता है, बस उसे पढ़ना आना चाहिए।",
+   "learn": "इस टॉपिक में आप सीखोगे, कैप्चर और डिस्प्ले फ़िल्टर्स, टीसीपी स्ट्रीम को फ़ॉलो करना, और वायर पर अटैक को पकड़ना।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। वायरशार्क मास्टरी, पैकेट्स को एक प्रो की तरह पढ़ना सीखो।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर अठारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है।",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। अभी विज़िट करो, टेक गार्डियन्स डॉट इन।"
+  },
+  "sub": {
+   "hook": "Aapke network me asal me kya chal raha hai? Har packet sach batata hai — bas use padhna aana chahiye.",
+   "learn": "Is topic me aap seekhoge — capture aur display filters, TCP stream ko follow karna, aur wire par attack ko pakadna.",
+   "book": "Pehle handbook se concept clear karo. Wireshark Mastery — packets ko ek pro ki tarah padhna seekho.",
+   "ctf": "Phir CTF Portal ke Room 18 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai.",
+   "cta": "Pehle seekho, phir practice karo. Abhi visit karo — techguardians.in"
+  },
+  "tags": ["#wireshark", "#packetanalysis", "#networkforensics", "#cybersecurity", "#blueteam"]
+ },
+ "23": {
+  "icon": "siren",
+  "hook": "<em>Ransomware</em> attack ho gaya… ab kya karoge? 🚨",
+  "points": ["<b>IR lifecycle</b> step by step", "Evidence bachakar <b>containment</b>", "<b>Recovery</b> + lessons learned"],
+  "showTasks": [1, 4, 10],
+  "vo": {
+   "hook": "अगर आपकी कंपनी पर रैनसमवेयर अटैक हो जाए, तो पहले पाँच मिनट में आप क्या करोगे?",
+   "learn": "इस टॉपिक में आप सीखोगे, इंसिडेंट रिस्पॉन्स लाइफ़साइकल स्टेप बाय स्टेप, एविडेंस खोए बिना अटैक को कंटेन करना, और रिकवरी के बाद सिस्टम को हार्डन करना।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। इंसिडेंट रिस्पॉन्स, डिटेक्ट, कंटेन और रिकवर।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तेईस में, रैनसमवेयर सिनेरियो तक, दस हैंड्स-ऑन टास्क। पहला टास्क बिल्कुल फ़्री है।",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। अभी विज़िट करो, टेक गार्डियन्स डॉट इन।"
+  },
+  "sub": {
+   "hook": "Agar aapki company par ransomware attack ho jaye, to pehle 5 minute me aap kya karoge?",
+   "learn": "Is topic me aap seekhoge — Incident Response lifecycle step by step, evidence khoye bina attack ko contain karna, aur recovery ke baad system ko harden karna.",
+   "book": "Pehle handbook se concept clear karo. Incident Response — detect, contain aur recover.",
+   "ctf": "Phir CTF Portal ke Room 23 me, ransomware scenario tak, 10 hands-on tasks. Pehla task bilkul FREE hai.",
+   "cta": "Pehle seekho, phir practice karo. Abhi visit karo — techguardians.in"
+  },
+  "tags": ["#incidentresponse", "#ransomware", "#soc", "#dfir", "#cybersecurity"]
+ }
+}
