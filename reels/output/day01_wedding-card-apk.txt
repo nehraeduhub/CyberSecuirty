@@ -1,0 +1,65 @@
+REEL: शादी कार्ड APK स्कैम (Wedding Invitation APK Fraud)
+Duration: 01:28
+
+=== VOICEOVER SCRIPT (RJ Nehra) ===
+इसे अपनी आवाज़ में रिकॉर्ड करके voice/wedding-card-apk.mp3 में रखें, render दोबारा चलाएँ।
+
+[00:00 - 00:05] HOOK
+रुको! ✋ ये शादी का कार्ड खोला तो फोन हैक! शादियों के सीजन में राजस्थान में तेजी से फैल रहा है।
+
+[00:05 - 00:11] INTRO
+राम राम सा! मैं RJ नेहरा, साइबर सेफ झुंझुनूं से। आज का साइबर क्राइम है: शादी कार्ड APK स्कैम। वीडियो आखिर तक देखिए, अंत में फोन की ज़रूरी सेटिंग बताऊँगा।
+
+[00:11 - 00:35] ठगी ऐसे होती है
+  1. अनजान नंबर से WhatsApp पर "शादी का कार्ड" आता है, जो असल में .APK ऐप होता है।
+  2. खोलते ही फोन ऐप इंस्टॉल करने और SMS, Contacts की परमिशन माँगता है।
+  3. ऐप चुपचाप आपके बैंक के OTP और मैसेज ठगों तक भेजने लगता है।
+  4. खाते से पैसे साफ, और आपके नंबर से सबको यही कार्ड चला जाता है।
+
+[00:35 - 00:45] खतरे के 3 संकेत
+  कार्ड PDF या फोटो होता है, .APK कभी नहीं। अनजान नंबर, जल्दी खोलने का दबाव। ऐप इंस्टॉल / परमिशन माँगना। ये दिखे तो रुक जाइए।
+
+[00:45 - 00:57] ऐसे बचें
+  • .APK फाइल पर कभी टैप न करें, सीधे डिलीट करें।
+  • भेजने वाले को कॉल करके पूछें: "कार्ड आपने भेजा?"।
+  • WhatsApp की Media auto-download बंद रखें।
+  • ऐप सिर्फ Play Store से ही इंस्टॉल करें।
+
+[00:57 - 01:14] अभी करें ये सेटिंग (वीडियो रोककर साथ-साथ करें)
+  1. Settings > Apps > Special app access > Install unknown apps > WhatsApp > "Allow from this source" को OFF करें।
+  2. WhatsApp > Settings > Storage and data > Media auto-download > "Auto-download (Mobile data)" को OFF करें।
+  3. Play Store > Profile > Play Protect > Settings > "Scan apps with Play Protect" को ON करें।
+
+[01:14 - 01:21] ठगी हो जाए तो
+  घबराएँ नहीं, तुरंत 1930 पर कॉल करें। पहला एक घंटा सबसे कीमती है। cybercrime.gov.in पर शिकायत दर्ज करें और बैंक को कॉल करके खाता या कार्ड ब्लॉक करवाएँ।
+
+[01:21 - 01:28] OUTRO
+  अब हम किसी के साथ कोई साइबर क्राइम नहीं होने देंगे। आप भी साइबर फौजी बनिए: वीडियो को फॉलो, शेयर कीजिए और परिवार के WhatsApp ग्रुप में ज़रूर भेजिए। जय हिंद!
+
+=== CAPTION ===
+
+🚨 शादी कार्ड APK स्कैम: रुको! ✋ ये शादी का कार्ड खोला तो फोन हैक!
+
+❓ ठगी ऐसे होती है:
+1️⃣ अनजान नंबर से WhatsApp पर "शादी का कार्ड" आता है, जो असल में .APK ऐप होता है
+2️⃣ खोलते ही फोन ऐप इंस्टॉल करने और SMS, Contacts की परमिशन माँगता है
+3️⃣ ऐप चुपचाप आपके बैंक के OTP और मैसेज ठगों तक भेजने लगता है
+4️⃣ खाते से पैसे साफ, और आपके नंबर से सबको यही कार्ड चला जाता है
+
+🛡️ ऐसे बचें:
+✅ .APK फाइल पर कभी टैप न करें, सीधे डिलीट करें
+✅ भेजने वाले को कॉल करके पूछें: "कार्ड आपने भेजा?"
+✅ WhatsApp की Media auto-download बंद रखें
+✅ ऐप सिर्फ Play Store से ही इंस्टॉल करें
+
+⚙️ फोन सेटिंग:
+🔧 Settings › Apps › Special app access › Install unknown apps › WhatsApp › Allow from this source: OFF
+🔧 WhatsApp › Settings › Storage and data › Media auto-download › Auto-download (Mobile data): OFF
+🔧 Play Store › Profile › Play Protect › Settings › Scan apps with Play Protect: ON
+
+📞 ठगी हो तो तुरंत 1930 | 🌐 cybercrime.gov.in
+
+अब हम किसी के साथ कोई साइबर क्राइम नहीं होने देंगे 🇮🇳
+RJ Nehra | Master in AI Cyber Security | TechGuardians | Cyber Fouji
+
+#CyberSafeJhunjhunu #TechGuardians #CyberFouji #RJNehra #Jhunjhunu #Shekhawati #Rajasthan #RajasthanPolice #CyberCrime #CyberAwareness #CyberSafety #OnlineFraud #Scam #1930 #WeddingInvitationAPKFraud #साइबर_सुरक्षा #झुंझुनूं

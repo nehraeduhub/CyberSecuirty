@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<title>CSJ Reel</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+:root{
+  --navy:#0b3d6e; --green:#16915a; --orange:#f39a1e; --maroon:#9b1b30; --olive:#4b5320;
+  --gold:#f5c84c; --red:#ff2e4d; --cyan:#29d3ff; --cream:#fbf3e6; --ink:#061426;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--ink)}
+body{font-family:'Poppins','Hind',sans-serif;color:#fff;position:relative}
+.hl{font-family:'Baloo 2','Poppins',sans-serif}
+
+/* ---------- STAGE BACKGROUND ---------- */
+#bg{position:absolute;inset:0;background:
+  radial-gradient(900px 700px at 50% 35%, #12407a 0%, #0a2448 45%, #061426 100%);}
+#grid{position:absolute;inset:0;opacity:.18;background-image:
+  linear-gradient(rgba(41,211,255,.5) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(41,211,255,.5) 1px,transparent 1px);
+  background-size:72px 72px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);
+  animation:gridmove 4s linear infinite}
+@keyframes gridmove{to{background-position:0 72px,72px 0}}
+#rain{position:absolute;inset:0;opacity:.35}
+#flash{position:absolute;inset:0;pointer-events:none;z-index:40}
+#vignette{position:absolute;inset:0;z-index:30;pointer-events:none;
+  box-shadow:inset 0 0 220px 60px rgba(0,0,0,.65)}
+
+/* ---------- HEADER ---------- */
+#header{position:absolute;left:0;right:0;top:0;height:206px;background:var(--cream);z-index:50;
+  display:flex;align-items:center;padding:0 28px;gap:22px;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+#header::after{content:"";position:absolute;left:0;right:0;bottom:-18px;height:18px;
+  background:radial-gradient(circle at 9px 9px,var(--orange) 6px,transparent 7px) 0 0/30px 18px,
+  linear-gradient(var(--cream),var(--cream));}
+#header .csj{width:150px;height:150px;border-radius:50%;box-shadow:0 0 0 4px var(--olive),0 6px 18px rgba(0,0,0,.3);
+  animation:spinIn 1.2s ease-out both}
+#header .brand{flex:1;line-height:1}
+#header .brand .t1{color:var(--maroon);font-size:70px;font-weight:800;letter-spacing:.5px}
+#header .brand .t2{color:#2f4f1c;font-size:34px;font-weight:600;margin-top:10px}
+#header .side{display:flex;flex-direction:column;align-items:center;gap:8px}
+#header .tg{height:118px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));animation:shieldGlow 2.4s ease-in-out infinite}
+#header .side .pill{font-size:19px;font-weight:700;background:var(--orange);color:#fff;border-radius:30px;padding:2px 14px;letter-spacing:1px}
+@keyframes spinIn{from{transform:rotate(-200deg) scale(.3);opacity:0}to{transform:none;opacity:1}}
+@keyframes shieldGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+#progress{position:absolute;top:224px;left:28px;right:28px;height:10px;border-radius:10px;background:rgba(255,255,255,.12);z-index:50;overflow:hidden}
+#progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),#fff 50%,var(--green));border-radius:10px;box-shadow:0 0 14px var(--orange)}
+#dayBadge{position:absolute;top:244px;left:50%;transform:translateX(-50%);white-space:nowrap;z-index:50;font-size:26px;font-weight:700;background:rgba(255,46,77,.15);
+  border:2px solid var(--red);color:#ffd5db;border-radius:12px;padding:2px 14px}
+#dayBadge b{color:#fff}
+#liveDot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--red);margin-right:8px;vertical-align:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.15}}
+
+/* ---------- FOOTER ---------- */
+#ticker{position:absolute;left:0;right:0;bottom:228px;height:62px;background:linear-gradient(90deg,#b5121b,#e2342d,#b5121b);
+  z-index:50;overflow:hidden;display:flex;align-items:center;border-top:3px solid var(--gold);border-bottom:3px solid var(--gold)}
+#ticker .lbl{position:relative;z-index:2;height:100%;background:var(--gold);color:#5a0b0b;font-weight:800;font-size:28px;display:flex;align-items:center;padding:0 20px;white-space:nowrap}
+#ticker .track{white-space:nowrap;font-size:29px;font-weight:600;animation:tick 22s linear infinite;padding-left:30px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+#footer{position:absolute;left:0;right:0;bottom:0;height:228px;background:var(--cream);z-index:50;
+  display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:16px}
+#footer .rj{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+#footer .rj .name{background:var(--olive);color:var(--gold);font-weight:800;font-size:40px;border-radius:14px;padding:4px 22px;letter-spacing:2px;box-shadow:0 4px 0 #2c3313}
+#footer .rj .role{white-space:nowrap;background:var(--orange);color:#fff;font-weight:700;font-size:22px;border-radius:30px;padding:5px 18px}
+#footer .rj .web{color:var(--navy);font-weight:700;font-size:22px;padding-left:6px}
+#footer .brands{display:contents}
+#footer .tgw{height:94px}
+#footer .cf{height:104px;animation:wave 3s ease-in-out infinite;transform-origin:20% 80%}
+@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-2deg) scale(1.03)}}
+
+/* ---------- SCENES ---------- */
+#stage{position:absolute;left:0;right:0;top:296px;bottom:290px;z-index:10}
+.scene{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;padding:20px 48px 0}
+.scene.on{display:flex}
+.a{animation-fill-mode:both;animation-timing-function:cubic-bezier(.2,.9,.3,1.2)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(80px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes zoomIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes slamIn{0%{opacity:0;transform:scale(2.6)}60%{opacity:1;transform:scale(.92)}100%{transform:scale(1)}}
+@keyframes slideL{from{opacity:0;transform:translateX(-700px)}to{opacity:1;transform:none}}
+@keyframes slideR{from{opacity:0;transform:translateX(700px)}to{opacity:1;transform:none}}
+@keyframes outUp{to{opacity:0;transform:translateY(-60px) scale(.96)}}
+@keyframes outFade{to{opacity:0}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes shake{0%,100%{transform:translate(0)}10%,50%,90%{transform:translate(-14px,4px)}30%,70%{transform:translate(14px,-4px)}}
+@keyframes glitch{0%,100%{text-shadow:4px 0 var(--red),-4px 0 var(--cyan);transform:none}
+  20%{text-shadow:-8px 0 var(--red),8px 0 var(--cyan);transform:translate(4px,-2px) skewX(-4deg)}
+  40%{text-shadow:6px 2px var(--red),-6px -2px var(--cyan);transform:translate(-4px,2px)}
+  60%{text-shadow:2px 0 var(--red),-2px 0 var(--cyan);transform:none}}
+@keyframes ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+@keyframes stamp{0%{opacity:0;transform:scale(3) rotate(-18deg)}70%{opacity:1;transform:scale(.9) rotate(-12deg)}100%{opacity:1;transform:scale(1) rotate(-12deg)}}
+@keyframes drop{from{opacity:0;transform:translateY(-140px)}to{opacity:1;transform:none}}
+@keyframes sweep{from{transform:translateX(-120%) skewX(-20deg)}to{transform:translateX(220%) skewX(-20deg)}}
+@keyframes redPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,46,77,.7)}50%{box-shadow:0 0 0 26px rgba(255,46,77,0)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes tap{0%{transform:scale(1);opacity:0}20%{opacity:1}50%{transform:scale(.85)}100%{transform:scale(1);opacity:0}}
+
+/* HOOK */
+.hook{justify-content:center;gap:40px;text-align:center}
+.alertTag{font-size:44px;font-weight:800;color:#fff;background:var(--red);padding:8px 34px;border-radius:16px;letter-spacing:4px;position:relative}
+.alertTag::before,.alertTag::after{content:"";position:absolute;inset:0;border:5px solid var(--red);border-radius:16px;animation:ring 1.1s ease-out infinite}
+.alertTag::after{animation-delay:.55s}
+.hookText{font-size:96px;line-height:1.18;font-weight:800;animation:glitch .9s steps(1) infinite}
+.hookSub{font-size:42px;line-height:1.35;color:#ffd99a;font-weight:600;max-width:900px}
+.sirenRow{font-size:110px;animation:bob 1s ease-in-out infinite}
+
+/* TITLE */
+.titleScene{justify-content:center;text-align:center;gap:26px}
+.kicker{font-size:44px;font-weight:700;color:var(--cyan);letter-spacing:2px}
+.bigTitle{font-size:118px;line-height:1.1;font-weight:800;background:linear-gradient(180deg,#fff 30%,#ffd27a);-webkit-background-clip:text;color:transparent;
+  filter:drop-shadow(0 8px 0 rgba(0,0,0,.35))}
+.enTag{font-size:38px;font-weight:600;color:#bfe9ff;border:2px solid rgba(41,211,255,.6);border-radius:40px;padding:8px 30px}
+.stay{margin-top:40px;font-size:40px;font-weight:700;background:var(--gold);color:#3a2300;padding:14px 34px;border-radius:20px;animation:pulse 1.2s ease-in-out infinite}
+
+/* SECTION HEADING */
+.secHead{display:flex;align-items:center;gap:20px;font-size:66px;font-weight:800;margin-bottom:26px;white-space:nowrap}
+.secHead .ico{width:96px;height:96px;border-radius:24px;display:grid;place-items:center;font-size:58px}
+
+/* HOW: step cards + phone */
+.how{padding-top:24px}
+.stepWrap{position:relative;width:100%;height:300px}
+.step{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:2px solid rgba(255,255,255,.25);
+  border-radius:34px;padding:26px 34px 26px 150px;display:flex;align-items:center;backdrop-filter:blur(6px)}
+.step .num{position:absolute;left:26px;top:50%;margin-top:-52px;width:104px;height:104px;border-radius:50%;background:var(--orange);display:grid;place-items:center;
+  font-size:62px;font-weight:800;color:#fff;box-shadow:0 0 0 8px rgba(243,154,30,.25)}
+.step .lab{position:absolute;top:-24px;left:30px;background:var(--cyan);color:#022;font-weight:800;font-size:26px;padding:4px 18px;border-radius:12px;letter-spacing:1px}
+.step .txt{font-size:47px;line-height:1.32;font-weight:600}
+.step.s4 .num{background:var(--red)}
+.phoneWrap{position:relative;margin-top:28px;width:560px;height:800px}
+.phone{position:absolute;inset:0;border-radius:70px;background:#111;padding:18px;box-shadow:0 0 0 4px #333,0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(41,211,255,.25)}
+.screen{position:relative;width:100%;height:100%;border-radius:54px;overflow:hidden;background:#efe7dd;display:flex;flex-direction:column}
+.notch{position:absolute;top:10px;left:50%;width:150px;height:34px;margin-left:-75px;background:#111;border-radius:20px;z-index:5}
+.appbar{height:150px;padding:56px 24px 0;display:flex;align-items:center;gap:16px;color:#fff;flex:none}
+.appbar .av{width:66px;height:66px;border-radius:50%;background:#cfd8dc;display:grid;place-items:center;font-size:36px;color:#555}
+.appbar .nm{font-size:30px;font-weight:600;line-height:1.1}
+.appbar .st{font-size:21px;opacity:.85}
+.chat{flex:1;padding:22px 18px;display:flex;flex-direction:column;gap:16px;
+  background-image:radial-gradient(rgba(0,0,0,.05) 2px,transparent 2px);background-size:26px 26px}
+.bub{max-width:84%;padding:14px 18px;border-radius:22px;font-size:27px;line-height:1.38;color:#111;box-shadow:0 2px 3px rgba(0,0,0,.12);position:relative}
+.bub.them{align-self:flex-start;background:#fff;border-top-left-radius:6px}
+.bub.me{align-self:flex-end;background:#d9fdd3;border-top-right-radius:6px}
+.bub .tm{display:block;text-align:right;font-size:17px;color:#888;margin-top:4px}
+.bub.file{display:flex;gap:14px;align-items:center;background:#fff}
+.bub.file .fi{width:70px;height:80px;border-radius:12px;background:#3ddc84;display:grid;place-items:center;font-weight:800;color:#fff;font-size:22px;flex:none}
+.bub.file .fn{font-weight:700;font-size:25px;word-break:break-all}
+.bub.file .fs{font-size:20px;color:#777}
+.bub.file::after{content:"⚠️ खतरा";position:absolute;right:-16px;top:-18px;background:var(--red);color:#fff;font-size:20px;font-weight:800;padding:2px 12px;border-radius:10px;transform:rotate(8deg)}
+.typing{align-self:flex-start;background:#fff;border-radius:22px;padding:14px 22px;font-size:30px;color:#888;letter-spacing:4px}
+/* platform themes */
+.p-whatsapp .appbar{background:#075e54}
+.p-sms .appbar{background:#1a73e8}.p-sms .screen{background:#f4f6fb}.p-sms .bub.me{background:#d3e3fd}
+.p-telegram .appbar{background:#2aa1da}.p-telegram .screen{background:#d6e8c9}.p-telegram .bub.me{background:#effdde}
+.p-instagram .appbar{background:linear-gradient(90deg,#833ab4,#e1306c,#f77737)}.p-instagram .screen{background:#fff}.p-instagram .bub.me{background:#efe1ff}
+.p-olx .appbar{background:#002f34}.p-olx .screen{background:#f2f4f5}.p-olx .bub.me{background:#c8f8f6}
+.p-facebook .appbar{background:#1877f2}.p-facebook .screen{background:#fff}
+.p-web .appbar{background:#3c4043}.p-web .screen{background:#f8f9fa}
+.p-call .screen{background:linear-gradient(180deg,#1b2a3a,#0d1520)}
+.p-call .appbar{display:none}
+.callTop{flex:none;padding:70px 20px 20px;text-align:center;color:#fff}
+.callTop .cav{width:150px;height:150px;border-radius:50%;margin:0 auto 18px;background:#455a64;display:grid;place-items:center;font-size:80px;position:relative}
+.callTop .cav::before{content:"";position:absolute;inset:0;border-radius:50%;border:4px solid #4caf50;animation:ring 1.4s ease-out infinite}
+.callTop .cn{font-size:36px;font-weight:700}
+.callTop .ct{font-size:28px;color:#8fd19e;margin-top:6px;font-family:monospace}
+.p-call .chat{background:none}
+.p-call .bub.them{background:rgba(255,255,255,.93)}
+.callBtns{flex:none;display:flex;justify-content:center;gap:120px;padding:10px 0 34px}
+.callBtns span{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;font-size:44px}
+/* phone overlays */
+.notif{position:absolute;left:16px;right:16px;top:58px;background:rgba(255,255,255,.97);border-radius:26px;padding:18px 22px;color:#111;z-index:6;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);font-size:24px;line-height:1.35}
+.notif b{display:block;font-size:22px;color:#555;margin-bottom:4px}
+.notif .leak{display:block;color:var(--red);font-weight:800;margin-top:6px}
+.debit{position:absolute;inset:0;background:rgba(160,0,20,.88);z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;text-align:center;padding:30px}
+.debit .x{font-size:120px}
+.debit .amt{font-size:78px;font-weight:800;line-height:1}
+.debit .dl{font-size:38px;font-weight:700;letter-spacing:3px;background:#fff;color:#b00018;padding:4px 22px;border-radius:12px}
+.debit .sm{font-size:28px;opacity:.95}
+.hacker{position:absolute;right:-60px;bottom:120px;font-size:150px;z-index:8;filter:drop-shadow(0 10px 20px rgba(0,0,0,.6))}
+
+/* CARDS (flags / tips) */
+.cards{width:100%;display:flex;flex-direction:column;gap:40px;margin-top:20px}
+.card{position:relative;border-radius:30px;padding:34px 34px 34px 140px;font-size:52px;line-height:1.3;font-weight:600;min-height:160px;display:flex;align-items:center;overflow:hidden}
+.card .ci{position:absolute;left:28px;top:50%;margin-top:-46px;width:92px;height:92px;border-radius:24px;display:grid;place-items:center;font-size:54px}
+.card .shine{position:absolute;top:0;bottom:0;width:120px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
+.flag{background:linear-gradient(135deg,rgba(255,46,77,.28),rgba(255,46,77,.08));border:3px solid rgba(255,46,77,.75)}
+.flag .ci{background:var(--red)}
+.tip{background:linear-gradient(135deg,rgba(22,145,90,.35),rgba(22,145,90,.1));border:3px solid rgba(60,220,140,.75);font-size:47px}
+.tip .ci{background:var(--green)}
+.tips .card{min-height:150px}
+.bigStamp{position:absolute;right:30px;bottom:6px;font-size:54px;font-weight:800;color:var(--red);border:6px solid var(--red);border-radius:18px;padding:0 24px;background:rgba(0,0,0,.35)}
+
+/* SETTINGS */
+.setTitle{text-align:center}
+.setTitle .sub{font-size:36px;color:#ffd99a;font-weight:600;margin-top:-10px}
+.setWrap{position:relative;width:100%;flex:1}
+.setItem{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center}
+.setCount{font-size:34px;font-weight:800;background:var(--cyan);color:#022;border-radius:14px;padding:4px 22px;margin-top:6px}
+.crumbs{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 10px;margin:22px 0 22px;max-width:980px}
+.chip{font-size:30px;font-weight:600;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.35);border-radius:16px;padding:6px 18px;position:relative}
+.chip.last{background:var(--orange);border-color:var(--orange)}
+.arrow{font-size:30px;color:var(--gold);align-self:center}
+.sphone{position:relative;width:560px;height:640px;border-radius:60px;background:#111;padding:16px;box-shadow:0 0 0 4px #333,0 30px 70px rgba(0,0,0,.6),0 0 60px rgba(243,154,30,.25)}
+.sscreen{width:100%;height:100%;border-radius:46px;background:#f6f7fb;overflow:hidden;color:#111;position:relative}
+.sbar{background:#fff;padding:60px 28px 22px;font-size:34px;font-weight:700;display:flex;align-items:center;gap:16px;border-bottom:1px solid #e3e3e3}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:26px 28px;font-size:28px;border-bottom:1px solid #e9e9e9;background:#fff}
+.srow.dim{color:#9aa0a6}
+.srow.hl2{background:#fff7e6;outline:4px solid var(--orange);outline-offset:-4px}
+.tgl{width:96px;height:54px;border-radius:30px;position:relative;flex:none;transition:none}
+.tgl i{position:absolute;top:5px;width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.tapHand{position:absolute;font-size:80px;z-index:4}
+.tapRing{position:absolute;width:90px;height:90px;border-radius:50%;border:6px solid var(--orange);z-index:3}
+.done{position:absolute;right:-30px;top:400px;font-size:46px;font-weight:800;color:#0e7a47;background:#e8fff2;border:6px solid #0e7a47;border-radius:18px;padding:0 20px;z-index:5}
+.appBadge{margin-top:16px;font-size:30px;font-weight:700;color:#bfe9ff}
+
+/* HELP */
+.help{justify-content:center;text-align:center;gap:26px}
+.help .q{font-size:62px;font-weight:800}
+.big1930{font-size:250px;line-height:.95;font-weight:800;color:var(--gold);text-shadow:0 0 40px rgba(245,200,76,.6);animation:pulse 1s ease-in-out infinite}
+.callNow{font-size:46px;font-weight:800;background:var(--red);border-radius:24px;padding:12px 40px;animation:redPulse 1.2s infinite}
+.helpList{display:flex;flex-direction:column;gap:20px;margin-top:10px;width:100%}
+.helpList div{font-size:38px;font-weight:600;background:rgba(255,255,255,.1);border-left:10px solid var(--cyan);border-radius:16px;padding:16px 26px;text-align:left}
+
+/* OUTRO */
+.outro{justify-content:center;text-align:center;gap:34px}
+.motto{font-size:76px;line-height:1.25;font-weight:800}
+.motto em{font-style:normal;color:var(--gold)}
+.fouji{display:flex;align-items:center;gap:22px;font-size:44px;font-weight:700;color:#ffd99a}
+.ctaRow{display:flex;gap:26px}
+.cta{font-size:46px;font-weight:800;border-radius:26px;padding:18px 40px;position:relative}
+.cta.f{background:linear-gradient(90deg,#e1306c,#f77737)}
+.cta.s{background:var(--green)}
+.cta.c{background:var(--navy);border:3px solid var(--cyan)}
+.hand{position:absolute;right:-30px;bottom:-60px;font-size:90px}
+.tri{width:100%;height:16px;border-radius:8px;background:linear-gradient(90deg,#ff9933 33%,#fff 33% 66%,#138808 66%)}
+</style>
+</head>
+<body>
+<div id="bg"></div><div id="grid" class="g"></div><canvas id="rain" width="1080" height="1920"></canvas>
+
+<div id="header">
+  <img class="csj" src="../assets/csj-logo.png" alt="">
+  <div class="brand"><div class="t1">साइबर सेफ झुंझुनूं</div><div class="t2">शेखावाटी का साइबर प्रहरी</div></div>
+  <div class="side"><img class="tg" src="../assets/tg-shield.png" alt=""><div class="pill">TECH GUARDIANS</div></div>
+</div>
+<div id="progress"><i></i></div>
+<div id="dayBadge"><span id="liveDot"></span>आज का साइबर क्राइम <b id="dayNo">#01</b></div>
+
+<div id="stage"></div>
+
+<div id="ticker"><div class="lbl">⚠️ ALERT</div><div class="track" id="tickTrack"></div></div>
+<div id="footer">
+  <div class="rj">
+    <div class="name">RJ NEHRA</div>
+    <div class="role">Master in AI Cyber Security</div>
+    <div class="web">🌐 techguardians.in</div>
+  </div>
+  <div class="brands">
+    <img class="tgw" src="../assets/tg-wordmark.png" alt="">
+    <img class="cf" src="../assets/cyber-fouji-tag.png" alt="">
+  </div>
+</div>
+<div id="vignette"></div><div id="flash"></div>
+
+<script src="../data/crimes.js"></script>
+<script>
+(function(){
+const qs = new URLSearchParams(location.search);
+let crime = window.CRIMES.find(c => c.id === qs.get('id')) || window.CRIMES[0];
+if (window.BREAKING) crime = window.BREAKING;
+const day = parseInt(qs.get('day') || '1', 10);
+document.getElementById('dayNo').textContent = '#' + String(day).padStart(2, '0');
+
+/* ---------- timeline (seconds) ---------- */
+const T = { hook: 0, title: 5.5, how: 11, flags: 35, tips: 45, settings: 57, help: 74, outro: 81, end: 88 };
+const order = ['hook','title','how','flags','tips','settings','help','outro'];
+const events = [];
+const ev = (t, type) => events.push({ t: +t.toFixed(3), type });
+order.forEach((k, i) => { if (i) ev(T[k] - 0.15, 'whoosh'); });
+ev(0, 'alarm'); ev(T.title + 0.2, 'boom');
+
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+const anim = (name, dur, delay, extra = '') => `${name} ${dur}s ${extra} ${delay}s both`;
+const st = (...a) => `style="animation:${a.join(',')}"`;
+
+const stage = document.getElementById('stage');
+const scenes = {};
+function scene(k, cls, html){
+  const el = document.createElement('section');
+  el.className = 'scene ' + cls; el.dataset.k = k; el.innerHTML = html;
+  stage.appendChild(el); scenes[k] = el; return el;
+}
+
+/* HOOK */
+scene('hook','hook',`
+  <div class="sirenRow a" ${st(anim('zoomIn',.5,0))}>🚨</div>
+  <div class="alertTag a" ${st(anim('zoomIn',.4,.1))}>CYBER ALERT</div>
+  <div class="hookText hl a" ${st(anim('slamIn',.7,.35), 'glitch .9s steps(1) 1s infinite')}>${esc(crime.hook)}</div>
+  <div class="hookSub a" ${st(anim('fadeUp',.6,1.6))}>${esc(crime.hookSub)}</div>`);
+
+/* TITLE */
+scene('title','titleScene',`
+  <div class="kicker a" ${st(anim('fadeUp',.5,.1))}>आज का साइबर क्राइम</div>
+  <div class="bigTitle hl a" ${st(anim('slamIn',.7,.25))}>${esc(crime.title)}</div>
+  <div class="enTag a" ${st(anim('fadeUp',.5,.9))}>${esc(crime.tag)}</div>
+  <div class="stay a" ${st(anim('zoomIn',.5,2.0),'pulse 1.2s ease-in-out 2.5s infinite')}>⏳ अंत तक देखें: फोन की ज़रूरी सेटिंग ⚙️</div>`);
+
+/* HOW */
+const msgT = [1.2, 2.8, 4.4, 6.0], stepT = [0.4, 6.4, 12.4, 18.4], otpT = 13.0, debitT = 19.6;
+msgT.slice(0, crime.messages.length).forEach(t => ev(T.how + t, 'ping'));
+stepT.forEach(t => ev(T.how + t, 'pop'));
+ev(T.how + otpT, 'notif'); ev(T.how + debitT, 'error');
+const icon = { whatsapp:'💬', sms:'✉️', telegram:'✈️', instagram:'📸', olx:'🛒', facebook:'👥', web:'🌐', call:'📞' }[crime.platform] || '💬';
+const bubbles = crime.messages.map((m, i) => {
+  const a = st(anim('zoomIn',.35,msgT[i] ?? 6));
+  if (m.file) return `<div class="bub file ${m.from} a" ${a}><div class="fi">APK</div><div><div class="fn">${esc(m.file)}</div><div class="fs">${esc(m.size||'')} • APK</div></div></div>`;
+  return `<div class="bub ${m.from} a" ${a}>${esc(m.text)}<span class="tm">${10+i}:4${i} ${m.from==='me'?'✓✓':''}</span></div>`;
+}).join('');
+const top = crime.platform === 'call'
+  ? `<div class="callTop"><div class="cav">👤</div><div class="cn">${esc(crime.contact)}</div><div class="ct" id="callTimer">00:00</div></div>`
+  : '';
+const btns = crime.platform === 'call' ? `<div class="callBtns"><span style="background:#e53935">📵</span><span style="background:#43a047">🔊</span></div>` : '';
+scene('how','how',`
+  <div class="secHead hl a" ${st(anim('fadeUp',.4,0))} style="font-size:58px;margin-bottom:34px"><span class="ico" style="background:var(--red)">🎯</span>ठगी ऐसे होती है</div>
+  <div class="stepWrap">
+    ${crime.steps.map((s, i) => `<div class="step s${i+1} a" ${st(anim(i%2?'slideR':'slideL',.55,stepT[i]), ...(i<3?[anim('outUp',.35,stepT[i]+5.65,'ease-in')]:[]))}>
+       <div class="lab">STEP ${i+1}/4</div><div class="num">${i+1}</div><div class="txt">${esc(s)}</div></div>`).join('')}
+  </div>
+  <div class="phoneWrap a p-${crime.platform}" ${st(anim('fadeUp',.7,.2), anim('shake',.5,debitT,'linear'))}>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div>
+      <div class="appbar"><span style="font-size:34px">←</span><div class="av">${icon}</div><div><div class="nm">${esc(crime.contact)}</div><div class="st">online</div></div></div>
+      ${top}<div class="chat">${bubbles}</div>${btns}
+      <div class="notif a" ${st(anim('drop',.5,otpT), anim('outFade',.3,debitT,'linear'))}><b>📩 Messages • now</b>Your OTP for transaction is <b style="display:inline;color:#111;font-size:26px">482915</b>. Do not share.<span class="leak a" ${st(anim('fadeIn',.3,otpT+1.4))}>⚠️ OTP चोरी होकर ठग के पास पहुँचा!</span></div>
+      <div class="debit a" ${st(anim('fadeIn',.3,debitT))}>
+        <div class="x a" ${st(anim('slamIn',.5,debitT+.1))}>💸</div>
+        <div class="dl">DEBITED</div>
+        <div class="amt hl a" ${st(anim('zoomIn',.4,debitT+.5))}>${esc(crime.loss)}</div>
+        <div class="sm">खाते से पैसे गायब… 😱</div>
+      </div>
+    </div></div>
+    <div class="hacker a" ${st(anim('slideR',.6,debitT+1.2), 'bob 1.4s ease-in-out '+(debitT+1.8)+'s infinite')}>🦹</div>
+  </div>`);
+
+/* FLAGS */
+const flagT = [1.2, 3.6, 6.0];
+flagT.forEach(t => ev(T.flags + t, 'stamp'));
+scene('flags','flags',`
+  <div class="secHead hl a" ${st(anim('zoomIn',.5,0))}><span class="ico" style="background:var(--red)">🚩</span>खतरे के 3 संकेत</div>
+  <div class="cards">${crime.flags.map((f, i) => `<div class="card flag a" ${st(anim(i%2?'slideR':'slideL',.5,flagT[i]))}>
+     <div class="ci">⚠️</div>${esc(f)}<div class="shine a" ${st(anim('sweep',1,flagT[i]+.4,'ease-in-out'))}></div></div>`).join('')}</div>
+  <div class="bigStamp a" style="position:relative;right:auto;bottom:auto;margin-top:46px;animation:${anim('stamp',.5,8.2)}">दिखे तो रुक जाएँ ✋</div>`);
+ev(T.flags + 8.2, 'stamp');
+
+/* TIPS */
+const tipT = [1.0, 3.4, 5.8, 8.2];
+tipT.forEach(t => ev(T.tips + t, 'success'));
+scene('tips','tips',`
+  <div class="secHead hl a" ${st(anim('zoomIn',.5,0))}><span class="ico" style="background:var(--green)">🛡️</span>ऐसे बचें</div>
+  <div class="cards">${crime.tips.map((f, i) => `<div class="card tip a" ${st(anim('fadeUp',.5,tipT[i]))}>
+     <div class="ci">✅</div>${esc(f)}<div class="shine a" ${st(anim('sweep',1,tipT[i]+.4,'ease-in-out'))}></div></div>`).join('')}</div>`);
+
+/* SETTINGS */
+const setBase = k => 1.6 + k * 5.1;
+const settingsHtml = crime.settings.map((s, k) => {
+  const b = setBase(k), tglT = b + 3.0, doneT = b + 3.6;
+  s.path.forEach((_, i) => ev(T.settings + b + .3 + i * .42, 'tap'));
+  ev(T.settings + tglT, 'toggle'); ev(T.settings + doneT, 'success');
+  const fromOn = !s.on;
+  const crumbs = s.path.map((p, i) => `${i ? `<span class="arrow a" ${st(anim('fadeIn',.2,b+.3+i*.42-.1))}>›</span>` : ''}<span class="chip ${i===s.path.length-1?'last':''} a" ${st(anim('zoomIn',.3,b+.3+i*.42))}>${esc(p)}</span>`).join('');
+  const c0 = fromOn ? '#1a73e8' : '#bdc1c6', c1 = s.on ? '#1a73e8' : '#bdc1c6';
+  const x0 = fromOn ? 47 : 5, x1 = s.on ? 47 : 5;
+  const kf = `tg${k}`, kk = `tk${k}`;
+  return `<style>@keyframes ${kf}{from{background:${c0}}to{background:${c1}}}@keyframes ${kk}{from{left:${x0}px}to{left:${x1}px}}</style>
+  <div class="setItem a" ${st(anim('fadeIn',.35,b), ...(k<crime.settings.length-1?[anim('outFade',.3,b+4.8,'ease-in')]:[]))}>
+    <div class="setCount">सेटिंग ${k+1}/${crime.settings.length} • ${esc(s.app)}</div>
+    <div class="crumbs">${crumbs}</div>
+    <div class="sphone a" ${st(anim('fadeUp',.5,b+.1))}><div class="sscreen">
+      <div class="sbar">← ${esc(s.path[s.path.length-1])}</div>
+      <div class="srow dim"><span>${esc(s.path[s.path.length-2] || s.app)}</span><span>›</span></div>
+      <div class="srow hl2"><span style="max-width:330px;font-weight:600">${esc(s.label)}</span>
+        <span class="tgl" style="animation:${kf} .3s linear ${tglT}s both"><i style="animation:${kk} .3s ease-out ${tglT}s both"></i></span></div>
+      <div class="srow dim"><span>Advanced</span><span>›</span></div>
+      <div class="srow dim"><span>About</span><span>›</span></div>
+      <div class="tapRing a" style="right:30px;top:232px;animation:tap .6s ease-out ${tglT-.15}s both"></div>
+      <div class="tapHand a" style="right:-4px;top:250px;animation:${anim('fadeUp',.4,tglT-.6)}">👆</div>
+    </div>
+    <div class="done a" ${st(anim('stamp',.45,doneT))}>${s.on ? 'ON ✅' : 'OFF ✅'}</div></div>
+  </div>`;
+}).join('');
+scene('settings','settings',`
+  <div class="setTitle">
+    <div class="secHead hl a" ${st(anim('zoomIn',.5,0))} style="margin-bottom:14px"><span class="ico" style="background:var(--orange)">⚙️</span>अभी करें ये सेटिंग</div>
+    <div class="sub a" ${st(anim('fadeUp',.4,.4))}>वीडियो रोककर अपने फोन में साथ-साथ करें 👇</div>
+  </div>
+  <div class="setWrap">${settingsHtml}</div>`);
+
+/* HELP */
+ev(T.help + .3, 'boom');
+scene('help','help',`
+  <div class="q hl a" ${st(anim('fadeUp',.5,0))}>ठगी हो गई? घबराएँ नहीं!</div>
+  <div class="big1930 hl a" ${st(anim('slamIn',.6,.3),'pulse 1s ease-in-out 1s infinite')}>1930</div>
+  <div class="callNow a" ${st(anim('zoomIn',.4,.9),'redPulse 1.2s 1.3s infinite')}>📞 तुरंत कॉल करें, पहला 1 घंटा सबसे कीमती</div>
+  <div class="helpList">
+    <div class="a" ${st(anim('slideL',.45,1.8))}>🌐 cybercrime.gov.in पर शिकायत दर्ज करें</div>
+    <div class="a" ${st(anim('slideR',.45,2.5))}>🏦 बैंक को कॉल करके खाता / कार्ड ब्लॉक करवाएँ</div>
+    <div class="a" ${st(anim('slideL',.45,3.2))}>📵 संदिग्ध कॉल / SMS: संचार साथी "चक्षु" पर रिपोर्ट</div>
+  </div>`);
+[1.8, 2.5, 3.2].forEach(t => ev(T.help + t, 'pop'));
+
+/* OUTRO */
+ev(T.outro + .2, 'boom'); ev(T.outro + 2.6, 'tap');
+scene('outro','outro',`
+  <div class="a" ${st(anim('zoomIn',.6,0))} style="display:flex;gap:40px;align-items:center"><img src="../assets/csj-logo.png" style="width:200px;border-radius:50%;box-shadow:0 0 0 6px var(--gold),0 0 50px rgba(245,200,76,.5)"><span style="font-size:70px">🤝</span><img src="../assets/tg-shield.png" style="height:210px"></div>
+  <div class="tri a" ${st(anim('fadeIn',.5,0))}></div>
+  <div class="motto hl a" ${st(anim('slamIn',.7,.2))}>अब हम किसी के साथ <em>कोई साइबर क्राइम</em> नहीं होने देंगे 🇮🇳</div>
+  <div class="fouji a" ${st(anim('fadeUp',.5,1.2))}>🪖 आप भी बनें <span style="color:#fff">साइबर फौजी</span></div>
+  <div class="ctaRow a" ${st(anim('zoomIn',.5,1.8))}>
+    <div class="cta f" style="animation:pulse 1s ease-in-out infinite">➕ Follow</div>
+    <div class="cta s">📤 Share</div>
+    <div class="cta c">🔔</div>
+  </div>
+  <div class="a" ${st(anim('fadeUp',.5,2.4))} style="font-size:38px;font-weight:600;color:#ffd99a;line-height:1.4">ये वीडियो परिवार के WhatsApp ग्रुप में भेजें,<br>किसी अपने को ठगी से बचाएँ 🙏</div>
+  <div class="tri a" ${st(anim('fadeIn',.5,0))}></div>`);
+
+/* TICKER */
+const tick = `🚨 ठगी हो तो तुरंत 1930 पर कॉल करें &nbsp;•&nbsp; 🌐 cybercrime.gov.in &nbsp;•&nbsp; 🔐 OTP / PIN किसी को न बताएँ &nbsp;•&nbsp; 📲 Follow करें: Cyber Safe Jhunjhunu &nbsp;•&nbsp; 🛡️ TechGuardians: Keep Learning Keep Sharing &nbsp;•&nbsp; `;
+document.getElementById('tickTrack').innerHTML = tick + tick;
+
+/* ---------- matrix rain (deterministic) ---------- */
+const CH = [...'01アカサタナ₹#$@<>{}'];
+const cv = document.getElementById('rain'), cx = cv.getContext('2d');
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const cols = Array.from({length: 36}, (_, i) => ({ x: i * 30 + 10, sp: 140 + rnd() * 260, off: rnd() * 1920, len: 8 + (rnd() * 14 | 0), chars: Array.from({length: 26}, () => CH[rnd() * CH.length | 0]) }));
+function rain(t){
+  cx.clearRect(0, 0, 1080, 1920); cx.font = '24px monospace';
+  for (const c of cols){
+    const head = (c.off + t * c.sp) % 2300 - 200;
+    for (let j = 0; j < c.len; j++){
+      const y = head - j * 28; if (y < 0 || y > 1920) continue;
+      cx.fillStyle = j === 0 ? 'rgba(220,255,240,.9)' : `rgba(41,211,180,${.6 - j / c.len * .6})`;
+      cx.fillText(c.chars[(j + (t * 8 | 0)) % c.chars.length], c.x, y);
+    }
+  }
+}
+
+/* ---------- seek ---------- */
+const flash = document.getElementById('flash'), prog = document.querySelector('#progress i');
+let active = null;
+function seek(t){
+  const k = order.slice().reverse().find(k => t >= T[k]) || 'hook';
+  if (k !== active){ Object.values(scenes).forEach(s => s.classList.toggle('on', s.dataset.k === k)); active = k; }
+  document.getAnimations().forEach(a => {
+    const tgt = a.effect && a.effect.target; if (!tgt) return;
+    const sc = tgt.closest && tgt.closest('.scene');
+    const base = sc ? T[sc.dataset.k] : 0;
+    a.pause(); a.currentTime = Math.max(0, (t - base) * 1000);
+  });
+  prog.style.width = Math.min(100, t / T.end * 100) + '%';
+  // scene transition flash
+  let f = 0; order.forEach((kk, i) => { if (i){ const d = Math.abs(t - T[kk]); if (d < .25) f = Math.max(f, 1 - d / .25); } });
+  flash.style.background = `rgba(200,240,255,${(f * .55).toFixed(3)})`;
+  // red tint during hook & debit
+  const dbt = T.how + debitT;
+  const red = (t < 5.5 ? (.10 + .08 * Math.sin(t * 9)) : 0) + (t > dbt && t < dbt + 1.4 ? .25 * (1 - (t - dbt) / 1.4) : 0);
+  document.getElementById('vignette').style.boxShadow = `inset 0 0 220px 60px rgba(0,0,0,.65), inset 0 0 0 2000px rgba(255,0,40,${red.toFixed(3)})`;
+  const ct = document.getElementById('callTimer');
+  if (ct){ const s = Math.max(0, t - T.how) | 0; ct.textContent = `00:${String(s % 60).padStart(2, '0')}`; }
+  rain(t);
+}
+
+window.REEL = { crime, day, duration: T.end, events: events.sort((a, b) => a.t - b.t), T,
+  seek, ready: document.fonts.ready.then(() => Promise.all([...document.images].map(i => i.complete ? 1 : new Promise(r => i.onload = i.onerror = r)))) };
+
+if (!qs.has('render')){
+  const t0 = performance.now();
+  const loop = () => { seek(((performance.now() - t0) / 1000) % T.end); requestAnimationFrame(loop); };
+  window.REEL.ready.then(loop);
+} else seek(0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+output/*.wav
+output/*.events.json
+output/*.video.mp4
+voice/*
+!voice/.gitkeep
