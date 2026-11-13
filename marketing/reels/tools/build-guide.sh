@@ -23,10 +23,10 @@ while read -r FILE AT; do
 done < <(python3 -I -c "import json,sys;[print(c['file'],c['at']) for c in json.load(open(sys.argv[1]))['clips']]" "$W/data.json")
 F+="${L}amix=inputs=$((i-2)):normalize=0,apad[vo];[vo]asplit[vo1][sc];[0]volume=$MUSIC_VOL[m];"
 F+="[m][sc]sidechaincompress=threshold=0.08:ratio=2:attack=30:release=450[md];[1]volume=$SFX_VOL[fx];[md][vo1][fx]amix=inputs=3:normalize=0:duration=first,loudnorm=I=-14:TP=-1.5:LRA=11[a]"
-ffmpeg -loglevel error -y "${IN[@]}" -filter_complex "$F" -map "[a]" -ar 48000 -ac 2 "$W/mix.wav"
+ffmpeg -nostdin -loglevel error -y "${IN[@]}" -filter_complex "$F" -map "[a]" -ar 48000 -ac 2 "$W/mix.wav"
 rm -rf "$W/frames"; NF=$(python3 -c "import math;print(math.ceil($TOTAL*30))"); STEP=$(( (NF + JOBS - 1) / JOBS ))
 for ((s=0; s<NF; s+=STEP)); do node "$R/tools/render.js" "$W" "$W/frames" "$s,$((s+STEP))" & done; wait
-ffmpeg -loglevel error -y -framerate 30 -i "$W/frames/f%05d.jpg" -i "$W/mix.wav" -c:v libx264 -profile:v high -crf 18 -preset slow \
+ffmpeg -nostdin -loglevel error -y -framerate 30 -i "$W/frames/f%05d.jpg" -i "$W/mix.wav" -c:v libx264 -profile:v high -crf ${CRF:-21} -preset slow \
   -pix_fmt yuv420p -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart "$O/$NAME.mp4"
 node "$R/tools/render.js" "$W" "$W/frames" cover "$O/$NAME-thumbnail.jpg"
 rm -rf "$W/frames"
