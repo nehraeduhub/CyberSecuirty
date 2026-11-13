@@ -35,7 +35,7 @@ const S = {
   insta2fa: { app: 'Instagram', path: ['Instagram', 'Accounts Centre', 'Password and security', 'Two-factor authentication'], label: 'Two-factor authentication', on: true, say: 'इंस्टाग्राम में, टू फैक्टर ऑथेंटिकेशन चालू कीजिए' },
   instaPrivate: { app: 'Instagram', path: ['Instagram', 'Settings', 'Account privacy'], label: 'Private account', on: true, say: 'इंस्टाग्राम अकाउंट को प्राइवेट कर दीजिए' },
   fbLock: { app: 'Facebook', path: ['Facebook', 'Profile', '...', 'Lock profile'], label: 'Lock profile', on: true, say: 'फेसबुक प्रोफाइल को लॉक कर दीजिए' },
-  screenShare: { app: 'Android', path: ['Settings', 'Apps', 'AnyDesk / TeamViewer'], label: 'Keep installed', on: false, say: 'एनी डेस्क या टीम व्यूअर जैसे ऐप, फोन से हटा दीजिए' },
+  screenShare: { app: 'Android', path: ['Settings', 'Apps', 'AnyDesk / TeamViewer'], label: 'Remote access app installed', on: false, say: 'एनी डेस्क या टीम व्यूअर जैसे ऐप, फोन से हटा दीजिए' },
   chromeSafe: { app: 'Chrome', path: ['Chrome', 'Settings', 'Privacy and security', 'Safe Browsing'], label: 'Enhanced protection', on: true, say: 'क्रोम में, सेफ ब्राउज़िंग का एन्हांस्ड प्रोटेक्शन चालू कीजिए' },
   telegramPrivacy: { app: 'Telegram', path: ['Telegram', 'Settings', 'Privacy and Security', 'Groups & Channels'], label: 'Add me: My Contacts only', on: true, say: 'टेलीग्राम में, ग्रुप में सिर्फ कॉन्टैक्ट्स ही जोड़ सकें, ये सेट कीजिए' },
   dnd: { app: 'Android', path: ['Phone', 'SMS 1909', '"FULLY BLOCK"'], label: 'DND: block promo calls & SMS', on: true, say: 'उन्नीस सौ नौ पर फुली ब्लॉक लिखकर एस एम एस भेजिए, प्रमोशनल कॉल बंद हो जाएँगे' },
