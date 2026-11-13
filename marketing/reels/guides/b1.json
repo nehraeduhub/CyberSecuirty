@@ -1,0 +1,253 @@
+{
+ "name": "B1-Website-Tour",
+ "kicker": "Website tour",
+ "accent": "#ff9933",
+ "mood": "bright",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "techguardians.in · Website tour",
+  "hook": "Cyber Security ka<br><em>sab kuch</em>, ek jagah 🇮🇳",
+  "chips": [
+   "🎓 Training",
+   "🚩 CTF",
+   "📘 Handbooks",
+   "🛡️ Free tools"
+  ],
+  "vo": "साइबर सिक्योरिटी सीखनी है? टेक गार्डियन्स पर सब कुछ, एक ही जगह मिलेगा। चलिए, वेबसाइट का टूर करते हैं।",
+  "sub": "Cyber security seekhni hai? Tech Guardians par sab kuch, ek hi jagah milega. Chaliye, website ka tour karte hain."
+ },
+ "steps": [
+  {
+   "label": "Training Programs",
+   "icon": "🎓",
+   "title": "Live <em>training</em> + labs",
+   "tip": "🎓 Live classes · Hands-on · Certificate",
+   "vo": "लाइव, मेंटर-लेड ट्रेनिंग प्रोग्राम्स, हैंड्स-ऑन लैब्स और सर्टिफ़िकेट के साथ।",
+   "sub": "Live, mentor-led training programs — hands-on labs aur certificate ke saath.",
+   "shots": [
+    {
+     "img": "training",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.35,
+       0
+      ],
+      [
+       0.7,
+       480
+      ]
+     ],
+     "ring": [
+      {
+       "k": "first",
+       "p0": 0.6,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "CTF Portal",
+   "icon": "🚩",
+   "title": "<em>CTF</em> me practice karo",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "vo": "सीटीएफ़ पोर्टल पर, तैंतालीस रूम्स में हैंड्स-ऑन प्रैक्टिस कीजिए। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "CTF Portal par 43 rooms me hands-on practice kijiye. Har room ka pehla task FREE hai.",
+   "shots": [
+    {
+     "img": "ctfhome",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.5,
+       0
+      ],
+      [
+       0.8,
+       700
+      ]
+     ],
+     "ring": [
+      {
+       "k": "stats",
+       "p0": 0.1,
+       "p1": 0.5
+      },
+      {
+       "k": "create",
+       "p0": 0.82,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "PDF Store",
+   "icon": "📘",
+   "title": "<em>43</em> Handbooks",
+   "tip": "👁 Look inside before you buy",
+   "vo": "तैंतालीस साइबर सिक्योरिटी हैंडबुक्स, ज़ीरो से मास्टरी तक। ख़रीदने से पहले, अंदर के पेज देखिए।",
+   "sub": "43 cyber security handbooks — zero se mastery tak. Khareedne se pehle andar ke page dekhiye.",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       100
+      ]
+     ],
+     "ring": [
+      {
+       "k": "look",
+       "p0": 0.4,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Cyber Safety Portal",
+   "icon": "🛡️",
+   "title": "<em>150+</em> free tools",
+   "tip": "🆓 100% free access",
+   "vo": "साइबर सेफ़्टी पोर्टल पर, एक सौ पचास से ज़्यादा फ़्री टूल्स।",
+   "sub": "Cyber Safety Portal par 150+ FREE tools.",
+   "shots": [
+    {
+     "img": "portal",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       150
+      ]
+     ],
+     "ring": [
+      {
+       "k": "stats",
+       "p0": 0.35,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Threat Intel Hub",
+   "icon": "📡",
+   "title": "Live <em>threat</em> intel",
+   "tip": "📰 Roz ki cyber news",
+   "vo": "लाइव थ्रेट इंटेलिजेंस, और रोज़ की साइबर न्यूज़।",
+   "sub": "Live threat intelligence, aur roz ki cyber news.",
+   "shots": [
+    {
+     "img": "threat",
+     "scroll": [
+      [
+       0,
+       150
+      ],
+      [
+       1,
+       450
+      ]
+     ],
+     "ring": [
+      {
+       "k": "stats",
+       "p0": 0.4,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Events & Awareness",
+   "icon": "🏫",
+   "title": "Events & <em>awareness</em>",
+   "tip": "🏫 School · College · Office",
+   "vo": "और स्कूल, कॉलेज के लिए, अवेयरनेस सेशन्स और लाइव इवेंट्स।",
+   "sub": "Aur school, college ke liye awareness sessions aur live events.",
+   "shots": [
+    {
+     "img": "events",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       300
+      ]
+     ],
+     "ring": [
+      {
+       "k": "next",
+       "p0": 0.35,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "cta": {
+  "headline": "Aaj hi <em>visit</em> kijiye 👇",
+  "button": "🚀 Explore now",
+  "chips": [
+   "🎓 Training",
+   "🚩 CTF",
+   "📘 PDF",
+   "🛡️ Tools"
+  ],
+  "vo": "आज ही विज़िट कीजिए, टेक गार्डियन्स डॉट इन। कीप लर्निंग, कीप शेयरिंग!",
+  "sub": "Aaj hi visit kijiye — techguardians.in. Keep Learning, Keep Sharing!"
+ },
+ "cover": {
+  "pill": "Website tour · techguardians.in",
+  "hook": "Cyber Security<br><em>ek jagah</em> 🇮🇳",
+  "shots": [
+   [
+    "ctfhome",
+    0
+   ],
+   [
+    "portal",
+    150
+   ]
+  ],
+  "chip": "🎓 Training · 🚩 CTF · 📘 PDF · 🛡️ Tools"
+ },
+ "caption": "Cyber security ka sab kuch, ek jagah 🇮🇳 — Tech Guardians website tour!\n\n🎓 Live, mentor-led training programs (hands-on labs + certificate)\n🚩 CTF Portal — 43 rooms, har room ka task 1 FREE\n📘 43 Cyber Security Handbooks — zero se mastery\n🛡️ Cyber Safety Portal — 150+ FREE tools\n📡 Live threat intel + roz ki cyber news\n🏫 Awareness sessions & live events\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#cybersecurityindia",
+  "#ctf",
+  "#ethicalhacking",
+  "#cyberawareness",
+  "#learncybersecurity",
+  "#hinglish"
+ ]
+}

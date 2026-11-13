@@ -1,0 +1,236 @@
+{
+ "name": "B4-Cyber-Safety-Portal-Free-Tools",
+ "kicker": "Cyber Safety Portal",
+ "accent": "#22d3ee",
+ "mood": "scan",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Cyber Safety Portal",
+  "hook": "<em>150+</em> FREE<br>Cyber Tools 🛡️",
+  "chips": [
+   "🆓 100% free",
+   "⚡ Live lookups",
+   "📞 1930 helpline"
+  ],
+  "vo": "एक सौ पचास से ज़्यादा साइबर सेफ़्टी टूल्स, बिल्कुल फ़्री! टेक गार्डियन्स साइबर सेफ़्टी पोर्टल पर।",
+  "sub": "150+ cyber safety tools, bilkul FREE! Tech Guardians Cyber Safety Portal par."
+ },
+ "steps": [
+  {
+   "label": "Unknown call?",
+   "icon": "📱",
+   "title": "<em>Anjaan</em> number?",
+   "tip": "📱 Spam / scam check",
+   "vo": "अनजान नंबर से कॉल आया? मोबाइल नंबर लुकअप से, स्पैम और स्कैम चेक कीजिए।",
+   "sub": "Anjaan number se call aaya? Mobile number lookup se spam aur scam check kijiye.",
+   "shots": [
+    {
+     "img": "portal",
+     "scroll": [
+      [
+       0,
+       1350
+      ],
+      [
+       0.3,
+       1900
+      ]
+     ],
+     "ring": [
+      {
+       "k": "mobile",
+       "p0": 0.35,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Data leak?",
+   "icon": "🔓",
+   "title": "Email / password <em>leak</em>?",
+   "tip": "🔓 Breach check",
+   "vo": "आपका ईमेल या पासवर्ड, किसी डेटा लीक में तो नहीं? ब्रीच चेक से तुरंत पता कीजिए।",
+   "sub": "Aapka email ya password kisi data leak me to nahi? Breach check se turant pata kijiye.",
+   "shots": [
+    {
+     "img": "portal",
+     "scroll": [
+      [
+       0,
+       1900
+      ],
+      [
+       0.25,
+       2150
+      ]
+     ],
+     "ring": [
+      {
+       "k": "email",
+       "p0": 0.2,
+       "p1": 0.6
+      },
+      {
+       "k": "pass",
+       "p0": 0.55,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Fake photo?",
+   "icon": "🖼️",
+   "title": "Asli ya <em>deepfake</em>?",
+   "tip": "🔍 Photo forensics",
+   "vo": "फ़ोटो असली है या डीपफ़ेक? फ़ोटो फ़ॉरेंसिक्स से जाँचिए।",
+   "sub": "Photo asli hai ya deepfake? Photo forensics se jaanchiye.",
+   "shots": [
+    {
+     "img": "portal",
+     "scroll": [
+      [
+       0,
+       2150
+      ],
+      [
+       0.25,
+       3850
+      ]
+     ],
+     "ring": [
+      {
+       "k": "deepfake",
+       "p0": 0.35,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Govt services",
+   "icon": "🏛️",
+   "title": "<em>Sarkari</em> services",
+   "tip": "🏛️ Ek click me",
+   "vo": "संचार साथी, साइबर क्राइम पोर्टल, जैसी सरकारी सर्विसेज़, एक क्लिक में।",
+   "sub": "Sanchar Saathi, Cyber Crime Portal jaisi sarkari services — ek click me.",
+   "shots": [
+    {
+     "img": "portal",
+     "scroll": [
+      [
+       0,
+       3850
+      ],
+      [
+       0.25,
+       1250
+      ]
+     ],
+     "ring": [
+      {
+       "k": "govt",
+       "p0": 0.35,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Fraud ho gaya?",
+   "icon": "1930",
+   "title": "Turant <em>1930</em> call",
+   "tip": "📞 1930 · cybercrime.gov.in",
+   "vo": "अगर फ़्रॉड हो जाए, तो तुरंत उन्नीस सौ तीस पर कॉल कीजिए, और साइबर क्राइम सपोर्ट फ़ॉर्म भरिए।",
+   "sub": "Agar fraud ho jaye, to turant 1930 par call kijiye, aur Cyber Crime Support form bhariye.",
+   "shots": [
+    {
+     "img": "menu",
+     "scroll": [
+      [
+       0,
+       300
+      ]
+     ],
+     "ring": [
+      {
+       "k": "helpline",
+       "p0": 0.1,
+       "p1": 0.45
+      }
+     ],
+     "tap": [
+      {
+       "k": "helpline",
+       "p": 0.35
+      }
+     ],
+     "to": 0.48
+    },
+    {
+     "img": "support",
+     "scroll": [
+      [
+       0.48,
+       0
+      ],
+      [
+       0.7,
+       1100
+      ]
+     ],
+     "ring": [
+      {
+       "k": "form",
+       "p0": 0.75,
+       "p1": 1
+      }
+     ],
+     "from": 0.48
+    }
+   ]
+  }
+ ],
+ "cta": {
+  "headline": "Safe rahiye, <em>smart</em> rahiye 👇",
+  "button": "🛡️ Cyber Safety Portal",
+  "chips": [
+   "🆓 150+ tools",
+   "📞 1930"
+  ],
+  "vo": "सेफ़ रहिए, स्मार्ट रहिए। अभी खोलिए, टेक गार्डियन्स डॉट इन।",
+  "sub": "Safe rahiye, smart rahiye. Abhi kholiye — techguardians.in"
+ },
+ "cover": {
+  "pill": "Cyber Safety Portal",
+  "hook": "<em>150+</em> FREE<br>Cyber Tools 🛡️",
+  "shots": [
+   [
+    "portal",
+    1900
+   ],
+   [
+    "portal",
+    3850
+   ]
+  ],
+  "chip": "🆓 100% free · 📞 1930 helpline"
+ },
+ "caption": "150+ FREE cyber safety tools 🛡️ — Tech Guardians Cyber Safety Portal\n\n📱 Anjaan number? Spam/scam check\n🔓 Email/password leak? Breach check\n🖼️ Photo asli ya deepfake? Photo forensics\n🏛️ Sanchar Saathi, Cyber Crime Portal — ek click me\n📞 Fraud ho gaya? Turant 1930 call karein + cybercrime.gov.in\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersafety",
+  "#1930",
+  "#cyberfraud",
+  "#onlinescam",
+  "#deepfake",
+  "#cyberawareness",
+  "#hinglish"
+ ]
+}

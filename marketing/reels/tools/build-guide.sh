@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Guide reels (step-by-step how-to), e.g.:  tools/build-guide.sh guides/account.json
 #   -> out/<name>/<name>.mp4, -thumbnail.jpg, .srt, .txt
-# Needs the local site on 127.0.0.1:8110 (PLAN.md §7) with SITE_DATA=<site>/api/data, and KOKORO_DIR.
+# Needs the local site on 127.0.0.1:8110 (PLAN.md §7), KOKORO_DIR, SITE_DATA=<site>/api/data (account guide)
+# and SITE=<website-classic> (brand reels; default ../..).
 set -euo pipefail
 R="$(cd "$(dirname "$0")/.." && pwd)"; GJ="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 JOBS="${JOBS:-3}"; MUSIC_VOL="${MUSIC_VOL:-0.75}"; SFX_VOL="${SFX_VOL:-0.45}"
 read -r NAME SHOTS MOOD < <(python3 -I -c "import json,sys;g=json.load(open(sys.argv[1]));print(g['name'],g['shots'],g['mood'])" "$GJ")
-W="$R/work/guide-$SHOTS"; O="$R/out/$NAME"; mkdir -p "$W" "$O"
-node "$R/tools/capture-$SHOTS.js" "$R/work/$SHOTS"
+W="$R/work/guide-$NAME"; O="$R/out/$NAME"; mkdir -p "$W" "$O"
+[ -n "${SKIP_CAPTURE:-}" ] || SITE="${SITE:-$R/../..}" node "$R/tools/capture-$SHOTS.js" "$R/work/$SHOTS"   # SKIP_CAPTURE=1 reuses the screens
 cp "$R/legacy/launch/shield.png" "$W/logo.png"
 python3 -I "$R/tools/guide.py" "$GJ" "$W" "$O"
 TOTAL=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['total'])" "$W/data.json")

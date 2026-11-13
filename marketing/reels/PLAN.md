@@ -66,11 +66,11 @@ from the cloud chat. Deliverables are plain MP4 + SRT so they can be opened and 
 
 | # | Reel | Length | Status |
 |---|---|---|---|
-| B1 | Website launch / tour (everything in one place) | 45 s | 16:9 launch intro exists → make 9:16 version |
+| B1 | Website launch / tour (everything in one place) | 53 s | **done** (`guides/b1.json`) |
 | B2 | How to enroll for the CTF portal (6 steps) | 60 s | **done** (`TG-CTF-How-to-Enroll-Reel.mp4`, see `legacy/reel/`) |
-| B3 | PDF Handbook Series — 43 books, look inside before you buy, ₹199 | 45 s | to do |
-| B4 | Free cyber tools / Cyber Safety Portal (150+ tools, 1930 helpline) | 45 s | to do |
-| B5 | Training programs + coupon offer | 45 s | to do |
+| B3 | PDF Handbook Series — 43 books, look inside before you buy (no price) | 45 s | **done** (`guides/b3.json`, cover wall) |
+| B4 | Free cyber tools / Cyber Safety Portal (150+ tools, 1930 helpline) | 47 s | **done** (`guides/b4.json`) |
+| B5 | Training programs + coupon (no amounts) | 47 s | **done** (`guides/b5.json`) |
 | B6 | How to create a student account (request → approval → sign in with password **or email OTP**) | 60 s | **done** (`guides/account.json`, `tools/build-guide.sh`) |
 
 ### B. Topic reels (43) — one per topic, handbook + CTF room together
@@ -143,7 +143,7 @@ Rendering cost: ~2 min of rendering per 60 s reel (1,800 frames) → a batch of 
 |---|---|---|---|
 | 0 | This plan + tooling saved in repo | `PLAN.md`, `legacy/` | ✅ approve plan, answer §11 |
 | 1 ✅ | Build template + pipeline; **3 pilot reels**: 12 Firewall, 18 Wireshark, 23 Incident Response | 3 MP4 + covers + captions | approve look & length |
-| 2 | Brand reels B1, B3, B4, B5 | 4 reels | approve |
+| 2 ✅ | Brand reels B1, B3, B4, B5 | 4 reels | approve |
 | 3 | Topic reels in batches of 6 (by path): Core → Networking → Perimeter → Detection → SOC → Windows → Linux/Forensics → CTI/Infra | 43 reels over ~8 batches | spot-check each batch |
 | 4 | Optional: 10 learning-path reels, 1:1 cuts | 10 reels | — |
 | 5 | Posting kit: 60-day calendar (1 reel/day), captions + hashtags per reel, pinned-comment links | `calendar.csv` | — |
@@ -210,3 +210,9 @@ SITE_DATA=<site>/api/data KOKORO_DIR=... tools/build-guide.sh guides/account.jso
 The account capture registers demo student `priya.sharma` (Priya Sharma, priya.s@example.com) in the local copy,
 approves it there and shows her dashboard; the email-code request is answered locally (no mail is sent).
 Remove that demo user from the local `users.json` before running it again.
+
+Brand reels (Phase 2) use the guide template too: `tools/capture-brand.js` (scrolls each page once so
+scroll-reveal sections render, hides every ₹ amount, blurs payment QR, copies the 43 covers), then
+`SKIP_CAPTURE=1 tools/build-guide.sh guides/b1.json` etc. Per-reel options in the JSON: `kicker`, `intro.pill`,
+step `label` / `icon` / `visual: "covers"`, `cta.headline/button/chips`, `cover` (thumbnail).
+Note: the old B2 enroll reel (`legacy/reel/`) still shows ₹99/₹999 and has no voice — remake it before posting.

@@ -1,0 +1,219 @@
+{
+ "name": "B5-Training-Programs",
+ "kicker": "Training Programs",
+ "accent": "#a78bfa",
+ "mood": "drive",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Live · Mentor-led",
+  "hook": "Live <em>Training</em><br>Programs 🎓",
+  "chips": [
+   "🔴 Live classes",
+   "🧪 Hands-on labs",
+   "📜 Certificate"
+  ],
+  "vo": "सिर्फ़ थ्योरी नहीं, असली लैब्स में सीखिए। टेक गार्डियन्स के लाइव ट्रेनिंग प्रोग्राम्स।",
+  "sub": "Sirf theory nahi, asli labs me seekhiye. Tech Guardians ke live training programs."
+ },
+ "steps": [
+  {
+   "label": "Programs",
+   "icon": "🧭",
+   "title": "Apna <em>skill</em> chuniye",
+   "tip": "🧭 Firewall · AD · AI · Hacking",
+   "vo": "वेब सर्वर होस्टिंग, सोफ़ोस फ़ायरवॉल, एक्टिव डायरेक्टरी, एआई एजेंट, एथिकल हैकिंग, और भी बहुत कुछ।",
+   "sub": "Web server hosting, Sophos Firewall, Active Directory, AI agent, ethical hacking — aur bhi bahut kuch.",
+   "shots": [
+    {
+     "img": "training",
+     "scroll": [
+      [
+       0,
+       450
+      ],
+      [
+       1,
+       3000
+      ]
+     ],
+     "ring": [
+      {
+       "k": "first",
+       "p0": 0.0,
+       "p1": 0.25
+      },
+      {
+       "k": "sophos",
+       "p0": 0.2,
+       "p1": 0.45
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Course",
+   "icon": "🔥",
+   "title": "<em>Sophos Firewall</em> course",
+   "tip": "📜 Certificate · Lifetime access",
+   "vo": "जैसे सोफ़ोस फ़ायरवॉल कोर्स में, छह हफ़्ते के लाइव सेशन्स, सर्टिफ़िकेट, और लाइफ़टाइम एक्सेस।",
+   "sub": "Jaise Sophos Firewall course me — 6 hafte ke live sessions, certificate aur lifetime access.",
+   "shots": [
+    {
+     "img": "course",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       250
+      ]
+     ],
+     "ring": [
+      {
+       "k": "stats",
+       "p0": 0.3,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Coupon",
+   "icon": "🎟️",
+   "title": "<em>Coupon</em> code hai?",
+   "tip": "🎟️ Checkout pe apply",
+   "vo": "कूपन कोड है? चेकआउट पर अप्लाई कीजिए, और एक्स्ट्रा डिस्काउंट पाइए।",
+   "sub": "Coupon code hai? Checkout par apply kijiye, aur extra discount paiye.",
+   "shots": [
+    {
+     "img": "checkout",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.25,
+       350
+      ]
+     ],
+     "ring": [
+      {
+       "k": "coupon",
+       "p0": 0.25,
+       "p1": 1
+      }
+     ],
+     "tap": [
+      {
+       "k": "apply",
+       "p": 0.8
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Awareness",
+   "icon": "🏫",
+   "title": "<em>Awareness</em> session",
+   "tip": "🏫 School · College · Office",
+   "vo": "स्कूल, कॉलेज या ऑफ़िस के लिए, साइबर अवेयरनेस सेशन भी बुक कीजिए।",
+   "sub": "School, college ya office ke liye cyber awareness session bhi book kijiye.",
+   "shots": [
+    {
+     "img": "training",
+     "scroll": [
+      [
+       0,
+       3000
+      ],
+      [
+       0.25,
+       3350
+      ]
+     ],
+     "ring": [
+      {
+       "k": "awareness",
+       "p0": 0.3,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Events",
+   "icon": "📅",
+   "title": "Live <em>events</em>",
+   "tip": "📅 Online + on campus",
+   "vo": "लाइव क्लासेज़, वेबिनार्स और बूटकैम्प्स, ऑनलाइन और कैंपस पर।",
+   "sub": "Live classes, webinars aur bootcamps — online aur campus par.",
+   "shots": [
+    {
+     "img": "events",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       300
+      ]
+     ],
+     "ring": [
+      {
+       "k": "next",
+       "p0": 0.35,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "cta": {
+  "headline": "Apna <em>course</em> chuniye 👇",
+  "button": "🎓 Enroll now",
+  "chips": [
+   "🔴 Live",
+   "🧪 Labs",
+   "📜 Certificate"
+  ],
+  "vo": "अपना कोर्स चुनिए, और आज ही एनरोल कीजिए। टेक गार्डियन्स डॉट इन।",
+  "sub": "Apna course chuniye, aur aaj hi enroll kijiye — techguardians.in"
+ },
+ "cover": {
+  "pill": "Live · Mentor-led",
+  "hook": "Live <em>Training</em><br>Programs 🎓",
+  "shots": [
+   [
+    "training",
+    450
+   ],
+   [
+    "course",
+    0
+   ]
+  ],
+  "chip": "🔴 Live · 🧪 Labs · 📜 Certificate"
+ },
+ "caption": "Live, mentor-led cyber security training 🎓 — sirf theory nahi, asli labs!\n\n🧭 Web Server Hosting · Sophos Firewall · Active Directory · AI Agent · Ethical Hacking · Android Security\n📜 Live sessions, hands-on labs aur certificate\n🎟️ Coupon code hai? Checkout pe apply karo, extra discount pao\n🏫 School / college / office ke liye awareness session book karo\n📅 Live classes, webinars & bootcamps\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecuritytraining",
+  "#sophosfirewall",
+  "#activedirectory",
+  "#ethicalhacking",
+  "#aiagent",
+  "#learncybersecurity",
+  "#hinglish"
+ ]
+}

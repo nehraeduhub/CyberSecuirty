@@ -57,7 +57,7 @@
 <body>
 <div id="bg"></div><div id="grid"></div>
 <div class="tri"><i></i><i></i><i></i></div>
-<div id="brand"><img id="logo" alt=""><span><b>Tech Guardians</b><small id="sublbl">How-to guide</small></span></div>
+<div id="brand"><img id="logo" alt=""><span><b>Tech Guardians</b><small id="sublbl"></small></span></div>
 <div id="wm">techguardians.in</div>
 <div id="bar"><i></i></div>
 <canvas id="bgfx" width="1080" height="1920" style="left:0;top:0"></canvas>
@@ -68,6 +68,7 @@
 const D = window.DATA, G = D.guide, A = D.assets, SC = D.scenes, M = D.marks;
 document.documentElement.style.setProperty('--ac', G.accent);
 document.getElementById('logo').src = A.logo;
+document.getElementById('sublbl').textContent = G.kicker || 'How-to guide';
 const ease = (x) => x < 0 ? 0 : x > 1 ? 1 : x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const back = (x) => { x = Math.max(0, Math.min(1, x)); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
@@ -114,9 +115,9 @@ function screen(sh, p, pd) {             // p = progress through the voice clip 
 function intro(t, lt) {
   return `<div class="glow" style="top:260px;transform:scale(${1 + .05 * Math.sin(lt * 3)})"></div>
     <div class="center" style="top:330px;${pop(lt, 0, .7)}"><img src="${A.logo}" style="width:240px;height:240px;border-radius:50px;background:#fff;padding:14px;object-fit:contain;box-shadow:0 30px 90px rgba(255,153,51,.35);transform:rotate(${Math.sin(lt * 2) * 3}deg)"></div>
-    <div class="center" style="top:640px;${fadeUp(lt, .3)}"><span class="pill">How-to guide · CTF Portal${shine(lt, 1.2, .8)}</span></div>
-    <div class="center" style="top:760px;${fadeUp(lt, .5)}"><div class="h1" style="font-size:108px;${lt > .5 && lt < 1.3 && Math.floor(lt * 30) % 4 ? `text-shadow:${(1.3 - lt) * 14}px 0 0 rgba(255,0,80,.8),${-(1.3 - lt) * 14}px 0 0 rgba(0,220,255,.8)` : ''}">${G.intro.hook}</div></div>
-    <div class="center" style="top:1080px">${G.intro.chips.map((c, i) => `<span class="chip" style="display:inline-block;${pop(lt, 1.4 + i * .3)}">${c}</span>`).join('')}</div>`;
+    <div class="center" style="top:640px;${fadeUp(lt, .3)}"><span class="pill">${G.intro.pill || 'How-to guide · CTF Portal'}${shine(lt, 1.2, .8)}</span></div>
+    <div class="center" style="top:740px"><div style="${fadeUp(lt, .5)}"><div class="h1" style="font-size:${G.intro.hook.length > 40 ? 92 : 108}px;${lt > .5 && lt < 1.3 && Math.floor(lt * 30) % 4 ? `text-shadow:${(1.3 - lt) * 14}px 0 0 rgba(255,0,80,.8),${-(1.3 - lt) * 14}px 0 0 rgba(0,220,255,.8)` : ''}">${G.intro.hook}</div></div>
+    <div style="margin-top:40px">${G.intro.chips.map((c, i) => `<span class="chip" style="display:inline-block;${pop(lt, 1.4 + i * .3)}">${c}</span>`).join('')}</div></div>`;
 }
 function step(i) {
   return (t, lt, d) => {
@@ -128,25 +129,40 @@ function step(i) {
       if (q > 0) scr += `<div class="banner" style="top:${-140 + q * 210}px"><small><span>✉️ Email · Tech Guardians</span><span>now</span></small>${b.text}</div>`;
     }
     const phoneIn = ease(clamp(lt / .6));
-    return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Step ${i + 1} of ${NS}${shine(lt, .6, .8)}</span></div>
+    return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${st.label || `Step ${i + 1} of ${NS}`}${shine(lt, .6, .8)}</span></div>
         <div class="h1" style="margin-top:22px;white-space:nowrap;font-size:${Math.min(70, Math.floor(1640 / st.title.replace(/<[^>]+>/g, '').length))}px;${fadeUp(lt, .12)}">${st.title}</div></div>
-      <div class="phone" style="left:60px;top:${470 + (1 - phoneIn) * 900 + Math.sin(lt * 1.6) * 5}px;transform:rotate(${(1 - phoneIn) * 8 - 1.5}deg)"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div>${scr}</div></div>
+      ${st.visual === 'covers' ? coverWall(lt, phoneIn) : `<div class="phone" style="left:60px;top:${470 + (1 - phoneIn) * 900 + Math.sin(lt * 1.6) * 5}px;transform:rotate(${(1 - phoneIn) * 8 - 1.5}deg)"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div>${scr}</div></div>`}
       <div style="position:absolute;left:640px;top:520px">
-        <div class="badge" style="${pop(lt, .15, .6)};margin-left:-10px"><div><b>${i + 1}</b><span>OF ${NS}</span></div></div>
+        <div class="badge" style="${pop(lt, .15, .6)};margin-left:-10px"><div>${st.icon ? `<b style="font-size:${st.icon.length > 3 ? 92 : 118}px;margin-bottom:10px;transform:scale(${1 + .06 * Math.sin(lt * 3)})">${st.icon}</b>` : `<b>${i + 1}</b>`}<span>${i + 1} OF ${NS}</span></div></div>
         <div class="dots" style="margin:10px 0 34px;${fadeUp(lt, .3)}">${G.steps.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'on' : ''}"></i>`).join('')}</div>
         <div class="tip" style="${fadeUp(lt, .5, .5, 40)}">${st.tip}${shine(lt, 1.1, .9)}</div>
       </div>`;
   };
 }
+// B3: wall of all handbook covers, three columns drifting in opposite directions
+function coverWall(lt, inP) {
+  const covers = Object.keys(A.img).filter((k) => k.startsWith('cover-')).sort();
+  let h = `<div style="position:absolute;left:50px;top:470px;width:540px;height:900px;overflow:hidden;border-radius:30px;opacity:${inP};transform:perspective(1400px) rotateY(${12 - 6 * inP}deg)">`;
+  for (let c = 0; c < 3; c++) {
+    const off = (c % 2 ? -1 : 1) * lt * 60 + c * 140, colH = 15 * 248;
+    for (let k = 0; k < 15; k++) {
+      const n = covers[(c * 15 + k) % covers.length], y = ((k * 248 + off) % colH + colH) % colH - 248;
+      if (y < -260 || y > 920) continue;
+      h += `<img src="${A.img[n]}" style="position:absolute;left:${c * 180 + 6}px;top:${y}px;width:168px;height:238px;border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.5)">`;
+    }
+  }
+  return h + `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#071a33 0%,transparent 14%,transparent 86%,#071a33 100%)"></div></div>`;
+}
 function cta(t, lt) {
+  const C = Object.assign({ headline: 'Abhi apna account <em>banaiye</em> 👇', button: '👤 Create Account', chips: ['🔑 Password', '✉️ Email OTP'] }, G.cta);
   const en = 1.6, d = lt - en - .1, pulse = lt > en ? 1 + .05 * Math.sin((lt - en) * 7) : 1;
   const tap = d > -.4 && d < 1 ? `<div class="tapc" style="left:540px;top:1015px;opacity:${clamp(1 - d)};transform:scale(${d < 0 ? 1.4 + d : 1 + d * 2})"></div>` : '';
   const typed = 'techguardians.in'.slice(0, Math.floor(clamp((lt - .5) / .7) * 16));
   return `<div class="glow" style="top:300px;transform:scale(${1 + .06 * Math.sin(lt * 3)})"></div>
-    <div class="center" style="top:330px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:90px">Abhi apna account <em>banaiye</em> 👇</div></div>
+    <div class="center" style="top:330px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:90px">${C.headline}</div></div>
     <div class="center" style="top:660px;${pop(lt, .3, .5)}"><div class="url">${typed}&nbsp;</div></div>
-    <div class="center" style="top:940px;${pop(lt, en - .5, .6)}"><span class="enroll" style="transform:scale(${pulse});box-shadow:0 0 ${30 + 40 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)">👤 Create Account${shine(lt, en + .3, .8)}</span></div>${tap}
-    <div class="center" style="top:1150px;${fadeUp(lt, en + .4)}"><span class="chip">🔑 Password</span><span class="chip">✉️ Email OTP</span></div>`;
+    <div class="center" style="top:940px;${pop(lt, en - .5, .6)}"><span class="enroll" style="transform:scale(${pulse});box-shadow:0 0 ${30 + 40 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)">${C.button}${shine(lt, en + .3, .8)}</span></div>${tap}
+    <div class="center" style="top:1150px;${fadeUp(lt, en + .4)}">${C.chips.map((c) => `<span class="chip">${c}</span>`).join('')}</div>`;
 }
 function end(t, lt) {
   return `<div class="glow" style="top:300px"></div>
@@ -218,12 +234,13 @@ window.render = function (t) {
 };
 window.renderCover = function () {
   window.render(0); document.getElementById('cap').innerHTML = ''; fx.clearRect(0, 0, 1080, 1920); document.getElementById('bar').style.opacity = 0;
-  const ph = (img, y, l, r) => `<div class="phone" style="left:${l}px;top:${y}px;transform:rotate(${r}deg) scale(.78);transform-origin:top left"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div><img src="${A.img[img]}" style="transform:translateY(${-160 * S}px)"></div></div>`;
+  const C = Object.assign({ pill: 'How-to guide · 2 minute', hook: G.intro.hook, shots: [['register-filled', 160], ['otp-code', 160]], chip: '🔑 Password + ✉️ Email OTP' }, G.cover);
+  const ph = ([img, y0], y, l, r) => `<div class="phone" style="left:${l}px;top:${y}px;transform:rotate(${r}deg) scale(.78);transform-origin:top left"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div><img src="${A.img[img]}" style="transform:translateY(${-y0 * S}px)"></div></div>`;
   document.getElementById('stage').innerHTML = `<div class="glow" style="top:700px"></div>
-    <div class="center" style="top:270px"><span class="pill" style="font-size:34px">How-to guide · 2 minute</span></div>
-    <div class="center" style="top:380px"><div class="h1" style="font-size:112px;letter-spacing:-3px">${G.intro.hook}</div></div>
-    ${ph('register-filled', 760, 90, -5)}${ph('otp-code', 800, 560, 5)}
-    <div class="center" style="top:1520px"><span class="chip" style="background:var(--ac);color:#140c02;font-size:40px">🔑 Password + ✉️ Email OTP</span></div>`;
+    <div class="center" style="top:270px"><span class="pill" style="font-size:34px">${C.pill}</span></div>
+    <div class="center" style="top:380px"><div class="h1" style="font-size:112px;letter-spacing:-3px">${C.hook}</div></div>
+    ${ph(C.shots[0], 760, 90, -5)}${ph(C.shots[1], 800, 560, 5)}
+    <div class="center" style="top:1520px"><span class="chip" style="background:var(--ac);color:#140c02;font-size:40px">${C.chip}</span></div>`;
 };
 window.ready = () => Promise.all(Object.values(imgs).map((i) => i.decode()));
 </script>

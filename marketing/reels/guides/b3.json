@@ -1,0 +1,209 @@
+{
+ "name": "B3-PDF-Handbook-Series",
+ "kicker": "PDF Handbook Series",
+ "accent": "#ffcc4d",
+ "mood": "pulse",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Cyber Security Handbook Series",
+  "hook": "<em>43</em> Cyber Security<br>Handbooks 📚",
+  "chips": [
+   "Zero → Mastery",
+   "📄 PDF",
+   "👁 Look inside"
+  ],
+  "vo": "साइबर सिक्योरिटी, ज़ीरो से मास्टरी तक। तैंतालीस हैंडबुक्स की पूरी सीरीज़।",
+  "sub": "Cyber security — zero se mastery tak. 43 handbooks ki poori series."
+ },
+ "steps": [
+  {
+   "label": "Complete series",
+   "icon": "📚",
+   "title": "Har topic ki <em>handbook</em>",
+   "tip": "📚 8 categories · 43 books",
+   "vo": "फ़ाउंडेशन्स, नेटवर्क, सॉक, विंडोज़, फ़ॉरेंसिक्स, लिनक्स, थ्रेट इंटेलिजेंस और क्लाउड। हर टॉपिक की अलग हैंडबुक।",
+   "sub": "Foundations, network, SOC, Windows, forensics, Linux, threat intelligence aur cloud — har topic ki alag handbook.",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "visual": "covers"
+  },
+  {
+   "label": "Look inside",
+   "icon": "👁",
+   "title": "Pehle <em>andar</em> dekho",
+   "tip": "👁 Preview pages",
+   "vo": "ख़रीदने से पहले, लुक इनसाइड से पेजेस देख लीजिए।",
+   "sub": "Khareedne se pehle Look inside se pages dekh lijiye.",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       480
+      ]
+     ],
+     "ring": [
+      {
+       "k": "look",
+       "p0": 0.35,
+       "p1": 1
+      }
+     ],
+     "tap": [
+      {
+       "k": "look",
+       "p": 0.8
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "What's inside",
+   "icon": "📖",
+   "title": "Kya <em>milega</em>, saaf likha",
+   "tip": "✍️ By Rajesh Nehra",
+   "vo": "हर बुक में क्या है, साफ़ लिखा है। राजेश नेहरा, मास्टर इन साइबर सिक्योरिटी द्वारा तैयार।",
+   "sub": "Har book me kya hai, saaf likha hai. Rajesh Nehra, Master in Cyber Security dwara taiyaar.",
+   "shots": [
+    {
+     "img": "book",
+     "scroll": [
+      [
+       0,
+       100
+      ],
+      [
+       0.45,
+       100
+      ],
+      [
+       0.75,
+       1100
+      ]
+     ],
+     "ring": [
+      {
+       "k": "cover",
+       "p0": 0.1,
+       "p1": 0.45
+      },
+      {
+       "k": "inside",
+       "p0": 0.8,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "UPI → Download",
+   "icon": "⬇️",
+   "title": "<em>UPI</em> se pay, turant download",
+   "tip": "📲 UPI → ⬇️ PDF",
+   "vo": "यूपीआई से पेमेंट कीजिए, और कन्फ़र्म होते ही, अपनी पीडीएफ़ डाउनलोड कीजिए।",
+   "sub": "UPI se payment kijiye, aur confirm hote hi apni PDF download kijiye.",
+   "shots": [
+    {
+     "img": "book",
+     "scroll": [
+      [
+       0,
+       1550
+      ]
+     ],
+     "ring": [
+      {
+       "k": "upi",
+       "p0": 0.15,
+       "p1": 0.55
+      },
+      {
+       "k": "dl",
+       "p0": 0.55,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "Learn → Practise",
+   "icon": "🚩",
+   "title": "Padho, phir <em>practice</em>",
+   "tip": "🚩 Same 43 topics in CTF",
+   "vo": "और हर हैंडबुक के साथ, उसी टॉपिक का सीटीएफ़ रूम, प्रैक्टिस के लिए।",
+   "sub": "Aur har handbook ke saath, usi topic ka CTF room — practice ke liye.",
+   "shots": [
+    {
+     "img": "ctfhome",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ],
+     "ring": [
+      {
+       "k": "stats",
+       "p0": 0.3,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "cta": {
+  "headline": "Apni <em>handbook</em> chuniye 👇",
+  "button": "📘 PDF Store",
+  "chips": [
+   "43 handbooks",
+   "Zero → Mastery"
+  ],
+  "vo": "अभी पीडीएफ़ स्टोर खोलिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Abhi PDF Store kholiye — techguardians.in par."
+ },
+ "cover": {
+  "pill": "PDF Handbook Series",
+  "hook": "<em>43</em> Cyber Security<br>Handbooks 📚",
+  "shots": [
+   [
+    "pdfstore",
+    100
+   ],
+   [
+    "book",
+    100
+   ]
+  ],
+  "chip": "Zero → Mastery · 👁 Look inside"
+ },
+ "caption": "43 Cyber Security Handbooks — zero se mastery tak 📚\n\n📚 8 categories: Foundations, Network, SOC, Windows, Forensics, Linux, Threat Intel, Cloud\n👁 Khareedne se pehle 'Look inside' se pages dekho\n📲 UPI se pay → confirm hote hi PDF download\n🚩 Har handbook ke saath usi topic ka CTF room\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#pdf",
+  "#handbook",
+  "#cybersecuritybooks",
+  "#learncybersecurity",
+  "#cybersecurityindia",
+  "#hinglish"
+ ]
+}
