@@ -135,6 +135,9 @@ Add-DnsServerResourceRecordA -ZoneName &quot;techguardinas.local&quot; -Name &qu
   <code>bash
   sudo ./setup.sh install-cert --cert wildcard.crt --key wildcard.key --chain intermediate.crt \
        --portal tgremote.gov.in --mesh tgmesh.gov.in</code>
+  <strong>Have a <code>.pfx</code> / <code>.p12</code> file instead?</strong> Use it directly (you are asked for its password):
+  <code>bash
+  sudo ./setup.sh install-cert --pfx wildcard.pfx --portal tgremote.gov.in --mesh tgmesh.gov.in</code>
   It checks that the key matches, the chain is complete, the certificate is valid and covers both names, then installs it, changes the names everywhere and restarts. For a public CA nothing has to be installed on PCs. Choose names that are not used by a real public site.
   <strong>Internal DNS:</strong> do <strong>not</strong> create a <code>gov.in</code> zone on your DNS server (it would hide every other gov.in site). Create one small zone per name instead, each with an A record for the zone itself:
   <code>powershell
@@ -352,7 +355,7 @@ When the session ends the technician has no further access. Close the support ag
 </tr>
 <tr>
 <td>Install a new/real certificate (and optionally new names)</td>
-<td><code>sudo ./setup.sh install-cert --cert c.crt --key c.key [--chain i.crt] [--portal name --mesh name]</code></td>
+<td><code>sudo ./setup.sh install-cert --pfx c.pfx</code> or <code>--cert c.crt --key c.key [--chain i.crt]</code>, plus <code>[--portal name --mesh name]</code></td>
 </tr>
 <tr>
 <td>Change host names</td>

@@ -6,7 +6,7 @@
 #   Day-2:                                     sudo ./setup.sh status | start | stop | restart | logs [svc]
 #                                              sudo ./setup.sh backup | export-ca | reset-admin-password | uninstall
 #                                              sudo ./setup.sh set-ports --https 7443 --http 8008 | repair-engine | doctor
-#                                              sudo ./setup.sh install-cert --cert c.pem --key k.pem [--chain i.pem] [--portal n --mesh n]
+#                                              sudo ./setup.sh install-cert --pfx cert.pfx | --cert c.pem --key k.pem [--chain i.pem] [--portal n --mesh n]
 #                                              sudo ./setup.sh set-hosts --portal <name> --mesh <name>
 #
 # Non-interactive install: set PORTAL_HOSTNAME, MESH_HOSTNAME, SERVER_IP (optional), ADMIN_USER,
@@ -286,16 +286,43 @@ install_cert() {
   need_root install-cert
   need_install
   set -a; . ./.env; set +a
-  local cert="" key="" ca="" chain="" portal="" mesh=""
+  local cert="" key="" ca="" chain="" portal="" mesh="" pfx=""
   while [ $# -gt 0 ]; do
     case "$1" in
+      --pfx) pfx=${2:-}; shift 2 ;;
       --cert) cert=${2:-}; shift 2 ;; --key) key=${2:-}; shift 2 ;; --ca) ca=${2:-}; shift 2 ;;
       --chain) chain=${2:-}; shift 2 ;; --portal) portal=${2:-}; shift 2 ;; --mesh) mesh=${2:-}; shift 2 ;;
-      *) die "Usage: sudo ./setup.sh install-cert --cert <cert.pem> --key <key.pem> [--chain <intermediate.pem>] [--ca <root.pem>] [--portal <name> --mesh <name>]" ;;
+      *) die "Usage: sudo ./setup.sh install-cert (--pfx <file.pfx> | --cert <cert.pem> --key <key.pem>) [--chain <intermediate.pem>] [--ca <root.pem>] [--portal <name> --mesh <name>]" ;;
     esac
   done
-  [ -s "$cert" ] && [ -s "$key" ] || die "--cert and --key files are required"
-  local tmp; tmp=$(mktemp -d)
+  local tmp; tmp=$(mktemp -d); CERT_TMP=$tmp; trap 'rm -rf "${CERT_TMP:-}"' EXIT   # private key copies never stay behind
+  if [ -n "$pfx" ]; then
+    # PKCS#12 (.pfx/.p12): certificate, chain and private key in one password-protected file.
+    [ -s "$pfx" ] || die "pfx file not found: $pfx"
+    if [ -z "${PFX_PASSWORD+x}" ]; then read -r -s -p "Password of $pfx (empty if none): " PFX_PASSWORD; echo; fi
+    export PFX_PASSWORD
+    local legacy=""
+    openssl pkcs12 -in "$pfx" -passin env:PFX_PASSWORD -nocerts -nodes -out "$tmp/pfx-key.pem" 2>/dev/null \
+      || { legacy="-legacy"; openssl pkcs12 $legacy -in "$pfx" -passin env:PFX_PASSWORD -nocerts -nodes -out "$tmp/pfx-key.pem" 2>/dev/null; } \
+      || die "cannot open $pfx (wrong password, or not a PKCS#12 file)"
+    grep -q "PRIVATE KEY" "$tmp/pfx-key.pem" || die "$pfx contains no private key (export it again WITH the private key)"
+    openssl pkcs12 $legacy -in "$pfx" -passin env:PFX_PASSWORD -nokeys -out "$tmp/pfx-certs.pem" 2>/dev/null || die "cannot read certificates from $pfx"
+    unset PFX_PASSWORD
+    # Split all certificates; the leaf is the one whose public key matches the private key, the rest is the chain.
+    awk -v d="$tmp" '/BEGIN CERTIFICATE/{n++; f=sprintf("%s/part-%02d.pem", d, n); on=1} on{print > f} /END CERTIFICATE/{on=0; close(f)}' "$tmp/pfx-certs.pem"
+    local kpub c; kpub=$(openssl pkey -in "$tmp/pfx-key.pem" -pubout 2>/dev/null)
+    : > "$tmp/pfx-leaf.pem"; : > "$tmp/pfx-chain.pem"
+    for c in "$tmp"/part-*.pem; do
+      [ -s "$c" ] || continue
+      if [ ! -s "$tmp/pfx-leaf.pem" ] && [ "$(openssl x509 -in "$c" -noout -pubkey 2>/dev/null)" = "$kpub" ]; then cat "$c" > "$tmp/pfx-leaf.pem"
+      else cat "$c" >> "$tmp/pfx-chain.pem"; fi
+    done
+    [ -s "$tmp/pfx-leaf.pem" ] || die "$pfx has no certificate matching its private key"
+    cat "$tmp/pfx-leaf.pem" "$tmp/pfx-chain.pem" > "$tmp/pfx-full.pem"
+    cert="$tmp/pfx-full.pem"; key="$tmp/pfx-key.pem"
+    c_ok "Read $pfx: certificate, $(grep -c 'BEGIN CERTIFICATE' "$tmp/pfx-chain.pem") chain certificate(s) and private key"
+  fi
+  [ -s "$cert" ] && [ -s "$key" ] || die "give --pfx <file>, or --cert and --key"
   # PEM-normalise (accepts DER .cer/.crt too); keep any chain already in the cert file
   if grep -q "BEGIN CERTIFICATE" "$cert"; then cp "$cert" "$tmp/full.pem"; else openssl x509 -inform DER -in "$cert" -out "$tmp/full.pem" || die "cannot read $cert"; fi
   if [ -n "$chain" ]; then [ -s "$chain" ] || die "chain file not found: $chain"; cat "$chain" >> "$tmp/full.pem"; fi
@@ -325,7 +352,7 @@ install_cert() {
   command install -m 644 "$tmp/full.pem" deploy/certs/fullchain.pem
   command install -m 600 "$tmp/key.pem" deploy/certs/privkey.pem
   command install -m 644 "$tmp/ca.pem" deploy/certs/ca.crt
-  rm -f "$tmp"/*.pem; rmdir "$tmp"
+  rm -f "$tmp"/*.pem; rmdir "$tmp" 2>/dev/null || true
   c_ok "Installed (previous files kept in $bk)"
   if [ "$portal" != "$PORTAL_HOSTNAME" ] || [ "$mesh" != "$MESH_HOSTNAME" ]; then apply_hosts "$portal" "$mesh"; c_ok "Host names now: $portal and $mesh"; fi
   agents_warning

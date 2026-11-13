@@ -119,6 +119,10 @@ Choose one:
   sudo ./setup.sh install-cert --cert wildcard.crt --key wildcard.key --chain intermediate.crt \
        --portal tgremote.gov.in --mesh tgmesh.gov.in
   ```
+  **Have a `.pfx` / `.p12` file instead?** Use it directly (you are asked for its password):
+  ```bash
+  sudo ./setup.sh install-cert --pfx wildcard.pfx --portal tgremote.gov.in --mesh tgmesh.gov.in
+  ```
   It checks that the key matches, the chain is complete, the certificate is valid and covers both names, then installs it, changes the names everywhere and restarts. For a public CA nothing has to be installed on PCs. Choose names that are not used by a real public site.
   **Internal DNS:** do **not** create a `gov.in` zone on your DNS server (it would hide every other gov.in site). Create one small zone per name instead, each with an A record for the zone itself:
   ```powershell
@@ -273,7 +277,7 @@ All commands run in the `techguardinas-remote-assist` folder on the server.
 | Print the CA certificate | `./setup.sh export-ca` |
 | Diagnose agents not connecting / engine problems | `sudo ./setup.sh doctor` |
 | Repair portal ↔ engine link ("Remote engine error … noauth" / 502) | `sudo ./setup.sh repair-engine` |
-| Install a new/real certificate (and optionally new names) | `sudo ./setup.sh install-cert --cert c.crt --key c.key [--chain i.crt] [--portal name --mesh name]` |
+| Install a new/real certificate (and optionally new names) | `sudo ./setup.sh install-cert --pfx c.pfx` or `--cert c.crt --key c.key [--chain i.crt]`, plus `[--portal name --mesh name]` |
 | Change host names | `sudo ./setup.sh set-hosts --portal <name> --mesh <name>` (reinstall agents afterwards) |
 | Change ports | `sudo ./setup.sh set-ports --https <port> --http <port>` (reinstall agents after an HTTPS port change) |
 | Reset the bootstrap admin password | `sudo ./setup.sh reset-admin-password` |
