@@ -11,7 +11,7 @@ function next() {
   if (!queue.length) { if (!running) { console.log(failed ? `finished with ${failed} failure(s)` : 'ALL DONE'); process.exit(failed ? 1 : 0); } return; }
   const d = queue.shift(), c = CRIMES[d - 1]; running++;
   console.log(`start Day ${d}: ${c.id}`);
-  const p = spawn('node', [path.join(__dirname, 'render.js'), c.id, String(d)], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const p = spawn('node', [path.join(__dirname, 'render.js'), c.id, String(d)], { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, OMP_NUM_THREADS: '1', OPENBLAS_NUM_THREADS: '1' } });
   let log = ''; p.stdout.on('data', x => log += x); p.stderr.on('data', x => log += x);
   p.on('close', code => {
     running--;

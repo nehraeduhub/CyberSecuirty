@@ -184,7 +184,7 @@ def build(duration, events, beat_start=5.0, voice=None):
         add(vo, a, v['t'])
     # sidechain: smooth voice envelope, music drops ~10 dB while RJ speaks
     env_v = np.abs(vo)
-    k = int(.25 * SR); env_v = np.convolve(env_v, np.ones(k) / k, 'same')
+    k = int(.25 * SR); cs = np.concatenate([[0], np.cumsum(env_v)]); i0 = np.clip(np.arange(n) - k // 2, 0, n); i1 = np.clip(np.arange(n) + k // 2, 0, n); env_v = (cs[i1] - cs[i0]) / k
     env_v = np.clip(env_v / (env_v.max() + 1e-9) * 3, 0, 1)
     duck = 1 - .68 * env_v
     mvol = .5 if voice else .55
