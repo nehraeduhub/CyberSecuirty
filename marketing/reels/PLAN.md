@@ -234,3 +234,9 @@ Total **59**: 43 topic reels + 6 brand (B1–B6) + 10 learning-path reels (P01�
 - **Path reels.** `paths.json` (hook, outcomes per path) + `tools/make-paths.py` → `guides/pNN.json`
   (cover grid of the path's handbooks, list of its rooms, outcomes).
 - Topic reels use voice speed 1.06 (`VOICE_SPEED`) and are ≈55–60 s with the reference scene.
+
+**Status 2026-11-13: all 59 reels built** (no failed builds). Topic reels 55–62 s, brand 53–68 s, path reels 39–44 s,
+≈14–26 MB each. Delivered as 18 zips (≤ ~94 MB each, GitHub limit 100 MB) in `zip/` — see `zip/INDEX.md` for what is
+in which zip — plus `calendar.csv`, a 59-day posting order starting 2026-11-16 (brand reels first, then each path reel
+followed by its topic reels). `tools/pack.py` regenerates both. The voice-over was never checked by ear — the owner
+should listen to a few reels before posting.
