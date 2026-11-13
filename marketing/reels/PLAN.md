@@ -161,6 +161,12 @@ with one Core/Networking topic; post daily at 7–9 pm IST; reuse each reel on S
 1. Language: **Hinglish headlines + English technical words** (Roman script on screen).
 2. Voice: **human-like male Hindi voice-over** (Kokoro `hm_omega`) **with background music clearly audible** —
    music sits ~9 dB under the voice while speaking, full level between lines (`MUSIC_VOL`, default 0.75).
+   Voice wording (owner, v2): learn scene says "Humare saath aap seekhenge, kaise …"; the CTA ends with
+   "techguardians.in par abhi enroll karo, aur seekhna start karo!".
+7. More animation (v2): diagonal swipe transitions, drifting binary particles + scan line, hook glitch + shake,
+   cards sliding in with shine, floating book with shine, karaoke captions, confetti on "Task 1 FREE",
+   the enroll button and the logo, pulsing "Abhi Enroll karo" button with tap. Synced sound effects from
+   tools/sfx.py (impact, whoosh, pop, sparkle; `SFX_VOL`, default 0.45).
 3. Prices: **NOT shown in reels** (no ₹ anywhere; "Task 1 FREE" stays). Post captions also have no prices.
 4. Watermark: **techguardians.in** on every reel.
 5. Pilots: Firewall, Wireshark, Incident Response — made.

@@ -42,7 +42,15 @@ for c in clips:
         subs.append({'t0': round(s, 3), 't1': round(s + d, 3), 'text': p.strip(' —')})
         s += d
 
-data = {'topic': t, 'scenes': scenes, 'clips': clips, 'subs': subs, 'total': total}
+# moments shared by the animation (template) and the sound effects (sfx.py)
+cl = {c['scene']: c for c in clips}
+marks = {
+    'cards': [round(cl['learn']['at'] + cl['learn']['dur'] * (.2 + i * .27), 3) for i in range(3)],
+    'free': round(cl['ctf']['at'] + cl['ctf']['dur'] * .78, 3),
+    'url': round(scenes['cta'][0] + 1.2, 3),
+    'enroll': round(cl['cta']['at'] + cl['cta']['dur'] * .55, 3),
+}
+data = {'topic': t, 'scenes': scenes, 'clips': clips, 'subs': subs, 'marks': marks, 'total': total}
 json.dump(data, open(os.path.join(work, 'data.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
 def ts(x):
@@ -55,12 +63,12 @@ strip = lambda h: re.sub(r'<[^>]+>', '', h)
 caption = f"""{strip(t['hook'])}
 
 {t['title']} — {t['subtitle']} 🛡️
-Is reel me: {' · '.join(strip(p) for p in t['points'])}
+Humare saath seekhenge: {' · '.join(strip(p) for p in t['points'])}
 
 📘 Pehle seekho: {t['title']} Handbook (PDF, {t['pages']} pages)
 🚩 Phir practice karo: CTF Room {t['num']} · {t['tasks']} hands-on tasks · Task 1 FREE
 
-👉 techguardians.in (link in bio)
+👉 Abhi enroll karo aur seekhna start karo: techguardians.in (link in bio)
 Keep Learning · Keep Sharing 🇮🇳
 
 {' '.join(t.get('tags', []) + ['#techguardians', '#cybersecurityindia', '#ctf', '#learncybersecurity', '#hinglish'])}

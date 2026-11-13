@@ -45,9 +45,15 @@
   .btn{display:inline-flex;align-items:center;gap:14px;margin:12px 10px;padding:24px 34px;border-radius:24px;font-size:38px;font-weight:900}
   .glow{position:absolute;width:1000px;height:1000px;left:40px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--ac) 30%,transparent),transparent 65%)}
   #cap{position:absolute;left:60px;right:60px;top:1350px;text-align:center;z-index:9}
-  #cap span{display:inline-block;max-width:960px;padding:18px 30px;border-radius:22px;background:rgba(3,10,22,.78);border:2px solid rgba(255,255,255,.12);font-size:52px;font-weight:800;line-height:1.18;letter-spacing:-.5px}
+  #cap>span{display:inline-block;max-width:960px;padding:18px 30px;border-radius:22px;background:rgba(3,10,22,.78);border:2px solid rgba(255,255,255,.12);font-size:52px;font-weight:800;line-height:1.18;letter-spacing:-.5px}
   #cap span i{font-style:normal;color:var(--ac)}
   canvas{position:absolute}
+  .sh{position:absolute;top:-20%;bottom:-20%;width:34%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);pointer-events:none;z-index:3}
+  .wrap{position:absolute;overflow:hidden;border-radius:10px;box-shadow:0 40px 90px rgba(0,0,0,.6)}
+  .wrap img{display:block;width:100%}
+  .enroll{display:inline-flex;align-items:center;gap:18px;padding:32px 60px;border-radius:999px;background:linear-gradient(90deg,#ff9933,#ffcc4d);color:#140c02;font-size:62px;font-weight:900;letter-spacing:-1px;position:relative;overflow:hidden}
+  .tapc{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:8px solid #fff;z-index:12}
+  #cap b{font-weight:900}
 </style></head>
 <body>
 <div id="bg"></div><div id="grid"></div>
@@ -56,7 +62,9 @@
 <div id="wm">techguardians.in</div>
 <div id="bar"><i></i></div>
 <canvas id="icon" width="940" height="560" style="left:70px;top:300px"></canvas>
+<canvas id="bgfx" width="1080" height="1920" style="left:0;top:0"></canvas>
 <div id="stage"></div>
+<canvas id="fx" width="1080" height="1920" style="left:0;top:0;z-index:10"></canvas>
 <div id="cap"></div>
 <script>
 const D = window.DATA, T = D.topic, A = D.assets, SC = D.scenes;
@@ -71,6 +79,9 @@ const keys = (k, t) => { if (t <= k[0][0]) return k[0][1]; for (let i = 1; i < k
 const fadeUp = (lt, at, d = .55, y = 50) => { const p = ease(clamp((lt - at) / d)); return `opacity:${p};transform:translateY(${(1 - p) * y}px)`; };
 const pop = (lt, at, d = .5) => { const p = clamp((lt - at) / d); return `opacity:${clamp(p * 2)};transform:scale(${.6 + .4 * back(p)})`; };
 const clip = (s) => D.clips.find((c) => c.scene === s);
+const M = D.marks;
+const shine = (lt, at, d = .9) => { const p = (lt - at) / d; return p > 0 && p < 1 ? `<i class="sh" style="left:${-40 + p * 150}%"></i>` : ''; };
+const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 const imgs = {};
 for (const k of ['cover', 'feature', 'room', 'task', 'logo']) { const i = new Image(); i.src = A[k]; imgs[k] = i; }
 
@@ -124,17 +135,22 @@ const ICONS = {
 function hook(t, lt) {
   const html = T.hook.replace(/(<em>.*?<\/em>|\S+)/g, (w, _m, i) => `<span class="w">${w}</span>`);
   let k = 0; const out = html.replace(/<span class="w">/g, () => `<span class="w" style="display:inline-block;${pop(lt, .25 + (k++) * .14, .4)}">`);
-  return `<div class="center" style="top:880px;${fadeUp(lt, .05)}"><span class="pill">${T.title}</span></div>
-    <div class="center" style="top:990px"><div class="h1" style="font-size:94px">${out}</div></div>`;
+  const gl = lt > .2 && lt < 1.1 && Math.floor(lt * 30) % 4 !== 0 ? (1.1 - lt) : 0;     // RGB-split glitch
+  const gx = gl * 14 * Math.sin(lt * 90), gy = gl * 6 * Math.cos(lt * 70);
+  const tsh = gl ? `text-shadow:${gx}px ${gy}px 0 rgba(255,0,80,.8),${-gx}px ${-gy}px 0 rgba(0,220,255,.8)` : '';
+  const zoom = 1 + .02 * Math.sin(lt * 1.5);
+  return `<div class="center" style="top:880px;${fadeUp(lt, .05)}"><span class="pill" style="position:relative;overflow:hidden">${T.title}${shine(lt, 1.4, .8)}</span></div>
+    <div class="center" style="top:990px;transform:scale(${zoom})"><div class="h1" style="font-size:94px;${tsh}">${out}</div></div>`;
 }
 function learn(t, lt) {
   const c = clip('learn'), base = c.at - SC.learn[0];
   const cards = T.points.map((p, i) => {
-    const at = base + c.dur * (.2 + i * .27);
-    return `<div class="card" style="${fadeUp(lt, at, .5, 70)}"><span class="ck" style="${pop(lt, at + .15, .45)}">✓</span><span><span class="num">0${i + 1}</span>${p}</span></div>`;
+    const at = M.cards[i] - SC.learn[0], q = ease(clamp((lt - at) / .5)), dir = i % 2 ? 1 : -1;
+    const lit = lt > at + .2 ? `border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,rgba(255,255,255,.05))` : '';
+    return `<div class="card" style="position:relative;overflow:hidden;opacity:${q};transform:translateX(${(1 - q) * 360 * dir}px) rotate(${(1 - q) * 4 * dir}deg);${lit}"><span class="ck" style="${pop(lt, at + .15, .45)}">✓</span><span><span class="num">0${i + 1}</span>${p}</span>${shine(lt, at + .45)}</div>`;
   }).join('');
-  return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Is topic me</span></div>
-    <div class="h1" style="margin:26px 0 48px;${fadeUp(lt, .15)}">Aap <em>seekhoge</em> 👇</div>${cards}</div>`;
+  return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Humare saath</span></div>
+    <div class="h1" style="margin:26px 0 48px;${fadeUp(lt, .15)}">Aap <em>seekhenge</em> <span style="display:inline-block;transform:translateY(${Math.abs(Math.sin(lt * 4)) * 14}px)">👇</span></div>${cards}</div>`;
 }
 function book(t, lt, d) {
   const tilt = keys([[0, -35], [1.2, -14], [d, -8]], lt), s = keys([[0, .7], [1.1, 1], [d, 1.04]], lt);
@@ -142,8 +158,8 @@ function book(t, lt, d) {
   return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Step 1 · Handbook 📘</span></div>
       <div class="h1" style="margin-top:26px;font-size:74px;white-space:nowrap;${fadeUp(lt, .15)}">Pehle <em>Handbook</em> se samjho</div></div>
     <div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1600px">
-      <img class="book" src="${A.cover}" style="left:100px;top:520px;width:430px;transform:rotateY(${-tilt}deg) scale(${s});opacity:${clamp(lt / .4)}">
-      <img class="book" src="${A.feature}" style="left:${fx}px;top:620px;width:420px;transform:rotate(${keys([[1.6, 12], [2.6, 4]], lt)}deg)">
+      <div class="wrap" style="left:100px;top:${520 + Math.sin(lt * 2) * 8}px;width:430px;transform:rotateY(${-tilt}deg) scale(${s});opacity:${clamp(lt / .4)}"><img src="${A.cover}">${shine(lt, 1.2, 1)}${shine(lt, 4.5, 1)}</div>
+      <div class="wrap" style="left:${fx}px;top:${620 + Math.cos(lt * 2) * 8}px;width:420px;transform:rotate(${keys([[1.6, 12], [2.6, 4]], lt)}deg)"><img src="${A.feature}">${shine(lt, 3, .9)}</div>
     </div>
     <div class="center" style="top:1180px;text-align:left;left:90px">
       <span class="chip" style="${pop(lt, 2.4)}">📄 ${T.pages} pages · PDF</span><span class="chip" style="${pop(lt, 2.7)}">Part ${T.num} of 43</span><span class="chip ac" style="${pop(lt, 3)}">Zero → Mastery</span></div>`;
@@ -161,7 +177,7 @@ function ctf(t, lt, d) {
   });
   const tp = clamp((lt - swap) / .5), ty = keys([[swap, 0], [swap + 1, 0], [d, Math.min(380, sh.task.h - 812 / S)]], lt);
   if (tp > 0) scr += `<img src="${A.task}" style="z-index:2;opacity:${tp};transform:translateY(${-ty * S}px)">`;
-  const phoneY = keys([[0, 1900], [.9, 450]], lt);
+  const phoneY = keys([[0, 1900], [.9, 450]], lt) + (lt > 1 ? Math.sin(lt * 1.8) * 6 : 0);
   return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Step 2 · CTF Portal 🚩</span></div>
       <div class="h1" style="margin-top:26px;font-size:72px;white-space:nowrap;${fadeUp(lt, .15)}">Phir <em>CTF</em> me practice karo</div></div>
     <div class="phone" style="left:70px;top:${phoneY}px;transform:rotate(${keys([[0, 6], [.9, -2]], lt)}deg)"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div>${scr}</div></div>
@@ -169,20 +185,22 @@ function ctf(t, lt, d) {
       <div class="stat" style="${fadeUp(lt, 1, .5, 40)}"><small>Room</small><b>${T.num} · ${T.difficulty}</b></div>
       <div class="stat" style="${fadeUp(lt, 1.4, .5, 40)}"><small>Hands-on</small><b>${T.tasks} tasks</b></div>
       <div class="stat" style="${fadeUp(lt, 1.8, .5, 40)}"><small>Labs + hints</small><b>In browser</b></div>
-      <div class="stat free" style="${pop(lt, clip('ctf').at - SC.ctf[0] + clip('ctf').dur * .78, .5)}"><small>Start now</small><b>Task 1 FREE ✅</b></div></div>`;
+      <div class="stat free" style="position:relative;overflow:hidden;${pop(lt, M.free - SC.ctf[0], .5)};box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(47,191,47,.7)"><small>Start now</small><b>Task 1 FREE ✅</b>${shine(lt, M.free - SC.ctf[0] + .5, .8)}</div></div>`;
 }
 function cta(t, lt) {
-  return `<div class="glow" style="top:340px"></div>
-    <div class="center" style="top:330px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:96px">Seekho 📘</div></div>
-    <div class="center" style="top:450px;${pop(lt, .35)}"><div style="font-size:90px;color:var(--ac);font-weight:900">↓</div></div>
-    <div class="center" style="top:570px;${fadeUp(lt, .55)}"><div class="h1" style="font-size:96px">Practice karo 🚩</div></div>
-    <div class="center" style="top:780px;${pop(lt, 1.2, .6)}"><div class="url">techguardians.in</div></div>
-    <div class="center" style="top:1010px;${fadeUp(lt, 1.7)}"><span class="btn" style="background:var(--ac);color:#140c02">📘 PDF Handbooks</span><span class="btn" style="background:#138808">🚩 CTF Portal</span></div>
-    <div class="center" style="top:1180px;${fadeUp(lt, 2.1)}"><span class="chip">43 topics</span><span class="chip">432 tasks</span><span class="chip">Hinglish + English</span></div>`;
+  const ue = M.url - SC.cta[0], en = M.enroll - SC.cta[0], typed = 'techguardians.in'.slice(0, Math.floor(clamp((lt - ue) / .7) * 16));
+  const pulse = lt > en ? 1 + .05 * Math.sin((lt - en) * 7) : 1, d = lt - en - .1;
+  const tap = d > -.4 && d < 1 ? `<div class="tapc" style="left:540px;top:1035px;opacity:${clamp(1 - d)};transform:scale(${d < 0 ? 1.4 + d : 1 + d * 2})"></div>` : '';
+  return `<div class="glow" style="top:300px;transform:scale(${1 + .06 * Math.sin(lt * 3)})"></div>
+    <div class="center" style="top:300px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:76px;white-space:nowrap">Seekho 📘 <span style="color:var(--ac)">→</span> Practice 🚩</div></div>
+    <div class="center" style="top:${keys([[0, 640], [ue, 640], [ue + .5, 520]], lt)}px;${pop(lt, ue - .3, .5)}"><div class="url">${typed}<span style="opacity:${Math.floor(lt * 3) % 2 && typed.length < 16 ? 1 : 0}">|</span>&nbsp;</div></div>
+    <div class="center" style="top:${en > 0 ? 720 : 720}px;${fadeUp(lt, en - .9)}"><div style="font-size:46px;font-weight:800;color:#cfe0ff">Abhi enroll karo aur seekhna start karo 👇</div></div>
+    <div class="center" style="top:960px;${pop(lt, en - .5, .6)}"><span class="enroll" style="transform:scale(${pulse});box-shadow:0 0 ${30 + 40 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)">🚀 Abhi Enroll karo${shine(lt, en + .3, .8)}</span></div>${tap}
+    <div class="center" style="top:1170px;${fadeUp(lt, en + .4)}"><span class="btn" style="background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);font-size:34px">📘 PDF Handbooks</span><span class="btn" style="background:#138808;font-size:34px">🚩 CTF Portal</span></div>`;
 }
 function end(t, lt) {
   return `<div class="glow" style="top:300px"></div>
-    <div class="center" style="top:400px;${pop(lt, 0, .7)}"><img src="${A.logo}" style="width:300px;height:300px;border-radius:60px;background:#fff;padding:18px;object-fit:contain;box-shadow:0 30px 100px color-mix(in srgb,var(--ac) 45%,transparent)"></div>
+    <div class="center" style="top:400px;${pop(lt, 0, .7)}"><div style="display:inline-block;position:relative;overflow:hidden;border-radius:60px;transform:rotate(${Math.sin(lt * 2) * 3}deg)"><img src="${A.logo}" style="display:block;width:300px;height:300px;background:#fff;padding:18px;object-fit:contain">${shine(lt, .8, .9)}</div></div>
     <div class="center" style="top:770px;${fadeUp(lt, .4)}"><div class="h1" style="font-size:100px">Tech Guardians</div></div>
     <div class="center" style="top:900px;${fadeUp(lt, .7)}"><div style="font-size:44px;font-weight:700;color:#cfe0ff">Keep Learning · Keep Sharing 🇮🇳</div></div>
     <div class="center" style="top:1010px;${fadeUp(lt, 1)}"><div style="display:inline-flex;width:420px;height:16px;border-radius:9px;overflow:hidden"><i style="flex:1;background:#ff9933"></i><i style="flex:1;background:#fff"></i><i style="flex:1;background:#138808"></i></div></div>
@@ -200,7 +218,8 @@ window.render = function (t) {
     const [a, b] = SC[name], d = b - a;
     if (t < a - .01 || t > b + .45) continue;
     const lt = t - a, out = name === 'end' ? 0 : ease(clamp((t - b) / .45));
-    html += `<div class="scene" style="opacity:${1 - out};transform:translateX(${-out * 140}px)">${FN[name](t, lt, d)}</div>`;
+    const shake = name === 'hook' && lt < .45 ? (.45 - lt) * 30 : 0;
+    html += `<div class="scene" style="opacity:${1 - out};transform:translate(${-out * 140 + shake * Math.sin(lt * 80)}px,${shake * Math.cos(lt * 65)}px) scale(${1 + lt * .003})">${FN[name](t, lt, d)}</div>`;
   }
   document.getElementById('stage').innerHTML = html;
   // hook icon on the canvas
@@ -209,16 +228,63 @@ window.render = function (t) {
   const io = t < ha ? ease(clamp(t / .5)) : 1 - ease(clamp((t - ha) / .45));
   cv.style.opacity = io; cv.style.transform = `scale(${.85 + .15 * io})`;
   if (io > 0) ICONS[T.icon](t);
-  // captions
+  effects(t);
+  // captions, karaoke style: the word being spoken lights up
   const s = D.subs.find((x) => t >= x.t0 && t < x.t1 + .05);
-  document.getElementById('cap').innerHTML = s && t < SC.end[0] ? `<span style="${pop(t, s.t0, .22)}">${hl(s.text)}</span>` : '';
+  let cap = '';
+  if (s && t < SC.end[0]) {
+    const w = s.text.split(' '), tot = w.reduce((a, x) => a + x.length + 2, 0), pr = clamp((t - s.t0) / (s.t1 - s.t0)) * tot;
+    let acc = 0;
+    cap = `<span style="${pop(t, s.t0, .22)}">` + w.map((x) => {
+      const a0 = acc; acc += x.length + 2;
+      if (pr >= a0 && pr < acc) return `<b style="display:inline-block;margin:0 6px;color:#ffd54d;transform:scale(1.08)">${x}</b>`;
+      return pr < a0 ? `<span style="opacity:.6">${hl(x)}</span>` : hl(x);
+    }).join(' ') + '</span>';
+  }
+  document.getElementById('cap').innerHTML = cap;
   const chrome = t < SC.end[0] ? 1 : 1 - clamp((t - SC.end[0]) / .4);
   for (const id of ['brand', 'wm', 'bar']) document.getElementById(id).style.opacity = chrome * (id === 'wm' ? .85 : 1);
 };
 
+// ---------- effect layers ----------
+const bg = document.getElementById('bgfx').getContext('2d'), fx = document.getElementById('fx').getContext('2d');
+function effects(t) {
+  bg.clearRect(0, 0, 1080, 1920);                                     // drifting binary + dots
+  bg.font = '700 30px JetBrains Mono, monospace'; bg.textAlign = 'center';
+  for (let i = 0; i < 46; i++) {
+    const x = hash(i) * 1080, sp = 30 + hash(i + 50) * 60, y = 1920 - ((t * sp + hash(i + 99) * 1920) % 2000);
+    const a = .08 + .12 * hash(i + 7) * (.6 + .4 * Math.sin(t * 2 + i));
+    bg.fillStyle = i % 3 ? `rgba(255,255,255,${a})` : T.accent + '55';
+    if (i % 2) bg.fillText(hash(i + Math.floor(t * 2)) > .5 ? '1' : '0', x, y); else { bg.beginPath(); bg.arc(x, y, 3 + hash(i) * 4, 0, 7); bg.fill(); }
+  }
+  const sy = (t * 260) % 2300 - 200; const gr = bg.createLinearGradient(0, sy - 120, 0, sy);   // scan line
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(255,255,255,.05)'); bg.fillStyle = gr; bg.fillRect(0, sy - 120, 1080, 120);
+  fx.clearRect(0, 0, 1080, 1920);
+  for (const n of ['learn', 'book', 'ctf', 'cta', 'end']) {           // diagonal swipe between scenes
+    const p = (t - (SC[n][0] - .32)) / .62; if (p <= 0 || p >= 1) continue;
+    const x = -900 + ease(p) * 2900;
+    fx.save(); fx.transform(1, 0, -.35, 1, 0, 0);
+    fx.fillStyle = T.accent; fx.globalAlpha = .92; fx.fillRect(x, 0, 520, 1920);
+    fx.fillStyle = '#fff'; fx.globalAlpha = .8; fx.fillRect(x - 70, 0, 26, 1920); fx.fillRect(x + 560, 0, 12, 1920);
+    fx.restore();
+    if (p > .35 && p < .65) { fx.fillStyle = `rgba(255,255,255,${.18 * (1 - Math.abs(p - .5) / .15)})`; fx.fillRect(0, 0, 1080, 1920); }
+  }
+  const bursts = [[M.free, 785, 1150], [M.enroll, 540, 1035], [SC.end[0] + .3, 540, 550]];
+  const cols = ['#ff9933', '#ffffff', '#138808', '#ffcc4d', T.accent];
+  for (const [tb, cx, cy] of bursts) {                                  // confetti
+    const dt = t - tb; if (dt < 0 || dt > 2.2) continue;
+    for (let i = 0; i < 70; i++) {
+      const ang = hash(i + tb) * Math.PI * 2, v = 500 + hash(i * 3 + tb) * 900;
+      const x = cx + Math.cos(ang) * v * dt * Math.exp(-dt * 1.2), y = cy + Math.sin(ang) * v * dt * Math.exp(-dt * 1.2) + 420 * dt * dt;
+      fx.save(); fx.translate(x, y); fx.rotate(dt * 8 + i); fx.globalAlpha = clamp((2.2 - dt) / .6);
+      fx.fillStyle = cols[i % cols.length]; fx.fillRect(-9, -5, 18, 10); fx.restore();
+    }
+  }
+}
+
 // Thumbnail / cover (1080x1920): hook + book + room badge, readable as a small tile.
 window.renderCover = function () {
-  window.render(0); document.getElementById('cap').innerHTML = ''; g.clearRect(0, 0, 940, 560); cv.style.opacity = 0;
+  window.render(0); document.getElementById('cap').innerHTML = ''; fx.clearRect(0, 0, 1080, 1920); g.clearRect(0, 0, 940, 560); cv.style.opacity = 0;
   document.getElementById('bar').style.opacity = 0;
   document.getElementById('stage').innerHTML = `<div class="glow" style="top:700px"></div>
     <div class="center" style="top:270px"><span class="pill" style="font-size:36px">Room ${T.num} · ${T.path}</span></div>
