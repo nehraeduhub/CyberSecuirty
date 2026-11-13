@@ -7,7 +7,7 @@ set -euo pipefail
 R="$(cd "$(dirname "$0")/.." && pwd)"
 SITE="${SITE:-$R/../..}"; JOBS="${JOBS:-3}"; MUSIC_VOL="${MUSIC_VOL:-0.75}"
 python3 -I "$R/tools/make-topics.py" "$SITE" "$R" >/dev/null
-node "$R/tools/capture.js" "$R/topics.json" "$(IFS=,; echo "$*")" "$R/work"
+[ -n "${SKIP_CAPTURE:-}" ] || node "$R/tools/capture.js" "$R/topics.json" "$(IFS=,; echo "$*")" "$R/work"
 for N in "$@"; do
   W="$R/work/$N"; mkdir -p "$W"
   read -r NAME BOOK MOOD < <(python3 -I -c "import json,sys;t=[x for x in json.load(open(sys.argv[1])) if x['num']==int(sys.argv[2])][0];print(t['name'],t['book'],t['mood'])" "$R/topics.json" "$N")
@@ -15,7 +15,9 @@ for N in "$@"; do
   cp "$SITE/public/images/store/books/$BOOK-cover.png" "$W/cover.png"
   cp "$SITE/public/images/store/books/$BOOK-feature.png" "$W/feature.png"
   cp "$R/legacy/launch/shield.png" "$W/logo.png"
-  python3 -I "$R/tools/voice.py" "$R/topics.json" "$N" "$W" >/dev/null
+  REFB=$(python3 -I -c "import json,sys;t=[x for x in json.load(open(sys.argv[1])) if x['num']==int(sys.argv[2])][0];print(t['ref'].get('cover',''))" "$R/topics.json" "$N")
+  rm -f "$W/refcover.png"; [ -z "$REFB" ] || cp "$SITE/public/images/store/books/$REFB-cover.png" "$W/refcover.png"
+  python3 -I "$R/tools/voice.py" "$R/topics.json" "$N" "$W" hm_omega "${VOICE_SPEED:-1.06}" >/dev/null
   python3 -I "$R/tools/timeline.py" "$R/topics.json" "$N" "$W" "$O"
   TOTAL=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['total'])" "$W/data.json")
   python3 -I "$R/tools/music.py" "$MOOD" "$TOTAL" "$W/music.wav" >/dev/null

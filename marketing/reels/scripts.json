@@ -1,107 +1,840 @@
 {
+ "1": {
+  "icon": "🛡️",
+  "hook": "Cyber security <em>zero</em> se kaise shuru karein? 🤔",
+  "hookVo": "साइबर सिक्योरिटी ज़ीरो से कैसे शुरू करें? सबसे पहले, एक डिफ़ेंडर की तरह सोचना सीखिए।",
+  "hookSub": "Cyber security zero se kaise shuru karein? Sabse pehle, ek defender ki tarah sochna seekhiye.",
+  "points": [
+   "<b>Core concepts</b> aasaan bhasha me",
+   "<b>Hash</b>, encoding, phishing pehchaan",
+   "Real <b>security mindset</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे साइबर सिक्योरिटी के कोर कॉन्सेप्ट्स काम करते हैं, कैसे हैश और फ़िशिंग को पहचानते हैं, और कैसे एक असली सिक्योरिटी माइंडसेट बनाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise cyber security ke core concepts kaam karte hain, kaise hash aur phishing ko pehchante hain, aur kaise ek asli security mindset banate hain.",
+  "tdev": "साइबर सिक्योरिटी फ़ंडामेंटल्स",
+  "tags": [
+   "#cybersecuritybasics",
+   "#beginners",
+   "#infosec"
+  ]
+ },
+ "2": {
+  "icon": "🔺",
+  "hook": "Har security ka <em>base</em> sirf 3 shabd? 🔺",
+  "hookVo": "हर सिक्योरिटी का बेस, सिर्फ़ तीन शब्द। कॉन्फ़िडेंशियलिटी, इंटीग्रिटी और अवेलेबिलिटी।",
+  "hookSub": "Har security ka base sirf 3 shabd — Confidentiality, Integrity aur Availability.",
+  "points": [
+   "<b>Confidentiality</b> — data secret",
+   "<b>Integrity</b> — data badle nahi",
+   "<b>Availability</b> — service chalu"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे डेटा को सीक्रेट रखते हैं, कैसे साबित करते हैं कि डेटा बदला नहीं गया, और कैसे सर्विस को हमेशा चालू रखते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise data ko secret rakhte hain, kaise saabit karte hain ki data badla nahi gaya, aur kaise service ko hamesha chalu rakhte hain.",
+  "tdev": "द सीआईए ट्रायड",
+  "tags": [
+   "#ciatriad",
+   "#infosec",
+   "#cybersecuritybasics"
+  ]
+ },
+ "3": {
+  "icon": "⚠️",
+  "hook": "Threat, vuln aur risk — <em>farak</em> pata hai? ⚠️",
+  "hookVo": "थ्रेट, वल्नरेबिलिटी और रिस्क, इनमें फ़र्क़ पता है? ज़्यादातर लोग इन्हें एक ही समझते हैं।",
+  "hookSub": "Threat, vulnerability aur risk — inme farak pata hai? Zyadatar log inhe ek hi samajhte hain.",
+  "points": [
+   "Threat vs vuln vs <b>risk</b>",
+   "<b>CVSS</b> se severity score",
+   "<b>Risk-based</b> decisions"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे थ्रेट, वल्नरेबिलिटी और रिस्क को अलग पहचानते हैं, कैसे सीवीएसएस से सीवेरिटी स्कोर करते हैं, और कैसे रिस्क के हिसाब से फ़ैसले लेते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise threat, vulnerability aur risk ko alag pehchante hain, kaise CVSS se severity score karte hain, aur kaise risk ke hisaab se faisle lete hain.",
+  "tdev": "थ्रेट्स, वल्नरेबिलिटीज़ एंड रिस्क्स",
+  "tags": [
+   "#riskmanagement",
+   "#cvss",
+   "#vulnerability"
+  ]
+ },
+ "4": {
+  "icon": "🏗️",
+  "hook": "Security baad me <em>jodte</em> ho? Galti yahin hai! 🏗️",
+  "hookVo": "सिक्योरिटी बाद में जोड़ते हो? असली ग़लती यहीं है। सिक्योरिटी शुरू से डिज़ाइन होनी चाहिए।",
+  "hookSub": "Security baad me jodte ho? Asli galti yahin hai. Security shuru se design honi chahiye.",
+  "points": [
+   "<b>Least privilege</b> & fail-safe",
+   "<b>Threat modeling</b>",
+   "Flat network ka <b>fix</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे लीस्ट प्रिविलेज और फ़ेल-सेफ़ डिज़ाइन लगाते हैं, कैसे थ्रेट मॉडलिंग करते हैं, और कैसे एक फ़्लैट नेटवर्क को सुरक्षित बनाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise least privilege aur fail-safe design lagate hain, kaise threat modeling karte hain, aur kaise ek flat network ko surakshit banate hain.",
+  "tdev": "सिक्योरिटी आर्किटेक्चर",
+  "tags": [
+   "#securityarchitecture",
+   "#threatmodeling",
+   "#securebydesign"
+  ]
+ },
+ "5": {
+  "icon": "🧅",
+  "hook": "Ek <em>taala</em> kaafi hai? Bilkul nahi! 🧅",
+  "hookVo": "क्या एक ताला काफ़ी है? बिल्कुल नहीं! असली सिक्योरिटी में, कई लेयर्स एक दूसरे को कवर करती हैं।",
+  "hookSub": "Kya ek taala kaafi hai? Bilkul nahi! Asli security me kai layers ek doosre ko cover karti hain.",
+  "points": [
+   "<b>Prevent</b>, detect, correct",
+   "Layers jo <b>cover</b> karein",
+   "No <b>single point</b> of failure"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे प्रिवेंट, डिटेक्ट और करेक्ट कंट्रोल्स लगाते हैं, कैसे लेयर्स एक दूसरे को कवर करती हैं, और कैसे सिंगल पॉइंट ऑफ़ फ़ेलियर हटाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise prevent, detect aur correct controls lagate hain, kaise layers ek doosre ko cover karti hain, aur kaise single point of failure hatate hain.",
+  "tdev": "डिफ़ेंस इन डेप्थ",
+  "tags": [
+   "#defenseindepth",
+   "#layeredsecurity",
+   "#infosec"
+  ]
+ },
+ "6": {
+  "icon": "🔐",
+  "hook": "<em>Never trust</em>, always verify — matlab? 🔐",
+  "hookVo": "नेवर ट्रस्ट, ऑलवेज़ वेरिफ़ाई। आज की सिक्योरिटी में, कोई भी डिफ़ॉल्ट से ट्रस्टेड नहीं है।",
+  "hookSub": "Never trust, always verify. Aaj ki security me koi bhi default se trusted nahi hai.",
+  "points": [
+   "<b>Identity</b> = naya perimeter",
+   "<b>Micro-segmentation</b>",
+   "Risk par <b>MFA</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे आइडेंटिटी को नया पेरिमीटर बनाते हैं, कैसे माइक्रो-सेगमेंटेशन करते हैं, और कैसे रिस्क के हिसाब से एमएफ़ए माँगते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise identity ko naya perimeter banate hain, kaise micro-segmentation karte hain, aur kaise risk ke hisaab se MFA maangte hain.",
+  "tdev": "ज़ीरो ट्रस्ट",
+  "tags": [
+   "#zerotrust",
+   "#mfa",
+   "#identitysecurity"
+  ]
+ },
+ "7": {
+  "icon": "packets",
+  "hook": "Ek click pe <em>internet</em> me kya hota hai? 🌐",
+  "hookVo": "एक क्लिक पर, इंटरनेट में असल में क्या होता है? जवाब है, टीसीपी आईपी।",
+  "hookSub": "Ek click par internet me asal me kya hota hai? Jawab hai — TCP/IP.",
+  "points": [
+   "<b>TCP handshake</b> padhna",
+   "<b>Ports</b> & private IP ranges",
+   "<b>MITM</b> rokna"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे टीसीपी हैंडशेक पढ़ते हैं, कैसे पोर्ट्स और प्राइवेट आईपी रेंज पहचानते हैं, और कैसे मैन इन द मिडल अटैक रोकते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise TCP handshake padhte hain, kaise ports aur private IP ranges pehchante hain, aur kaise man-in-the-middle attack rokte hain.",
+  "tdev": "टीसीपी आईपी नेटवर्किंग",
+  "tags": [
+   "#tcpip",
+   "#networking",
+   "#ccna"
+  ]
+ },
+ "8": {
+  "icon": "🔌",
+  "hook": "Hacker <em>switch port</em> se andar aa gaya? 🔌",
+  "hookVo": "हैकर ऑफ़िस के एक खुले स्विच पोर्ट से अंदर आ गया? नेटवर्क फ़ैब्रिक को हार्डन करना ज़रूरी है।",
+  "hookSub": "Hacker office ke ek khule switch port se andar aa gaya? Network fabric ko harden karna zaroori hai.",
+  "points": [
+   "<b>Port security</b>",
+   "Routing protocol <b>protection</b>",
+   "<b>BGP hijack</b> rokna"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे पोर्ट सिक्योरिटी लगाते हैं, कैसे रूटिंग प्रोटोकॉल्स को प्रोटेक्ट करते हैं, और कैसे बीजीपी हाइजैक रोकते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise port security lagate hain, kaise routing protocols ko protect karte hain, aur kaise BGP hijack rokte hain.",
+  "tdev": "रूटिंग एंड स्विचिंग सिक्योरिटी",
+  "tags": [
+   "#routing",
+   "#switching",
+   "#networksecurity"
+  ]
+ },
+ "9": {
+  "icon": "🧩",
+  "hook": "VLAN laga diya, phir bhi <em>attack</em> paar? 🧩",
+  "hookVo": "वीलैन लगा दिया, फिर भी अटैकर दूसरे सेगमेंट में पहुँच गया? वीलैन हॉपिंग को समझना ज़रूरी है।",
+  "hookSub": "VLAN laga diya, phir bhi attacker doosre segment me pahunch gaya? VLAN hopping ko samajhna zaroori hai.",
+  "points": [
+   "<b>Access vs trunk</b> ports",
+   "<b>VLAN hopping</b> rokna",
+   "<b>VRF</b> isolation"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे एक्सेस और ट्रंक पोर्ट्स सेट करते हैं, कैसे वीलैन हॉपिंग रोकते हैं, और कैसे वीआरएफ़ से रास्ते अलग करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise access aur trunk ports set karte hain, kaise VLAN hopping rokte hain, aur kaise VRF se raaste alag karte hain.",
+  "tdev": "वीलैन एंड वीआरएफ़",
+  "tags": [
+   "#vlan",
+   "#vrf",
+   "#networksecurity"
+  ]
+ },
+ "10": {
+  "icon": "🚧",
+  "hook": "Ek PC hack — <em>poora</em> network gaya? 🚧",
+  "hookVo": "एक कंप्यूटर हैक हुआ, और पूरा नेटवर्क गया? सही सेगमेंटेशन, अटैकर को वहीं रोक देता है।",
+  "hookSub": "Ek computer hack hua, aur poora network gaya? Sahi segmentation attacker ko wahin rok deta hai.",
+  "points": [
+   "Trust ke hisaab se <b>zones</b>",
+   "<b>Lateral movement</b> rokna",
+   "Sirf <b>jump host</b> access"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे ट्रस्ट के हिसाब से ज़ोन्स बनाते हैं, कैसे लैटरल मूवमेंट रोकते हैं, और कैसे सिर्फ़ जंप होस्ट से एक्सेस देते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise trust ke hisaab se zones banate hain, kaise lateral movement rokte hain, aur kaise sirf jump host se access dete hain.",
+  "tdev": "नेटवर्क सेगमेंटेशन",
+  "tags": [
+   "#segmentation",
+   "#lateralmovement",
+   "#networksecurity"
+  ]
+ },
+ "11": {
+  "icon": "🛰️",
+  "hook": "MPLS = <em>encryption</em>? Bada myth! 🛰️",
+  "hookVo": "क्या एमपीएलएस मतलब एन्क्रिप्शन? ये एक बड़ा मिथ है! कैरियर कोर की सिक्योरिटी समझिए।",
+  "hookSub": "Kya MPLS matlab encryption? Ye ek bada myth hai! Carrier core ki security samjhiye.",
+  "points": [
+   "<b>MPLS</b> forwarding",
+   "<b>VPN</b> path separation",
+   "<b>Control plane</b> protection"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे एमपीएलएस पैकेट्स फ़ॉरवर्ड करता है, कैसे कस्टमर्स के रास्ते अलग रहते हैं, और कैसे कंट्रोल प्लेन को प्रोटेक्ट करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise MPLS packets forward karta hai, kaise customers ke raaste alag rehte hain, aur kaise control plane ko protect karte hain.",
+  "tdev": "एमपीएलएस सिक्योरिटी",
+  "tags": [
+   "#mpls",
+   "#isp",
+   "#networksecurity"
+  ]
+ },
  "12": {
   "icon": "firewall",
   "hook": "Kya ek <em>Firewall</em> har attack rok sakta hai? 🤔",
+  "hookVo": "क्या एक फ़ायरवॉल हर अटैक को रोक सकता है? जवाब है, नहीं! अगर उसके रूल्स सही नहीं हैं।",
+  "hookSub": "Kya ek Firewall har attack rok sakta hai? Jawab hai — nahi! Agar uske rules sahi nahi hain.",
   "points": [
    "<b>Default-deny</b> policy banana",
    "<b>Zones</b> aur segmentation",
    "<b>Stateful inspection</b> & NAT rules"
   ],
-  "showTasks": [
-   2,
-   5,
-   6
-  ],
-  "vo": {
-   "hook": "क्या एक फ़ायरवॉल हर अटैक को रोक सकता है? जवाब है, नहीं! अगर उसके रूल्स सही नहीं हैं।",
-   "learn": "हमारे साथ आप सीखेंगे, कैसे डिफ़ॉल्ट डिनाई पॉलिसी बनाते हैं, कैसे ज़ोन्स और सेगमेंटेशन करते हैं, और कैसे स्टेटफ़ुल इंस्पेक्शन के साथ नैट रूल्स लिखते हैं।",
-   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। फ़ायरवॉल सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर बारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
-   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!"
-  },
-  "sub": {
-   "hook": "Kya ek Firewall har attack rok sakta hai? Jawab hai — nahi! Agar uske rules sahi nahi hain.",
-   "learn": "Humare saath aap seekhenge — kaise default-deny policy banate hain, kaise zones aur segmentation karte hain, aur kaise stateful inspection ke saath NAT rules likhte hain.",
-   "book": "Pehle handbook se concept clear karo. Firewall Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 12 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein.",
-   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!"
-  },
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे डिफ़ॉल्ट डिनाई पॉलिसी बनाते हैं, कैसे ज़ोन्स और सेगमेंटेशन करते हैं, और कैसे स्टेटफ़ुल इंस्पेक्शन के साथ नैट रूल्स लिखते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise default-deny policy banate hain, kaise zones aur segmentation karte hain, aur kaise stateful inspection ke saath NAT rules likhte hain.",
   "tags": [
    "#firewall",
    "#networksecurity",
    "#cybersecurity",
    "#ngfw",
    "#defaultdeny"
+  ],
+  "showTasks": [
+   2,
+   5,
+   6
+  ],
+  "tdev": "फ़ायरवॉल सिक्योरिटी"
+ },
+ "13": {
+  "icon": "⚖️",
+  "hook": "Lakhon users, ek <em>front door</em> — safe kaise? ⚖️",
+  "hookVo": "लाखों यूज़र्स, और एक ही फ़्रंट डोर। उसे सुरक्षित कैसे रखें? लोड बैलेंसर और एडीसी से।",
+  "hookSub": "Lakhon users aur ek hi front door. Use surakshit kaise rakhein? Load balancer aur ADC se.",
+  "points": [
+   "<b>Balancing</b> & health checks",
+   "<b>TLS</b> termination safely",
+   "<b>Rate limiting</b> + headers"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे लोड बैलेंसिंग और हेल्थ चेक्स सेट करते हैं, कैसे टीएलएस को सुरक्षित टर्मिनेट करते हैं, और कैसे रेट लिमिटिंग लगाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise load balancing aur health checks set karte hain, kaise TLS ko surakshit terminate karte hain, aur kaise rate limiting lagate hain.",
+  "tdev": "लोड बैलेंसर एंड एडीसी सिक्योरिटी",
+  "tags": [
+   "#loadbalancer",
+   "#adc",
+   "#tls"
+  ]
+ },
+ "14": {
+  "icon": "firewall",
+  "hook": "SQL injection <em>website</em> tak pahunche hi nahi! 🧱",
+  "hookVo": "एसक्यूएल इंजेक्शन जैसे अटैक, आपकी वेबसाइट तक पहुँचें ही नहीं। ये काम करता है, वेब एप्लिकेशन फ़ायरवॉल।",
+  "hookSub": "SQL injection jaise attack aapki website tak pahunchein hi nahi. Ye kaam karta hai Web Application Firewall.",
+  "points": [
+   "<b>OWASP Top 10</b> block",
+   "<b>ModSecurity</b> + Core Rule Set",
+   "<b>Virtual patching</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे ओवास्प टॉप टेन अटैक्स ब्लॉक करते हैं, कैसे मॉडसिक्योरिटी डिप्लॉय करते हैं, और कैसे वर्चुअल पैचिंग करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise OWASP Top 10 attacks block karte hain, kaise ModSecurity deploy karte hain, aur kaise virtual patching karte hain.",
+  "tdev": "वेब एप्लिकेशन फ़ायरवॉल",
+  "tags": [
+   "#waf",
+   "#owasp",
+   "#websecurity"
+  ]
+ },
+ "15": {
+  "icon": "🚀",
+  "hook": "Apni <em>website</em> khud live karni hai? 🚀",
+  "hookVo": "अपनी वेबसाइट ख़ुद लाइव करनी है? सर्वर सेटअप से लेकर सिक्योरिटी तक, सब सीखिए।",
+  "hookSub": "Apni website khud live karni hai? Server setup se lekar security tak, sab seekhiye.",
+  "points": [
+   "<b>IIS</b>, XAMPP, Cloudflare, ngrok",
+   "<b>TLS</b> certificate lagana",
+   "Server <b>hardening</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे वेब सर्वर सेटअप करते हैं, कैसे टीएलएस सर्टिफ़िकेट लगाते हैं, और कैसे सर्वर को हार्डन करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise web server setup karte hain, kaise TLS certificate lagate hain, aur kaise server ko harden karte hain.",
+  "tdev": "वेब सर्वर सेटअप एंड होस्टिंग",
+  "tags": [
+   "#webhosting",
+   "#webserver",
+   "#cloudflare"
+  ]
+ },
+ "16": {
+  "icon": "radar",
+  "hook": "Attack ho raha hai — <em>pata</em> kaise chalega? 🚨",
+  "hookVo": "नेटवर्क पर अटैक हो रहा है, ये पता कैसे चलेगा? आईडीएस और आईपीएस से।",
+  "hookSub": "Network par attack ho raha hai, ye pata kaise chalega? IDS aur IPS se.",
+  "points": [
+   "<b>Signature</b> vs anomaly",
+   "Apna <b>detection rule</b>",
+   "<b>Noise</b> tune karna"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे सिग्नेचर और एनॉमली डिटेक्शन काम करते हैं, कैसे अपना डिटेक्शन रूल लिखते हैं, और कैसे फ़ालतू अलर्ट्स कम करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise signature aur anomaly detection kaam karte hain, kaise apna detection rule likhte hain, aur kaise faltu alerts kam karte hain.",
+  "tdev": "आईडीएस आईपीएस",
+  "tags": [
+   "#ids",
+   "#ips",
+   "#snort"
+  ]
+ },
+ "17": {
+  "icon": "packets",
+  "hook": "Breach <em>flows</em> me chhupa tha! 📈",
+  "hookVo": "ब्रीच, नेटवर्क फ़्लोज़ में छुपा था, बस किसी ने देखा नहीं। नेटवर्क मॉनिटरिंग सीखिए।",
+  "hookSub": "Breach network flows me chhupa tha — bas kisi ne dekha nahi. Network monitoring seekhiye.",
+  "points": [
+   "<b>Baseline</b> banana",
+   "<b>NetFlow</b> & SNMP",
+   "Attack <b>flows</b> me pakadna"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे नॉर्मल ट्रैफ़िक की बेसलाइन बनाते हैं, कैसे नेटफ़्लो और एसएनएमपी से डेटा लेते हैं, और कैसे फ़्लोज़ में अटैक पकड़ते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise normal traffic ki baseline banate hain, kaise NetFlow aur SNMP se data lete hain, aur kaise flows me attack pakadte hain.",
+  "tdev": "नेटवर्क मॉनिटरिंग",
+  "tags": [
+   "#networkmonitoring",
+   "#netflow",
+   "#noc"
   ]
  },
  "18": {
   "icon": "packets",
   "hook": "Aapke network me <em>asal me</em> kya chal raha hai? 👀",
+  "hookVo": "आपके नेटवर्क में असल में क्या चल रहा है? हर पैकेट सच बताता है, बस उसे पढ़ना आना चाहिए।",
+  "hookSub": "Aapke network me asal me kya chal raha hai? Har packet sach batata hai — bas use padhna aana chahiye.",
   "points": [
    "<b>Capture</b> vs <b>display</b> filters",
    "<b>Follow TCP stream</b> se data padho",
    "Wire par <b>attack</b> pakdo"
   ],
-  "showTasks": [
-   2,
-   5,
-   8
-  ],
-  "vo": {
-   "hook": "आपके नेटवर्क में असल में क्या चल रहा है? हर पैकेट सच बताता है, बस उसे पढ़ना आना चाहिए।",
-   "learn": "हमारे साथ आप सीखेंगे, कैसे कैप्चर और डिस्प्ले फ़िल्टर्स लगाते हैं, कैसे टीसीपी स्ट्रीम को फ़ॉलो करते हैं, और कैसे वायर पर अटैक को पकड़ते हैं।",
-   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। वायरशार्क मास्टरी, पैकेट्स को एक प्रो की तरह पढ़ना सीखो।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर अठारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
-   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!"
-  },
-  "sub": {
-   "hook": "Aapke network me asal me kya chal raha hai? Har packet sach batata hai — bas use padhna aana chahiye.",
-   "learn": "Humare saath aap seekhenge — kaise capture aur display filters lagate hain, kaise TCP stream ko follow karte hain, aur kaise wire par attack ko pakadte hain.",
-   "book": "Pehle handbook se concept clear karo. Wireshark Mastery — packets ko ek pro ki tarah padhna seekho.",
-   "ctf": "Phir CTF Portal ke Room 18 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein.",
-   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!"
-  },
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे कैप्चर और डिस्प्ले फ़िल्टर्स लगाते हैं, कैसे टीसीपी स्ट्रीम को फ़ॉलो करते हैं, और कैसे वायर पर अटैक को पकड़ते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise capture aur display filters lagate hain, kaise TCP stream ko follow karte hain, aur kaise wire par attack ko pakadte hain.",
   "tags": [
    "#wireshark",
    "#packetanalysis",
    "#networkforensics",
    "#cybersecurity",
    "#blueteam"
+  ],
+  "showTasks": [
+   2,
+   5,
+   8
+  ],
+  "tdev": "वायरशार्क मास्टरी"
+ },
+ "19": {
+  "icon": "radar",
+  "hook": "Network me kaun kaun <em>zinda</em> hai? 📡",
+  "hookVo": "आपके नेटवर्क में कौन कौन से डिवाइस ज़िंदा हैं, और कौन से पोर्ट खुले हैं? एनमैप बताता है।",
+  "hookSub": "Aapke network me kaun kaun se devices zinda hain, aur kaun se port khule hain? Nmap batata hai.",
+  "points": [
+   "<b>Host</b> & port discovery",
+   "<b>Service</b> + OS detection",
+   "<b>NSE</b> scripts"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे होस्ट और पोर्ट्स डिस्कवर करते हैं, कैसे सर्विस और ऑपरेटिंग सिस्टम पहचानते हैं, और कैसे एनएसई स्क्रिप्ट्स चलाते हैं। सिर्फ़ अपने या अनुमति वाले नेटवर्क पर।",
+  "learnSub": "Humare saath aap seekhenge — kaise host aur ports discover karte hain, kaise service aur OS pehchante hain, aur kaise NSE scripts chalate hain. Sirf apne ya permission wale network par.",
+  "tdev": "एनमैप मास्टरी",
+  "tags": [
+   "#nmap",
+   "#portscanning",
+   "#ethicalhacking"
+  ]
+ },
+ "20": {
+  "icon": "🖥️",
+  "hook": "<em>SOC</em> ke andar 24×7 hota kya hai? 🖥️",
+  "hookVo": "सॉक के अंदर, चौबीसों घंटे, होता क्या है? सिक्योरिटी ऑपरेशन्स सेंटर कैसे बनता है, समझिए।",
+  "hookSub": "SOC ke andar 24x7 hota kya hai? Security Operations Center kaise banta hai, samjhiye.",
+  "points": [
+   "People, process, <b>technology</b>",
+   "<b>L1, L2, L3</b> analyst tiers",
+   "<b>ATT&CK</b> mapping"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे सॉक में पीपल, प्रोसेस और टेक्नोलॉजी जुड़ते हैं, कैसे एल वन, एल टू, एल थ्री एनालिस्ट काम करते हैं, और कैसे डिटेक्शन्स को अटैक फ़्रेमवर्क से मैप करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise SOC me people, process aur technology judte hain, kaise L1, L2, L3 analyst kaam karte hain, aur kaise detections ko ATT&CK se map karte hain.",
+  "tdev": "सॉक आर्किटेक्चर",
+  "tags": [
+   "#soc",
+   "#socanalyst",
+   "#blueteam"
+  ]
+ },
+ "21": {
+  "icon": "🔎",
+  "hook": "Lakhon logs me ek <em>attack</em> — dhoondhoge kaise? 🔎",
+  "hookVo": "लाखों लॉग्स में छुपा एक अटैक, ढूँढोगे कैसे? यही काम करता है, सीम।",
+  "hookSub": "Lakhon logs me chhupa ek attack, dhoondhoge kaise? Yahi kaam karta hai SIEM.",
+  "points": [
+   "Logs <b>collect</b> & parse",
+   "<b>Correlation</b> rules",
+   "<b>Brute-force</b> detection"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे लॉग्स कलेक्ट और पार्स करते हैं, कैसे कोरिलेशन रूल्स बनाते हैं, और कैसे ब्रूट फ़ोर्स अटैक पकड़ते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise logs collect aur parse karte hain, kaise correlation rules banate hain, aur kaise brute force attack pakadte hain.",
+  "tdev": "सीम",
+  "tags": [
+   "#siem",
+   "#soc",
+   "#loganalysis"
+  ]
+ },
+ "22": {
+  "icon": "🔔",
+  "hook": "Roz hazaaron alerts — <em>asli</em> wala kaunsa? 🔔",
+  "hookVo": "रोज़ हज़ारों अलर्ट्स, इनमें असली वाला कौन सा? अलर्ट फ़टीग से कैसे बचें, सीखिए।",
+  "hookSub": "Roz hazaaron alerts — inme asli wala kaunsa? Alert fatigue se kaise bachein, seekhiye.",
+  "points": [
+   "Sahi <b>logs</b> pehle",
+   "<b>Severity</b> & priority",
+   "<b>Dedup</b> + tuning"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे ज़रूरी लॉग्स पहले कलेक्ट करते हैं, कैसे अलर्ट्स की सीवेरिटी तय करते हैं, और कैसे डुप्लिकेट और फ़ालतू अलर्ट्स हटाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise zaroori logs pehle collect karte hain, kaise alerts ki severity tay karte hain, aur kaise duplicate aur faltu alerts hatate hain.",
+  "tdev": "लॉग एंड अलर्ट मैनेजमेंट",
+  "tags": [
+   "#alertfatigue",
+   "#soc",
+   "#logmanagement"
   ]
  },
  "23": {
   "icon": "siren",
   "hook": "<em>Ransomware</em> attack ho gaya… ab kya karoge? 🚨",
+  "hookVo": "अगर आपकी कंपनी पर रैनसमवेयर अटैक हो जाए, तो पहले पाँच मिनट में आप क्या करोगे?",
+  "hookSub": "Agar aapki company par ransomware attack ho jaye, to pehle 5 minute me aap kya karoge?",
   "points": [
    "<b>IR lifecycle</b> step by step",
    "Evidence bachakar <b>containment</b>",
    "<b>Recovery</b> + lessons learned"
   ],
-  "showTasks": [
-   1,
-   4,
-   10
-  ],
-  "vo": {
-   "hook": "अगर आपकी कंपनी पर रैनसमवेयर अटैक हो जाए, तो पहले पाँच मिनट में आप क्या करोगे?",
-   "learn": "हमारे साथ आप सीखेंगे, कैसे इंसिडेंट रिस्पॉन्स लाइफ़साइकल को स्टेप बाय स्टेप फ़ॉलो करते हैं, कैसे एविडेंस खोए बिना अटैक को कंटेन करते हैं, और कैसे रिकवरी के बाद सिस्टम को हार्डन करते हैं।",
-   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। इंसिडेंट रिस्पॉन्स, डिटेक्ट, कंटेन और रिकवर।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तेईस में, रैनसमवेयर सिनेरियो तक, दस हैंड्स-ऑन टास्क। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
-   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!"
-  },
-  "sub": {
-   "hook": "Agar aapki company par ransomware attack ho jaye, to pehle 5 minute me aap kya karoge?",
-   "learn": "Humare saath aap seekhenge — kaise Incident Response lifecycle ko step by step follow karte hain, kaise evidence khoye bina attack ko contain karte hain, aur kaise recovery ke baad system ko harden karte hain.",
-   "book": "Pehle handbook se concept clear karo. Incident Response — detect, contain aur recover.",
-   "ctf": "Phir CTF Portal ke Room 23 me, ransomware scenario tak, 10 hands-on tasks. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein.",
-   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!"
-  },
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे इंसिडेंट रिस्पॉन्स लाइफ़साइकल को स्टेप बाय स्टेप फ़ॉलो करते हैं, कैसे एविडेंस खोए बिना अटैक को कंटेन करते हैं, और कैसे रिकवरी के बाद सिस्टम को हार्डन करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise Incident Response lifecycle ko step by step follow karte hain, kaise evidence khoye bina attack ko contain karte hain, aur kaise recovery ke baad system ko harden karte hain.",
   "tags": [
    "#incidentresponse",
    "#ransomware",
    "#soc",
    "#dfir",
    "#cybersecurity"
+  ],
+  "showTasks": [
+   1,
+   4,
+   10
+  ],
+  "tdev": "इंसिडेंट रिस्पॉन्स"
+ },
+ "24": {
+  "icon": "radar",
+  "hook": "Jo <em>alerts</em> nahi pakadte, use kaun pakdega? 🕵️",
+  "hookVo": "जो अटैक अलर्ट्स नहीं पकड़ते, उसे कौन पकड़ेगा? थ्रेट हंटर!",
+  "hookSub": "Jo attack alerts nahi pakadte, use kaun pakdega? Threat hunter!",
+  "points": [
+   "<b>Hypothesis</b> se hunting",
+   "<b>Persistence</b> & C2 dhoondhna",
+   "Hunt → <b>detection</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे हाइपोथिसिस बनाकर हंट करते हैं, कैसे पर्सिस्टेंस और सीटू बीकन्स ढूँढते हैं, और कैसे हंट को डिटेक्शन रूल में बदलते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise hypothesis banakar hunt karte hain, kaise persistence aur C2 beacons dhoondhte hain, aur kaise hunt ko detection rule me badalte hain.",
+  "tdev": "थ्रेट हंटिंग",
+  "tags": [
+   "#threathunting",
+   "#blueteam",
+   "#soc"
+  ]
+ },
+ "25": {
+  "icon": "🤖",
+  "hook": "Phishing alert ka <em>jawab</em> — 30 second me? 🤖",
+  "hookVo": "फ़िशिंग अलर्ट का जवाब, सिर्फ़ तीस सेकंड में? सोर और सिक्योरिटी ऑटोमेशन से।",
+  "hookSub": "Phishing alert ka jawab sirf 30 second me? SOAR aur security automation se.",
+  "points": [
+   "<b>Playbooks</b> jo kaam karein",
+   "Auto <b>enrichment</b> & triage",
+   "<b>Human in the loop</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे प्लेबुक्स बनाते हैं, कैसे एनरिचमेंट और ट्राइएज ऑटोमेट करते हैं, और कैसे ज़रूरी फ़ैसलों पर इंसान को लूप में रखते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise playbooks banate hain, kaise enrichment aur triage automate karte hain, aur kaise zaroori faislon par insaan ko loop me rakhte hain.",
+  "tdev": "सोर एंड सिक्योरिटी ऑटोमेशन",
+  "tags": [
+   "#soar",
+   "#automation",
+   "#soc"
+  ]
+ },
+ "26": {
+  "icon": "🧰",
+  "hook": "Splunk, ELK, Wazuh — <em>ek</em> rule sab pe? 🧰",
+  "hookVo": "स्प्लंक, ईएलके, वाज़ुह, एक ही रूल सब पर चल सकता है? हाँ, सिग्मा से!",
+  "hookSub": "Splunk, ELK, Wazuh — ek hi rule sab par chal sakta hai? Haan, Sigma se!",
+  "points": [
+   "<b>Splunk</b> search",
+   "<b>ELK</b> & Wazuh",
+   "Portable <b>Sigma</b> rules"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे स्प्लंक में सर्च करते हैं, कैसे ईएलके और वाज़ुह इस्तेमाल करते हैं, और कैसे सिग्मा रूल एक बार लिखकर हर जगह चलाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise Splunk me search karte hain, kaise ELK aur Wazuh istemaal karte hain, aur kaise Sigma rule ek baar likhkar har jagah chalate hain.",
+  "tdev": "सॉक टूल्स",
+  "tags": [
+   "#splunk",
+   "#wazuh",
+   "#sigma"
+  ]
+ },
+ "27": {
+  "icon": "🪟",
+  "hook": "Phishing mail se <em>Admin</em> tak — kaise? 🪟",
+  "hookVo": "एक फ़िशिंग मेल से, एडमिन राइट्स तक, अटैकर कैसे पहुँचता है? विंडोज़ का सिक्योरिटी मॉडल समझिए।",
+  "hookSub": "Ek phishing mail se admin rights tak attacker kaise pahunchta hai? Windows ka security model samjhiye.",
+  "points": [
+   "<b>SIDs</b>, tokens, ACLs",
+   "<b>UAC</b> & privileges",
+   "<b>Pass-the-hash</b> rokna"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे एसआईडी, टोकन्स और एसीएल काम करते हैं, कैसे यूएसी और प्रिविलेजेस संभालते हैं, और कैसे पास द हैश अटैक रोकते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise SID, tokens aur ACL kaam karte hain, kaise UAC aur privileges sambhalte hain, aur kaise pass-the-hash attack rokte hain.",
+  "tdev": "विंडोज़ सिक्योरिटी",
+  "tags": [
+   "#windowssecurity",
+   "#privilegeescalation",
+   "#blueteam"
+  ]
+ },
+ "28": {
+  "icon": "🔒",
+  "hook": "Default Windows = <em>khula</em> darwaza? 🔒",
+  "hookVo": "डिफ़ॉल्ट विंडोज़, मतलब अटैकर के लिए खुला दरवाज़ा? विंडोज़ हार्डनिंग सीखिए।",
+  "hookSub": "Default Windows matlab attacker ke liye khula darwaza? Windows hardening seekhiye.",
+  "points": [
+   "Security <b>baselines</b>",
+   "<b>LAPS</b> & BitLocker",
+   "Attack surface <b>kam</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे सिक्योरिटी बेसलाइन्स लगाते हैं, कैसे लैप्स और बिटलॉकर सेट करते हैं, और कैसे अटैक सरफ़ेस कम करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise security baselines lagate hain, kaise LAPS aur BitLocker set karte hain, aur kaise attack surface kam karte hain.",
+  "tdev": "विंडोज़ हार्डनिंग",
+  "tags": [
+   "#windowshardening",
+   "#bitlocker",
+   "#laps"
+  ]
+ },
+ "29": {
+  "icon": "🏰",
+  "hook": "Ek user se <em>Domain Admin</em> tak! 🏰",
+  "hookVo": "एक आम यूज़र से, डोमेन एडमिन तक। एक्टिव डायरेक्टरी अटैक्स कैसे होते हैं, और कैसे रोकें?",
+  "hookSub": "Ek aam user se Domain Admin tak. Active Directory attacks kaise hote hain, aur kaise rokein?",
+  "points": [
+   "<b>Kerberos</b> & krbtgt",
+   "<b>Kerberoasting</b>, DCSync",
+   "<b>Tiered admin</b> model"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे कर्बेरोस और टिकट्स काम करते हैं, कैसे कर्बेरोस्टिंग और डीसी सिंक पकड़ते हैं, और कैसे टियर्ड एडमिन मॉडल लगाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise Kerberos aur tickets kaam karte hain, kaise Kerberoasting aur DCSync pakadte hain, aur kaise tiered admin model lagate hain.",
+  "tdev": "एक्टिव डायरेक्टरी सिक्योरिटी",
+  "tags": [
+   "#activedirectory",
+   "#kerberos",
+   "#adsecurity"
+  ]
+ },
+ "30": {
+  "icon": "⚙️",
+  "hook": "Ek <em>GPO</em> — hazaaron computers! ⚙️",
+  "hookVo": "एक जीपीओ, और हज़ारों कंप्यूटर्स पर असर। सही हो तो सुरक्षा, ग़लत हो तो ख़तरा।",
+  "hookSub": "Ek GPO, aur hazaaron computers par asar. Sahi ho to suraksha, galat ho to khatra.",
+  "points": [
+   "<b>LSDOU</b> processing order",
+   "<b>cpassword</b> jaise misconfigs",
+   "GPO <b>changes</b> detect"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे ग्रुप पॉलिसी का प्रोसेसिंग ऑर्डर काम करता है, कैसे पुरानी पासवर्ड ग़लतियाँ ढूँढते हैं, और कैसे जीपीओ के बदलाव डिटेक्ट करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise Group Policy ka processing order kaam karta hai, kaise purani password galtiyan dhoondhte hain, aur kaise GPO ke badlaav detect karte hain.",
+  "tdev": "ग्रुप पॉलिसी सिक्योरिटी",
+  "tags": [
+   "#grouppolicy",
+   "#gpo",
+   "#activedirectory"
+  ]
+ },
+ "31": {
+  "icon": "🦠",
+  "hook": "Antivirus <em>chuka</em>, EDR ne pakda! 🦠",
+  "hookVo": "एंटीवायरस से अटैक छूट गया, लेकिन ईडीआर ने पकड़ लिया। कैसे? समझिए।",
+  "hookSub": "Antivirus se attack chhoot gaya, lekin EDR ne pakad liya. Kaise? Samjhiye.",
+  "points": [
+   "<b>Process tree</b> padhna",
+   "<b>Behaviour</b> detection",
+   "<b>Isolate</b> & rollback"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे प्रोसेस ट्री पढ़ते हैं, कैसे बिहेवियर से अटैक डिटेक्ट करते हैं, और कैसे होस्ट को आइसोलेट करके रोलबैक करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise process tree padhte hain, kaise behaviour se attack detect karte hain, aur kaise host ko isolate karke rollback karte hain.",
+  "tdev": "एंडपॉइंट डिटेक्शन एंड रिस्पॉन्स",
+  "tags": [
+   "#edr",
+   "#endpointsecurity",
+   "#xdr"
+  ]
+ },
+ "32": {
+  "icon": "⌨️",
+  "hook": "Ek <em>PowerShell</em> line — poora attack? ⌨️",
+  "hookVo": "पावरशेल की एक लाइन, और पूरा अटैक? अटैकर्स इसे कैसे इस्तेमाल करते हैं, और कैसे पकड़ें?",
+  "hookSub": "PowerShell ki ek line, aur poora attack? Attackers ise kaise istemaal karte hain, aur kaise pakdein?",
+  "points": [
+   "<b>Download cradle</b> pakadna",
+   "<b>Script-block</b> logging",
+   "<b>AMSI</b> & constrained mode"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे डाउनलोड क्रेडल और एनकोडेड कमांड्स पकड़ते हैं, कैसे स्क्रिप्ट ब्लॉक लॉगिंग चालू करते हैं, और कैसे एएमएसआई और कंस्ट्रेन्ड मोड लगाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise download cradle aur encoded commands pakadte hain, kaise script-block logging chalu karte hain, aur kaise AMSI aur constrained mode lagate hain.",
+  "tdev": "पावरशेल सिक्योरिटी",
+  "tags": [
+   "#powershell",
+   "#amsi",
+   "#blueteam"
+  ]
+ },
+ "33": {
+  "icon": "🔬",
+  "hook": "PC me <em>malware</em>? Live pakdo! 🔬",
+  "hookVo": "कंप्यूटर में मैलवेयर है? सिसइंटरनल्स टूल्स से, लाइव पकड़िए।",
+  "hookSub": "Computer me malware hai? Sysinternals tools se live pakadiye.",
+  "points": [
+   "<b>Process Explorer</b>",
+   "<b>Autoruns</b> se persistence",
+   "<b>Sysmon</b> logging"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे प्रोसेस एक्सप्लोरर से संदिग्ध प्रोसेस पहचानते हैं, कैसे ऑटोरन्स से पर्सिस्टेंस ढूँढते हैं, और कैसे सिसमॉन से लॉगिंग करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise Process Explorer se sandigdh process pehchante hain, kaise Autoruns se persistence dhoondhte hain, aur kaise Sysmon se logging karte hain.",
+  "tdev": "सिसइंटरनल्स",
+  "tags": [
+   "#sysinternals",
+   "#sysmon",
+   "#malwareanalysis"
+  ]
+ },
+ "34": {
+  "icon": "🐧",
+  "hook": "Linux server <em>hack</em> hone se pehle! 🐧",
+  "hookVo": "लिनक्स सर्वर हैक होने से पहले, ये सेटिंग्स ज़रूर कीजिए।",
+  "hookSub": "Linux server hack hone se pehle, ye settings zaroor kijiye.",
+  "points": [
+   "<b>Permissions</b> & SUID",
+   "<b>SSH keys</b>, no passwords",
+   "<b>Firewall</b> + SELinux"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे परमिशन्स और एसयूआईडी सही रखते हैं, कैसे एसएसएच को कीज़ से सुरक्षित करते हैं, और कैसे फ़ायरवॉल और सीलिनक्स लगाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise permissions aur SUID sahi rakhte hain, kaise SSH ko keys se surakshit karte hain, aur kaise firewall aur SELinux lagate hain.",
+  "tdev": "लिनक्स सिक्योरिटी हार्डनिंग",
+  "tags": [
+   "#linux",
+   "#linuxhardening",
+   "#ssh"
+  ]
+ },
+ "35": {
+  "icon": "📟",
+  "hook": "Server pe koi <em>chhupa</em> baitha hai? 👀",
+  "hookVo": "आपके लिनक्स सर्वर पर कोई चुपचाप बैठा है? लॉग्स और ऑडिटडी से पता कीजिए।",
+  "hookSub": "Aapke Linux server par koi chupchaap baitha hai? Logs aur auditd se pata kijiye.",
+  "points": [
+   "<b>journald</b> & central logs",
+   "<b>auditd</b> + AIDE",
+   "<b>Webshell</b> & rootkit hunt"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे लॉग्स को सेंट्रल करते हैं, कैसे ऑडिटडी और एड से बदलाव पकड़ते हैं, और कैसे वेबशेल और रूटकिट ढूँढते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise logs ko central karte hain, kaise auditd aur AIDE se badlaav pakadte hain, aur kaise webshell aur rootkit dhoondhte hain.",
+  "tdev": "लिनक्स सिक्योरिटी मॉनिटरिंग",
+  "tags": [
+   "#linux",
+   "#auditd",
+   "#incidentresponse"
+  ]
+ },
+ "36": {
+  "icon": "⚖️",
+  "hook": "Evidence <em>court</em> me tike kaise? ⚖️",
+  "hookVo": "डिजिटल एविडेंस, कोर्ट में टिके कैसे? एक ग़लत क्लिक, और सबूत बेकार।",
+  "hookSub": "Digital evidence court me tike kaise? Ek galat click, aur saboot bekaar.",
+  "points": [
+   "<b>Order of volatility</b>",
+   "<b>Imaging</b> + hashing",
+   "<b>Chain of custody</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे ऑर्डर ऑफ़ वोलैटिलिटी से सबूत लेते हैं, कैसे इमेजिंग और हैशिंग करते हैं, और कैसे चेन ऑफ़ कस्टडी बनाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise order of volatility se saboot lete hain, kaise imaging aur hashing karte hain, aur kaise chain of custody banate hain.",
+  "tdev": "डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स",
+  "tags": [
+   "#digitalforensics",
+   "#evidence",
+   "#dfir"
+  ]
+ },
+ "37": {
+  "icon": "🧬",
+  "hook": "Delete file bhi <em>sach</em> bolti hai! 🧬",
+  "hookVo": "डिलीट की हुई फ़ाइल भी सच बोलती है। डिस्क, मेमोरी, रजिस्ट्री और ब्राउज़र में छुपे सबूत ढूँढिए।",
+  "hookSub": "Delete ki hui file bhi sach bolti hai. Disk, memory, registry aur browser me chhupe saboot dhoondhiye.",
+  "points": [
+   "<b>Disk</b> & file carving",
+   "<b>Memory</b> forensics",
+   "<b>Registry</b> & browser artefacts"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे डिस्क से डिलीटेड फ़ाइल्स निकालते हैं, कैसे मेमोरी फ़ॉरेंसिक्स करते हैं, और कैसे रजिस्ट्री और ब्राउज़र से सबूत जोड़ते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise disk se deleted files nikalte hain, kaise memory forensics karte hain, aur kaise registry aur browser se saboot jodte hain.",
+  "tdev": "फ़ॉरेंसिक डोमेन्स",
+  "tags": [
+   "#forensics",
+   "#memoryforensics",
+   "#dfir"
+  ]
+ },
+ "38": {
+  "icon": "🛠️",
+  "hook": "4 <em>free</em> tools, poori investigation! 🛠️",
+  "hookVo": "चार फ़्री प्रोफ़ेशनल टूल्स, और पूरी इन्वेस्टिगेशन। एफ़टीके इमेजर, केप, ऑटोप्सी और वोलैटिलिटी।",
+  "hookSub": "4 free professional tools, aur poori investigation — FTK Imager, KAPE, Autopsy aur Volatility.",
+  "points": [
+   "<b>FTK Imager</b> acquisition",
+   "<b>KAPE</b> + Autopsy",
+   "<b>Volatility</b> memory"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे एफ़टीके इमेजर से सबूत लेते हैं, कैसे केप और ऑटोप्सी से ट्राइएज करते हैं, और कैसे वोलैटिलिटी से मेमोरी एनालाइज़ करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise FTK Imager se saboot lete hain, kaise KAPE aur Autopsy se triage karte hain, aur kaise Volatility se memory analyse karte hain.",
+  "tdev": "फ़ॉरेंसिक टूल्स",
+  "tags": [
+   "#autopsy",
+   "#volatility",
+   "#dfir"
+  ]
+ },
+ "39": {
+  "icon": "🎯",
+  "hook": "Hacker ka <em>agla</em> move pehle se pata? 🎯",
+  "hookVo": "हैकर का अगला मूव, पहले से पता हो तो? यही है, साइबर थ्रेट इंटेलिजेंस।",
+  "hookSub": "Hacker ka agla move pehle se pata ho to? Yahi hai Cyber Threat Intelligence.",
+  "points": [
+   "<b>Intelligence lifecycle</b>",
+   "<b>MITRE ATT&CK</b>",
+   "<b>Threat actor</b> profiling"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे इंटेलिजेंस लाइफ़साइकल चलती है, कैसे माइटर अटैक फ़्रेमवर्क इस्तेमाल करते हैं, और कैसे थ्रेट एक्टर्स की प्रोफ़ाइल बनाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise intelligence lifecycle chalti hai, kaise MITRE ATT&CK istemaal karte hain, aur kaise threat actors ki profile banate hain.",
+  "tdev": "साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स",
+  "tags": [
+   "#threatintelligence",
+   "#cti",
+   "#mitreattack"
+  ]
+ },
+ "40": {
+  "icon": "🛰️",
+  "hook": "Intel se <em>attack</em> block — kaise? 🛰️",
+  "hookVo": "थ्रेट इंटेल से, अटैक को आने से पहले ब्लॉक कैसे करें? सीटीआई ऑपरेशन्स सीखिए।",
+  "hookSub": "Threat intel se attack ko aane se pehle block kaise karein? CTI operations seekhiye.",
+  "points": [
+   "Safe <b>OSINT</b>",
+   "<b>STIX/TAXII</b> & MISP",
+   "SOC me <b>enrichment</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे सुरक्षित ओसिंट करते हैं, कैसे स्टिक्स, टैक्सी और मिस्प से इंटेल शेयर करते हैं, और कैसे सॉक में अलर्ट्स एनरिच करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise surakshit OSINT karte hain, kaise STIX, TAXII aur MISP se intel share karte hain, aur kaise SOC me alerts enrich karte hain.",
+  "tdev": "साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स",
+  "tags": [
+   "#osint",
+   "#misp",
+   "#cti"
+  ]
+ },
+ "41": {
+  "icon": "💠",
+  "hook": "VM se <em>bahar</em> nikal gaya attacker? 💠",
+  "hookVo": "अटैकर वर्चुअल मशीन से बाहर निकलकर, होस्ट तक पहुँच गया? इसे वीएम एस्केप कहते हैं।",
+  "hookSub": "Attacker virtual machine se bahar nikalkar host tak pahunch gaya? Ise VM escape kehte hain.",
+  "points": [
+   "<b>Hypervisor</b> Type 1 vs 2",
+   "<b>VM escape</b> rokna",
+   "<b>Management plane</b> hardening"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे हाइपरवाइज़र काम करता है, कैसे वीएम एस्केप से बचते हैं, और कैसे मैनेजमेंट प्लेन को हार्डन करते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise hypervisor kaam karta hai, kaise VM escape se bachte hain, aur kaise management plane ko harden karte hain.",
+  "tdev": "वर्चुअलाइज़ेशन सिक्योरिटी",
+  "tags": [
+   "#virtualization",
+   "#vmware",
+   "#hypervisor"
+  ]
+ },
+ "42": {
+  "icon": "🐳",
+  "hook": "Container <em>root</em> pe chal raha hai? 🐳",
+  "hookVo": "आपका डॉकर कंटेनर रूट पर चल रहा है? ये बहुत बड़ा ख़तरा है।",
+  "hookSub": "Aapka Docker container root par chal raha hai? Ye bahut bada khatra hai.",
+  "points": [
+   "<b>Non-root</b> containers",
+   "Image <b>scan</b> & signing",
+   "<b>Kubernetes RBAC</b>"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे कंटेनर्स को नॉन-रूट चलाते हैं, कैसे इमेजेस को स्कैन और साइन करते हैं, और कैसे कुबरनेटीज़ आरबैक लगाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise containers ko non-root chalate hain, kaise images ko scan aur sign karte hain, aur kaise Kubernetes RBAC lagate hain.",
+  "tdev": "कंटेनर सिक्योरिटी",
+  "tags": [
+   "#docker",
+   "#kubernetes",
+   "#devsecops"
+  ]
+ },
+ "43": {
+  "icon": "🏭",
+  "hook": "Data centre security = sirf <em>firewall</em>? 🏭",
+  "hookVo": "डेटा सेंटर की सिक्योरिटी, मतलब सिर्फ़ फ़ायरवॉल? नहीं! गेट से लेकर बैकअप तक, सब ज़रूरी है।",
+  "hookSub": "Data centre ki security matlab sirf firewall? Nahi! Gate se lekar backup tak, sab zaroori hai.",
+  "points": [
+   "<b>Physical</b> layered access",
+   "<b>Power</b>, cooling, fire",
+   "<b>3-2-1</b> backups"
+  ],
+  "learnVo": "हमारे साथ आप सीखेंगे, कैसे फ़िज़िकल एक्सेस को लेयर्स में सुरक्षित करते हैं, कैसे पावर और कूलिंग संभालते हैं, और कैसे थ्री टू वन बैकअप बनाते हैं।",
+  "learnSub": "Humare saath aap seekhenge — kaise physical access ko layers me surakshit karte hain, kaise power aur cooling sambhalte hain, aur kaise 3-2-1 backup banate hain.",
+  "tdev": "डेटा सेंटर सिक्योरिटी",
+  "tags": [
+   "#datacenter",
+   "#backup",
+   "#physicalsecurity"
   ]
  }
 }

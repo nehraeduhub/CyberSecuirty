@@ -67,7 +67,7 @@ from the cloud chat. Deliverables are plain MP4 + SRT so they can be opened and 
 | # | Reel | Length | Status |
 |---|---|---|---|
 | B1 | Website launch / tour (everything in one place) | 53 s | **done** (`guides/b1.json`) |
-| B2 | How to enroll for the CTF portal (6 steps) | 60 s | **done** (`TG-CTF-How-to-Enroll-Reel.mp4`, see `legacy/reel/`) |
+| B2 | How to enroll for the CTF portal (6 steps) | 55 s | **remade** with voice, no prices (`guides/b2.json`, `tools/capture-enroll.js`) |
 | B3 | PDF Handbook Series — 43 books, look inside before you buy (no price) | 45 s | **done** (`guides/b3.json`, cover wall) |
 | B4 | Free cyber tools / Cyber Safety Portal (150+ tools, 1930 helpline) | 47 s | **done** (`guides/b4.json`) |
 | B5 | Training programs + coupon (no amounts) | 47 s | **done** (`guides/b5.json`) |
@@ -215,4 +215,22 @@ Brand reels (Phase 2) use the guide template too: `tools/capture-brand.js` (scro
 scroll-reveal sections render, hides every ₹ amount, blurs payment QR, copies the 43 covers), then
 `SKIP_CAPTURE=1 tools/build-guide.sh guides/b1.json` etc. Per-reel options in the JSON: `kicker`, `intro.pill`,
 step `label` / `icon` / `visual: "covers"`, `cta.headline/button/chips`, `cover` (thumbnail).
-Note: the old B2 enroll reel (`legacy/reel/`) still shows ₹99/₹999 and has no voice — remake it before posting.
+
+## 14. Full series (owner request 2026-11-13): ~60 reels, each pointing to another reel
+
+Total **59**: 43 topic reels + 6 brand (B1–B6) + 10 learning-path reels (P01–P10). Build everything with
+`tools/build-all.sh` (skips finished reels; ≈2.5 min per reel).
+
+- **Cross-references.** Every reel ends with a "reference" scene (mini reel card + voice) before the end card:
+  topic N → "Agli reel: Room N+1 …" (43 → website tour); the CTF scene of every topic reel also says
+  "account kaise banayein, wo reel dekhi kya?" (→ B6). Brand: B1→B6, B2→B6, B3→Room 1, B4→B1, B5→B1, B6→B2.
+  Path reels → the first topic reel of that path. The post caption (.txt) names the same reel.
+- **Topic scripts.** `scripts.json` has all 43 topics (icon, hook, 3 points, hook + learn voice in Devanagari,
+  captions in Roman, `tdev` = topic name in Devanagari). `tools/make-topics.py` assembles the rest of the voice
+  (book / CTF / CTA / reference) from fixed patterns. Icons: `firewall`, `packets`, `radar`, `siren` or any emoji.
+- **Data fix.** Handbook series and CTF rooms are NOT in the same order for 34–38: room 34/35 = Linux
+  (handbooks #37/#38), rooms 36/37/38 = Forensics (handbooks #34/#35/#36). Reel numbers follow the ROOM number;
+  "Part N of 43" on screen is the handbook's series number.
+- **Path reels.** `paths.json` (hook, outcomes per path) + `tools/make-paths.py` → `guides/pNN.json`
+  (cover grid of the path's handbooks, list of its rooms, outcomes).
+- Topic reels use voice speed 1.06 (`VOICE_SPEED`) and are ≈55–60 s with the reference scene.

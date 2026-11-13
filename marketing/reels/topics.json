@@ -1,6 +1,7 @@
 [
  {
   "num": 1,
+  "series": 1,
   "slug": "fundamentals",
   "book": "cybersecurity-fundamentals",
   "name": "01-Cybersecurity-Fundamentals",
@@ -26,16 +27,58 @@
    "The Client Knows",
    "Final: Defender's Exam"
   ],
-  "points": [
-   "Core concepts, clearly explained",
-   "Build a real security mindset",
-   "Your first step to mastery"
-  ],
   "accent": "#ff9933",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "🛡️",
+  "hook": "Cyber security <em>zero</em> se kaise shuru karein? 🤔",
+  "points": [
+   "<b>Core concepts</b> aasaan bhasha me",
+   "<b>Hash</b>, encoding, phishing pehchaan",
+   "Real <b>security mindset</b>"
+  ],
+  "tags": [
+   "#cybersecuritybasics",
+   "#beginners",
+   "#infosec"
+  ],
+  "tdev": "साइबर सिक्योरिटी फ़ंडामेंटल्स",
+  "showTasks": [
+   2,
+   5,
+   12
+  ],
+  "ref": {
+   "name": "02-The-CIA-Triad",
+   "rom": "Room 2 · The CIA Triad",
+   "dev": "द सीआईए ट्रायड",
+   "cover": "cia-triad",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "साइबर सिक्योरिटी ज़ीरो से कैसे शुरू करें? सबसे पहले, एक डिफ़ेंडर की तरह सोचना सीखिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे साइबर सिक्योरिटी के कोर कॉन्सेप्ट्स काम करते हैं, कैसे हैश और फ़िशिंग को पहचानते हैं, और कैसे एक असली सिक्योरिटी माइंडसेट बनाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। साइबर सिक्योरिटी फ़ंडामेंटल्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर एक में, बारह हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, द सीआईए ट्रायड। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Cyber security zero se kaise shuru karein? Sabse pehle, ek defender ki tarah sochna seekhiye.",
+   "learn": "Humare saath aap seekhenge — kaise cyber security ke core concepts kaam karte hain, kaise hash aur phishing ko pehchante hain, aur kaise ek asli security mindset banate hain.",
+   "book": "Pehle handbook se concept clear karo. Cybersecurity Fundamentals — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 1 me, 12 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 2 · The CIA Triad. Use miss mat kijiye!"
+  }
  },
  {
   "num": 2,
+  "series": 2,
   "slug": "cia-triad",
   "book": "cia-triad",
   "name": "02-The-CIA-Triad",
@@ -59,16 +102,58 @@
    "Tunnel the traffic",
    "Scenario: catch the tamper"
   ],
-  "points": [
-   "The foundation of all security",
-   "Real-world, worked examples",
-   "Apply the model everywhere"
-  ],
   "accent": "#ff9933",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "🔺",
+  "hook": "Har security ka <em>base</em> sirf 3 shabd? 🔺",
+  "points": [
+   "<b>Confidentiality</b> — data secret",
+   "<b>Integrity</b> — data badle nahi",
+   "<b>Availability</b> — service chalu"
+  ],
+  "tags": [
+   "#ciatriad",
+   "#infosec",
+   "#cybersecuritybasics"
+  ],
+  "tdev": "द सीआईए ट्रायड",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "03-Threats-Vulnerabilities-Risks",
+   "rom": "Room 3 · Threats, Vulnerabilities & Risks",
+   "dev": "थ्रेट्स, वल्नरेबिलिटीज़ एंड रिस्क्स",
+   "cover": "threats-vulnerabilities-risks",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "हर सिक्योरिटी का बेस, सिर्फ़ तीन शब्द। कॉन्फ़िडेंशियलिटी, इंटीग्रिटी और अवेलेबिलिटी।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे डेटा को सीक्रेट रखते हैं, कैसे साबित करते हैं कि डेटा बदला नहीं गया, और कैसे सर्विस को हमेशा चालू रखते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। द सीआईए ट्रायड, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर दो में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, थ्रेट्स, वल्नरेबिलिटीज़ एंड रिस्क्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Har security ka base sirf 3 shabd — Confidentiality, Integrity aur Availability.",
+   "learn": "Humare saath aap seekhenge — kaise data ko secret rakhte hain, kaise saabit karte hain ki data badla nahi gaya, aur kaise service ko hamesha chalu rakhte hain.",
+   "book": "Pehle handbook se concept clear karo. The CIA Triad — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 2 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 3 · Threats, Vulnerabilities & Risks. Use miss mat kijiye!"
+  }
  },
  {
   "num": 3,
+  "series": 3,
   "slug": "threats-vulns-risks",
   "book": "threats-vulnerabilities-risks",
   "name": "03-Threats-Vulnerabilities-Risks",
@@ -92,16 +177,58 @@
    "Do the maths",
    "Scenario: a critical CVE appears"
   ],
-  "points": [
-   "Tell threat from vuln from risk",
-   "Assess and prioritise clearly",
-   "Risk-based decision making"
-  ],
   "accent": "#ff9933",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "⚠️",
+  "hook": "Threat, vuln aur risk — <em>farak</em> pata hai? ⚠️",
+  "points": [
+   "Threat vs vuln vs <b>risk</b>",
+   "<b>CVSS</b> se severity score",
+   "<b>Risk-based</b> decisions"
+  ],
+  "tags": [
+   "#riskmanagement",
+   "#cvss",
+   "#vulnerability"
+  ],
+  "tdev": "थ्रेट्स, वल्नरेबिलिटीज़ एंड रिस्क्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "04-Security-Architecture",
+   "rom": "Room 4 · Security Architecture",
+   "dev": "सिक्योरिटी आर्किटेक्चर",
+   "cover": "security-architecture",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "थ्रेट, वल्नरेबिलिटी और रिस्क, इनमें फ़र्क़ पता है? ज़्यादातर लोग इन्हें एक ही समझते हैं।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे थ्रेट, वल्नरेबिलिटी और रिस्क को अलग पहचानते हैं, कैसे सीवीएसएस से सीवेरिटी स्कोर करते हैं, और कैसे रिस्क के हिसाब से फ़ैसले लेते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। थ्रेट्स, वल्नरेबिलिटीज़ एंड रिस्क्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तीन में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, सिक्योरिटी आर्किटेक्चर। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Threat, vulnerability aur risk — inme farak pata hai? Zyadatar log inhe ek hi samajhte hain.",
+   "learn": "Humare saath aap seekhenge — kaise threat, vulnerability aur risk ko alag pehchante hain, kaise CVSS se severity score karte hain, aur kaise risk ke hisaab se faisle lete hain.",
+   "book": "Pehle handbook se concept clear karo. Threats, Vulnerabilities & Risks — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 3 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 4 · Security Architecture. Use miss mat kijiye!"
+  }
  },
  {
   "num": 4,
+  "series": 4,
   "slug": "security-architecture",
   "book": "security-architecture",
   "name": "04-Security-Architecture",
@@ -125,16 +252,58 @@
    "Scenario: the flat network",
    "The fix"
   ],
-  "points": [
-   "Principles of secure design",
-   "Layered, defensible architecture",
-   "Build it right the first time"
-  ],
   "accent": "#ff9933",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "🏗️",
+  "hook": "Security baad me <em>jodte</em> ho? Galti yahin hai! 🏗️",
+  "points": [
+   "<b>Least privilege</b> & fail-safe",
+   "<b>Threat modeling</b>",
+   "Flat network ka <b>fix</b>"
+  ],
+  "tags": [
+   "#securityarchitecture",
+   "#threatmodeling",
+   "#securebydesign"
+  ],
+  "tdev": "सिक्योरिटी आर्किटेक्चर",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "05-Defense-in-Depth",
+   "rom": "Room 5 · Defense in Depth",
+   "dev": "डिफ़ेंस इन डेप्थ",
+   "cover": "defense-in-depth",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "सिक्योरिटी बाद में जोड़ते हो? असली ग़लती यहीं है। सिक्योरिटी शुरू से डिज़ाइन होनी चाहिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे लीस्ट प्रिविलेज और फ़ेल-सेफ़ डिज़ाइन लगाते हैं, कैसे थ्रेट मॉडलिंग करते हैं, और कैसे एक फ़्लैट नेटवर्क को सुरक्षित बनाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। सिक्योरिटी आर्किटेक्चर, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर चार में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, डिफ़ेंस इन डेप्थ। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Security baad me jodte ho? Asli galti yahin hai. Security shuru se design honi chahiye.",
+   "learn": "Humare saath aap seekhenge — kaise least privilege aur fail-safe design lagate hain, kaise threat modeling karte hain, aur kaise ek flat network ko surakshit banate hain.",
+   "book": "Pehle handbook se concept clear karo. Security Architecture — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 4 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 5 · Defense in Depth. Use miss mat kijiye!"
+  }
  },
  {
   "num": 5,
+  "series": 5,
   "slug": "defense-in-depth",
   "book": "defense-in-depth",
   "name": "05-Defense-in-Depth",
@@ -158,16 +327,58 @@
    "Scenario: the layer that was missing",
    "Prevent and detect"
   ],
-  "points": [
-   "Layers that cover each other",
-   "No single point of failure",
-   "Practical, real-world layering"
-  ],
   "accent": "#ff9933",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "🧅",
+  "hook": "Ek <em>taala</em> kaafi hai? Bilkul nahi! 🧅",
+  "points": [
+   "<b>Prevent</b>, detect, correct",
+   "Layers jo <b>cover</b> karein",
+   "No <b>single point</b> of failure"
+  ],
+  "tags": [
+   "#defenseindepth",
+   "#layeredsecurity",
+   "#infosec"
+  ],
+  "tdev": "डिफ़ेंस इन डेप्थ",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "06-Zero-Trust",
+   "rom": "Room 6 · Zero Trust",
+   "dev": "ज़ीरो ट्रस्ट",
+   "cover": "zero-trust",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "क्या एक ताला काफ़ी है? बिल्कुल नहीं! असली सिक्योरिटी में, कई लेयर्स एक दूसरे को कवर करती हैं।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे प्रिवेंट, डिटेक्ट और करेक्ट कंट्रोल्स लगाते हैं, कैसे लेयर्स एक दूसरे को कवर करती हैं, और कैसे सिंगल पॉइंट ऑफ़ फ़ेलियर हटाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। डिफ़ेंस इन डेप्थ, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर पाँच में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, ज़ीरो ट्रस्ट। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Kya ek taala kaafi hai? Bilkul nahi! Asli security me kai layers ek doosre ko cover karti hain.",
+   "learn": "Humare saath aap seekhenge — kaise prevent, detect aur correct controls lagate hain, kaise layers ek doosre ko cover karti hain, aur kaise single point of failure hatate hain.",
+   "book": "Pehle handbook se concept clear karo. Defense in Depth — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 5 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 6 · Zero Trust. Use miss mat kijiye!"
+  }
  },
  {
   "num": 6,
+  "series": 6,
   "slug": "zero-trust",
   "book": "zero-trust",
   "name": "06-Zero-Trust",
@@ -191,16 +402,58 @@
    "Stronger factor when it is risky",
    "Scenario: the stolen password that went nowhere"
   ],
-  "points": [
-   "The Zero Trust model explained",
-   "Identity and micro-segmentation",
-   "Implement it in realistic stages"
-  ],
   "accent": "#ff9933",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "🔐",
+  "hook": "<em>Never trust</em>, always verify — matlab? 🔐",
+  "points": [
+   "<b>Identity</b> = naya perimeter",
+   "<b>Micro-segmentation</b>",
+   "Risk par <b>MFA</b>"
+  ],
+  "tags": [
+   "#zerotrust",
+   "#mfa",
+   "#identitysecurity"
+  ],
+  "tdev": "ज़ीरो ट्रस्ट",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "07-TCP-IP-Networking",
+   "rom": "Room 7 · TCP/IP Networking",
+   "dev": "टीसीपी आईपी नेटवर्किंग",
+   "cover": "tcp-ip-networking",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "नेवर ट्रस्ट, ऑलवेज़ वेरिफ़ाई। आज की सिक्योरिटी में, कोई भी डिफ़ॉल्ट से ट्रस्टेड नहीं है।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे आइडेंटिटी को नया पेरिमीटर बनाते हैं, कैसे माइक्रो-सेगमेंटेशन करते हैं, और कैसे रिस्क के हिसाब से एमएफ़ए माँगते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। ज़ीरो ट्रस्ट, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर छह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, टीसीपी आईपी नेटवर्किंग। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Never trust, always verify. Aaj ki security me koi bhi default se trusted nahi hai.",
+   "learn": "Humare saath aap seekhenge — kaise identity ko naya perimeter banate hain, kaise micro-segmentation karte hain, aur kaise risk ke hisaab se MFA maangte hain.",
+   "book": "Pehle handbook se concept clear karo. Zero Trust — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 6 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 7 · TCP/IP Networking. Use miss mat kijiye!"
+  }
  },
  {
   "num": 7,
+  "series": 7,
   "slug": "tcp-ip",
   "book": "tcp-ip-networking",
   "name": "07-TCP-IP-Networking",
@@ -224,16 +477,58 @@
    "Stop the MITM",
    "Scenario: the finance workstation"
   ],
-  "points": [
-   "The stack, layer by layer",
-   "How packets really flow",
-   "Security at every layer"
-  ],
   "accent": "#38bdf8",
-  "mood": "pulse"
+  "mood": "pulse",
+  "icon": "packets",
+  "hook": "Ek click pe <em>internet</em> me kya hota hai? 🌐",
+  "points": [
+   "<b>TCP handshake</b> padhna",
+   "<b>Ports</b> & private IP ranges",
+   "<b>MITM</b> rokna"
+  ],
+  "tags": [
+   "#tcpip",
+   "#networking",
+   "#ccna"
+  ],
+  "tdev": "टीसीपी आईपी नेटवर्किंग",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "08-Routing-Switching-Security",
+   "rom": "Room 8 · Routing & Switching Security",
+   "dev": "रूटिंग एंड स्विचिंग सिक्योरिटी",
+   "cover": "routing-switching-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "एक क्लिक पर, इंटरनेट में असल में क्या होता है? जवाब है, टीसीपी आईपी।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे टीसीपी हैंडशेक पढ़ते हैं, कैसे पोर्ट्स और प्राइवेट आईपी रेंज पहचानते हैं, और कैसे मैन इन द मिडल अटैक रोकते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। टीसीपी आईपी नेटवर्किंग, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर सात में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, रूटिंग एंड स्विचिंग सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Ek click par internet me asal me kya hota hai? Jawab hai — TCP/IP.",
+   "learn": "Humare saath aap seekhenge — kaise TCP handshake padhte hain, kaise ports aur private IP ranges pehchante hain, aur kaise man-in-the-middle attack rokte hain.",
+   "book": "Pehle handbook se concept clear karo. TCP/IP Networking — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 7 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 8 · Routing & Switching Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 8,
+  "series": 8,
   "slug": "routing-switching",
   "book": "routing-switching-security",
   "name": "08-Routing-Switching-Security",
@@ -257,16 +552,58 @@
    "The maxim",
    "Scenario: walked in the front door"
   ],
-  "points": [
-   "Secure routing protocols",
-   "Switch and port hardening",
-   "Stop layer-2 attacks"
-  ],
   "accent": "#38bdf8",
-  "mood": "pulse"
+  "mood": "pulse",
+  "icon": "🔌",
+  "hook": "Hacker <em>switch port</em> se andar aa gaya? 🔌",
+  "points": [
+   "<b>Port security</b>",
+   "Routing protocol <b>protection</b>",
+   "<b>BGP hijack</b> rokna"
+  ],
+  "tags": [
+   "#routing",
+   "#switching",
+   "#networksecurity"
+  ],
+  "tdev": "रूटिंग एंड स्विचिंग सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "09-VLAN-VRF",
+   "rom": "Room 9 · VLAN & VRF",
+   "dev": "वीलैन एंड वीआरएफ़",
+   "cover": "vlan-vrf",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "हैकर ऑफ़िस के एक खुले स्विच पोर्ट से अंदर आ गया? नेटवर्क फ़ैब्रिक को हार्डन करना ज़रूरी है।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे पोर्ट सिक्योरिटी लगाते हैं, कैसे रूटिंग प्रोटोकॉल्स को प्रोटेक्ट करते हैं, और कैसे बीजीपी हाइजैक रोकते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। रूटिंग एंड स्विचिंग सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर आठ में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, वीलैन एंड वीआरएफ़। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Hacker office ke ek khule switch port se andar aa gaya? Network fabric ko harden karna zaroori hai.",
+   "learn": "Humare saath aap seekhenge — kaise port security lagate hain, kaise routing protocols ko protect karte hain, aur kaise BGP hijack rokte hain.",
+   "book": "Pehle handbook se concept clear karo. Routing & Switching Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 8 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 9 · VLAN & VRF. Use miss mat kijiye!"
+  }
  },
  {
   "num": 9,
+  "series": 9,
   "slug": "vlan-vrf",
   "book": "vlan-vrf",
   "name": "09-VLAN-VRF",
@@ -290,16 +627,58 @@
    "The segmentation maxim",
    "Scenario: segmented, crossed anyway"
   ],
-  "points": [
-   "VLAN segmentation done right",
-   "VRF path separation",
-   "Stop VLAN hopping"
-  ],
   "accent": "#38bdf8",
-  "mood": "pulse"
+  "mood": "pulse",
+  "icon": "🧩",
+  "hook": "VLAN laga diya, phir bhi <em>attack</em> paar? 🧩",
+  "points": [
+   "<b>Access vs trunk</b> ports",
+   "<b>VLAN hopping</b> rokna",
+   "<b>VRF</b> isolation"
+  ],
+  "tags": [
+   "#vlan",
+   "#vrf",
+   "#networksecurity"
+  ],
+  "tdev": "वीलैन एंड वीआरएफ़",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "10-Network-Segmentation",
+   "rom": "Room 10 · Network Segmentation",
+   "dev": "नेटवर्क सेगमेंटेशन",
+   "cover": "network-segmentation",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "वीलैन लगा दिया, फिर भी अटैकर दूसरे सेगमेंट में पहुँच गया? वीलैन हॉपिंग को समझना ज़रूरी है।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे एक्सेस और ट्रंक पोर्ट्स सेट करते हैं, कैसे वीलैन हॉपिंग रोकते हैं, और कैसे वीआरएफ़ से रास्ते अलग करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। वीलैन एंड वीआरएफ़, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर नौ में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, नेटवर्क सेगमेंटेशन। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "VLAN laga diya, phir bhi attacker doosre segment me pahunch gaya? VLAN hopping ko samajhna zaroori hai.",
+   "learn": "Humare saath aap seekhenge — kaise access aur trunk ports set karte hain, kaise VLAN hopping rokte hain, aur kaise VRF se raaste alag karte hain.",
+   "book": "Pehle handbook se concept clear karo. VLAN & VRF — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 9 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 10 · Network Segmentation. Use miss mat kijiye!"
+  }
  },
  {
   "num": 10,
+  "series": 10,
   "slug": "network-segmentation",
   "book": "network-segmentation",
   "name": "10-Network-Segmentation",
@@ -323,16 +702,58 @@
    "The segmentation maxim",
    "Scenario: contain the breach"
   ],
-  "points": [
-   "Segment by trust level",
-   "Kill lateral movement",
-   "Micro-segmentation in practice"
-  ],
   "accent": "#38bdf8",
-  "mood": "pulse"
+  "mood": "pulse",
+  "icon": "🚧",
+  "hook": "Ek PC hack — <em>poora</em> network gaya? 🚧",
+  "points": [
+   "Trust ke hisaab se <b>zones</b>",
+   "<b>Lateral movement</b> rokna",
+   "Sirf <b>jump host</b> access"
+  ],
+  "tags": [
+   "#segmentation",
+   "#lateralmovement",
+   "#networksecurity"
+  ],
+  "tdev": "नेटवर्क सेगमेंटेशन",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "11-MPLS-Security",
+   "rom": "Room 11 · MPLS Security",
+   "dev": "एमपीएलएस सिक्योरिटी",
+   "cover": "mpls-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "एक कंप्यूटर हैक हुआ, और पूरा नेटवर्क गया? सही सेगमेंटेशन, अटैकर को वहीं रोक देता है।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे ट्रस्ट के हिसाब से ज़ोन्स बनाते हैं, कैसे लैटरल मूवमेंट रोकते हैं, और कैसे सिर्फ़ जंप होस्ट से एक्सेस देते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। नेटवर्क सेगमेंटेशन, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर दस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, एमपीएलएस सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Ek computer hack hua, aur poora network gaya? Sahi segmentation attacker ko wahin rok deta hai.",
+   "learn": "Humare saath aap seekhenge — kaise trust ke hisaab se zones banate hain, kaise lateral movement rokte hain, aur kaise sirf jump host se access dete hain.",
+   "book": "Pehle handbook se concept clear karo. Network Segmentation — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 10 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 11 · MPLS Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 11,
+  "series": 11,
   "slug": "mpls",
   "book": "mpls-security",
   "name": "11-MPLS-Security",
@@ -356,16 +777,58 @@
    "The MPLS maxim",
    "Scenario: the shared-service change"
   ],
-  "points": [
-   "How MPLS actually works",
-   "VPN path separation",
-   "Hardening the core"
-  ],
   "accent": "#38bdf8",
-  "mood": "pulse"
+  "mood": "pulse",
+  "icon": "🛰️",
+  "hook": "MPLS = <em>encryption</em>? Bada myth! 🛰️",
+  "points": [
+   "<b>MPLS</b> forwarding",
+   "<b>VPN</b> path separation",
+   "<b>Control plane</b> protection"
+  ],
+  "tags": [
+   "#mpls",
+   "#isp",
+   "#networksecurity"
+  ],
+  "tdev": "एमपीएलएस सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "12-Firewall-Security",
+   "rom": "Room 12 · Firewall Security",
+   "dev": "फ़ायरवॉल सिक्योरिटी",
+   "cover": "firewall-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "क्या एमपीएलएस मतलब एन्क्रिप्शन? ये एक बड़ा मिथ है! कैरियर कोर की सिक्योरिटी समझिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे एमपीएलएस पैकेट्स फ़ॉरवर्ड करता है, कैसे कस्टमर्स के रास्ते अलग रहते हैं, और कैसे कंट्रोल प्लेन को प्रोटेक्ट करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। एमपीएलएस सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर ग्यारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, फ़ायरवॉल सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Kya MPLS matlab encryption? Ye ek bada myth hai! Carrier core ki security samjhiye.",
+   "learn": "Humare saath aap seekhenge — kaise MPLS packets forward karta hai, kaise customers ke raaste alag rehte hain, aur kaise control plane ko protect karte hain.",
+   "book": "Pehle handbook se concept clear karo. MPLS Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 11 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 12 · Firewall Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 12,
+  "series": 12,
   "slug": "firewall",
   "book": "firewall-security",
   "name": "12-Firewall-Security",
@@ -389,44 +852,60 @@
    "Allow what must",
    "Scenario: the rule nobody removed"
   ],
+  "accent": "#f97316",
+  "mood": "drive",
+  "icon": "firewall",
+  "hook": "Kya ek <em>Firewall</em> har attack rok sakta hai? 🤔",
   "points": [
    "<b>Default-deny</b> policy banana",
    "<b>Zones</b> aur segmentation",
    "<b>Stateful inspection</b> & NAT rules"
   ],
-  "accent": "#f97316",
-  "mood": "drive",
-  "icon": "firewall",
-  "hook": "Kya ek <em>Firewall</em> har attack rok sakta hai? 🤔",
-  "showTasks": [
-   2,
-   5,
-   6
-  ],
-  "vo": {
-   "hook": "क्या एक फ़ायरवॉल हर अटैक को रोक सकता है? जवाब है, नहीं! अगर उसके रूल्स सही नहीं हैं।",
-   "learn": "हमारे साथ आप सीखेंगे, कैसे डिफ़ॉल्ट डिनाई पॉलिसी बनाते हैं, कैसे ज़ोन्स और सेगमेंटेशन करते हैं, और कैसे स्टेटफ़ुल इंस्पेक्शन के साथ नैट रूल्स लिखते हैं।",
-   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। फ़ायरवॉल सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर बारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
-   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!"
-  },
-  "sub": {
-   "hook": "Kya ek Firewall har attack rok sakta hai? Jawab hai — nahi! Agar uske rules sahi nahi hain.",
-   "learn": "Humare saath aap seekhenge — kaise default-deny policy banate hain, kaise zones aur segmentation karte hain, aur kaise stateful inspection ke saath NAT rules likhte hain.",
-   "book": "Pehle handbook se concept clear karo. Firewall Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 12 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein.",
-   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!"
-  },
   "tags": [
    "#firewall",
    "#networksecurity",
    "#cybersecurity",
    "#ngfw",
    "#defaultdeny"
-  ]
+  ],
+  "tdev": "फ़ायरवॉल सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   6
+  ],
+  "ref": {
+   "name": "13-Load-Balancer-ADC-Security",
+   "rom": "Room 13 · Load Balancer & ADC Security",
+   "dev": "लोड बैलेंसर एंड एडीसी सिक्योरिटी",
+   "cover": "load-balancer-adc-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "क्या एक फ़ायरवॉल हर अटैक को रोक सकता है? जवाब है, नहीं! अगर उसके रूल्स सही नहीं हैं।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे डिफ़ॉल्ट डिनाई पॉलिसी बनाते हैं, कैसे ज़ोन्स और सेगमेंटेशन करते हैं, और कैसे स्टेटफ़ुल इंस्पेक्शन के साथ नैट रूल्स लिखते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। फ़ायरवॉल सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर बारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, लोड बैलेंसर एंड एडीसी सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Kya ek Firewall har attack rok sakta hai? Jawab hai — nahi! Agar uske rules sahi nahi hain.",
+   "learn": "Humare saath aap seekhenge — kaise default-deny policy banate hain, kaise zones aur segmentation karte hain, aur kaise stateful inspection ke saath NAT rules likhte hain.",
+   "book": "Pehle handbook se concept clear karo. Firewall Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 12 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 13 · Load Balancer & ADC Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 13,
+  "series": 13,
   "slug": "load-balancer-adc",
   "book": "load-balancer-adc-security",
   "name": "13-Load-Balancer-ADC-Security",
@@ -450,16 +929,58 @@
    "Centralise TLS",
    "Scenario: the device that holds the keys"
   ],
-  "points": [
-   "Harden the ADC",
-   "SSL/TLS offload safely",
-   "Protect the front door"
-  ],
   "accent": "#f97316",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "⚖️",
+  "hook": "Lakhon users, ek <em>front door</em> — safe kaise? ⚖️",
+  "points": [
+   "<b>Balancing</b> & health checks",
+   "<b>TLS</b> termination safely",
+   "<b>Rate limiting</b> + headers"
+  ],
+  "tags": [
+   "#loadbalancer",
+   "#adc",
+   "#tls"
+  ],
+  "tdev": "लोड बैलेंसर एंड एडीसी सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "14-Web-Application-Firewall",
+   "rom": "Room 14 · Web Application Firewall",
+   "dev": "वेब एप्लिकेशन फ़ायरवॉल",
+   "cover": "waf",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "लाखों यूज़र्स, और एक ही फ़्रंट डोर। उसे सुरक्षित कैसे रखें? लोड बैलेंसर और एडीसी से।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे लोड बैलेंसिंग और हेल्थ चेक्स सेट करते हैं, कैसे टीएलएस को सुरक्षित टर्मिनेट करते हैं, और कैसे रेट लिमिटिंग लगाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। लोड बैलेंसर एंड एडीसी सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तेरह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, वेब एप्लिकेशन फ़ायरवॉल। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Lakhon users aur ek hi front door. Use surakshit kaise rakhein? Load balancer aur ADC se.",
+   "learn": "Humare saath aap seekhenge — kaise load balancing aur health checks set karte hain, kaise TLS ko surakshit terminate karte hain, aur kaise rate limiting lagate hain.",
+   "book": "Pehle handbook se concept clear karo. Load Balancer & ADC Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 13 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 14 · Web Application Firewall. Use miss mat kijiye!"
+  }
  },
  {
   "num": 14,
+  "series": 14,
   "slug": "waf",
   "book": "waf",
   "name": "14-Web-Application-Firewall",
@@ -483,16 +1004,58 @@
    "Virtual patching",
    "Scenario: stop the credential stuffing"
   ],
-  "points": [
-   "Block the OWASP Top 10",
-   "Tune rules without breakage",
-   "Virtual patching"
-  ],
   "accent": "#f97316",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "firewall",
+  "hook": "SQL injection <em>website</em> tak pahunche hi nahi! 🧱",
+  "points": [
+   "<b>OWASP Top 10</b> block",
+   "<b>ModSecurity</b> + Core Rule Set",
+   "<b>Virtual patching</b>"
+  ],
+  "tags": [
+   "#waf",
+   "#owasp",
+   "#websecurity"
+  ],
+  "tdev": "वेब एप्लिकेशन फ़ायरवॉल",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "15-Web-Server-Setup-Hosting",
+   "rom": "Room 15 · Web Server Setup & Hosting",
+   "dev": "वेब सर्वर सेटअप एंड होस्टिंग",
+   "cover": "web-server-hosting",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "एसक्यूएल इंजेक्शन जैसे अटैक, आपकी वेबसाइट तक पहुँचें ही नहीं। ये काम करता है, वेब एप्लिकेशन फ़ायरवॉल।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे ओवास्प टॉप टेन अटैक्स ब्लॉक करते हैं, कैसे मॉडसिक्योरिटी डिप्लॉय करते हैं, और कैसे वर्चुअल पैचिंग करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। वेब एप्लिकेशन फ़ायरवॉल, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर चौदह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, वेब सर्वर सेटअप एंड होस्टिंग। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "SQL injection jaise attack aapki website tak pahunchein hi nahi. Ye kaam karta hai Web Application Firewall.",
+   "learn": "Humare saath aap seekhenge — kaise OWASP Top 10 attacks block karte hain, kaise ModSecurity deploy karte hain, aur kaise virtual patching karte hain.",
+   "book": "Pehle handbook se concept clear karo. Web Application Firewall — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 14 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 15 · Web Server Setup & Hosting. Use miss mat kijiye!"
+  }
  },
  {
   "num": 15,
+  "series": 15,
   "slug": "web-server-hosting",
   "book": "web-server-hosting",
   "name": "15-Web-Server-Setup-Hosting",
@@ -516,16 +1079,58 @@
    "Confirm it's serving",
    "Scenario: hardening the host"
   ],
-  "points": [
-   "IIS, XAMPP, Cloudflare, ngrok",
-   "Build and host a real site",
-   "Secure the server end to end"
-  ],
   "accent": "#f97316",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "🚀",
+  "hook": "Apni <em>website</em> khud live karni hai? 🚀",
+  "points": [
+   "<b>IIS</b>, XAMPP, Cloudflare, ngrok",
+   "<b>TLS</b> certificate lagana",
+   "Server <b>hardening</b>"
+  ],
+  "tags": [
+   "#webhosting",
+   "#webserver",
+   "#cloudflare"
+  ],
+  "tdev": "वेब सर्वर सेटअप एंड होस्टिंग",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "16-IDS-IPS",
+   "rom": "Room 16 · IDS / IPS",
+   "dev": "आईडीएस आईपीएस",
+   "cover": "ids-ips",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "अपनी वेबसाइट ख़ुद लाइव करनी है? सर्वर सेटअप से लेकर सिक्योरिटी तक, सब सीखिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे वेब सर्वर सेटअप करते हैं, कैसे टीएलएस सर्टिफ़िकेट लगाते हैं, और कैसे सर्वर को हार्डन करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। वेब सर्वर सेटअप एंड होस्टिंग, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर पंद्रह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, आईडीएस आईपीएस। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Apni website khud live karni hai? Server setup se lekar security tak, sab seekhiye.",
+   "learn": "Humare saath aap seekhenge — kaise web server setup karte hain, kaise TLS certificate lagate hain, aur kaise server ko harden karte hain.",
+   "book": "Pehle handbook se concept clear karo. Web Server Setup & Hosting — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 15 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 16 · IDS / IPS. Use miss mat kijiye!"
+  }
  },
  {
   "num": 16,
+  "series": 16,
   "slug": "ids-ips",
   "book": "ids-ips",
   "name": "16-IDS-IPS",
@@ -549,16 +1154,58 @@
    "Ship the metadata",
    "Scenario: the alert that was read"
   ],
-  "points": [
-   "Signature vs anomaly detection",
-   "Tune for signal, not noise",
-   "Deploy it the right way"
-  ],
   "accent": "#22d3ee",
-  "mood": "scan"
+  "mood": "scan",
+  "icon": "radar",
+  "hook": "Attack ho raha hai — <em>pata</em> kaise chalega? 🚨",
+  "points": [
+   "<b>Signature</b> vs anomaly",
+   "Apna <b>detection rule</b>",
+   "<b>Noise</b> tune karna"
+  ],
+  "tags": [
+   "#ids",
+   "#ips",
+   "#snort"
+  ],
+  "tdev": "आईडीएस आईपीएस",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "17-Network-Monitoring",
+   "rom": "Room 17 · Network Monitoring",
+   "dev": "नेटवर्क मॉनिटरिंग",
+   "cover": "network-monitoring",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "नेटवर्क पर अटैक हो रहा है, ये पता कैसे चलेगा? आईडीएस और आईपीएस से।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे सिग्नेचर और एनॉमली डिटेक्शन काम करते हैं, कैसे अपना डिटेक्शन रूल लिखते हैं, और कैसे फ़ालतू अलर्ट्स कम करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। आईडीएस आईपीएस, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर सोलह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, नेटवर्क मॉनिटरिंग। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Network par attack ho raha hai, ye pata kaise chalega? IDS aur IPS se.",
+   "learn": "Humare saath aap seekhenge — kaise signature aur anomaly detection kaam karte hain, kaise apna detection rule likhte hain, aur kaise faltu alerts kam karte hain.",
+   "book": "Pehle handbook se concept clear karo. IDS / IPS — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 16 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 17 · Network Monitoring. Use miss mat kijiye!"
+  }
  },
  {
   "num": 17,
+  "series": 17,
   "slug": "network-monitoring",
   "book": "network-monitoring",
   "name": "17-Network-Monitoring",
@@ -582,16 +1229,58 @@
    "Actionable alerts",
    "Scenario: the breach the flows revealed"
   ],
-  "points": [
-   "Flow and packet visibility",
-   "Baseline and anomaly detection",
-   "Spot the intruder early"
-  ],
   "accent": "#22d3ee",
-  "mood": "scan"
+  "mood": "scan",
+  "icon": "packets",
+  "hook": "Breach <em>flows</em> me chhupa tha! 📈",
+  "points": [
+   "<b>Baseline</b> banana",
+   "<b>NetFlow</b> & SNMP",
+   "Attack <b>flows</b> me pakadna"
+  ],
+  "tags": [
+   "#networkmonitoring",
+   "#netflow",
+   "#noc"
+  ],
+  "tdev": "नेटवर्क मॉनिटरिंग",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "18-Wireshark-Mastery",
+   "rom": "Room 18 · Wireshark Mastery",
+   "dev": "वायरशार्क मास्टरी",
+   "cover": "wireshark",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "ब्रीच, नेटवर्क फ़्लोज़ में छुपा था, बस किसी ने देखा नहीं। नेटवर्क मॉनिटरिंग सीखिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे नॉर्मल ट्रैफ़िक की बेसलाइन बनाते हैं, कैसे नेटफ़्लो और एसएनएमपी से डेटा लेते हैं, और कैसे फ़्लोज़ में अटैक पकड़ते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। नेटवर्क मॉनिटरिंग, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर सत्रह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, वायरशार्क मास्टरी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Breach network flows me chhupa tha — bas kisi ne dekha nahi. Network monitoring seekhiye.",
+   "learn": "Humare saath aap seekhenge — kaise normal traffic ki baseline banate hain, kaise NetFlow aur SNMP se data lete hain, aur kaise flows me attack pakadte hain.",
+   "book": "Pehle handbook se concept clear karo. Network Monitoring — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 17 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 18 · Wireshark Mastery. Use miss mat kijiye!"
+  }
  },
  {
   "num": 18,
+  "series": 18,
   "slug": "wireshark",
   "book": "wireshark",
   "name": "18-Wireshark-Mastery",
@@ -615,44 +1304,60 @@
    "tshark for scale",
    "Scenario: packets settle it"
   ],
+  "accent": "#22d3ee",
+  "mood": "scan",
+  "icon": "packets",
+  "hook": "Aapke network me <em>asal me</em> kya chal raha hai? 👀",
   "points": [
    "<b>Capture</b> vs <b>display</b> filters",
    "<b>Follow TCP stream</b> se data padho",
    "Wire par <b>attack</b> pakdo"
   ],
-  "accent": "#22d3ee",
-  "mood": "scan",
-  "icon": "packets",
-  "hook": "Aapke network me <em>asal me</em> kya chal raha hai? 👀",
-  "showTasks": [
-   2,
-   5,
-   8
-  ],
-  "vo": {
-   "hook": "आपके नेटवर्क में असल में क्या चल रहा है? हर पैकेट सच बताता है, बस उसे पढ़ना आना चाहिए।",
-   "learn": "हमारे साथ आप सीखेंगे, कैसे कैप्चर और डिस्प्ले फ़िल्टर्स लगाते हैं, कैसे टीसीपी स्ट्रीम को फ़ॉलो करते हैं, और कैसे वायर पर अटैक को पकड़ते हैं।",
-   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। वायरशार्क मास्टरी, पैकेट्स को एक प्रो की तरह पढ़ना सीखो।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर अठारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
-   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!"
-  },
-  "sub": {
-   "hook": "Aapke network me asal me kya chal raha hai? Har packet sach batata hai — bas use padhna aana chahiye.",
-   "learn": "Humare saath aap seekhenge — kaise capture aur display filters lagate hain, kaise TCP stream ko follow karte hain, aur kaise wire par attack ko pakadte hain.",
-   "book": "Pehle handbook se concept clear karo. Wireshark Mastery — packets ko ek pro ki tarah padhna seekho.",
-   "ctf": "Phir CTF Portal ke Room 18 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein.",
-   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!"
-  },
   "tags": [
    "#wireshark",
    "#packetanalysis",
    "#networkforensics",
    "#cybersecurity",
    "#blueteam"
-  ]
+  ],
+  "tdev": "वायरशार्क मास्टरी",
+  "showTasks": [
+   2,
+   5,
+   8
+  ],
+  "ref": {
+   "name": "19-Nmap-Mastery",
+   "rom": "Room 19 · Nmap Mastery",
+   "dev": "एनमैप मास्टरी",
+   "cover": "nmap",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "आपके नेटवर्क में असल में क्या चल रहा है? हर पैकेट सच बताता है, बस उसे पढ़ना आना चाहिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे कैप्चर और डिस्प्ले फ़िल्टर्स लगाते हैं, कैसे टीसीपी स्ट्रीम को फ़ॉलो करते हैं, और कैसे वायर पर अटैक को पकड़ते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। वायरशार्क मास्टरी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर अठारह में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, एनमैप मास्टरी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Aapke network me asal me kya chal raha hai? Har packet sach batata hai — bas use padhna aana chahiye.",
+   "learn": "Humare saath aap seekhenge — kaise capture aur display filters lagate hain, kaise TCP stream ko follow karte hain, aur kaise wire par attack ko pakadte hain.",
+   "book": "Pehle handbook se concept clear karo. Wireshark Mastery — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 18 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 19 · Nmap Mastery. Use miss mat kijiye!"
+  }
  },
  {
   "num": 19,
+  "series": 19,
   "slug": "nmap",
   "book": "nmap",
   "name": "19-Nmap-Mastery",
@@ -676,16 +1381,58 @@
    "Hunt weaknesses",
    "Save it three ways"
   ],
-  "points": [
-   "Host and port discovery",
-   "Service and OS detection",
-   "NSE scripting power"
-  ],
   "accent": "#22d3ee",
-  "mood": "scan"
+  "mood": "scan",
+  "icon": "radar",
+  "hook": "Network me kaun kaun <em>zinda</em> hai? 📡",
+  "points": [
+   "<b>Host</b> & port discovery",
+   "<b>Service</b> + OS detection",
+   "<b>NSE</b> scripts"
+  ],
+  "tags": [
+   "#nmap",
+   "#portscanning",
+   "#ethicalhacking"
+  ],
+  "tdev": "एनमैप मास्टरी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "20-SOC-Architecture",
+   "rom": "Room 20 · SOC Architecture",
+   "dev": "सॉक आर्किटेक्चर",
+   "cover": "soc-architecture",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "आपके नेटवर्क में कौन कौन से डिवाइस ज़िंदा हैं, और कौन से पोर्ट खुले हैं? एनमैप बताता है।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे होस्ट और पोर्ट्स डिस्कवर करते हैं, कैसे सर्विस और ऑपरेटिंग सिस्टम पहचानते हैं, और कैसे एनएसई स्क्रिप्ट्स चलाते हैं। सिर्फ़ अपने या अनुमति वाले नेटवर्क पर।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। एनमैप मास्टरी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर उन्नीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, सॉक आर्किटेक्चर। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Aapke network me kaun kaun se devices zinda hain, aur kaun se port khule hain? Nmap batata hai.",
+   "learn": "Humare saath aap seekhenge — kaise host aur ports discover karte hain, kaise service aur OS pehchante hain, aur kaise NSE scripts chalate hain. Sirf apne ya permission wale network par.",
+   "book": "Pehle handbook se concept clear karo. Nmap Mastery — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 19 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 20 · SOC Architecture. Use miss mat kijiye!"
+  }
  },
  {
   "num": 20,
+  "series": 20,
   "slug": "soc-architecture",
   "book": "soc-architecture",
   "name": "20-SOC-Architecture",
@@ -709,16 +1456,58 @@
    "Measure the SOC",
    "Scenario: a phishing alert end to end"
   ],
-  "points": [
-   "People, process and technology",
-   "Tiered analysis that scales",
-   "Design for real throughput"
-  ],
   "accent": "#ef4444",
-  "mood": "tension"
+  "mood": "tension",
+  "icon": "🖥️",
+  "hook": "<em>SOC</em> ke andar 24×7 hota kya hai? 🖥️",
+  "points": [
+   "People, process, <b>technology</b>",
+   "<b>L1, L2, L3</b> analyst tiers",
+   "<b>ATT&CK</b> mapping"
+  ],
+  "tags": [
+   "#soc",
+   "#socanalyst",
+   "#blueteam"
+  ],
+  "tdev": "सॉक आर्किटेक्चर",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "21-SIEM",
+   "rom": "Room 21 · SIEM",
+   "dev": "सीम",
+   "cover": "siem",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "सॉक के अंदर, चौबीसों घंटे, होता क्या है? सिक्योरिटी ऑपरेशन्स सेंटर कैसे बनता है, समझिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे सॉक में पीपल, प्रोसेस और टेक्नोलॉजी जुड़ते हैं, कैसे एल वन, एल टू, एल थ्री एनालिस्ट काम करते हैं, और कैसे डिटेक्शन्स को अटैक फ़्रेमवर्क से मैप करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। सॉक आर्किटेक्चर, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर बीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, सीम। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "SOC ke andar 24x7 hota kya hai? Security Operations Center kaise banta hai, samjhiye.",
+   "learn": "Humare saath aap seekhenge — kaise SOC me people, process aur technology judte hain, kaise L1, L2, L3 analyst kaam karte hain, aur kaise detections ko ATT&CK se map karte hain.",
+   "book": "Pehle handbook se concept clear karo. SOC Architecture — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 20 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 21 · SIEM. Use miss mat kijiye!"
+  }
  },
  {
   "num": 21,
+  "series": 21,
   "slug": "siem",
   "book": "siem",
   "name": "21-SIEM",
@@ -742,16 +1531,58 @@
    "Tuning",
    "Scenario: a correlated intrusion"
   ],
-  "points": [
-   "Collect and correlate at scale",
-   "Build detections that fire right",
-   "Innspark-ready workflows"
-  ],
   "accent": "#ef4444",
-  "mood": "tension"
+  "mood": "tension",
+  "icon": "🔎",
+  "hook": "Lakhon logs me ek <em>attack</em> — dhoondhoge kaise? 🔎",
+  "points": [
+   "Logs <b>collect</b> & parse",
+   "<b>Correlation</b> rules",
+   "<b>Brute-force</b> detection"
+  ],
+  "tags": [
+   "#siem",
+   "#soc",
+   "#loganalysis"
+  ],
+  "tdev": "सीम",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "22-Log-Alert-Management",
+   "rom": "Room 22 · Log & Alert Management",
+   "dev": "लॉग एंड अलर्ट मैनेजमेंट",
+   "cover": "log-and-alert-management",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "लाखों लॉग्स में छुपा एक अटैक, ढूँढोगे कैसे? यही काम करता है, सीम।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे लॉग्स कलेक्ट और पार्स करते हैं, कैसे कोरिलेशन रूल्स बनाते हैं, और कैसे ब्रूट फ़ोर्स अटैक पकड़ते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। सीम, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर इक्कीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, लॉग एंड अलर्ट मैनेजमेंट। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Lakhon logs me chhupa ek attack, dhoondhoge kaise? Yahi kaam karta hai SIEM.",
+   "learn": "Humare saath aap seekhenge — kaise logs collect aur parse karte hain, kaise correlation rules banate hain, aur kaise brute force attack pakadte hain.",
+   "book": "Pehle handbook se concept clear karo. SIEM — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 21 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 22 · Log & Alert Management. Use miss mat kijiye!"
+  }
  },
  {
   "num": 22,
+  "series": 22,
   "slug": "log-alert-management",
   "book": "log-and-alert-management",
   "name": "22-Log-Alert-Management",
@@ -775,16 +1606,58 @@
    "Tune without blind spots",
    "Scenario: the storm and the silence"
   ],
-  "points": [
-   "Collect the logs that matter",
-   "Tune high-signal alerts",
-   "Beat alert fatigue"
-  ],
   "accent": "#ef4444",
-  "mood": "tension"
+  "mood": "tension",
+  "icon": "🔔",
+  "hook": "Roz hazaaron alerts — <em>asli</em> wala kaunsa? 🔔",
+  "points": [
+   "Sahi <b>logs</b> pehle",
+   "<b>Severity</b> & priority",
+   "<b>Dedup</b> + tuning"
+  ],
+  "tags": [
+   "#alertfatigue",
+   "#soc",
+   "#logmanagement"
+  ],
+  "tdev": "लॉग एंड अलर्ट मैनेजमेंट",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "23-Incident-Response",
+   "rom": "Room 23 · Incident Response",
+   "dev": "इंसिडेंट रिस्पॉन्स",
+   "cover": "incident-response",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "रोज़ हज़ारों अलर्ट्स, इनमें असली वाला कौन सा? अलर्ट फ़टीग से कैसे बचें, सीखिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे ज़रूरी लॉग्स पहले कलेक्ट करते हैं, कैसे अलर्ट्स की सीवेरिटी तय करते हैं, और कैसे डुप्लिकेट और फ़ालतू अलर्ट्स हटाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। लॉग एंड अलर्ट मैनेजमेंट, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर बाईस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, इंसिडेंट रिस्पॉन्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Roz hazaaron alerts — inme asli wala kaunsa? Alert fatigue se kaise bachein, seekhiye.",
+   "learn": "Humare saath aap seekhenge — kaise zaroori logs pehle collect karte hain, kaise alerts ki severity tay karte hain, aur kaise duplicate aur faltu alerts hatate hain.",
+   "book": "Pehle handbook se concept clear karo. Log & Alert Management — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 22 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 23 · Incident Response. Use miss mat kijiye!"
+  }
  },
  {
   "num": 23,
+  "series": 23,
   "slug": "incident-response",
   "book": "incident-response",
   "name": "23-Incident-Response",
@@ -808,44 +1681,60 @@
    "Reporting obligations",
    "Scenario: ransomware, end to end"
   ],
+  "accent": "#ef4444",
+  "mood": "tension",
+  "icon": "siren",
+  "hook": "<em>Ransomware</em> attack ho gaya… ab kya karoge? 🚨",
   "points": [
    "<b>IR lifecycle</b> step by step",
    "Evidence bachakar <b>containment</b>",
    "<b>Recovery</b> + lessons learned"
   ],
-  "accent": "#ef4444",
-  "mood": "tension",
-  "icon": "siren",
-  "hook": "<em>Ransomware</em> attack ho gaya… ab kya karoge? 🚨",
-  "showTasks": [
-   1,
-   4,
-   10
-  ],
-  "vo": {
-   "hook": "अगर आपकी कंपनी पर रैनसमवेयर अटैक हो जाए, तो पहले पाँच मिनट में आप क्या करोगे?",
-   "learn": "हमारे साथ आप सीखेंगे, कैसे इंसिडेंट रिस्पॉन्स लाइफ़साइकल को स्टेप बाय स्टेप फ़ॉलो करते हैं, कैसे एविडेंस खोए बिना अटैक को कंटेन करते हैं, और कैसे रिकवरी के बाद सिस्टम को हार्डन करते हैं।",
-   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। इंसिडेंट रिस्पॉन्स, डिटेक्ट, कंटेन और रिकवर।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तेईस में, रैनसमवेयर सिनेरियो तक, दस हैंड्स-ऑन टास्क। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
-   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!"
-  },
-  "sub": {
-   "hook": "Agar aapki company par ransomware attack ho jaye, to pehle 5 minute me aap kya karoge?",
-   "learn": "Humare saath aap seekhenge — kaise Incident Response lifecycle ko step by step follow karte hain, kaise evidence khoye bina attack ko contain karte hain, aur kaise recovery ke baad system ko harden karte hain.",
-   "book": "Pehle handbook se concept clear karo. Incident Response — detect, contain aur recover.",
-   "ctf": "Phir CTF Portal ke Room 23 me, ransomware scenario tak, 10 hands-on tasks. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein.",
-   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!"
-  },
   "tags": [
    "#incidentresponse",
    "#ransomware",
    "#soc",
    "#dfir",
    "#cybersecurity"
-  ]
+  ],
+  "tdev": "इंसिडेंट रिस्पॉन्स",
+  "showTasks": [
+   1,
+   4,
+   10
+  ],
+  "ref": {
+   "name": "24-Threat-Hunting",
+   "rom": "Room 24 · Threat Hunting",
+   "dev": "थ्रेट हंटिंग",
+   "cover": "threat-hunting",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "अगर आपकी कंपनी पर रैनसमवेयर अटैक हो जाए, तो पहले पाँच मिनट में आप क्या करोगे?",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे इंसिडेंट रिस्पॉन्स लाइफ़साइकल को स्टेप बाय स्टेप फ़ॉलो करते हैं, कैसे एविडेंस खोए बिना अटैक को कंटेन करते हैं, और कैसे रिकवरी के बाद सिस्टम को हार्डन करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। इंसिडेंट रिस्पॉन्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तेईस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, थ्रेट हंटिंग। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Agar aapki company par ransomware attack ho jaye, to pehle 5 minute me aap kya karoge?",
+   "learn": "Humare saath aap seekhenge — kaise Incident Response lifecycle ko step by step follow karte hain, kaise evidence khoye bina attack ko contain karte hain, aur kaise recovery ke baad system ko harden karte hain.",
+   "book": "Pehle handbook se concept clear karo. Incident Response — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 23 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 24 · Threat Hunting. Use miss mat kijiye!"
+  }
  },
  {
   "num": 24,
+  "series": 24,
   "slug": "threat-hunting",
   "book": "threat-hunting",
   "name": "24-Threat-Hunting",
@@ -869,16 +1758,58 @@
    "Promote finds to detections",
    "Scenario: the hunt that found what alerts missed"
   ],
-  "points": [
-   "Hunt with real hypotheses",
-   "Hunt persistence and C2",
-   "Turn hunts into detections"
-  ],
   "accent": "#ef4444",
-  "mood": "tension"
+  "mood": "tension",
+  "icon": "radar",
+  "hook": "Jo <em>alerts</em> nahi pakadte, use kaun pakdega? 🕵️",
+  "points": [
+   "<b>Hypothesis</b> se hunting",
+   "<b>Persistence</b> & C2 dhoondhna",
+   "Hunt → <b>detection</b>"
+  ],
+  "tags": [
+   "#threathunting",
+   "#blueteam",
+   "#soc"
+  ],
+  "tdev": "थ्रेट हंटिंग",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "25-SOAR-Security-Automation",
+   "rom": "Room 25 · SOAR & Security Automation",
+   "dev": "सोर एंड सिक्योरिटी ऑटोमेशन",
+   "cover": "soar-security-automation",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "जो अटैक अलर्ट्स नहीं पकड़ते, उसे कौन पकड़ेगा? थ्रेट हंटर!",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे हाइपोथिसिस बनाकर हंट करते हैं, कैसे पर्सिस्टेंस और सीटू बीकन्स ढूँढते हैं, और कैसे हंट को डिटेक्शन रूल में बदलते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। थ्रेट हंटिंग, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर चौबीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, सोर एंड सिक्योरिटी ऑटोमेशन। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Jo attack alerts nahi pakadte, use kaun pakdega? Threat hunter!",
+   "learn": "Humare saath aap seekhenge — kaise hypothesis banakar hunt karte hain, kaise persistence aur C2 beacons dhoondhte hain, aur kaise hunt ko detection rule me badalte hain.",
+   "book": "Pehle handbook se concept clear karo. Threat Hunting — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 24 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 25 · SOAR & Security Automation. Use miss mat kijiye!"
+  }
  },
  {
   "num": 25,
+  "series": 25,
   "slug": "soar",
   "book": "soar-security-automation",
   "name": "25-SOAR-Security-Automation",
@@ -902,16 +1833,58 @@
    "Protect the automation",
    "Scenario: phishing, automated"
   ],
-  "points": [
-   "Playbooks that actually work",
-   "Automate triage and enrichment",
-   "Scale your SOC"
-  ],
   "accent": "#ef4444",
-  "mood": "tension"
+  "mood": "tension",
+  "icon": "🤖",
+  "hook": "Phishing alert ka <em>jawab</em> — 30 second me? 🤖",
+  "points": [
+   "<b>Playbooks</b> jo kaam karein",
+   "Auto <b>enrichment</b> & triage",
+   "<b>Human in the loop</b>"
+  ],
+  "tags": [
+   "#soar",
+   "#automation",
+   "#soc"
+  ],
+  "tdev": "सोर एंड सिक्योरिटी ऑटोमेशन",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "26-SOC-Tools-Splunk-ELK-Wazuh-Sigma",
+   "rom": "Room 26 · SOC Tools: Splunk · ELK · Wazuh · Sigma",
+   "dev": "सॉक टूल्स",
+   "cover": "soc-tools-splunk-elk-wazuh-sigma",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "फ़िशिंग अलर्ट का जवाब, सिर्फ़ तीस सेकंड में? सोर और सिक्योरिटी ऑटोमेशन से।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे प्लेबुक्स बनाते हैं, कैसे एनरिचमेंट और ट्राइएज ऑटोमेट करते हैं, और कैसे ज़रूरी फ़ैसलों पर इंसान को लूप में रखते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। सोर एंड सिक्योरिटी ऑटोमेशन, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर पच्चीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, सॉक टूल्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Phishing alert ka jawab sirf 30 second me? SOAR aur security automation se.",
+   "learn": "Humare saath aap seekhenge — kaise playbooks banate hain, kaise enrichment aur triage automate karte hain, aur kaise zaroori faislon par insaan ko loop me rakhte hain.",
+   "book": "Pehle handbook se concept clear karo. SOAR & Security Automation — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 25 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 26 · SOC Tools: Splunk · ELK · Wazuh · Sigma. Use miss mat kijiye!"
+  }
  },
  {
   "num": 26,
+  "series": 26,
   "slug": "soc-tools",
   "book": "soc-tools-splunk-elk-wazuh-sigma",
   "name": "26-SOC-Tools-Splunk-ELK-Wazuh-Sigma",
@@ -935,16 +1908,58 @@
    "Detection-as-code",
    "Scenario: one rule, three platforms"
   ],
-  "points": [
-   "Search and dashboards",
-   "Open-source SIEM power",
-   "Portable Sigma detections"
-  ],
   "accent": "#ef4444",
-  "mood": "tension"
+  "mood": "tension",
+  "icon": "🧰",
+  "hook": "Splunk, ELK, Wazuh — <em>ek</em> rule sab pe? 🧰",
+  "points": [
+   "<b>Splunk</b> search",
+   "<b>ELK</b> & Wazuh",
+   "Portable <b>Sigma</b> rules"
+  ],
+  "tags": [
+   "#splunk",
+   "#wazuh",
+   "#sigma"
+  ],
+  "tdev": "सॉक टूल्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "27-Windows-Security",
+   "rom": "Room 27 · Windows Security",
+   "dev": "विंडोज़ सिक्योरिटी",
+   "cover": "windows-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "स्प्लंक, ईएलके, वाज़ुह, एक ही रूल सब पर चल सकता है? हाँ, सिग्मा से!",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे स्प्लंक में सर्च करते हैं, कैसे ईएलके और वाज़ुह इस्तेमाल करते हैं, और कैसे सिग्मा रूल एक बार लिखकर हर जगह चलाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। सॉक टूल्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर छब्बीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, विंडोज़ सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Splunk, ELK, Wazuh — ek hi rule sab par chal sakta hai? Haan, Sigma se!",
+   "learn": "Humare saath aap seekhenge — kaise Splunk me search karte hain, kaise ELK aur Wazuh istemaal karte hain, aur kaise Sigma rule ek baar likhkar har jagah chalate hain.",
+   "book": "Pehle handbook se concept clear karo. SOC Tools: Splunk · ELK · Wazuh · Sigma — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 26 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 27 · Windows Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 27,
+  "series": 27,
   "slug": "windows-security",
   "book": "windows-security",
   "name": "27-Windows-Security",
@@ -968,16 +1983,58 @@
    "Modern defences",
    "Scenario: phishing to privilege"
   ],
-  "points": [
-   "The Windows security model",
-   "Tokens and privileges",
-   "Stop privilege abuse"
-  ],
   "accent": "#60a5fa",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "🪟",
+  "hook": "Phishing mail se <em>Admin</em> tak — kaise? 🪟",
+  "points": [
+   "<b>SIDs</b>, tokens, ACLs",
+   "<b>UAC</b> & privileges",
+   "<b>Pass-the-hash</b> rokna"
+  ],
+  "tags": [
+   "#windowssecurity",
+   "#privilegeescalation",
+   "#blueteam"
+  ],
+  "tdev": "विंडोज़ सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "28-Windows-Hardening",
+   "rom": "Room 28 · Windows Hardening",
+   "dev": "विंडोज़ हार्डनिंग",
+   "cover": "windows-hardening",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "एक फ़िशिंग मेल से, एडमिन राइट्स तक, अटैकर कैसे पहुँचता है? विंडोज़ का सिक्योरिटी मॉडल समझिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे एसआईडी, टोकन्स और एसीएल काम करते हैं, कैसे यूएसी और प्रिविलेजेस संभालते हैं, और कैसे पास द हैश अटैक रोकते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। विंडोज़ सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर सत्ताईस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, विंडोज़ हार्डनिंग। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Ek phishing mail se admin rights tak attacker kaise pahunchta hai? Windows ka security model samjhiye.",
+   "learn": "Humare saath aap seekhenge — kaise SID, tokens aur ACL kaam karte hain, kaise UAC aur privileges sambhalte hain, aur kaise pass-the-hash attack rokte hain.",
+   "book": "Pehle handbook se concept clear karo. Windows Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 27 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 28 · Windows Hardening. Use miss mat kijiye!"
+  }
  },
  {
   "num": 28,
+  "series": 28,
   "slug": "windows-hardening",
   "book": "windows-hardening",
   "name": "28-Windows-Hardening",
@@ -1001,16 +2058,58 @@
    "Audit policy & exceptions",
    "Scenario: harden a fleet without breaking it"
   ],
-  "points": [
-   "Baselines and controls",
-   "Audit your real posture",
-   "Close the gaps that matter"
-  ],
   "accent": "#60a5fa",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "🔒",
+  "hook": "Default Windows = <em>khula</em> darwaza? 🔒",
+  "points": [
+   "Security <b>baselines</b>",
+   "<b>LAPS</b> & BitLocker",
+   "Attack surface <b>kam</b>"
+  ],
+  "tags": [
+   "#windowshardening",
+   "#bitlocker",
+   "#laps"
+  ],
+  "tdev": "विंडोज़ हार्डनिंग",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "29-Active-Directory-Security",
+   "rom": "Room 29 · Active Directory Security",
+   "dev": "एक्टिव डायरेक्टरी सिक्योरिटी",
+   "cover": "active-directory-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "डिफ़ॉल्ट विंडोज़, मतलब अटैकर के लिए खुला दरवाज़ा? विंडोज़ हार्डनिंग सीखिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे सिक्योरिटी बेसलाइन्स लगाते हैं, कैसे लैप्स और बिटलॉकर सेट करते हैं, और कैसे अटैक सरफ़ेस कम करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। विंडोज़ हार्डनिंग, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर अट्ठाईस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, एक्टिव डायरेक्टरी सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Default Windows matlab attacker ke liye khula darwaza? Windows hardening seekhiye.",
+   "learn": "Humare saath aap seekhenge — kaise security baselines lagate hain, kaise LAPS aur BitLocker set karte hain, aur kaise attack surface kam karte hain.",
+   "book": "Pehle handbook se concept clear karo. Windows Hardening — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 28 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 29 · Active Directory Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 29,
+  "series": 29,
   "slug": "active-directory",
   "book": "active-directory-security",
   "name": "29-Active-Directory-Security",
@@ -1034,16 +2133,58 @@
    "Privilege & delegation",
    "Scenario: foothold to Domain Admin"
   ],
-  "points": [
-   "Master Kerberos and delegation",
-   "Stop credential theft & lateral movement",
-   "Tiered admin and hardening"
-  ],
   "accent": "#60a5fa",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "🏰",
+  "hook": "Ek user se <em>Domain Admin</em> tak! 🏰",
+  "points": [
+   "<b>Kerberos</b> & krbtgt",
+   "<b>Kerberoasting</b>, DCSync",
+   "<b>Tiered admin</b> model"
+  ],
+  "tags": [
+   "#activedirectory",
+   "#kerberos",
+   "#adsecurity"
+  ],
+  "tdev": "एक्टिव डायरेक्टरी सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "30-Group-Policy-Security",
+   "rom": "Room 30 · Group Policy Security",
+   "dev": "ग्रुप पॉलिसी सिक्योरिटी",
+   "cover": "group-policy-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "एक आम यूज़र से, डोमेन एडमिन तक। एक्टिव डायरेक्टरी अटैक्स कैसे होते हैं, और कैसे रोकें?",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे कर्बेरोस और टिकट्स काम करते हैं, कैसे कर्बेरोस्टिंग और डीसी सिंक पकड़ते हैं, और कैसे टियर्ड एडमिन मॉडल लगाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। एक्टिव डायरेक्टरी सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर उनतीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, ग्रुप पॉलिसी सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Ek aam user se Domain Admin tak. Active Directory attacks kaise hote hain, aur kaise rokein?",
+   "learn": "Humare saath aap seekhenge — kaise Kerberos aur tickets kaam karte hain, kaise Kerberoasting aur DCSync pakadte hain, aur kaise tiered admin model lagate hain.",
+   "book": "Pehle handbook se concept clear karo. Active Directory Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 29 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 30 · Group Policy Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 30,
+  "series": 30,
   "slug": "group-policy",
   "book": "group-policy-security",
   "name": "30-Group-Policy-Security",
@@ -1067,16 +2208,58 @@
    "Lock it down",
    "Scenario: a GPO turned against the fleet"
   ],
-  "points": [
-   "GPO security settings that count",
-   "Enforce baselines fleet-wide",
-   "Avoid the classic misconfigs"
-  ],
   "accent": "#60a5fa",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "⚙️",
+  "hook": "Ek <em>GPO</em> — hazaaron computers! ⚙️",
+  "points": [
+   "<b>LSDOU</b> processing order",
+   "<b>cpassword</b> jaise misconfigs",
+   "GPO <b>changes</b> detect"
+  ],
+  "tags": [
+   "#grouppolicy",
+   "#gpo",
+   "#activedirectory"
+  ],
+  "tdev": "ग्रुप पॉलिसी सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "31-Endpoint-Detection-Response",
+   "rom": "Room 31 · Endpoint Detection & Response",
+   "dev": "एंडपॉइंट डिटेक्शन एंड रिस्पॉन्स",
+   "cover": "edr",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "एक जीपीओ, और हज़ारों कंप्यूटर्स पर असर। सही हो तो सुरक्षा, ग़लत हो तो ख़तरा।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे ग्रुप पॉलिसी का प्रोसेसिंग ऑर्डर काम करता है, कैसे पुरानी पासवर्ड ग़लतियाँ ढूँढते हैं, और कैसे जीपीओ के बदलाव डिटेक्ट करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। ग्रुप पॉलिसी सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, एंडपॉइंट डिटेक्शन एंड रिस्पॉन्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Ek GPO, aur hazaaron computers par asar. Sahi ho to suraksha, galat ho to khatra.",
+   "learn": "Humare saath aap seekhenge — kaise Group Policy ka processing order kaam karta hai, kaise purani password galtiyan dhoondhte hain, aur kaise GPO ke badlaav detect karte hain.",
+   "book": "Pehle handbook se concept clear karo. Group Policy Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 30 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 31 · Endpoint Detection & Response. Use miss mat kijiye!"
+  }
  },
  {
   "num": 31,
+  "series": 31,
   "slug": "edr",
   "book": "edr",
   "name": "31-Endpoint-Detection-Response",
@@ -1100,16 +2283,58 @@
    "Tuning",
    "Scenario: EDR catches what AV missed"
   ],
-  "points": [
-   "How EDR really works",
-   "Detect and respond on endpoints",
-   "Hunt on the host"
-  ],
   "accent": "#60a5fa",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "🦠",
+  "hook": "Antivirus <em>chuka</em>, EDR ne pakda! 🦠",
+  "points": [
+   "<b>Process tree</b> padhna",
+   "<b>Behaviour</b> detection",
+   "<b>Isolate</b> & rollback"
+  ],
+  "tags": [
+   "#edr",
+   "#endpointsecurity",
+   "#xdr"
+  ],
+  "tdev": "एंडपॉइंट डिटेक्शन एंड रिस्पॉन्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "32-PowerShell-Security",
+   "rom": "Room 32 · PowerShell Security",
+   "dev": "पावरशेल सिक्योरिटी",
+   "cover": "powershell-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "एंटीवायरस से अटैक छूट गया, लेकिन ईडीआर ने पकड़ लिया। कैसे? समझिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे प्रोसेस ट्री पढ़ते हैं, कैसे बिहेवियर से अटैक डिटेक्ट करते हैं, और कैसे होस्ट को आइसोलेट करके रोलबैक करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। एंडपॉइंट डिटेक्शन एंड रिस्पॉन्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर इकतीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, पावरशेल सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Antivirus se attack chhoot gaya, lekin EDR ne pakad liya. Kaise? Samjhiye.",
+   "learn": "Humare saath aap seekhenge — kaise process tree padhte hain, kaise behaviour se attack detect karte hain, aur kaise host ko isolate karke rollback karte hain.",
+   "book": "Pehle handbook se concept clear karo. Endpoint Detection & Response — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 31 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 32 · PowerShell Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 32,
+  "series": 32,
   "slug": "powershell-security",
   "book": "powershell-security",
   "name": "32-PowerShell-Security",
@@ -1133,16 +2358,58 @@
    "Remove PowerShell v2",
    "Scenario: catch the cradle"
   ],
-  "points": [
-   "How attackers abuse PowerShell",
-   "Logging and constrained mode",
-   "Detect malicious scripts"
-  ],
   "accent": "#60a5fa",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "⌨️",
+  "hook": "Ek <em>PowerShell</em> line — poora attack? ⌨️",
+  "points": [
+   "<b>Download cradle</b> pakadna",
+   "<b>Script-block</b> logging",
+   "<b>AMSI</b> & constrained mode"
+  ],
+  "tags": [
+   "#powershell",
+   "#amsi",
+   "#blueteam"
+  ],
+  "tdev": "पावरशेल सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "33-Sysinternals",
+   "rom": "Room 33 · Sysinternals",
+   "dev": "सिसइंटरनल्स",
+   "cover": "sysinternals",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "पावरशेल की एक लाइन, और पूरा अटैक? अटैकर्स इसे कैसे इस्तेमाल करते हैं, और कैसे पकड़ें?",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे डाउनलोड क्रेडल और एनकोडेड कमांड्स पकड़ते हैं, कैसे स्क्रिप्ट ब्लॉक लॉगिंग चालू करते हैं, और कैसे एएमएसआई और कंस्ट्रेन्ड मोड लगाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। पावरशेल सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर बत्तीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, सिसइंटरनल्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "PowerShell ki ek line, aur poora attack? Attackers ise kaise istemaal karte hain, aur kaise pakdein?",
+   "learn": "Humare saath aap seekhenge — kaise download cradle aur encoded commands pakadte hain, kaise script-block logging chalu karte hain, aur kaise AMSI aur constrained mode lagate hain.",
+   "book": "Pehle handbook se concept clear karo. PowerShell Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 32 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 33 · Sysinternals. Use miss mat kijiye!"
+  }
  },
  {
   "num": 33,
+  "series": 33,
   "slug": "sysinternals",
   "book": "sysinternals",
   "name": "33-Sysinternals",
@@ -1166,23 +2433,65 @@
    "Sysmon",
    "Scenario: live-triage a host"
   ],
-  "points": [
-   "Process Explorer & Autoruns",
-   "Hunt malware live",
-   "Fast host triage"
-  ],
   "accent": "#60a5fa",
-  "mood": "drive"
+  "mood": "drive",
+  "icon": "🔬",
+  "hook": "PC me <em>malware</em>? Live pakdo! 🔬",
+  "points": [
+   "<b>Process Explorer</b>",
+   "<b>Autoruns</b> se persistence",
+   "<b>Sysmon</b> logging"
+  ],
+  "tags": [
+   "#sysinternals",
+   "#sysmon",
+   "#malwareanalysis"
+  ],
+  "tdev": "सिसइंटरनल्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "34-Linux-Security-Hardening",
+   "rom": "Room 34 · Linux Security: Hardening",
+   "dev": "लिनक्स सिक्योरिटी हार्डनिंग",
+   "cover": "linux-hardening",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "कंप्यूटर में मैलवेयर है? सिसइंटरनल्स टूल्स से, लाइव पकड़िए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे प्रोसेस एक्सप्लोरर से संदिग्ध प्रोसेस पहचानते हैं, कैसे ऑटोरन्स से पर्सिस्टेंस ढूँढते हैं, और कैसे सिसमॉन से लॉगिंग करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। सिसइंटरनल्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तैंतीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, लिनक्स सिक्योरिटी हार्डनिंग। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Computer me malware hai? Sysinternals tools se live pakadiye.",
+   "learn": "Humare saath aap seekhenge — kaise Process Explorer se sandigdh process pehchante hain, kaise Autoruns se persistence dhoondhte hain, aur kaise Sysmon se logging karte hain.",
+   "book": "Pehle handbook se concept clear karo. Sysinternals — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 33 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 34 · Linux Security: Hardening. Use miss mat kijiye!"
+  }
  },
  {
   "num": 34,
+  "series": 37,
   "slug": "linux-hardening",
-  "book": "forensics-fundamentals",
-  "name": "34-Digital-Forensics-Fundamentals",
-  "title": "Digital Forensics Fundamentals",
-  "subtitle": "Handling and evidence",
-  "pages": 31,
-  "category": "Digital Forensics",
+  "book": "linux-hardening",
+  "name": "34-Linux-Security-Hardening",
+  "title": "Linux Security: Hardening",
+  "subtitle": "Permissions, SSH, firewall, MAC",
+  "pages": 33,
+  "category": "Linux Security",
   "path": "Linux",
   "difficulty": "Medium",
   "roomTitle": "Linux Hardening",
@@ -1199,23 +2508,65 @@
    "Mandatory access control",
    "Scenario: harden a web server"
   ],
-  "points": [
-   "Chain of custody done right",
-   "Preserve and hash evidence",
-   "Produce defensible findings"
-  ],
   "accent": "#facc15",
-  "mood": "pulse"
+  "mood": "pulse",
+  "icon": "🐧",
+  "hook": "Linux server <em>hack</em> hone se pehle! 🐧",
+  "points": [
+   "<b>Permissions</b> & SUID",
+   "<b>SSH keys</b>, no passwords",
+   "<b>Firewall</b> + SELinux"
+  ],
+  "tags": [
+   "#linux",
+   "#linuxhardening",
+   "#ssh"
+  ],
+  "tdev": "लिनक्स सिक्योरिटी हार्डनिंग",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "35-Linux-Security-Monitoring",
+   "rom": "Room 35 · Linux Security: Monitoring",
+   "dev": "लिनक्स सिक्योरिटी मॉनिटरिंग",
+   "cover": "linux-monitoring",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "लिनक्स सर्वर हैक होने से पहले, ये सेटिंग्स ज़रूर कीजिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे परमिशन्स और एसयूआईडी सही रखते हैं, कैसे एसएसएच को कीज़ से सुरक्षित करते हैं, और कैसे फ़ायरवॉल और सीलिनक्स लगाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। लिनक्स सिक्योरिटी हार्डनिंग, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर चौंतीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, लिनक्स सिक्योरिटी मॉनिटरिंग। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Linux server hack hone se pehle, ye settings zaroor kijiye.",
+   "learn": "Humare saath aap seekhenge — kaise permissions aur SUID sahi rakhte hain, kaise SSH ko keys se surakshit karte hain, aur kaise firewall aur SELinux lagate hain.",
+   "book": "Pehle handbook se concept clear karo. Linux Security: Hardening — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 34 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 35 · Linux Security: Monitoring. Use miss mat kijiye!"
+  }
  },
  {
   "num": 35,
+  "series": 38,
   "slug": "linux-monitoring",
-  "book": "forensic-domains",
-  "name": "35-Forensic-Domains",
-  "title": "Forensic Domains",
-  "subtitle": "Disk · memory · Windows · network · browser",
-  "pages": 30,
-  "category": "Digital Forensics",
+  "book": "linux-monitoring",
+  "name": "35-Linux-Security-Monitoring",
+  "title": "Linux Security: Monitoring",
+  "subtitle": "Logs, auditd, hunting and IR",
+  "pages": 33,
+  "category": "Linux Security",
   "path": "Linux",
   "difficulty": "Medium",
   "roomTitle": "Linux Monitoring",
@@ -1232,22 +2583,64 @@
    "Hunt webshells & rootkits",
    "Scenario: triage a compromised host"
   ],
-  "points": [
-   "Five domains of evidence",
-   "Where the truth really hides",
-   "Cross-domain investigation"
-  ],
   "accent": "#facc15",
-  "mood": "pulse"
+  "mood": "pulse",
+  "icon": "📟",
+  "hook": "Server pe koi <em>chhupa</em> baitha hai? 👀",
+  "points": [
+   "<b>journald</b> & central logs",
+   "<b>auditd</b> + AIDE",
+   "<b>Webshell</b> & rootkit hunt"
+  ],
+  "tags": [
+   "#linux",
+   "#auditd",
+   "#incidentresponse"
+  ],
+  "tdev": "लिनक्स सिक्योरिटी मॉनिटरिंग",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "36-Digital-Forensics-Fundamentals",
+   "rom": "Room 36 · Digital Forensics Fundamentals",
+   "dev": "डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स",
+   "cover": "forensics-fundamentals",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "आपके लिनक्स सर्वर पर कोई चुपचाप बैठा है? लॉग्स और ऑडिटडी से पता कीजिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे लॉग्स को सेंट्रल करते हैं, कैसे ऑडिटडी और एड से बदलाव पकड़ते हैं, और कैसे वेबशेल और रूटकिट ढूँढते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। लिनक्स सिक्योरिटी मॉनिटरिंग, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर पैंतीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Aapke Linux server par koi chupchaap baitha hai? Logs aur auditd se pata kijiye.",
+   "learn": "Humare saath aap seekhenge — kaise logs ko central karte hain, kaise auditd aur AIDE se badlaav pakadte hain, aur kaise webshell aur rootkit dhoondhte hain.",
+   "book": "Pehle handbook se concept clear karo. Linux Security: Monitoring — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 35 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 36 · Digital Forensics Fundamentals. Use miss mat kijiye!"
+  }
  },
  {
   "num": 36,
+  "series": 34,
   "slug": "forensics-fundamentals",
-  "book": "forensic-tools",
-  "name": "36-Forensic-Tools",
-  "title": "Forensic Tools",
-  "subtitle": "FTK Imager · KAPE · Autopsy · Volatility",
-  "pages": 30,
+  "book": "forensics-fundamentals",
+  "name": "36-Digital-Forensics-Fundamentals",
+  "title": "Digital Forensics Fundamentals",
+  "subtitle": "Handling and evidence",
+  "pages": 31,
   "category": "Digital Forensics",
   "path": "Forensics",
   "difficulty": "Hard",
@@ -1265,23 +2658,65 @@
    "Admissibility & Indian law",
    "Scenario: preserve, prove, present"
   ],
-  "points": [
-   "Four free professional tools",
-   "Acquire, triage, analyse",
-   "Build a real workflow"
-  ],
   "accent": "#a78bfa",
-  "mood": "scan"
+  "mood": "scan",
+  "icon": "⚖️",
+  "hook": "Evidence <em>court</em> me tike kaise? ⚖️",
+  "points": [
+   "<b>Order of volatility</b>",
+   "<b>Imaging</b> + hashing",
+   "<b>Chain of custody</b>"
+  ],
+  "tags": [
+   "#digitalforensics",
+   "#evidence",
+   "#dfir"
+  ],
+  "tdev": "डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "37-Forensic-Domains",
+   "rom": "Room 37 · Forensic Domains",
+   "dev": "फ़ॉरेंसिक डोमेन्स",
+   "cover": "forensic-domains",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "डिजिटल एविडेंस, कोर्ट में टिके कैसे? एक ग़लत क्लिक, और सबूत बेकार।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे ऑर्डर ऑफ़ वोलैटिलिटी से सबूत लेते हैं, कैसे इमेजिंग और हैशिंग करते हैं, और कैसे चेन ऑफ़ कस्टडी बनाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर छत्तीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, फ़ॉरेंसिक डोमेन्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Digital evidence court me tike kaise? Ek galat click, aur saboot bekaar.",
+   "learn": "Humare saath aap seekhenge — kaise order of volatility se saboot lete hain, kaise imaging aur hashing karte hain, aur kaise chain of custody banate hain.",
+   "book": "Pehle handbook se concept clear karo. Digital Forensics Fundamentals — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 36 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 37 · Forensic Domains. Use miss mat kijiye!"
+  }
  },
  {
   "num": 37,
+  "series": 35,
   "slug": "forensic-domains",
-  "book": "linux-hardening",
-  "name": "37-Linux-Security-Hardening",
-  "title": "Linux Security: Hardening",
-  "subtitle": "Permissions, SSH, firewall, MAC",
-  "pages": 33,
-  "category": "Linux Security",
+  "book": "forensic-domains",
+  "name": "37-Forensic-Domains",
+  "title": "Forensic Domains",
+  "subtitle": "Disk · memory · Windows · network · browser",
+  "pages": 30,
+  "category": "Digital Forensics",
   "path": "Forensics",
   "difficulty": "Hard",
   "roomTitle": "Forensic Domains",
@@ -1298,23 +2733,65 @@
    "Browser forensics",
    "Scenario: one timeline from five domains"
   ],
-  "points": [
-   "The Linux security model",
-   "Harden SSH and services",
-   "SELinux / AppArmor"
-  ],
   "accent": "#a78bfa",
-  "mood": "scan"
+  "mood": "scan",
+  "icon": "🧬",
+  "hook": "Delete file bhi <em>sach</em> bolti hai! 🧬",
+  "points": [
+   "<b>Disk</b> & file carving",
+   "<b>Memory</b> forensics",
+   "<b>Registry</b> & browser artefacts"
+  ],
+  "tags": [
+   "#forensics",
+   "#memoryforensics",
+   "#dfir"
+  ],
+  "tdev": "फ़ॉरेंसिक डोमेन्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "38-Forensic-Tools",
+   "rom": "Room 38 · Forensic Tools",
+   "dev": "फ़ॉरेंसिक टूल्स",
+   "cover": "forensic-tools",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "डिलीट की हुई फ़ाइल भी सच बोलती है। डिस्क, मेमोरी, रजिस्ट्री और ब्राउज़र में छुपे सबूत ढूँढिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे डिस्क से डिलीटेड फ़ाइल्स निकालते हैं, कैसे मेमोरी फ़ॉरेंसिक्स करते हैं, और कैसे रजिस्ट्री और ब्राउज़र से सबूत जोड़ते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। फ़ॉरेंसिक डोमेन्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर सैंतीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, फ़ॉरेंसिक टूल्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Delete ki hui file bhi sach bolti hai. Disk, memory, registry aur browser me chhupe saboot dhoondhiye.",
+   "learn": "Humare saath aap seekhenge — kaise disk se deleted files nikalte hain, kaise memory forensics karte hain, aur kaise registry aur browser se saboot jodte hain.",
+   "book": "Pehle handbook se concept clear karo. Forensic Domains — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 37 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 38 · Forensic Tools. Use miss mat kijiye!"
+  }
  },
  {
   "num": 38,
+  "series": 36,
   "slug": "forensic-tools",
-  "book": "linux-monitoring",
-  "name": "38-Linux-Security-Monitoring",
-  "title": "Linux Security: Monitoring",
-  "subtitle": "Logs, auditd, hunting and IR",
-  "pages": 33,
-  "category": "Linux Security",
+  "book": "forensic-tools",
+  "name": "38-Forensic-Tools",
+  "title": "Forensic Tools",
+  "subtitle": "FTK Imager · KAPE · Autopsy · Volatility",
+  "pages": 30,
+  "category": "Digital Forensics",
   "path": "Forensics",
   "difficulty": "Hard",
   "roomTitle": "Forensic Tools",
@@ -1331,16 +2808,58 @@
    "Chain the tools",
    "Scenario: running machine to defensible answer"
   ],
-  "points": [
-   "Central logging and auditd",
-   "Hunt intrusions on Linux",
-   "Respond and recover"
-  ],
   "accent": "#a78bfa",
-  "mood": "scan"
+  "mood": "scan",
+  "icon": "🛠️",
+  "hook": "4 <em>free</em> tools, poori investigation! 🛠️",
+  "points": [
+   "<b>FTK Imager</b> acquisition",
+   "<b>KAPE</b> + Autopsy",
+   "<b>Volatility</b> memory"
+  ],
+  "tags": [
+   "#autopsy",
+   "#volatility",
+   "#dfir"
+  ],
+  "tdev": "फ़ॉरेंसिक टूल्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "39-Cyber-Threat-Intelligence-Foundations",
+   "rom": "Room 39 · Cyber Threat Intelligence: Foundations",
+   "dev": "साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स",
+   "cover": "cti-foundations",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "चार फ़्री प्रोफ़ेशनल टूल्स, और पूरी इन्वेस्टिगेशन। एफ़टीके इमेजर, केप, ऑटोप्सी और वोलैटिलिटी।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे एफ़टीके इमेजर से सबूत लेते हैं, कैसे केप और ऑटोप्सी से ट्राइएज करते हैं, और कैसे वोलैटिलिटी से मेमोरी एनालाइज़ करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। फ़ॉरेंसिक टूल्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर अड़तीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "4 free professional tools, aur poori investigation — FTK Imager, KAPE, Autopsy aur Volatility.",
+   "learn": "Humare saath aap seekhenge — kaise FTK Imager se saboot lete hain, kaise KAPE aur Autopsy se triage karte hain, aur kaise Volatility se memory analyse karte hain.",
+   "book": "Pehle handbook se concept clear karo. Forensic Tools — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 38 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 39 · Cyber Threat Intelligence: Foundations. Use miss mat kijiye!"
+  }
  },
  {
   "num": 39,
+  "series": 39,
   "slug": "cti-foundations",
   "book": "cti-foundations",
   "name": "39-Cyber-Threat-Intelligence-Foundations",
@@ -1364,16 +2883,58 @@
    "Actors, APTs & attribution",
    "Scenario: write the product"
   ],
-  "points": [
-   "The intelligence lifecycle",
-   "MITRE ATT&CK & Pyramid of Pain",
-   "Profile real threat actors"
-  ],
   "accent": "#34d399",
-  "mood": "tension"
+  "mood": "tension",
+  "icon": "🎯",
+  "hook": "Hacker ka <em>agla</em> move pehle se pata? 🎯",
+  "points": [
+   "<b>Intelligence lifecycle</b>",
+   "<b>MITRE ATT&CK</b>",
+   "<b>Threat actor</b> profiling"
+  ],
+  "tags": [
+   "#threatintelligence",
+   "#cti",
+   "#mitreattack"
+  ],
+  "tdev": "साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "40-Cyber-Threat-Intelligence-Operations",
+   "rom": "Room 40 · Cyber Threat Intelligence: Operations",
+   "dev": "साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स",
+   "cover": "cti-operations",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "हैकर का अगला मूव, पहले से पता हो तो? यही है, साइबर थ्रेट इंटेलिजेंस।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे इंटेलिजेंस लाइफ़साइकल चलती है, कैसे माइटर अटैक फ़्रेमवर्क इस्तेमाल करते हैं, और कैसे थ्रेट एक्टर्स की प्रोफ़ाइल बनाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर उनतालीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Hacker ka agla move pehle se pata ho to? Yahi hai Cyber Threat Intelligence.",
+   "learn": "Humare saath aap seekhenge — kaise intelligence lifecycle chalti hai, kaise MITRE ATT&CK istemaal karte hain, aur kaise threat actors ki profile banate hain.",
+   "book": "Pehle handbook se concept clear karo. Cyber Threat Intelligence: Foundations — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 39 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 40 · Cyber Threat Intelligence: Operations. Use miss mat kijiye!"
+  }
  },
  {
   "num": 40,
+  "series": 40,
   "slug": "cti-operations",
   "book": "cti-operations",
   "name": "40-Cyber-Threat-Intelligence-Operations",
@@ -1397,16 +2958,58 @@
    "Operationalise: enrich the SOC",
    "Scenario: collection to a blocked attack"
   ],
-  "points": [
-   "Safe OSINT and collection",
-   "STIX/TAXII and MISP sharing",
-   "Operationalise intel in the SOC"
-  ],
   "accent": "#34d399",
-  "mood": "tension"
+  "mood": "tension",
+  "icon": "🛰️",
+  "hook": "Intel se <em>attack</em> block — kaise? 🛰️",
+  "points": [
+   "Safe <b>OSINT</b>",
+   "<b>STIX/TAXII</b> & MISP",
+   "SOC me <b>enrichment</b>"
+  ],
+  "tags": [
+   "#osint",
+   "#misp",
+   "#cti"
+  ],
+  "tdev": "साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "41-Virtualization-Security",
+   "rom": "Room 41 · Virtualization Security",
+   "dev": "वर्चुअलाइज़ेशन सिक्योरिटी",
+   "cover": "virtualization-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "थ्रेट इंटेल से, अटैक को आने से पहले ब्लॉक कैसे करें? सीटीआई ऑपरेशन्स सीखिए।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे सुरक्षित ओसिंट करते हैं, कैसे स्टिक्स, टैक्सी और मिस्प से इंटेल शेयर करते हैं, और कैसे सॉक में अलर्ट्स एनरिच करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर चालीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, वर्चुअलाइज़ेशन सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Threat intel se attack ko aane se pehle block kaise karein? CTI operations seekhiye.",
+   "learn": "Humare saath aap seekhenge — kaise surakshit OSINT karte hain, kaise STIX, TAXII aur MISP se intel share karte hain, aur kaise SOC me alerts enrich karte hain.",
+   "book": "Pehle handbook se concept clear karo. Cyber Threat Intelligence: Operations — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 40 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 41 · Virtualization Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 41,
+  "series": 41,
   "slug": "virtualization",
   "book": "virtualization-security",
   "name": "41-Virtualization-Security",
@@ -1430,16 +3033,58 @@
    "Hypervisor attack surface",
    "Scenario: protect the boundary"
   ],
-  "points": [
-   "Protect the host/guest boundary",
-   "Harden ESXi, Hyper-V and KVM",
-   "Secure the management plane"
-  ],
   "accent": "#2dd4bf",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "💠",
+  "hook": "VM se <em>bahar</em> nikal gaya attacker? 💠",
+  "points": [
+   "<b>Hypervisor</b> Type 1 vs 2",
+   "<b>VM escape</b> rokna",
+   "<b>Management plane</b> hardening"
+  ],
+  "tags": [
+   "#virtualization",
+   "#vmware",
+   "#hypervisor"
+  ],
+  "tdev": "वर्चुअलाइज़ेशन सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "42-Container-Security",
+   "rom": "Room 42 · Container Security",
+   "dev": "कंटेनर सिक्योरिटी",
+   "cover": "container-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "अटैकर वर्चुअल मशीन से बाहर निकलकर, होस्ट तक पहुँच गया? इसे वीएम एस्केप कहते हैं।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे हाइपरवाइज़र काम करता है, कैसे वीएम एस्केप से बचते हैं, और कैसे मैनेजमेंट प्लेन को हार्डन करते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। वर्चुअलाइज़ेशन सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर इकतालीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, कंटेनर सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Attacker virtual machine se bahar nikalkar host tak pahunch gaya? Ise VM escape kehte hain.",
+   "learn": "Humare saath aap seekhenge — kaise hypervisor kaam karta hai, kaise VM escape se bachte hain, aur kaise management plane ko harden karte hain.",
+   "book": "Pehle handbook se concept clear karo. Virtualization Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 41 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 42 · Container Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 42,
+  "series": 42,
   "slug": "container-security",
   "book": "container-security",
   "name": "42-Container-Security",
@@ -1463,16 +3108,58 @@
    "Kubernetes & RBAC",
    "Scenario: image to locked-down cluster"
   ],
-  "points": [
-   "Harden the runtime (non-root)",
-   "Secure images & supply chain",
-   "Lock down Kubernetes"
-  ],
   "accent": "#2dd4bf",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "🐳",
+  "hook": "Container <em>root</em> pe chal raha hai? 🐳",
+  "points": [
+   "<b>Non-root</b> containers",
+   "Image <b>scan</b> & signing",
+   "<b>Kubernetes RBAC</b>"
+  ],
+  "tags": [
+   "#docker",
+   "#kubernetes",
+   "#devsecops"
+  ],
+  "tdev": "कंटेनर सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "43-Data-Centre-Security",
+   "rom": "Room 43 · Data Centre Security",
+   "dev": "डेटा सेंटर सिक्योरिटी",
+   "cover": "data-centre-security",
+   "kind": "next"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "आपका डॉकर कंटेनर रूट पर चल रहा है? ये बहुत बड़ा ख़तरा है।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे कंटेनर्स को नॉन-रूट चलाते हैं, कैसे इमेजेस को स्कैन और साइन करते हैं, और कैसे कुबरनेटीज़ आरबैक लगाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। कंटेनर सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर बयालीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "अगली रील में देखिए, डेटा सेंटर सिक्योरिटी। उसे मिस मत कीजिए!"
+  },
+  "sub": {
+   "hook": "Aapka Docker container root par chal raha hai? Ye bahut bada khatra hai.",
+   "learn": "Humare saath aap seekhenge — kaise containers ko non-root chalate hain, kaise images ko scan aur sign karte hain, aur kaise Kubernetes RBAC lagate hain.",
+   "book": "Pehle handbook se concept clear karo. Container Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 42 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Agli reel me dekhiye — Room 43 · Data Centre Security. Use miss mat kijiye!"
+  }
  },
  {
   "num": 43,
+  "series": 43,
   "slug": "data-centre-security",
   "book": "data-centre-security",
   "name": "43-Data-Centre-Security",
@@ -1496,12 +3183,52 @@
    "Network & storage security",
    "Scenario: fence to backups"
   ],
-  "points": [
-   "Layered physical defence",
-   "Power, cooling and resilience",
-   "3-2-1 immutable backups"
-  ],
   "accent": "#2dd4bf",
-  "mood": "bright"
+  "mood": "bright",
+  "icon": "🏭",
+  "hook": "Data centre security = sirf <em>firewall</em>? 🏭",
+  "points": [
+   "<b>Physical</b> layered access",
+   "<b>Power</b>, cooling, fire",
+   "<b>3-2-1</b> backups"
+  ],
+  "tags": [
+   "#datacenter",
+   "#backup",
+   "#physicalsecurity"
+  ],
+  "tdev": "डेटा सेंटर सिक्योरिटी",
+  "showTasks": [
+   2,
+   5,
+   10
+  ],
+  "ref": {
+   "name": "B1-Website-Tour",
+   "rom": "Tech Guardians Website Tour",
+   "dev": "टेक गार्डियन्स वेबसाइट टूर",
+   "kind": "seen"
+  },
+  "accountRef": {
+   "name": "B6-How-to-Create-Student-Account",
+   "rom": "Student Account kaise banayein",
+   "dev": "स्टूडेंट अकाउंट कैसे बनाएँ"
+  },
+  "vo": {
+   "hook": "डेटा सेंटर की सिक्योरिटी, मतलब सिर्फ़ फ़ायरवॉल? नहीं! गेट से लेकर बैकअप तक, सब ज़रूरी है।",
+   "learn": "हमारे साथ आप सीखेंगे, कैसे फ़िज़िकल एक्सेस को लेयर्स में सुरक्षित करते हैं, कैसे पावर और कूलिंग संभालते हैं, और कैसे थ्री टू वन बैकअप बनाते हैं।",
+   "book": "पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। डेटा सेंटर सिक्योरिटी, ज़ीरो से मास्टरी तक, आसान भाषा में।",
+   "ctf": "फिर सीटीएफ़ पोर्टल के रूम नंबर तैंतालीस में, दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
+   "cta": "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+   "ref": "टेक गार्डियन्स वेबसाइट टूर वाली रील देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।"
+  },
+  "sub": {
+   "hook": "Data centre ki security matlab sirf firewall? Nahi! Gate se lekar backup tak, sab zaroori hai.",
+   "learn": "Humare saath aap seekhenge — kaise physical access ko layers me surakshit karte hain, kaise power aur cooling sambhalte hain, aur kaise 3-2-1 backup banate hain.",
+   "book": "Pehle handbook se concept clear karo. Data Centre Security — zero se mastery tak, aasaan bhasha me.",
+   "ctf": "Phir CTF Portal ke Room 43 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+   "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
+   "ref": "Tech Guardians Website Tour wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+  }
  }
 ]

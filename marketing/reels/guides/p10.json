@@ -1,0 +1,154 @@
+{
+ "name": "P10-Path-Virtualization-Data-Centre",
+ "kicker": "Learning path",
+ "accent": "#2dd4bf",
+ "mood": "bright",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Virtualization & Data Centre",
+  "hook": "VM, Docker & <em>data centre</em> 🏭",
+  "chips": [
+   "📘 3 handbooks",
+   "🚩 3 rooms",
+   "🧪 30 tasks"
+  ],
+  "vo": "वर्चुअलाइज़ेशन, कंटेनर्स और डेटा सेंटर, पूरे स्टैक की सिक्योरिटी।",
+  "sub": "Virtualization, containers aur data centre — poore stack ki security."
+ },
+ "steps": [
+  {
+   "label": "3 Handbooks",
+   "icon": "📚",
+   "title": "<em>3</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-41",
+    "cover-42",
+    "cover-43"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में तीन हैंडबुक्स हैं। वर्चुअलाइज़ेशन सिक्योरिटी से, डेटा सेंटर सिक्योरिटी तक।",
+   "sub": "Is path me 3 handbooks hain — Virtualization Security se Data Centre Security tak."
+  },
+  {
+   "label": "3 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>30</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "41",
+     "Virtualization & Hypervisor Security"
+    ],
+    [
+     "42",
+     "Container & Orchestration Security"
+    ],
+    [
+     "43",
+     "Data Centre Security"
+    ]
+   ],
+   "vo": "और तीन सीटीएफ़ रूम्स, जिनमें 30 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 3 CTF rooms, jinme 30 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Virtualization & Data Centre",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "Hypervisor & VM escape"
+    ],
+    [
+     "✓",
+     "Docker + Kubernetes"
+    ],
+    [
+     "✓",
+     "Data centre & 3-2-1 backup"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप सिलिकॉन से फ़ैसिलिटी तक, पूरा स्टैक सुरक्षित कर पाएँगे।",
+   "sub": "Is path ke baad aap silicon se facility tak poora stack surakshit kar paayenge.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 41 se start",
+  "chips": [
+   "📘 3 handbooks",
+   "🚩 3 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "41-Virtualization-Security",
+  "rom": "Room 41 · Virtualization Security",
+  "cover": "virtualization-security",
+  "vo": "इस पाथ की पहली रील, वर्चुअलाइज़ेशन सिक्योरिटी, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — Virtualization Security — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 3 rooms",
+  "hook": "VM, Docker & <em>data centre</em> 🏭",
+  "covers": [
+   "cover-41",
+   "cover-42",
+   "cover-43"
+  ],
+  "chip": "📘 3 handbooks · 🚩 30 tasks"
+ },
+ "caption": "VM, Docker & data centre 🏭\n\nVirtualization & Data Centre path — Secure the stack from silicon to facility.\n\n📘 3 handbooks: Virtualization Security, Container Security, Data Centre Security\n🚩 3 CTF rooms · 30 hands-on tasks · har room ka task 1 FREE\n🎯 Hypervisor & VM escape · Docker + Kubernetes · Data centre & 3-2-1 backup\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#infra"
+ ]
+}

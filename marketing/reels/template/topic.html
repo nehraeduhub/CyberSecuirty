@@ -54,6 +54,11 @@
   .enroll{display:inline-flex;align-items:center;gap:18px;padding:32px 60px;border-radius:999px;background:linear-gradient(90deg,#ff9933,#ffcc4d);color:#140c02;font-size:62px;font-weight:900;letter-spacing:-1px;position:relative;overflow:hidden}
   .tapc{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:8px solid #fff;z-index:12}
   #cap b{font-weight:900}
+  .reel{position:absolute;width:420px;height:746px;border-radius:40px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 70%,#0a2348),#071a33 70%);border:4px solid rgba(255,255,255,.25);box-shadow:0 40px 120px rgba(0,0,0,.6)}
+  .reel .tag{position:absolute;left:24px;top:24px;padding:8px 18px;border-radius:999px;background:rgba(0,0,0,.45);font-size:24px;font-weight:900;letter-spacing:3px}
+  .reel .ttl{position:absolute;left:28px;right:28px;bottom:96px;font-size:44px;font-weight:900;line-height:1.08;letter-spacing:-1px;text-shadow:0 4px 20px rgba(0,0,0,.6)}
+  .reel .site{position:absolute;left:28px;bottom:36px;font-size:24px;font-weight:800;opacity:.85}
+  .play{position:absolute;left:50%;top:38%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:#0a2348;font-size:70px;box-shadow:0 0 0 0 rgba(255,255,255,.5)}
 </style></head>
 <body>
 <div id="bg"></div><div id="grid"></div>
@@ -83,7 +88,7 @@ const M = D.marks;
 const shine = (lt, at, d = .9) => { const p = (lt - at) / d; return p > 0 && p < 1 ? `<i class="sh" style="left:${-40 + p * 150}%"></i>` : ''; };
 const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 const imgs = {};
-for (const k of ['cover', 'feature', 'room', 'task', 'logo']) { const i = new Image(); i.src = A[k]; imgs[k] = i; }
+for (const k of ['cover', 'feature', 'room', 'task', 'logo', 'refcover']) { if (!A[k]) continue; const i = new Image(); i.src = A[k]; imgs[k] = i; }
 
 // ---------- hook icon animations (canvas) ----------
 const cv = document.getElementById('icon'), g = cv.getContext('2d');
@@ -118,6 +123,26 @@ const ICONS = {
     const mx = 470 + Math.sin(t * 1.3) * 300, my = 260 + Math.cos(t * .9) * 90;  // magnifier
     g.lineWidth = 14; g.strokeStyle = '#fff'; g.beginPath(); g.arc(mx, my, 90, 0, 7); g.stroke();
     g.fillStyle = 'rgba(34,211,238,.12)'; g.fill(); g.lineWidth = 22; g.beginPath(); g.moveTo(mx + 64, my + 64); g.lineTo(mx + 140, my + 140); g.stroke();
+  },
+  radar(t) {
+    const cx = 470, cy = 270, R0 = 240;
+    g.strokeStyle = 'rgba(34,211,238,.35)'; g.lineWidth = 3;
+    for (let k = 1; k <= 3; k++) { g.beginPath(); g.arc(cx, cy, R0 * k / 3, 0, 7); g.stroke(); }
+    g.beginPath(); g.moveTo(cx - R0, cy); g.lineTo(cx + R0, cy); g.moveTo(cx, cy - R0); g.lineTo(cx, cy + R0); g.stroke();
+    const a = t * 2.2; const gr = g.createConicGradient ? g.createConicGradient(a - .9, cx, cy) : null;
+    if (gr) { gr.addColorStop(0, 'rgba(34,211,238,0)'); gr.addColorStop(.14, 'rgba(34,211,238,.55)'); gr.addColorStop(.15, 'rgba(34,211,238,0)'); g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, R0, 0, 7); g.fill(); }
+    for (let i = 0; i < 7; i++) {                                     // blips light up as the beam passes
+      const ang = hash(i) * 6.283, r = 50 + hash(i + 9) * 180, bx = cx + Math.cos(ang) * r, by = cy + Math.sin(ang) * r;
+      const since = ((a - ang) % 6.283 + 6.283) % 6.283, on = Math.max(0, 1 - since / 2.5), bad = i === 3;
+      g.fillStyle = bad ? `rgba(239,68,68,${.3 + on})` : `rgba(134,239,172,${.2 + on})`; g.beginPath(); g.arc(bx, by, bad ? 14 : 10, 0, 7); g.fill();
+    }
+  },
+  emoji(t) {                                                          // generic: topic emoji with orbiting packets
+    const cx = 470, cy = 270;
+    for (let k = 0; k < 3; k++) { const p = (t * .6 + k / 3) % 1; g.strokeStyle = `${T.accent}${Math.round((1 - p) * 160).toString(16).padStart(2, '0')}`; g.lineWidth = 6; g.beginPath(); g.arc(cx, cy, 130 + p * 200, 0, 7); g.stroke(); }
+    for (let i = 0; i < 8; i++) { const a = t * (i % 2 ? 1.1 : -.8) + i * .785, r = 200 + (i % 3) * 18; packet(cx + Math.cos(a) * r, cy + Math.sin(a) * r * .55, i % 3 ? T.accent : '#ffffff', 12); }
+    g.save(); g.translate(cx, cy + Math.sin(t * 2.4) * 10); g.rotate(Math.sin(t * 1.6) * .08);
+    g.font = '200px Noto Color Emoji'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(T.icon, 0, 8); g.restore(); g.textBaseline = 'alphabetic';
   },
   siren(t) {
     const cx = 470, cy = 280;
@@ -162,7 +187,7 @@ function book(t, lt, d) {
       <div class="wrap" style="left:${fx}px;top:${620 + Math.cos(lt * 2) * 8}px;width:420px;transform:rotate(${keys([[1.6, 12], [2.6, 4]], lt)}deg)"><img src="${A.feature}">${shine(lt, 3, .9)}</div>
     </div>
     <div class="center" style="top:1180px;text-align:left;left:90px">
-      <span class="chip" style="${pop(lt, 2.4)}">📄 ${T.pages} pages · PDF</span><span class="chip" style="${pop(lt, 2.7)}">Part ${T.num} of 43</span><span class="chip ac" style="${pop(lt, 3)}">Zero → Mastery</span></div>`;
+      <span class="chip" style="${pop(lt, 2.4)}">📄 ${T.pages} pages · PDF</span><span class="chip" style="${pop(lt, 2.7)}">Part ${T.series} of 43</span><span class="chip ac" style="${pop(lt, 3)}">Zero → Mastery</span></div>`;
 }
 function ctf(t, lt, d) {
   const sh = A.shots, S = 468 / 390, room = sh.room, cards = room.cards;
@@ -186,7 +211,8 @@ function ctf(t, lt, d) {
       <div class="stat" style="${fadeUp(lt, 1.4, .5, 40)}"><small>Hands-on</small><b>${T.tasks} tasks</b></div>
       <div class="stat" style="${fadeUp(lt, 1.8, .5, 40)}"><small>Labs + hints</small><b>In browser</b></div>
       <div class="stat free" style="position:relative;overflow:hidden;${pop(lt, M.free - SC.ctf[0], .5)};box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(47,191,47,.7)"><small>Start now</small><b>Task 1 FREE ✅</b>${shine(lt, M.free - SC.ctf[0] + .5, .8)}</div>
-      <div class="stat" style="position:relative;overflow:hidden;background:linear-gradient(90deg,#ff9933,#ffcc4d);border-color:#ffcc4d;color:#140c02;${pop(lt, M.account - SC.ctf[0], .5)};transform-origin:center;box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)"><small style="color:#5a3300;white-space:nowrap;letter-spacing:2px;font-size:22px">👤 CTF access ke liye</small><b style="font-size:36px">Account banayein</b>${shine(lt, M.account - SC.ctf[0] + .5, .8)}</div></div>`;
+      <div class="stat" style="position:relative;overflow:hidden;background:linear-gradient(90deg,#ff9933,#ffcc4d);border-color:#ffcc4d;color:#140c02;${pop(lt, M.account - SC.ctf[0], .5)};transform-origin:center;box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)"><small style="color:#5a3300;white-space:nowrap;letter-spacing:2px;font-size:22px">👤 CTF access ke liye</small><b style="font-size:36px">Account banayein</b>${shine(lt, M.account - SC.ctf[0] + .5, .8)}</div>
+      <div style="${pop(lt, M.acctref - SC.ctf[0], .45)};display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:#fff;color:#0a2348;font-size:24px;font-weight:900;white-space:nowrap">▶ Reel: ${T.accountRef.rom}</div></div>`;
 }
 function cta(t, lt) {
   const ue = M.url - SC.cta[0], en = M.enroll - SC.cta[0], typed = 'techguardians.in'.slice(0, Math.floor(clamp((lt - ue) / .7) * 16));
@@ -199,6 +225,19 @@ function cta(t, lt) {
     <div class="center" style="top:960px;${pop(lt, en - .5, .6)}"><span class="enroll" style="transform:scale(${pulse});box-shadow:0 0 ${30 + 40 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)">🚀 Abhi Enroll karo${shine(lt, en + .3, .8)}</span></div>${tap}
     <div class="center" style="top:1170px;${fadeUp(lt, en + .4)}"><span class="btn" style="background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);font-size:34px">📘 PDF Handbooks</span><span class="btn" style="background:#138808;font-size:34px">🚩 CTF Portal</span></div>`;
 }
+function ref(t, lt, d) {
+  const R = T.ref, next = R.kind === 'next', q = back(clamp((lt - .2) / .6));
+  const cover = A.refcover ? `<img src="${A.refcover}" style="position:absolute;left:50%;top:110px;width:210px;margin-left:-105px;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.5);transform:rotate(-4deg)">` : `<img src="${A.logo}" style="position:absolute;left:50%;top:150px;width:200px;margin-left:-100px;border-radius:40px;background:#fff;padding:12px">`;
+  const pulse = 1 + .08 * Math.abs(Math.sin(lt * 3.5));
+  return `<div class="glow" style="top:330px"></div>
+    <div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${next ? 'Agli reel 👉' : 'Ye reel dekhi kya? 👀'}</span></div>
+      <div class="h1" style="margin-top:22px;font-size:78px;${fadeUp(lt, .12)}">${next ? 'Next: <em>miss</em> mat karna!' : 'Ye reel <em>dekhi</em> kya?'}</div></div>
+    <div class="reel" style="left:330px;top:${500 + Math.sin(lt * 2) * 8}px;opacity:${clamp((lt - .2) / .3)};transform:scale(${.6 + .4 * q}) rotate(${(1 - q) * -8 + Math.sin(lt * 1.5) * 1.5}deg)">
+      <span class="tag">▶ REEL</span>${cover}
+      <div class="play" style="transform:scale(${pulse})">▶</div>
+      <div class="ttl">${R.rom}</div><div class="site">techguardians.in</div></div>
+    <div class="center" style="top:1270px;${fadeUp(lt, .9)}"><span class="chip ac" style="font-size:34px">👆 Profile pe dekhiye</span></div>`;
+}
 function end(t, lt) {
   return `<div class="glow" style="top:300px"></div>
     <div class="center" style="top:400px;${pop(lt, 0, .7)}"><div style="display:inline-block;position:relative;overflow:hidden;border-radius:60px;transform:rotate(${Math.sin(lt * 2) * 3}deg)"><img src="${A.logo}" style="display:block;width:300px;height:300px;background:#fff;padding:18px;object-fit:contain">${shine(lt, .8, .9)}</div></div>
@@ -207,8 +246,8 @@ function end(t, lt) {
     <div class="center" style="top:1010px;${fadeUp(lt, 1)}"><div style="display:inline-flex;width:420px;height:16px;border-radius:9px;overflow:hidden"><i style="flex:1;background:#ff9933"></i><i style="flex:1;background:#fff"></i><i style="flex:1;background:#138808"></i></div></div>
     <div class="center" style="top:1100px;${fadeUp(lt, 1.2)}"><span class="chip ac" style="font-size:44px">techguardians.in</span></div>`;
 }
-const FN = { hook, learn, book, ctf, cta, end };
-const ORDER = ['hook', 'learn', 'book', 'ctf', 'cta', 'end'];
+const FN = { hook, learn, book, ctf, cta, ref, end };
+const ORDER = ['hook', 'learn', 'book', 'ctf', 'cta', 'ref', 'end'];
 const hl = (s) => s.replace(/(techguardians\.in|\b(?:[A-Z][A-Za-z]*[A-Z0-9][A-Za-z0-9-]*|[A-Z]{2,}|\d+|Firewall|Wireshark|Incident|Response|Ransomware|Room|Security|Mastery)\b)/g, '<i>$1</i>');
 
 window.render = function (t) {
@@ -228,7 +267,7 @@ window.render = function (t) {
   g.clearRect(0, 0, 940, 560);
   const io = t < ha ? ease(clamp(t / .5)) : 1 - ease(clamp((t - ha) / .45));
   cv.style.opacity = io; cv.style.transform = `scale(${.85 + .15 * io})`;
-  if (io > 0) ICONS[T.icon](t);
+  if (io > 0) (ICONS[T.icon] || ICONS.emoji)(t);
   effects(t);
   // captions, karaoke style: the word being spoken lights up
   const s = D.subs.find((x) => t >= x.t0 && t < x.t1 + .05);
@@ -261,7 +300,7 @@ function effects(t) {
   const sy = (t * 260) % 2300 - 200; const gr = bg.createLinearGradient(0, sy - 120, 0, sy);   // scan line
   gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(255,255,255,.05)'); bg.fillStyle = gr; bg.fillRect(0, sy - 120, 1080, 120);
   fx.clearRect(0, 0, 1080, 1920);
-  for (const n of ['learn', 'book', 'ctf', 'cta', 'end']) {           // diagonal swipe between scenes
+  for (const n of ['learn', 'book', 'ctf', 'cta', 'ref', 'end']) {           // diagonal swipe between scenes
     const p = (t - (SC[n][0] - .32)) / .62; if (p <= 0 || p >= 1) continue;
     const x = -900 + ease(p) * 2900;
     fx.save(); fx.transform(1, 0, -.35, 1, 0, 0);

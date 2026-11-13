@@ -1,0 +1,160 @@
+{
+ "name": "P04-Path-Detection-Recon",
+ "kicker": "Learning path",
+ "accent": "#22d3ee",
+ "mood": "scan",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Detection & Recon",
+  "hook": "Attacker ko <em>dekhna</em> seekho 👁️",
+  "chips": [
+   "📘 4 handbooks",
+   "🚩 4 rooms",
+   "🧪 40 tasks"
+  ],
+  "vo": "अटैकर को नेटवर्क पर देखना सीखिए। डिटेक्शन एंड रीकॉन पाथ।",
+  "sub": "Attacker ko network par dekhna seekhiye. Detection & Recon path."
+ },
+ "steps": [
+  {
+   "label": "4 Handbooks",
+   "icon": "📚",
+   "title": "<em>4</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-16",
+    "cover-17",
+    "cover-18",
+    "cover-19"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में चार हैंडबुक्स हैं। आईडीएस आईपीएस से, एनमैप मास्टरी तक।",
+   "sub": "Is path me 4 handbooks hain — IDS / IPS se Nmap Mastery tak."
+  },
+  {
+   "label": "4 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>40</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "16",
+     "Intrusion Detection & Prevention (IDS/IPS)"
+    ],
+    [
+     "17",
+     "Network Monitoring"
+    ],
+    [
+     "18",
+     "Wireshark"
+    ],
+    [
+     "19",
+     "Nmap Network Scanning"
+    ]
+   ],
+   "vo": "और चार सीटीएफ़ रूम्स, जिनमें 40 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 4 CTF rooms, jinme 40 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Detection & Recon",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "IDS/IPS rules"
+    ],
+    [
+     "✓",
+     "Wireshark packet analysis"
+    ],
+    [
+     "✓",
+     "Nmap scanning"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप नेटवर्क पर हर संदिग्ध चीज़ पकड़ पाएँगे।",
+   "sub": "Is path ke baad aap network par har sandigdh cheez pakad paayenge.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 16 se start",
+  "chips": [
+   "📘 4 handbooks",
+   "🚩 4 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "16-IDS-IPS",
+  "rom": "Room 16 · IDS / IPS",
+  "cover": "ids-ips",
+  "vo": "इस पाथ की पहली रील, आईडीएस आईपीएस, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — IDS / IPS — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 4 rooms",
+  "hook": "Attacker ko <em>dekhna</em> seekho 👁️",
+  "covers": [
+   "cover-16",
+   "cover-17",
+   "cover-18",
+   "cover-19"
+  ],
+  "chip": "📘 4 handbooks · 🚩 40 tasks"
+ },
+ "caption": "Attacker ko dekhna seekho 👁️\n\nDetection & Recon path — See the network and the attacker.\n\n📘 4 handbooks: IDS / IPS, Network Monitoring, Wireshark Mastery, Nmap Mastery\n🚩 4 CTF rooms · 40 hands-on tasks · har room ka task 1 FREE\n🎯 IDS/IPS rules · Wireshark packet analysis · Nmap scanning\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#detection"
+ ]
+}

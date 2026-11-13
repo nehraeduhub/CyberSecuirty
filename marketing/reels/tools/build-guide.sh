@@ -10,6 +10,8 @@ read -r NAME SHOTS MOOD < <(python3 -I -c "import json,sys;g=json.load(open(sys.
 W="$R/work/guide-$NAME"; O="$R/out/$NAME"; mkdir -p "$W" "$O"
 [ -n "${SKIP_CAPTURE:-}" ] || SITE="${SITE:-$R/../..}" node "$R/tools/capture-$SHOTS.js" "$R/work/$SHOTS"   # SKIP_CAPTURE=1 reuses the screens
 cp "$R/legacy/launch/shield.png" "$W/logo.png"
+REFB=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1])).get('ref',{}).get('cover',''))" "$GJ")
+rm -f "$W/refcover.png"; [ -z "$REFB" ] || cp "${SITE:-$R/../..}/public/images/store/books/$REFB-cover.png" "$W/refcover.png"
 python3 -I "$R/tools/guide.py" "$GJ" "$W" "$O"
 TOTAL=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['total'])" "$W/data.json")
 python3 -I "$R/tools/music.py" "$MOOD" "$TOTAL" "$W/music.wav" >/dev/null

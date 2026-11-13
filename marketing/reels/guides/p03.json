@@ -1,0 +1,160 @@
+{
+ "name": "P03-Path-Perimeter-AppSec",
+ "kicker": "Learning path",
+ "accent": "#f97316",
+ "mood": "drive",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Perimeter & AppSec",
+  "hook": "Network ka <em>darwaza</em> kaun sambhalega? 🧱",
+  "chips": [
+   "📘 4 handbooks",
+   "🚩 4 rooms",
+   "🧪 40 tasks"
+  ],
+  "vo": "नेटवर्क और वेबसाइट का दरवाज़ा कौन संभालेगा? पेरिमीटर एंड ऐपसेक पाथ।",
+  "sub": "Network aur website ka darwaza kaun sambhalega? Perimeter & AppSec path."
+ },
+ "steps": [
+  {
+   "label": "4 Handbooks",
+   "icon": "📚",
+   "title": "<em>4</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-12",
+    "cover-13",
+    "cover-14",
+    "cover-15"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में चार हैंडबुक्स हैं। फ़ायरवॉल सिक्योरिटी से, वेब सर्वर सेटअप एंड होस्टिंग तक।",
+   "sub": "Is path me 4 handbooks hain — Firewall Security se Web Server Setup & Hosting tak."
+  },
+  {
+   "label": "4 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>40</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "12",
+     "Firewall Security"
+    ],
+    [
+     "13",
+     "Load Balancer & ADC Security"
+    ],
+    [
+     "14",
+     "Web Application Firewall"
+    ],
+    [
+     "15",
+     "Web Server Hosting"
+    ]
+   ],
+   "vo": "और चार सीटीएफ़ रूम्स, जिनमें 40 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 4 CTF rooms, jinme 40 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Perimeter & AppSec",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "Firewall rule base"
+    ],
+    [
+     "✓",
+     "ADC, WAF, OWASP"
+    ],
+    [
+     "✓",
+     "Secure web hosting"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप फ़ायरवॉल से वेबसाइट तक, पूरा पेरिमीटर संभाल पाएँगे।",
+   "sub": "Is path ke baad aap firewall se website tak poora perimeter sambhal paayenge.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 12 se start",
+  "chips": [
+   "📘 4 handbooks",
+   "🚩 4 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "12-Firewall-Security",
+  "rom": "Room 12 · Firewall Security",
+  "cover": "firewall-security",
+  "vo": "इस पाथ की पहली रील, फ़ायरवॉल सिक्योरिटी, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — Firewall Security — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 4 rooms",
+  "hook": "Network ka <em>darwaza</em> kaun sambhalega? 🧱",
+  "covers": [
+   "cover-12",
+   "cover-13",
+   "cover-14",
+   "cover-15"
+  ],
+  "chip": "📘 4 handbooks · 🚩 40 tasks"
+ },
+ "caption": "Network ka darwaza kaun sambhalega? 🧱\n\nPerimeter & AppSec path — Firewalls, delivery and web defence.\n\n📘 4 handbooks: Firewall Security, Load Balancer & ADC Security, Web Application Firewall, Web Server Setup & Hosting\n🚩 4 CTF rooms · 40 hands-on tasks · har room ka task 1 FREE\n🎯 Firewall rule base · ADC, WAF, OWASP · Secure web hosting\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#perimeter"
+ ]
+}

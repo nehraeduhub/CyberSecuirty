@@ -23,7 +23,7 @@ def tts(text):
     return f, sf.info(f).duration
 
 scenes, clips, cur = {}, [], 0.0
-items = [('intro', G['intro'], .4, 4)] + [(f's{i + 1}', s, .3, 3.8) for i, s in enumerate(G['steps'])] + [('cta', G['cta'], .3, 4.5)]
+items = [('intro', G['intro'], .4, 4)] + [(f's{i + 1}', s, .3, 3.8) for i, s in enumerate(G['steps'])] + [('cta', G['cta'], .3, 4.5)] + ([('ref', G['ref'], .3, 4.5)] if G.get('ref') else [])
 for name, it, lead, minimum in items:
     f, dur = tts(it['vo'])
     d = max(minimum, lead + dur + .4)
@@ -61,5 +61,6 @@ json.dump(data, open(os.path.join(WORK, 'data.json'), 'w', encoding='utf-8'), en
 ts = lambda x: f'{int(x // 3600):02d}:{int(x // 60 % 60):02d}:{int(x % 60):02d},{int(round(x * 1000)) % 1000:03d}'
 with open(os.path.join(OUT, G['name'] + '.srt'), 'w', encoding='utf-8') as f:
     for i, s in enumerate(subs, 1): f.write(f"{i}\n{ts(s['t0'])} --> {ts(s['t1'])}\n{s['text']}\n\n")
-open(os.path.join(OUT, G['name'] + '.txt'), 'w', encoding='utf-8').write(G['caption'] + '\n\n' + ' '.join(G['tags']) + '\n')
+more = f"\n▶ Ye reel bhi dekho: {G['ref']['rom']}" if G.get('ref') else ''
+open(os.path.join(OUT, G['name'] + '.txt'), 'w', encoding='utf-8').write(G['caption'] + more + '\n\n' + ' '.join(G['tags']) + '\n')
 print('total', total, 's;', ' '.join(f'{k}:{v[1] - v[0]:.1f}' for k, v in scenes.items()))

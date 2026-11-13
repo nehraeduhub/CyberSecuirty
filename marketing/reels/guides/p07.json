@@ -1,0 +1,148 @@
+{
+ "name": "P07-Path-Linux-Security",
+ "kicker": "Learning path",
+ "accent": "#facc15",
+ "mood": "pulse",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Linux Security",
+  "hook": "<em>Linux</em> server secure karna hai? 🐧",
+  "chips": [
+   "📘 2 handbooks",
+   "🚩 2 rooms",
+   "🧪 20 tasks"
+  ],
+  "vo": "लिनक्स सर्वर सुरक्षित करना है? लिनक्स सिक्योरिटी पाथ।",
+  "sub": "Linux server surakshit karna hai? Linux Security path."
+ },
+ "steps": [
+  {
+   "label": "2 Handbooks",
+   "icon": "📚",
+   "title": "<em>2</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-37",
+    "cover-38"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में दो हैंडबुक्स हैं। लिनक्स सिक्योरिटी हार्डनिंग से, लिनक्स सिक्योरिटी मॉनिटरिंग तक।",
+   "sub": "Is path me 2 handbooks hain — Linux Security: Hardening se Linux Security: Monitoring tak."
+  },
+  {
+   "label": "2 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>20</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "34",
+     "Linux Hardening"
+    ],
+    [
+     "35",
+     "Linux Monitoring"
+    ]
+   ],
+   "vo": "और दो सीटीएफ़ रूम्स, जिनमें 20 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 2 CTF rooms, jinme 20 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Linux Security",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "SSH, firewall, SELinux"
+    ],
+    [
+     "✓",
+     "auditd & log monitoring"
+    ],
+    [
+     "✓",
+     "Intrusion hunting"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप लिनक्स सर्वर को हार्डन भी करेंगे, और मॉनिटर भी।",
+   "sub": "Is path ke baad aap Linux server ko harden bhi karenge, aur monitor bhi.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 34 se start",
+  "chips": [
+   "📘 2 handbooks",
+   "🚩 2 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "34-Linux-Security-Hardening",
+  "rom": "Room 34 · Linux Security: Hardening",
+  "cover": "linux-hardening",
+  "vo": "इस पाथ की पहली रील, लिनक्स सिक्योरिटी हार्डनिंग, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — Linux Security: Hardening — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 2 rooms",
+  "hook": "<em>Linux</em> server secure karna hai? 🐧",
+  "covers": [
+   "cover-37",
+   "cover-38"
+  ],
+  "chip": "📘 2 handbooks · 🚩 20 tasks"
+ },
+ "caption": "Linux server secure karna hai? 🐧\n\nLinux Security path — Harden and watch Linux servers.\n\n📘 2 handbooks: Linux Security: Hardening, Linux Security: Monitoring\n🚩 2 CTF rooms · 20 hands-on tasks · har room ka task 1 FREE\n🎯 SSH, firewall, SELinux · auditd & log monitoring · Intrusion hunting\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#linux"
+ ]
+}

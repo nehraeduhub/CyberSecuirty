@@ -1,0 +1,148 @@
+{
+ "name": "P09-Path-Threat-Intelligence",
+ "kicker": "Learning path",
+ "accent": "#34d399",
+ "mood": "tension",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Threat Intelligence",
+  "hook": "Hacker se <em>ek kadam</em> aage 🎯",
+  "chips": [
+   "📘 2 handbooks",
+   "🚩 2 rooms",
+   "🧪 20 tasks"
+  ],
+  "vo": "हैकर से एक क़दम आगे रहना है? थ्रेट इंटेलिजेंस पाथ।",
+  "sub": "Hacker se ek kadam aage rehna hai? Threat Intelligence path."
+ },
+ "steps": [
+  {
+   "label": "2 Handbooks",
+   "icon": "📚",
+   "title": "<em>2</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-39",
+    "cover-40"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में दो हैंडबुक्स हैं। साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स से, साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स तक।",
+   "sub": "Is path me 2 handbooks hain — Cyber Threat Intelligence: Foundations se Cyber Threat Intelligence: Operations tak."
+  },
+  {
+   "label": "2 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>20</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "39",
+     "Threat Intelligence Foundations"
+    ],
+    [
+     "40",
+     "Threat Intelligence Operations"
+    ]
+   ],
+   "vo": "और दो सीटीएफ़ रूम्स, जिनमें 20 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 2 CTF rooms, jinme 20 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Threat Intelligence",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "Lifecycle & ATT&CK"
+    ],
+    [
+     "✓",
+     "OSINT, STIX/TAXII, MISP"
+    ],
+    [
+     "✓",
+     "Intel → blocked attack"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप डेटा को इंटेलिजेंस में, और इंटेल को एक्शन में बदल पाएँगे।",
+   "sub": "Is path ke baad aap data ko intelligence me, aur intel ko action me badal paayenge.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 39 se start",
+  "chips": [
+   "📘 2 handbooks",
+   "🚩 2 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "39-Cyber-Threat-Intelligence-Foundations",
+  "rom": "Room 39 · Cyber Threat Intelligence: Foundations",
+  "cover": "cti-foundations",
+  "vo": "इस पाथ की पहली रील, साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — Cyber Threat Intelligence: Foundations — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 2 rooms",
+  "hook": "Hacker se <em>ek kadam</em> aage 🎯",
+  "covers": [
+   "cover-39",
+   "cover-40"
+  ],
+  "chip": "📘 2 handbooks · 🚩 20 tasks"
+ },
+ "caption": "Hacker se ek kadam aage 🎯\n\nThreat Intelligence path — Turn data into decisions.\n\n📘 2 handbooks: Cyber Threat Intelligence: Foundations, Cyber Threat Intelligence: Operations\n🚩 2 CTF rooms · 20 hands-on tasks · har room ka task 1 FREE\n🎯 Lifecycle & ATT&CK · OSINT, STIX/TAXII, MISP · Intel → blocked attack\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#cti"
+ ]
+}

@@ -53,6 +53,13 @@
   #cap>span{display:inline-block;max-width:960px;padding:16px 28px;border-radius:22px;background:rgba(3,10,22,.82);border:2px solid rgba(255,255,255,.12);font-size:48px;font-weight:800;line-height:1.18;letter-spacing:-.5px}
   #cap i{font-style:normal;color:var(--ac)}
   canvas{position:absolute}
+  .reel{position:absolute;width:420px;height:746px;border-radius:40px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 70%,#0a2348),#071a33 70%);border:4px solid rgba(255,255,255,.25);box-shadow:0 40px 120px rgba(0,0,0,.6)}
+  .reel .tag{position:absolute;left:24px;top:24px;padding:8px 18px;border-radius:999px;background:rgba(0,0,0,.45);font-size:24px;font-weight:900;letter-spacing:3px}
+  .reel .ttl{position:absolute;left:28px;right:28px;bottom:96px;font-size:44px;font-weight:900;line-height:1.08;letter-spacing:-1px;text-shadow:0 4px 20px rgba(0,0,0,.6)}
+  .reel .site{position:absolute;left:28px;bottom:36px;font-size:24px;font-weight:800;opacity:.85}
+  .play{position:absolute;left:50%;top:38%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:#0a2348;font-size:70px}
+  .li{display:flex;align-items:center;gap:20px;padding:20px 24px;margin-bottom:16px;border-radius:24px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.16);font-size:34px;font-weight:800;line-height:1.15}
+  .li .n{flex:none;min-width:64px;height:64px;padding:0 10px;border-radius:18px;background:var(--ac);color:#140c02;display:grid;place-items:center;font-size:30px;font-weight:900}
 </style></head>
 <body>
 <div id="bg"></div><div id="grid"></div>
@@ -131,7 +138,7 @@ function step(i) {
     const phoneIn = ease(clamp(lt / .6));
     return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${st.label || `Step ${i + 1} of ${NS}`}${shine(lt, .6, .8)}</span></div>
         <div class="h1" style="margin-top:22px;white-space:nowrap;font-size:${Math.min(70, Math.floor(1640 / st.title.replace(/<[^>]+>/g, '').length))}px;${fadeUp(lt, .12)}">${st.title}</div></div>
-      ${st.visual === 'covers' ? coverWall(lt, phoneIn) : `<div class="phone" style="left:60px;top:${470 + (1 - phoneIn) * 900 + Math.sin(lt * 1.6) * 5}px;transform:rotate(${(1 - phoneIn) * 8 - 1.5}deg)"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div>${scr}</div></div>`}
+      ${st.visual === 'covers' ? coverWall(lt, phoneIn, st.coverSet) : st.visual === 'list' ? listPanel(st.items, p, pd, phoneIn) : `<div class="phone" style="left:60px;top:${470 + (1 - phoneIn) * 900 + Math.sin(lt * 1.6) * 5}px;transform:rotate(${(1 - phoneIn) * 8 - 1.5}deg)"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div>${scr}</div></div>`}
       <div style="position:absolute;left:640px;top:520px">
         <div class="badge" style="${pop(lt, .15, .6)};margin-left:-10px"><div>${st.icon ? `<b style="font-size:${st.icon.length > 3 ? 92 : 118}px;margin-bottom:10px;transform:scale(${1 + .06 * Math.sin(lt * 3)})">${st.icon}</b>` : `<b>${i + 1}</b>`}<span>${i + 1} OF ${NS}</span></div></div>
         <div class="dots" style="margin:10px 0 34px;${fadeUp(lt, .3)}">${G.steps.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'on' : ''}"></i>`).join('')}</div>
@@ -140,7 +147,22 @@ function step(i) {
   };
 }
 // B3: wall of all handbook covers, three columns drifting in opposite directions
-function coverWall(lt, inP) {
+function listPanel(items, p, pd, inP) {      // path reels: rooms / outcomes popping in one by one over the voice clip
+  const fs = items.length > 5 ? 30 : 36;
+  return `<div style="position:absolute;left:60px;top:480px;width:540px;opacity:${inP}">` + items.map((it, k) => {
+    const q = ease(clamp((p - (.08 + k * .8 / items.length)) * pd / .45));
+    return `<div class="li" style="font-size:${fs}px;opacity:${q};transform:translateX(${(1 - q) * -200}px)"><span class="n">${it[0]}</span><span>${it[1]}</span></div>`;
+  }).join('') + '</div>';
+}
+function coverWall(lt, inP, set) {
+  if (set) {                                   // a few covers (one learning path): fanned grid, each popping in
+    const n = set.length, cols = n <= 4 ? 2 : 3, w = cols === 2 ? 250 : 170, hgt = w * 1.414, gap = 14;
+    return `<div style="position:absolute;left:55px;top:480px;width:540px;height:900px">` + set.map((k, i) => {
+      const q = back(clamp((lt - .3 - i * .22) / .5)), r = Math.floor(i / cols), c = i % cols, rowN = Math.min(cols, n - r * cols);
+      const x = (540 - rowN * w - (rowN - 1) * gap) / 2 + c * (w + gap), y = r * (hgt + gap) + Math.sin(lt * 2 + i) * 6;
+      return `<img src="${A.img[k]}" style="position:absolute;left:${x}px;top:${y}px;width:${w}px;border-radius:8px;box-shadow:0 16px 40px rgba(0,0,0,.55);opacity:${clamp((lt - .3 - i * .22) / .2)};transform:scale(${.5 + .5 * q}) rotate(${(i % 2 ? 2 : -2) * q}deg)">`;
+    }).join('') + '</div>';
+  }
   const covers = Object.keys(A.img).filter((k) => k.startsWith('cover-')).sort();
   let h = `<div style="position:absolute;left:50px;top:470px;width:540px;height:900px;overflow:hidden;border-radius:30px;opacity:${inP};transform:perspective(1400px) rotateY(${12 - 6 * inP}deg)">`;
   for (let c = 0; c < 3; c++) {
@@ -164,6 +186,18 @@ function cta(t, lt) {
     <div class="center" style="top:940px;${pop(lt, en - .5, .6)}"><span class="enroll" style="transform:scale(${pulse});box-shadow:0 0 ${30 + 40 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)">${C.button}${shine(lt, en + .3, .8)}</span></div>${tap}
     <div class="center" style="top:1150px;${fadeUp(lt, en + .4)}">${C.chips.map((c) => `<span class="chip">${c}</span>`).join('')}</div>`;
 }
+function ref(t, lt) {
+  const R = G.ref, next = R.kind === 'next', q = back(clamp((lt - .2) / .6));
+  const cover = A.refcover ? `<img src="${A.refcover}" style="position:absolute;left:50%;top:110px;width:210px;margin-left:-105px;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.5);transform:rotate(-4deg)">` : `<img src="${A.logo}" style="position:absolute;left:50%;top:130px;width:190px;margin-left:-95px;border-radius:40px;background:#fff;padding:12px;object-fit:contain;height:190px">`;
+  return `<div class="glow" style="top:330px"></div>
+    <div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${next ? 'Agli reel 👉' : 'Ye reel dekhi kya? 👀'}</span></div>
+      <div class="h1" style="margin-top:22px;font-size:78px;${fadeUp(lt, .12)}">${next ? 'Next: <em>miss</em> mat karna!' : 'Ye reel <em>dekhi</em> kya?'}</div></div>
+    <div class="reel" style="left:330px;top:${500 + Math.sin(lt * 2) * 8}px;opacity:${clamp((lt - .2) / .3)};transform:scale(${.6 + .4 * q}) rotate(${(1 - q) * -8 + Math.sin(lt * 1.5) * 1.5}deg)">
+      <span class="tag">▶ REEL</span>${cover}
+      <div class="play" style="transform:scale(${1 + .08 * Math.abs(Math.sin(lt * 3.5))})">▶</div>
+      <div class="ttl">${R.rom}</div><div class="site">techguardians.in</div></div>
+    <div class="center" style="top:1270px;${fadeUp(lt, .9)}"><span class="chip" style="font-size:34px;background:var(--ac);color:#140c02">👆 Profile pe dekhiye</span></div>`;
+}
 function end(t, lt) {
   return `<div class="glow" style="top:300px"></div>
     <div class="center" style="top:400px;${pop(lt, 0, .7)}"><div style="display:inline-block;position:relative;overflow:hidden;border-radius:60px;transform:rotate(${Math.sin(lt * 2) * 3}deg)"><img src="${A.logo}" style="display:block;width:300px;height:300px;background:#fff;padding:18px;object-fit:contain">${shine(lt, .8, .9)}</div></div>
@@ -172,7 +206,7 @@ function end(t, lt) {
     <div class="center" style="top:1010px;${fadeUp(lt, 1)}"><div style="display:inline-flex;width:420px;height:16px;border-radius:9px;overflow:hidden"><i style="flex:1;background:#ff9933"></i><i style="flex:1;background:#fff"></i><i style="flex:1;background:#138808"></i></div></div>
     <div class="center" style="top:1100px;${fadeUp(lt, 1.2)}"><span class="chip" style="font-size:44px;background:var(--ac);color:#140c02">techguardians.in</span></div>`;
 }
-const FN = { intro, cta, end }; G.steps.forEach((_, i) => FN[`s${i + 1}`] = step(i));
+const FN = { intro, cta, ref, end }; G.steps.forEach((_, i) => FN[`s${i + 1}`] = step(i));
 const ORDER = Object.keys(SC);
 const hl = (s) => s.replace(/(techguardians\.in|\b(?:[A-Z][A-Za-z]*[A-Z0-9][A-Za-z0-9-]*|[A-Z]{2,}|\d+|My|Account|Request|Send|Sign|Verify|Email|FREE|Portal)\b)/g, '<i>$1</i>');
 
@@ -239,7 +273,7 @@ window.renderCover = function () {
   document.getElementById('stage').innerHTML = `<div class="glow" style="top:700px"></div>
     <div class="center" style="top:270px"><span class="pill" style="font-size:34px">${C.pill}</span></div>
     <div class="center" style="top:380px"><div class="h1" style="font-size:112px;letter-spacing:-3px">${C.hook}</div></div>
-    ${ph(C.shots[0], 760, 90, -5)}${ph(C.shots[1], 800, 560, 5)}
+    ${C.covers ? C.covers.slice(0, 3).map((k, i) => `<img src="${A.img[k]}" style="position:absolute;left:${[110, 370, 630][i]}px;top:${[900, 820, 900][i]}px;width:340px;border-radius:10px;box-shadow:0 30px 70px rgba(0,0,0,.6);transform:rotate(${[-8, 0, 8][i]}deg);z-index:${i === 1 ? 2 : 1}">`).join('') : ph(C.shots[0], 760, 90, -5) + ph(C.shots[1], 800, 560, 5)}
     <div class="center" style="top:1520px"><span class="chip" style="background:var(--ac);color:#140c02;font-size:40px">${C.chip}</span></div>`;
 };
 window.ready = () => Promise.all(Object.values(imgs).map((i) => i.decode()));

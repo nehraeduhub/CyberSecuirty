@@ -1,0 +1,132 @@
+{
+ "Core": {
+  "hook": "Cyber security <em>shuru</em> kahan se? 🧭",
+  "vo": "साइबर सिक्योरिटी शुरू कहाँ से करें? कोर फ़ाउंडेशन्स पाथ से।",
+  "sub": "Cyber security shuru kahan se karein? Core Foundations path se.",
+  "out": [
+   "CIA, risk & Zero Trust",
+   "Defender ka mindset",
+   "Har path ka base"
+  ],
+  "outVo": "इस पाथ के बाद, आपके पास हर एडवांस्ड टॉपिक का मज़बूत बेस होगा।",
+  "outSub": "Is path ke baad aapke paas har advanced topic ka mazboot base hoga.",
+  "tdev": "कोर फ़ाउंडेशन्स"
+ },
+ "Networking": {
+  "hook": "Network ki <em>gehri</em> samajh chahiye? 🌐",
+  "vo": "नेटवर्क की गहरी समझ चाहिए? नेटवर्किंग पाथ।",
+  "sub": "Network ki gehri samajh chahiye? Networking path.",
+  "out": [
+   "TCP/IP se MPLS tak",
+   "VLAN, VRF, segmentation",
+   "Layer-2 attacks rokna"
+  ],
+  "outVo": "इस पाथ के बाद, आप नेटवर्क को अंदर से समझकर सुरक्षित कर पाएँगे।",
+  "outSub": "Is path ke baad aap network ko andar se samajhkar surakshit kar paayenge.",
+  "tdev": "नेटवर्किंग"
+ },
+ "Perimeter": {
+  "hook": "Network ka <em>darwaza</em> kaun sambhalega? 🧱",
+  "vo": "नेटवर्क और वेबसाइट का दरवाज़ा कौन संभालेगा? पेरिमीटर एंड ऐपसेक पाथ।",
+  "sub": "Network aur website ka darwaza kaun sambhalega? Perimeter & AppSec path.",
+  "out": [
+   "Firewall rule base",
+   "ADC, WAF, OWASP",
+   "Secure web hosting"
+  ],
+  "outVo": "इस पाथ के बाद, आप फ़ायरवॉल से वेबसाइट तक, पूरा पेरिमीटर संभाल पाएँगे।",
+  "outSub": "Is path ke baad aap firewall se website tak poora perimeter sambhal paayenge.",
+  "tdev": "पेरिमीटर एंड ऐपसेक"
+ },
+ "Detection": {
+  "hook": "Attacker ko <em>dekhna</em> seekho 👁️",
+  "vo": "अटैकर को नेटवर्क पर देखना सीखिए। डिटेक्शन एंड रीकॉन पाथ।",
+  "sub": "Attacker ko network par dekhna seekhiye. Detection & Recon path.",
+  "out": [
+   "IDS/IPS rules",
+   "Wireshark packet analysis",
+   "Nmap scanning"
+  ],
+  "outVo": "इस पाथ के बाद, आप नेटवर्क पर हर संदिग्ध चीज़ पकड़ पाएँगे।",
+  "outSub": "Is path ke baad aap network par har sandigdh cheez pakad paayenge.",
+  "tdev": "डिटेक्शन एंड रीकॉन"
+ },
+ "SOC": {
+  "hook": "<em>SOC Analyst</em> banna hai? 🛡️",
+  "vo": "सॉक एनालिस्ट बनना है? ये रहा पूरा रास्ता।",
+  "sub": "SOC Analyst banna hai? Ye raha poora raasta.",
+  "out": [
+   "SIEM & alert triage",
+   "Incident response",
+   "Threat hunting + SOAR"
+  ],
+  "outVo": "इस पाथ के बाद, आप एक सॉक एनालिस्ट की तरह, अलर्ट से इंसिडेंट तक संभाल पाएँगे।",
+  "outSub": "Is path ke baad aap ek SOC analyst ki tarah alert se incident tak sambhal paayenge.",
+  "tdev": "सॉक एंड ऑपरेशन्स"
+ },
+ "Windows": {
+  "hook": "Windows & <em>AD</em> expert banna hai? 🪟",
+  "vo": "विंडोज़ और एक्टिव डायरेक्टरी एक्सपर्ट बनना है? ये पाथ आपके लिए है।",
+  "sub": "Windows aur Active Directory expert banna hai? Ye path aapke liye hai.",
+  "out": [
+   "Windows internals",
+   "AD attacks & defence",
+   "EDR, PowerShell, Sysinternals"
+  ],
+  "outVo": "इस पाथ के बाद, आप पूरी एंटरप्राइज़ विंडोज़ एस्टेट सुरक्षित कर पाएँगे।",
+  "outSub": "Is path ke baad aap poori enterprise Windows estate surakshit kar paayenge.",
+  "tdev": "विंडोज़ एंड एक्टिव डायरेक्टरी"
+ },
+ "Linux": {
+  "hook": "<em>Linux</em> server secure karna hai? 🐧",
+  "vo": "लिनक्स सर्वर सुरक्षित करना है? लिनक्स सिक्योरिटी पाथ।",
+  "sub": "Linux server surakshit karna hai? Linux Security path.",
+  "out": [
+   "SSH, firewall, SELinux",
+   "auditd & log monitoring",
+   "Intrusion hunting"
+  ],
+  "outVo": "इस पाथ के बाद, आप लिनक्स सर्वर को हार्डन भी करेंगे, और मॉनिटर भी।",
+  "outSub": "Is path ke baad aap Linux server ko harden bhi karenge, aur monitor bhi.",
+  "tdev": "लिनक्स सिक्योरिटी"
+ },
+ "Forensics": {
+  "hook": "<em>Cyber detective</em> banna hai? 🔍",
+  "vo": "साइबर डिटेक्टिव बनना है? डिजिटल फ़ॉरेंसिक्स पाथ।",
+  "sub": "Cyber detective banna hai? Digital Forensics path.",
+  "out": [
+   "Evidence & chain of custody",
+   "Disk, memory, registry",
+   "FTK, KAPE, Autopsy, Volatility"
+  ],
+  "outVo": "इस पाथ के बाद, आप सबूत ढूँढकर, कोर्ट में टिकने वाली रिपोर्ट बना पाएँगे।",
+  "outSub": "Is path ke baad aap saboot dhoondhkar court me tikne wali report bana paayenge.",
+  "tdev": "डिजिटल फ़ॉरेंसिक्स"
+ },
+ "CTI": {
+  "hook": "Hacker se <em>ek kadam</em> aage 🎯",
+  "vo": "हैकर से एक क़दम आगे रहना है? थ्रेट इंटेलिजेंस पाथ।",
+  "sub": "Hacker se ek kadam aage rehna hai? Threat Intelligence path.",
+  "out": [
+   "Lifecycle & ATT&CK",
+   "OSINT, STIX/TAXII, MISP",
+   "Intel → blocked attack"
+  ],
+  "outVo": "इस पाथ के बाद, आप डेटा को इंटेलिजेंस में, और इंटेल को एक्शन में बदल पाएँगे।",
+  "outSub": "Is path ke baad aap data ko intelligence me, aur intel ko action me badal paayenge.",
+  "tdev": "थ्रेट इंटेलिजेंस"
+ },
+ "Infra": {
+  "hook": "VM, Docker & <em>data centre</em> 🏭",
+  "vo": "वर्चुअलाइज़ेशन, कंटेनर्स और डेटा सेंटर, पूरे स्टैक की सिक्योरिटी।",
+  "sub": "Virtualization, containers aur data centre — poore stack ki security.",
+  "out": [
+   "Hypervisor & VM escape",
+   "Docker + Kubernetes",
+   "Data centre & 3-2-1 backup"
+  ],
+  "outVo": "इस पाथ के बाद, आप सिलिकॉन से फ़ैसिलिटी तक, पूरा स्टैक सुरक्षित कर पाएँगे।",
+  "outSub": "Is path ke baad aap silicon se facility tak poora stack surakshit kar paayenge.",
+  "tdev": "वर्चुअलाइज़ेशन एंड डेटा सेंटर"
+ }
+}

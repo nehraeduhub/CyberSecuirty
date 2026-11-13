@@ -1,0 +1,154 @@
+{
+ "name": "P08-Path-Digital-Forensics",
+ "kicker": "Learning path",
+ "accent": "#a78bfa",
+ "mood": "scan",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Digital Forensics",
+  "hook": "<em>Cyber detective</em> banna hai? 🔍",
+  "chips": [
+   "📘 3 handbooks",
+   "🚩 3 rooms",
+   "🧪 30 tasks"
+  ],
+  "vo": "साइबर डिटेक्टिव बनना है? डिजिटल फ़ॉरेंसिक्स पाथ।",
+  "sub": "Cyber detective banna hai? Digital Forensics path."
+ },
+ "steps": [
+  {
+   "label": "3 Handbooks",
+   "icon": "📚",
+   "title": "<em>3</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-34",
+    "cover-35",
+    "cover-36"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में तीन हैंडबुक्स हैं। डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स से, फ़ॉरेंसिक टूल्स तक।",
+   "sub": "Is path me 3 handbooks hain — Digital Forensics Fundamentals se Forensic Tools tak."
+  },
+  {
+   "label": "3 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>30</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "36",
+     "Forensics Fundamentals & Evidence"
+    ],
+    [
+     "37",
+     "Forensic Domains"
+    ],
+    [
+     "38",
+     "Forensic Tools"
+    ]
+   ],
+   "vo": "और तीन सीटीएफ़ रूम्स, जिनमें 30 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 3 CTF rooms, jinme 30 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Digital Forensics",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "Evidence & chain of custody"
+    ],
+    [
+     "✓",
+     "Disk, memory, registry"
+    ],
+    [
+     "✓",
+     "FTK, KAPE, Autopsy, Volatility"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप सबूत ढूँढकर, कोर्ट में टिकने वाली रिपोर्ट बना पाएँगे।",
+   "sub": "Is path ke baad aap saboot dhoondhkar court me tikne wali report bana paayenge.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 36 se start",
+  "chips": [
+   "📘 3 handbooks",
+   "🚩 3 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "36-Digital-Forensics-Fundamentals",
+  "rom": "Room 36 · Digital Forensics Fundamentals",
+  "cover": "forensics-fundamentals",
+  "vo": "इस पाथ की पहली रील, डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — Digital Forensics Fundamentals — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 3 rooms",
+  "hook": "<em>Cyber detective</em> banna hai? 🔍",
+  "covers": [
+   "cover-34",
+   "cover-35",
+   "cover-36"
+  ],
+  "chip": "📘 3 handbooks · 🚩 30 tasks"
+ },
+ "caption": "Cyber detective banna hai? 🔍\n\nDigital Forensics path — Handle evidence and find the truth.\n\n📘 3 handbooks: Digital Forensics Fundamentals, Forensic Domains, Forensic Tools\n🚩 3 CTF rooms · 30 hands-on tasks · har room ka task 1 FREE\n🎯 Evidence & chain of custody · Disk, memory, registry · FTK, KAPE, Autopsy, Volatility\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#forensics"
+ ]
+}

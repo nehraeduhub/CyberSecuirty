@@ -1,0 +1,166 @@
+{
+ "name": "P02-Path-Networking",
+ "kicker": "Learning path",
+ "accent": "#38bdf8",
+ "mood": "pulse",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Networking",
+  "hook": "Network ki <em>gehri</em> samajh chahiye? 🌐",
+  "chips": [
+   "📘 5 handbooks",
+   "🚩 5 rooms",
+   "🧪 50 tasks"
+  ],
+  "vo": "नेटवर्क की गहरी समझ चाहिए? नेटवर्किंग पाथ।",
+  "sub": "Network ki gehri samajh chahiye? Networking path."
+ },
+ "steps": [
+  {
+   "label": "5 Handbooks",
+   "icon": "📚",
+   "title": "<em>5</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-07",
+    "cover-08",
+    "cover-09",
+    "cover-10",
+    "cover-11"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में पाँच हैंडबुक्स हैं। टीसीपी आईपी नेटवर्किंग से, एमपीएलएस सिक्योरिटी तक।",
+   "sub": "Is path me 5 handbooks hain — TCP/IP Networking se MPLS Security tak."
+  },
+  {
+   "label": "5 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>50</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "07",
+     "TCP/IP & Packet Analysis"
+    ],
+    [
+     "08",
+     "Routing & Switching Security"
+    ],
+    [
+     "09",
+     "VLANs, VRFs & Isolation"
+    ],
+    [
+     "10",
+     "Network Segmentation"
+    ],
+    [
+     "11",
+     "MPLS/VPN Security"
+    ]
+   ],
+   "vo": "और पाँच सीटीएफ़ रूम्स, जिनमें 50 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 5 CTF rooms, jinme 50 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Networking",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "TCP/IP se MPLS tak"
+    ],
+    [
+     "✓",
+     "VLAN, VRF, segmentation"
+    ],
+    [
+     "✓",
+     "Layer-2 attacks rokna"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप नेटवर्क को अंदर से समझकर सुरक्षित कर पाएँगे।",
+   "sub": "Is path ke baad aap network ko andar se samajhkar surakshit kar paayenge.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 7 se start",
+  "chips": [
+   "📘 5 handbooks",
+   "🚩 5 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "07-TCP-IP-Networking",
+  "rom": "Room 7 · TCP/IP Networking",
+  "cover": "tcp-ip-networking",
+  "vo": "इस पाथ की पहली रील, टीसीपी आईपी नेटवर्किंग, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — TCP/IP Networking — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 5 rooms",
+  "hook": "Network ki <em>gehri</em> samajh chahiye? 🌐",
+  "covers": [
+   "cover-07",
+   "cover-08",
+   "cover-09",
+   "cover-10",
+   "cover-11"
+  ],
+  "chip": "📘 5 handbooks · 🚩 50 tasks"
+ },
+ "caption": "Network ki gehri samajh chahiye? 🌐\n\nNetworking path — How traffic moves — and how to secure it.\n\n📘 5 handbooks: TCP/IP Networking, Routing & Switching Security, VLAN & VRF, Network Segmentation, MPLS Security\n🚩 5 CTF rooms · 50 hands-on tasks · har room ka task 1 FREE\n🎯 TCP/IP se MPLS tak · VLAN, VRF, segmentation · Layer-2 attacks rokna\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#networking"
+ ]
+}

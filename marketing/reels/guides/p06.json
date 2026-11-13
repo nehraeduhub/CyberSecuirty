@@ -1,0 +1,178 @@
+{
+ "name": "P06-Path-Windows-Active-Directory",
+ "kicker": "Learning path",
+ "accent": "#60a5fa",
+ "mood": "drive",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Windows & Active Directory",
+  "hook": "Windows & <em>AD</em> expert banna hai? 🪟",
+  "chips": [
+   "📘 7 handbooks",
+   "🚩 7 rooms",
+   "🧪 70 tasks"
+  ],
+  "vo": "विंडोज़ और एक्टिव डायरेक्टरी एक्सपर्ट बनना है? ये पाथ आपके लिए है।",
+  "sub": "Windows aur Active Directory expert banna hai? Ye path aapke liye hai."
+ },
+ "steps": [
+  {
+   "label": "7 Handbooks",
+   "icon": "📚",
+   "title": "<em>7</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-27",
+    "cover-28",
+    "cover-29",
+    "cover-30",
+    "cover-31",
+    "cover-32",
+    "cover-33"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में सात हैंडबुक्स हैं। विंडोज़ सिक्योरिटी से, सिसइंटरनल्स तक।",
+   "sub": "Is path me 7 handbooks hain — Windows Security se Sysinternals tak."
+  },
+  {
+   "label": "7 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>70</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "27",
+     "Windows Security"
+    ],
+    [
+     "28",
+     "Windows Hardening"
+    ],
+    [
+     "29",
+     "Active Directory Security"
+    ],
+    [
+     "30",
+     "Group Policy Security"
+    ],
+    [
+     "31",
+     "Endpoint Detection & Response"
+    ],
+    [
+     "32",
+     "PowerShell Security"
+    ],
+    [
+     "33",
+     "Windows Sysinternals Suite"
+    ]
+   ],
+   "vo": "और सात सीटीएफ़ रूम्स, जिनमें 70 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 7 CTF rooms, jinme 70 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Windows & Active Directory",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "Windows internals"
+    ],
+    [
+     "✓",
+     "AD attacks & defence"
+    ],
+    [
+     "✓",
+     "EDR, PowerShell, Sysinternals"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप पूरी एंटरप्राइज़ विंडोज़ एस्टेट सुरक्षित कर पाएँगे।",
+   "sub": "Is path ke baad aap poori enterprise Windows estate surakshit kar paayenge.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 27 se start",
+  "chips": [
+   "📘 7 handbooks",
+   "🚩 7 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "27-Windows-Security",
+  "rom": "Room 27 · Windows Security",
+  "cover": "windows-security",
+  "vo": "इस पाथ की पहली रील, विंडोज़ सिक्योरिटी, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — Windows Security — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 7 rooms",
+  "hook": "Windows & <em>AD</em> expert banna hai? 🪟",
+  "covers": [
+   "cover-27",
+   "cover-28",
+   "cover-29",
+   "cover-30",
+   "cover-31",
+   "cover-32",
+   "cover-33"
+  ],
+  "chip": "📘 7 handbooks · 🚩 70 tasks"
+ },
+ "caption": "Windows & AD expert banna hai? 🪟\n\nWindows & Active Directory path — Secure the enterprise estate.\n\n📘 7 handbooks: Windows Security, Windows Hardening, Active Directory Security, Group Policy Security, Endpoint Detection & Response, PowerShell Security, Sysinternals\n🚩 7 CTF rooms · 70 hands-on tasks · har room ka task 1 FREE\n🎯 Windows internals · AD attacks & defence · EDR, PowerShell, Sysinternals\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#windows"
+ ]
+}

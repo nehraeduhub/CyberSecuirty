@@ -1,0 +1,178 @@
+{
+ "name": "P05-Path-SOC-Operations",
+ "kicker": "Learning path",
+ "accent": "#ef4444",
+ "mood": "tension",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · SOC & Operations",
+  "hook": "<em>SOC Analyst</em> banna hai? 🛡️",
+  "chips": [
+   "📘 7 handbooks",
+   "🚩 7 rooms",
+   "🧪 70 tasks"
+  ],
+  "vo": "सॉक एनालिस्ट बनना है? ये रहा पूरा रास्ता।",
+  "sub": "SOC Analyst banna hai? Ye raha poora raasta."
+ },
+ "steps": [
+  {
+   "label": "7 Handbooks",
+   "icon": "📚",
+   "title": "<em>7</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-20",
+    "cover-21",
+    "cover-22",
+    "cover-23",
+    "cover-24",
+    "cover-25",
+    "cover-26"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में सात हैंडबुक्स हैं। सॉक आर्किटेक्चर से, सॉक टूल्स तक।",
+   "sub": "Is path me 7 handbooks hain — SOC Architecture se SOC Tools: Splunk · ELK · Wazuh · Sigma tak."
+  },
+  {
+   "label": "7 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>70</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "20",
+     "SOC Architecture"
+    ],
+    [
+     "21",
+     "SIEM — Security Monitoring at Scale"
+    ],
+    [
+     "22",
+     "Log & Alert Management"
+    ],
+    [
+     "23",
+     "Incident Response"
+    ],
+    [
+     "24",
+     "Threat Hunting"
+    ],
+    [
+     "25",
+     "SOAR & Security Automation"
+    ],
+    [
+     "26",
+     "Splunk, ELK, Wazuh & Sigma"
+    ]
+   ],
+   "vo": "और सात सीटीएफ़ रूम्स, जिनमें 70 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 7 CTF rooms, jinme 70 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 SOC & Operations",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "SIEM & alert triage"
+    ],
+    [
+     "✓",
+     "Incident response"
+    ],
+    [
+     "✓",
+     "Threat hunting + SOAR"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आप एक सॉक एनालिस्ट की तरह, अलर्ट से इंसिडेंट तक संभाल पाएँगे।",
+   "sub": "Is path ke baad aap ek SOC analyst ki tarah alert se incident tak sambhal paayenge.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 20 se start",
+  "chips": [
+   "📘 7 handbooks",
+   "🚩 7 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "20-SOC-Architecture",
+  "rom": "Room 20 · SOC Architecture",
+  "cover": "soc-architecture",
+  "vo": "इस पाथ की पहली रील, सॉक आर्किटेक्चर, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — SOC Architecture — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 7 rooms",
+  "hook": "<em>SOC Analyst</em> banna hai? 🛡️",
+  "covers": [
+   "cover-20",
+   "cover-21",
+   "cover-22",
+   "cover-23",
+   "cover-24",
+   "cover-25",
+   "cover-26"
+  ],
+  "chip": "📘 7 handbooks · 🚩 70 tasks"
+ },
+ "caption": "SOC Analyst banna hai? 🛡️\n\nSOC & Operations path — Run detection and response at scale.\n\n📘 7 handbooks: SOC Architecture, SIEM, Log & Alert Management, Incident Response, Threat Hunting, SOAR & Security Automation, SOC Tools: Splunk · ELK · Wazuh · Sigma\n🚩 7 CTF rooms · 70 hands-on tasks · har room ka task 1 FREE\n🎯 SIEM & alert triage · Incident response · Threat hunting + SOAR\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#soc"
+ ]
+}

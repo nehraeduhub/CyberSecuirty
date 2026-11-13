@@ -7,7 +7,7 @@ topics, num, work, out = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4]
 t = next(x for x in json.load(open(topics, encoding='utf-8')) if x['num'] == num)
 vo = json.load(open(os.path.join(work, 'vo.json')))
 # scene: (gap before the voice, minimum scene length)
-PLAN = [('hook', .5, 5.5), ('learn', .35, 9), ('book', .35, 8.5), ('ctf', .35, 11.5), ('cta', .35, 6)]
+PLAN = [('hook', .5, 5.5), ('learn', .35, 9), ('book', .35, 7), ('ctf', .35, 11.5), ('cta', .35, 6), ('ref', .3, 4.5)]
 TAIL = .6        # breath after each clip
 END = 3.2        # end card, music only
 scenes, clips, cur = {}, [], 0.0
@@ -49,6 +49,7 @@ marks = {
     # "Task 1 FREE" pops when the voice says पहला टास्क फ़्री; the account card when it says सीटीएफ़ एक्सेस (by position in the text)
     'free': round(cl['ctf']['at'] + cl['ctf']['dur'] * max(0, t['vo']['ctf'].find('पहला')) / len(t['vo']['ctf']) + .4, 3),
     'account': round(cl['ctf']['at'] + cl['ctf']['dur'] * max(0, t['vo']['ctf'].find('सीटीएफ़ एक्सेस')) / len(t['vo']['ctf']), 3),
+    'acctref': round(cl['ctf']['at'] + cl['ctf']['dur'] * max(0, t['vo']['ctf'].find('वो रील')) / len(t['vo']['ctf']), 3),
     'url': round(scenes['cta'][0] + 1.2, 3),
     'enroll': round(cl['cta']['at'] + cl['cta']['dur'] * .55, 3),
 }
@@ -69,9 +70,10 @@ Humare saath seekhenge: {' · '.join(strip(p) for p in t['points'])}
 
 📘 Pehle seekho: {t['title']} Handbook (PDF, {t['pages']} pages)
 🚩 Phir practice karo: CTF Room {t['num']} · {t['tasks']} hands-on tasks · Task 1 FREE
-👤 CTF access ke liye apna account zaroor banayein
+👤 CTF access ke liye apna account zaroor banayein — kaise? '{t['accountRef']['rom']}' wali reel dekho
 
 👉 Abhi enroll karo aur seekhna start karo: techguardians.in (link in bio)
+▶ {'Agli reel' if t['ref']['kind'] == 'next' else 'Ye reel bhi dekho'}: {t['ref']['rom']}
 Keep Learning · Keep Sharing 🇮🇳
 
 {' '.join(t.get('tags', []) + ['#techguardians', '#cybersecurityindia', '#ctf', '#learncybersecurity', '#hinglish'])}

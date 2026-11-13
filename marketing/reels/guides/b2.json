@@ -1,0 +1,325 @@
+{
+ "name": "B2-How-to-Enroll-CTF-Portal",
+ "kicker": "How-to guide",
+ "accent": "#ff9933",
+ "mood": "drive",
+ "shots": "enroll",
+ "speed": 1.06,
+ "intro": {
+  "pill": "How-to guide · CTF Portal",
+  "hook": "CTF Portal me<br><em>enroll</em> kaise karein? 🚩",
+  "chips": [
+   "🚩 43 rooms",
+   "✅ Task 1 FREE",
+   "6 easy steps"
+  ],
+  "vo": "सीटीएफ़ पोर्टल में एनरोल कैसे करें? छह आसान स्टेप्स में देखिए।",
+  "sub": "CTF Portal me enroll kaise karein? 6 aasaan steps me dekhiye."
+ },
+ "steps": [
+  {
+   "title": "<em>CTF Portal</em> kholo",
+   "tip": "🌐 techguardians.in",
+   "vo": "टेक गार्डियन्स डॉट इन के मेन्यू में, सीटीएफ़ पोर्टल खोलिए।",
+   "sub": "techguardians.in ke menu me CTF Portal kholiye.",
+   "shots": [
+    {
+     "img": "menu",
+     "scroll": [
+      [
+       0,
+       300
+      ]
+     ],
+     "ring": [
+      {
+       "k": "ctf",
+       "p0": 0.4,
+       "p1": 1
+      }
+     ],
+     "tap": [
+      {
+       "k": "ctf",
+       "p": 0.8
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Student account se <em>sign in</em>",
+   "tip": "▶ Reel: Student Account kaise banayein",
+   "vo": "अपने स्टूडेंट अकाउंट से साइन इन कीजिए। अकाउंट नहीं है? तो पहले अकाउंट बनाइए।",
+   "sub": "Apne student account se sign in kijiye. Account nahi hai? To pehle account banaiye.",
+   "shots": [
+    {
+     "img": "gate",
+     "scroll": [
+      [
+       0,
+       560
+      ],
+      [
+       1,
+       700
+      ]
+     ],
+     "ring": [
+      {
+       "k": "signin",
+       "p0": 0.1,
+       "p1": 0.5
+      },
+      {
+       "k": "create",
+       "p0": 0.6,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Task 1 <em>FREE</em> — shuru karo",
+   "tip": "✅ Har room ka task 1 free",
+   "vo": "हर रूम का पहला टास्क फ़्री है। कोई भी रूम खोलिए, और सीखना शुरू कीजिए।",
+   "sub": "Har room ka pehla task FREE hai. Koi bhi room kholiye, aur seekhna shuru kijiye.",
+   "shots": [
+    {
+     "img": "ctfhome",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       0
+      ],
+      [
+       0.6,
+       620
+      ]
+     ],
+     "ring": [
+      {
+       "k": "free",
+       "p0": 0.05,
+       "p1": 0.4
+      },
+      {
+       "k": "room",
+       "p0": 0.65,
+       "p1": 1
+      }
+     ],
+     "tap": [
+      {
+       "k": "room",
+       "p": 0.85
+      }
+     ],
+     "to": 0.9
+    },
+    {
+     "img": "room",
+     "scroll": [
+      [
+       0.9,
+       0
+      ],
+      [
+       1.2,
+       300
+      ]
+     ],
+     "from": 0.9
+    }
+   ]
+  },
+  {
+   "title": "<em>Saare rooms</em> unlock karo",
+   "tip": "🔓 Monthly ya annual plan",
+   "vo": "सारे रूम्स अनलॉक करने के लिए, मंथली या एनुअल प्लान चुनिए।",
+   "sub": "Saare rooms unlock karne ke liye monthly ya annual plan chuniye.",
+   "shots": [
+    {
+     "img": "plans",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       300
+      ],
+      [
+       0.6,
+       300
+      ],
+      [
+       0.75,
+       560
+      ]
+     ],
+     "ring": [
+      {
+       "k": "monthly",
+       "p0": 0.35,
+       "p1": 0.7
+      },
+      {
+       "k": "annual",
+       "p0": 0.65,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Details + <em>coupon</em>",
+   "tip": "🎟️ Coupon code hai? Apply karo",
+   "vo": "अपनी डिटेल्स भरिए। कूपन कोड है, तो अप्लाई कीजिए।",
+   "sub": "Apni details bhariye. Coupon code hai, to apply kijiye.",
+   "shots": [
+    {
+     "img": "checkout",
+     "scroll": [
+      [
+       0,
+       0
+      ],
+      [
+       0.3,
+       330
+      ]
+     ],
+     "ring": [
+      {
+       "k": "coupon",
+       "p0": 0.35,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "<em>UPI</em> se pay + UTR",
+   "tip": "📲 Verify hote hi sab unlock",
+   "vo": "यूपीआई से पेमेंट कीजिए, और ट्रांज़ैक्शन आईडी सबमिट कीजिए। वेरिफ़ाई होते ही, सारे रूम्स अनलॉक!",
+   "sub": "UPI se payment kijiye, aur transaction ID submit kijiye. Verify hote hi saare rooms unlock!",
+   "shots": [
+    {
+     "img": "upi",
+     "scroll": [
+      [
+       0,
+       690
+      ],
+      [
+       0.3,
+       690
+      ],
+      [
+       0.42,
+       1250
+      ]
+     ],
+     "ring": [
+      {
+       "k": "qr",
+       "p0": 0.1,
+       "p1": 0.45
+      }
+     ],
+     "tap": [
+      {
+       "k": "paid",
+       "p": 0.46
+      }
+     ],
+     "to": 0.5
+    },
+    {
+     "img": "utr",
+     "scroll": [
+      [
+       0.5,
+       640
+      ],
+      [
+       0.8,
+       640
+      ],
+      [
+       0.88,
+       1000
+      ]
+     ],
+     "ring": [
+      {
+       "k": "utr",
+       "p0": 0.55,
+       "p1": 0.85
+      }
+     ],
+     "tap": [
+      {
+       "k": "submit",
+       "p": 0.94
+      }
+     ],
+     "from": 0.5
+    }
+   ],
+   "confetti": 0.92
+  }
+ ],
+ "cta": {
+  "headline": "Aaj hi <em>flags</em> capture karo 👇",
+  "button": "🚩 CTF Portal",
+  "chips": [
+   "🚩 43 rooms",
+   "✅ Task 1 FREE"
+  ],
+  "vo": "आज ही शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "B6-How-to-Create-Student-Account",
+  "rom": "Student Account kaise banayein",
+  "vo": "स्टूडेंट अकाउंट कैसे बनाएँ वाली रील देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Student Account kaise banayein wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "How-to guide · 6 steps",
+  "hook": "CTF Portal me<br><em>enroll</em> kaise? 🚩",
+  "shots": [
+   [
+    "ctfhome",
+    0
+   ],
+   [
+    "room",
+    0
+   ]
+  ],
+  "chip": "🚩 43 rooms · ✅ Task 1 FREE"
+ },
+ "caption": "CTF Portal me enroll kaise karein? 🚩 6 aasaan steps:\n\n1️⃣ techguardians.in → Menu → CTF Portal\n2️⃣ Student account se sign in (account nahi hai? pehle banao)\n3️⃣ Har room ka task 1 FREE — shuru karo\n4️⃣ Saare rooms ke liye monthly ya annual plan chuno\n5️⃣ Details bharo, coupon code ho to apply karo\n6️⃣ UPI se pay → transaction ID submit → verify hote hi unlock ✅\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#ctf",
+  "#capturetheflag",
+  "#cybersecurity",
+  "#howto",
+  "#learncybersecurity",
+  "#cybersecurityindia",
+  "#hinglish"
+ ]
+}

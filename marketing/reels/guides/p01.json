@@ -1,0 +1,172 @@
+{
+ "name": "P01-Path-Core-Foundations",
+ "kicker": "Learning path",
+ "accent": "#ff9933",
+ "mood": "bright",
+ "shots": "brand",
+ "speed": 1.05,
+ "intro": {
+  "pill": "Learning Path · Core Foundations",
+  "hook": "Cyber security <em>shuru</em> kahan se? 🧭",
+  "chips": [
+   "📘 6 handbooks",
+   "🚩 6 rooms",
+   "🧪 62 tasks"
+  ],
+  "vo": "साइबर सिक्योरिटी शुरू कहाँ से करें? कोर फ़ाउंडेशन्स पाथ से।",
+  "sub": "Cyber security shuru kahan se karein? Core Foundations path se."
+ },
+ "steps": [
+  {
+   "label": "6 Handbooks",
+   "icon": "📚",
+   "title": "<em>6</em> handbooks",
+   "tip": "📘 Zero → Mastery",
+   "visual": "covers",
+   "coverSet": [
+    "cover-01",
+    "cover-02",
+    "cover-03",
+    "cover-04",
+    "cover-05",
+    "cover-06"
+   ],
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "vo": "इस पाथ में छह हैंडबुक्स हैं। साइबर सिक्योरिटी फ़ंडामेंटल्स से, ज़ीरो ट्रस्ट तक।",
+   "sub": "Is path me 6 handbooks hain — Cybersecurity Fundamentals se Zero Trust tak."
+  },
+  {
+   "label": "6 CTF Rooms",
+   "icon": "🚩",
+   "title": "<em>62</em> hands-on tasks",
+   "tip": "🚩 Har room ka task 1 FREE",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "01",
+     "Cybersecurity Fundamentals"
+    ],
+    [
+     "02",
+     "The CIA Triad"
+    ],
+    [
+     "03",
+     "Threats, Vulnerabilities & Risks"
+    ],
+    [
+     "04",
+     "Security Architecture"
+    ],
+    [
+     "05",
+     "Defense in Depth"
+    ],
+    [
+     "06",
+     "Zero Trust"
+    ]
+   ],
+   "vo": "और छह सीटीएफ़ रूम्स, जिनमें 62 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "sub": "Aur 6 CTF rooms, jinme 62 hands-on tasks hain. Har room ka pehla task FREE hai."
+  },
+  {
+   "label": "Is path ke baad",
+   "icon": "🎯",
+   "title": "Aap kya <em>kar paayenge</em>",
+   "tip": "🎓 Core Foundations",
+   "visual": "list",
+   "shots": [
+    {
+     "img": "pdfstore",
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   ],
+   "items": [
+    [
+     "✓",
+     "CIA, risk & Zero Trust"
+    ],
+    [
+     "✓",
+     "Defender ka mindset"
+    ],
+    [
+     "✓",
+     "Har path ka base"
+    ]
+   ],
+   "vo": "इस पाथ के बाद, आपके पास हर एडवांस्ड टॉपिक का मज़बूत बेस होगा।",
+   "sub": "Is path ke baad aapke paas har advanced topic ka mazboot base hoga.",
+   "confetti": 0.6
+  }
+ ],
+ "cta": {
+  "headline": "Ye path <em>shuru</em> kijiye 👇",
+  "button": "🚩 Room 1 se start",
+  "chips": [
+   "📘 6 handbooks",
+   "🚩 6 rooms"
+  ],
+  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
+ },
+ "ref": {
+  "kind": "seen",
+  "name": "01-Cybersecurity-Fundamentals",
+  "rom": "Room 1 · Cybersecurity Fundamentals",
+  "cover": "cybersecurity-fundamentals",
+  "vo": "इस पाथ की पहली रील, साइबर सिक्योरिटी फ़ंडामेंटल्स, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Is path ki pehli reel — Cybersecurity Fundamentals — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+ },
+ "cover": {
+  "pill": "Learning Path · 6 rooms",
+  "hook": "Cyber security <em>shuru</em> kahan se? 🧭",
+  "covers": [
+   "cover-01",
+   "cover-02",
+   "cover-03",
+   "cover-04",
+   "cover-05",
+   "cover-06"
+  ],
+  "chip": "📘 6 handbooks · 🚩 62 tasks"
+ },
+ "caption": "Cyber security shuru kahan se? 🧭\n\nCore Foundations path — The concepts every defender needs first.\n\n📘 6 handbooks: Cybersecurity Fundamentals, The CIA Triad, Threats, Vulnerabilities & Risks, Security Architecture, Defense in Depth, Zero Trust\n🚩 6 CTF rooms · 62 hands-on tasks · har room ka task 1 FREE\n🎯 CIA, risk & Zero Trust · Defender ka mindset · Har path ka base\n\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#learningpath",
+  "#ctf",
+  "#cybersecuritycareer",
+  "#cybersecurityindia",
+  "#hinglish",
+  "#core"
+ ]
+}
