@@ -7,23 +7,26 @@ const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 const [WORK, OUT, arg, coverFile] = process.argv.slice(2);
 const FPS = 30;
-const TEMPLATE = path.join(__dirname, '..', 'template', 'topic.html');
+
 (async () => {
   const data = JSON.parse(fs.readFileSync(path.join(WORK, 'data.json'), 'utf8'));
   const w = path.resolve(WORK), url = (f) => 'file://' + path.join(w, f);
-  data.assets = { cover: url('cover.png'), feature: url('feature.png'), room: url('room.png'), task: url('task.png'), logo: url('logo.png'),
+  if (data.guide) {   // guide reel: screenshots from tools/capture-<x>.js in work/<guide.shots>/
+    const sd = path.resolve(WORK, '..', data.guide.shots), shots = JSON.parse(fs.readFileSync(path.join(sd, 'shots.json'), 'utf8'));
+    data.assets = { logo: url('logo.png'), shots, img: Object.fromEntries(Object.keys(shots).map((k) => [k, 'file://' + path.join(sd, k + '.png')])) };
+  } else data.assets = { cover: url('cover.png'), feature: url('feature.png'), room: url('room.png'), task: url('task.png'), logo: url('logo.png'),
     shots: JSON.parse(fs.readFileSync(path.join(WORK, 'shots.json'), 'utf8')) };
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1080, height: 1920 } });
   await p.addInitScript((d) => { window.DATA = d; }, data);
-  await p.goto('file://' + TEMPLATE);
+  await p.goto('file://' + path.join(__dirname, '..', 'template', data.guide ? 'guide.html' : 'topic.html'));
   await p.evaluate(() => window.ready());
   await p.evaluate(() => document.fonts.ready);
   fs.mkdirSync(OUT, { recursive: true });
   if (arg === 'cover') {
     await p.evaluate(() => window.renderCover()); await p.waitForTimeout(300);
     await p.screenshot({ path: coverFile, type: 'jpeg', quality: 92 });
-  } else if (arg && !arg.includes(',')) {
+  } else if (arg && arg.includes(';')) {
     for (const t of arg.split(';').map(Number)) {
       await p.evaluate((t) => window.render(t), t);
       await p.screenshot({ path: path.join(OUT, `t${String(t).replace('.', '_')}.jpg`), type: 'jpeg', quality: 85 });

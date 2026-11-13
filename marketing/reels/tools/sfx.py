@@ -31,8 +31,13 @@ def sparkle():
 put(0.02, impact())
 for name, (a, b) in d['scenes'].items():
     if a > 0: put(a - .3, whoosh(), (-.3, .3)[int(a) % 2])
-for i, c in enumerate(d['marks']['cards']): put(c, pop(700 + 140 * i))
-put(d['marks']['free'], sparkle()); put(d['marks']['url'], pop(1000)); put(d['marks']['enroll'], sparkle(), .2)
+m = d['marks']
+for i, c in enumerate(m.get('cards', [])): put(c, pop(700 + 140 * i))
+for c in m.get('taps', []): put(c, pop(1150), .15)                     # guide reels: every tap
+for k in ('free', 'enroll', 'account'):
+    if k in m: put(m[k], sparkle(), .2 if k == 'enroll' else 0)
+for c in m.get('sparkles', []): put(c, sparkle())
+if 'url' in m: put(m['url'], pop(1000))
 x = np.stack([L, R], 1)[: int(d['total'] * SR)]
 sf.write(sys.argv[2], (x / max(1, np.abs(x).max() / .9)).astype(np.float32), SR, subtype='PCM_16')
 print('sfx ok')

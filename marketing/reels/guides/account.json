@@ -1,0 +1,426 @@
+{
+ "name": "B6-How-to-Create-Student-Account",
+ "title": "Student Account kaise banayein",
+ "accent": "#ff9933",
+ "mood": "bright",
+ "shots": "account",
+ "speed": 1.08,
+ "intro": {
+  "hook": "Student Account<br>kaise <em>banayein?</em> 🎓",
+  "chips": [
+   "⏱️ 2 minute",
+   "✅ FREE",
+   "✉️ Email OTP login"
+  ],
+  "vo": "स्टूडेंट अकाउंट कैसे बनाएँ? सिर्फ़ दो मिनट में, स्टेप बाय स्टेप।",
+  "sub": "Student account kaise banayein? Sirf 2 minute me, step by step."
+ },
+ "steps": [
+  {
+   "title": "Website kholo → <em>My Account</em>",
+   "tip": "🌐 techguardians.in",
+   "vo": "टेक गार्डियन्स डॉट इन खोलिए, और मेन्यू में माय अकाउंट पर टैप कीजिए।",
+   "sub": "techguardians.in kholiye, aur menu me My Account par tap kijiye.",
+   "shots": [
+    {
+     "img": "menu",
+     "scroll": [
+      [
+       0,
+       380
+      ]
+     ],
+     "ring": [
+      {
+       "k": "acct",
+       "p0": 0.55,
+       "p1": 1
+      }
+     ],
+     "tap": [
+      {
+       "k": "acct",
+       "p": 0.85
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "<em>Request account</em> par tap",
+   "tip": "🆕 Naya account",
+   "vo": "अब, रिक्वेस्ट अकाउंट पर टैप कीजिए।",
+   "sub": "Ab Request account par tap kijiye.",
+   "shots": [
+    {
+     "img": "login",
+     "scroll": [
+      [
+       0,
+       160
+      ]
+     ],
+     "ring": [
+      {
+       "k": "tabReg",
+       "p0": 0.2,
+       "p1": 1
+      }
+     ],
+     "tap": [
+      {
+       "k": "tabReg",
+       "p": 0.8
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Apni <em>details</em> bharo ✍️",
+   "tip": "📝 User ID + password likh kar rakhein",
+   "vo": "नाम, ईमेल, मोबाइल, यूज़र आईडी और पासवर्ड भरिए, इन्हें लिख कर रखिए, और सेंड रिक्वेस्ट दबाइए।",
+   "sub": "Naam, email, mobile, user ID aur password bhariye, inhe likh kar rakhiye, aur Send request dabaiye.",
+   "shots": [
+    {
+     "img": "register",
+     "to": 0.86,
+     "scroll": [
+      [
+       0,
+       370
+      ],
+      [
+       0.3,
+       370
+      ],
+      [
+       0.42,
+       620
+      ],
+      [
+       0.86,
+       640
+      ]
+     ],
+     "type": [
+      {
+       "k": "name",
+       "text": "Priya Sharma",
+       "p0": 0.02,
+       "p1": 0.1
+      },
+      {
+       "k": "email",
+       "text": "priya.s@example.com",
+       "p0": 0.1,
+       "p1": 0.19
+      },
+      {
+       "k": "phone",
+       "text": "9876500011",
+       "p0": 0.19,
+       "p1": 0.25
+      },
+      {
+       "k": "user",
+       "text": "priya.sharma",
+       "p0": 0.25,
+       "p1": 0.33
+      },
+      {
+       "k": "pass",
+       "text": "Learn2Hack9",
+       "pw": true,
+       "p0": 0.33,
+       "p1": 0.4
+      },
+      {
+       "k": "pass2",
+       "text": "Learn2Hack9",
+       "pw": true,
+       "p0": 0.4,
+       "p1": 0.46
+      }
+     ],
+     "ring": [
+      {
+       "k": "user",
+       "p0": 0.47,
+       "p1": 0.62
+      },
+      {
+       "k": "pass",
+       "p0": 0.5,
+       "p1": 0.62
+      }
+     ]
+    },
+    {
+     "img": "register-filled",
+     "from": 0.86,
+     "scroll": [
+      [
+       0,
+       640
+      ],
+      [
+       1,
+       700
+      ]
+     ],
+     "tap": [
+      {
+       "k": "btn",
+       "p": 0.96
+      }
+     ],
+     "ring": [
+      {
+       "k": "agree",
+       "p0": 0.86,
+       "p1": 0.94
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Request <em>sent!</em> ✅",
+   "tip": "⏳ Approval ke baad account active",
+   "vo": "रिक्वेस्ट सेंड! अप्रूवल के बाद, अकाउंट एक्टिव हो जाएगा।",
+   "sub": "Request send! Approval ke baad account active ho jayega.",
+   "confetti": 0.15,
+   "shots": [
+    {
+     "img": "done",
+     "scroll": [
+      [
+       0,
+       160
+      ]
+     ],
+     "ring": [
+      {
+       "k": "done",
+       "p0": 0.15,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Sign in: <em>Option 1</em> 🔑",
+   "tip": "🔑 User ID + password",
+   "vo": "साइन इन का पहला तरीका, यूज़र आईडी और पासवर्ड।",
+   "sub": "Sign in ka pehla tarika — user ID aur password.",
+   "shots": [
+    {
+     "img": "login",
+     "to": 0.75,
+     "scroll": [
+      [
+       0,
+       160
+      ]
+     ],
+     "type": [
+      {
+       "k": "user",
+       "text": "priya.sharma",
+       "p0": 0.35,
+       "p1": 0.55
+      },
+      {
+       "k": "pass",
+       "text": "Learn2Hack9",
+       "pw": true,
+       "p0": 0.55,
+       "p1": 0.72
+      }
+     ]
+    },
+    {
+     "img": "login-filled",
+     "from": 0.75,
+     "scroll": [
+      [
+       0,
+       160
+      ]
+     ],
+     "tap": [
+      {
+       "k": "btn",
+       "p": 0.9
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Option 2: <em>Email OTP</em> ✉️",
+   "tip": "✉️ Password yaad rakhne ki zaroorat nahi",
+   "vo": "दूसरा तरीका, ईमेल ओटीपी। ईमेल कोड वाला ऑप्शन चुनिए, ईमेल डालिए, और सेंड कोड दबाइए।",
+   "sub": "Doosra tarika — Email OTP. Email code wala option chuniye, email daliye, aur Send code dabaiye.",
+   "shots": [
+    {
+     "img": "login",
+     "to": 0.38,
+     "scroll": [
+      [
+       0,
+       160
+      ]
+     ],
+     "ring": [
+      {
+       "k": "otp",
+       "p0": 0.1,
+       "p1": 0.38
+      }
+     ],
+     "tap": [
+      {
+       "k": "otp",
+       "p": 0.32
+      }
+     ]
+    },
+    {
+     "img": "otp",
+     "from": 0.38,
+     "scroll": [
+      [
+       0,
+       160
+      ]
+     ],
+     "type": [
+      {
+       "k": "email",
+       "text": "priya.s@example.com",
+       "p0": 0.55,
+       "p1": 0.82
+      }
+     ],
+     "tap": [
+      {
+       "k": "btn",
+       "p": 0.94
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "<em>6-digit code</em> dalo 🔢",
+   "tip": "🔒 Code kisi ke saath share na karein",
+   "vo": "ईमेल पर आया छह अंकों का कोड डालिए, और साइन इन कीजिए। कोड किसी से शेयर मत कीजिए।",
+   "sub": "Email par aaya 6 ankon ka code daliye, aur sign in kijiye. Code kisi se share mat kijiye.",
+   "banner": {
+    "p0": 0.0,
+    "p1": 0.4,
+    "text": "Your Tech Guardians sign-in code: <b>482913</b>"
+   },
+   "shots": [
+    {
+     "img": "otp-code",
+     "scroll": [
+      [
+       0,
+       160
+      ]
+     ],
+     "type": [
+      {
+       "k": "code",
+       "text": "4 8 2 9 1 3",
+       "p0": 0.3,
+       "p1": 0.5,
+       "center": true,
+       "blank": true
+      }
+     ],
+     "ring": [
+      {
+       "k": "code",
+       "p0": 0.3,
+       "p1": 0.62
+      }
+     ],
+     "tap": [
+      {
+       "k": "btn",
+       "p": 0.62
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Account <em>ready!</em> 🎉",
+   "tip": "🚩 Ab CTF Portal kholo",
+   "vo": "बस! अकाउंट तैयार है। अब सीटीएफ़ पोर्टल पर, पहला टास्क फ़्री में शुरू कीजिए।",
+   "sub": "Bas! Account taiyaar hai. Ab CTF Portal par pehla task FREE me shuru kijiye.",
+   "confetti": 0.05,
+   "shots": [
+    {
+     "img": "dash",
+     "to": 0.5,
+     "scroll": [
+      [
+       0,
+       0
+      ]
+     ],
+     "ring": [
+      {
+       "k": "who",
+       "p0": 0.05,
+       "p1": 0.45
+      }
+     ]
+    },
+    {
+     "img": "ctfhome",
+     "from": 0.5,
+     "scroll": [
+      [
+       0.5,
+       0
+      ],
+      [
+       1,
+       260
+      ]
+     ],
+     "ring": [
+      {
+       "k": "free",
+       "p0": 0.75,
+       "p1": 1
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "cta": {
+  "vo": "अभी अपना अकाउंट बनाइए, टेक गार्डियन्स डॉट इन पर!",
+  "sub": "Abhi apna account banaiye — techguardians.in par!"
+ },
+ "caption": "Tech Guardians par Student Account kaise banayein? 🎓 Sirf 2 minute — step by step.\n\n1️⃣ techguardians.in → Menu → My Account\n2️⃣ Request account\n3️⃣ Naam, email, mobile, user ID, password bharo → Send request\n4️⃣ Approval ke baad account active ✅\n5️⃣ Sign in: user ID + password 🔑\n6️⃣ Ya Email OTP se: email daalo → Send code → 6-digit code → Verify & sign in ✉️\n🔒 OTP kisi ke saath share na karein.\n\n🚩 Phir CTF Portal par pehla task FREE!\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
+ "tags": [
+  "#techguardians",
+  "#cybersecurity",
+  "#ctf",
+  "#studentaccount",
+  "#howto",
+  "#otp",
+  "#learncybersecurity",
+  "#cybersecurityindia",
+  "#hinglish"
+ ]
+}

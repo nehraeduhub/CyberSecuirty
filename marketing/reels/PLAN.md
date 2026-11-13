@@ -71,6 +71,7 @@ from the cloud chat. Deliverables are plain MP4 + SRT so they can be opened and 
 | B3 | PDF Handbook Series — 43 books, look inside before you buy, ₹199 | 45 s | to do |
 | B4 | Free cyber tools / Cyber Safety Portal (150+ tools, 1930 helpline) | 45 s | to do |
 | B5 | Training programs + coupon offer | 45 s | to do |
+| B6 | How to create a student account (request → approval → sign in with password **or email OTP**) | 60 s | **done** (`guides/account.json`, `tools/build-guide.sh`) |
 
 ### B. Topic reels (43) — one per topic, handbook + CTF room together
 
@@ -196,3 +197,16 @@ To add a topic: write its `hook`, `points`, `vo` (Devanagari), `sub` (Roman) and
 3. Prices on screen — [yes: ₹199 handbook, ₹99/₹999 CTF].
 4. Watermark/handle — [`techguardians.in` on every reel]; Instagram handle? (unknown)
 5. Pilot topics — [Firewall, Wireshark, Incident Response].
+
+## 13. Guide reels (step-by-step how-to)
+
+`guides/<x>.json` describes the steps: title, tip, voice (Devanagari), caption (Roman), and per step the phone
+screens with scroll / ring / tap / typing, timed as fractions of that step's voice clip. Screens come from
+`tools/capture-<shots>.js` (local site copy; prices hidden automatically). Build:
+
+```
+SITE_DATA=<site>/api/data KOKORO_DIR=... tools/build-guide.sh guides/account.json
+```
+The account capture registers demo student `priya.sharma` (Priya Sharma, priya.s@example.com) in the local copy,
+approves it there and shows her dashboard; the email-code request is answered locally (no mail is sent).
+Remove that demo user from the local `users.json` before running it again.

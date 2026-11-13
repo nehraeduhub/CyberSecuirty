@@ -1,0 +1,230 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Guide reel</title>
+<!-- Step-by-step guide reel, 1080x1920. tools/render.js injects window.DATA (work/guide-x/data.json + assets)
+     and calls window.render(t) per frame or window.renderCover() for the thumbnail. Steps come from guides/*.json:
+     each shot has scroll keys, rings, taps and typing, timed as fractions (p) of that step's voice clip. -->
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:#06152b;font-family:'Inter','Inter Display',system-ui,'Noto Color Emoji',sans-serif;color:#fff}
+  :root{--ac:#ff9933}
+  em{font-style:normal;color:var(--ac)}
+  #bg{position:absolute;inset:0;background:radial-gradient(1100px 900px at 85% 8%,color-mix(in srgb,var(--ac) 26%,#123a73) 0%,transparent 60%),radial-gradient(900px 900px at 0% 100%,#0e2f5c 0%,transparent 60%),linear-gradient(180deg,#071a33,#0a2348 55%,#061428)}
+  #grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:60px 60px}
+  .tri{position:absolute;left:0;right:0;top:0;height:14px;display:flex;z-index:9}
+  .tri i{flex:1}.tri i:nth-child(1){background:#ff9933}.tri i:nth-child(2){background:#fff}.tri i:nth-child(3){background:#138808}
+  #brand{position:absolute;top:96px;left:70px;display:flex;align-items:center;gap:20px;z-index:8}
+  #brand img{width:84px;height:84px;border-radius:20px;background:#fff;padding:6px;object-fit:contain}
+  #brand b{display:block;font-size:40px;font-weight:800;letter-spacing:-.5px}
+  #brand small{display:block;font-size:22px;color:var(--ac);font-weight:800;letter-spacing:4px;text-transform:uppercase;margin-top:3px}
+  #wm{position:absolute;top:118px;right:70px;font:800 28px Inter,sans-serif;padding:10px 20px;border-radius:999px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);z-index:8}
+  #bar{position:absolute;left:70px;right:70px;top:216px;height:6px;border-radius:6px;background:rgba(255,255,255,.1);z-index:8}
+  #bar i{display:block;height:100%;border-radius:6px;background:var(--ac)}
+  .scene{position:absolute;inset:0}
+  .pill{display:inline-flex;align-items:center;gap:12px;background:var(--ac);color:#140c02;font-weight:900;font-size:30px;letter-spacing:3px;padding:12px 26px;border-radius:999px;text-transform:uppercase;position:relative;overflow:hidden}
+  .h1{font-size:84px;line-height:1.05;font-weight:900;letter-spacing:-1.8px}
+  .head{position:absolute;left:70px;right:70px;top:268px}
+  .center{position:absolute;left:70px;right:70px;text-align:center}
+  .chip{display:inline-block;margin:10px 8px;padding:16px 28px;border-radius:999px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);font-size:36px;font-weight:800}
+  .phone{position:absolute;width:520px;height:900px;border-radius:66px;background:#0b0f17;padding:16px;box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 3px #2a3550,inset 0 0 0 2px #1b2233}
+  .screen{position:relative;width:488px;height:868px;border-radius:52px;overflow:hidden;background:#f5f7fb}
+  .screen>img{position:absolute;left:0;top:56px;width:488px}
+  .status{position:absolute;left:0;right:0;top:0;height:56px;background:#fff;z-index:6;display:flex;align-items:center;justify-content:space-between;padding:6px 42px 0;font:700 20px Inter,sans-serif;color:#0b0f17}
+  .notch{position:absolute;left:50%;top:24px;transform:translateX(-50%);width:130px;height:36px;border-radius:22px;background:#0b0f17;z-index:8}
+  .ring{position:absolute;border:6px solid var(--ac);border-radius:16px;box-shadow:0 0 40px color-mix(in srgb,var(--ac) 80%,transparent);z-index:4}
+  .tap{position:absolute;width:86px;height:86px;margin:-43px 0 0 -43px;border-radius:50%;background:rgba(255,153,51,.55);border:5px solid #fff;z-index:7}
+  .wave{position:absolute;width:86px;height:86px;margin:-43px 0 0 -43px;border-radius:50%;border:6px solid var(--ac);z-index:7}
+  .typed{position:absolute;z-index:3;display:flex;align-items:center;overflow:hidden;white-space:nowrap;color:#0b1f4a;font-family:Inter,sans-serif;border-radius:12px}
+  .caret{display:inline-block;width:3px;height:1.1em;background:#1d4ed8;margin-left:2px}
+  .banner{position:absolute;left:14px;right:14px;z-index:7;background:rgba(255,255,255,.97);color:#0b1f4a;border-radius:26px;padding:18px 22px;box-shadow:0 18px 50px rgba(0,0,0,.35);font:500 21px/1.3 Inter,sans-serif}
+  .banner small{display:flex;justify-content:space-between;font:700 17px Inter,sans-serif;color:#5b6b8c;margin-bottom:6px}
+  .badge{width:320px;height:320px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,color-mix(in srgb,var(--ac) 40%,transparent),transparent 70%);text-align:center}
+  .badge b{display:block;font-size:170px;line-height:1;font-weight:900;color:var(--ac)}
+  .badge span{display:block;font-size:30px;font-weight:800;color:#cfe0ff;letter-spacing:3px}
+  .tip{width:340px;padding:26px 28px;border-radius:28px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.16);font-size:34px;font-weight:800;line-height:1.25;position:relative;overflow:hidden}
+  .dots{display:flex;gap:10px;flex-wrap:wrap;width:340px}
+  .dots i{width:30px;height:12px;border-radius:6px;background:rgba(255,255,255,.18)}
+  .dots i.done{background:#2fbf2f}.dots i.on{background:var(--ac);width:60px}
+  .url{display:inline-block;padding:26px 50px;border-radius:28px;background:#fff;color:#0a2348;font-size:68px;font-weight:900;letter-spacing:-1px;box-shadow:0 30px 90px rgba(0,0,0,.45)}
+  .enroll{display:inline-flex;align-items:center;gap:18px;padding:32px 60px;border-radius:999px;background:linear-gradient(90deg,#ff9933,#ffcc4d);color:#140c02;font-size:60px;font-weight:900;position:relative;overflow:hidden}
+  .tapc{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:8px solid #fff;z-index:12}
+  .glow{position:absolute;width:1000px;height:1000px;left:40px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--ac) 30%,transparent),transparent 65%)}
+  .sh{position:absolute;top:-20%;bottom:-20%;width:34%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);pointer-events:none;z-index:3}
+  #cap{position:absolute;left:60px;right:60px;top:1400px;text-align:center;z-index:9}
+  #cap>span{display:inline-block;max-width:960px;padding:16px 28px;border-radius:22px;background:rgba(3,10,22,.82);border:2px solid rgba(255,255,255,.12);font-size:48px;font-weight:800;line-height:1.18;letter-spacing:-.5px}
+  #cap i{font-style:normal;color:var(--ac)}
+  canvas{position:absolute}
+</style></head>
+<body>
+<div id="bg"></div><div id="grid"></div>
+<div class="tri"><i></i><i></i><i></i></div>
+<div id="brand"><img id="logo" alt=""><span><b>Tech Guardians</b><small id="sublbl">How-to guide</small></span></div>
+<div id="wm">techguardians.in</div>
+<div id="bar"><i></i></div>
+<canvas id="bgfx" width="1080" height="1920" style="left:0;top:0"></canvas>
+<div id="stage"></div>
+<canvas id="fx" width="1080" height="1920" style="left:0;top:0;z-index:10"></canvas>
+<div id="cap"></div>
+<script>
+const D = window.DATA, G = D.guide, A = D.assets, SC = D.scenes, M = D.marks;
+document.documentElement.style.setProperty('--ac', G.accent);
+document.getElementById('logo').src = A.logo;
+const ease = (x) => x < 0 ? 0 : x > 1 ? 1 : x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x) => { x = Math.max(0, Math.min(1, x)); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const keys = (k, t) => { if (t <= k[0][0]) return k[0][1]; for (let i = 1; i < k.length; i++) if (t <= k[i][0]) { const [a, va] = k[i - 1], [b, vb] = k[i]; return va + (vb - va) * ease((t - a) / (b - a)); } return k[k.length - 1][1]; };
+const fadeUp = (lt, at, d = .55, y = 50) => { const p = ease(clamp((lt - at) / d)); return `opacity:${p};transform:translateY(${(1 - p) * y}px)`; };
+const pop = (lt, at, d = .5) => { const p = clamp((lt - at) / d); return `opacity:${clamp(p * 2)};transform:scale(${.6 + .4 * back(p)})`; };
+const shine = (lt, at, d = .9) => { const p = (lt - at) / d; return p > 0 && p < 1 ? `<i class="sh" style="left:${-40 + p * 150}%"></i>` : ''; };
+const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const clip = (s) => D.clips.find((c) => c.scene === s);
+const imgs = {}; for (const [k, v] of Object.entries(A.img)) { const i = new Image(); i.src = v; imgs[k] = i; } imgs.logo = new Image(); imgs.logo.src = A.logo;
+const S = 488 / 390, TOP = 56;
+const NS = G.steps.length;
+
+// one phone screen: screenshot scrolled, typed text, rings, taps
+function screen(sh, p, pd) {             // p = progress through the voice clip (0..1, may run past 1); pd = seconds per unit p
+  const meta = A.shots[sh.img], R = (k) => meta.rects[k];
+  const y = keys(sh.scroll, p);
+  let h = `<img src="${A.img[sh.img]}" style="transform:translateY(${-y * S}px)">`;
+  for (const ty of sh.type || []) {
+    const r = R(ty.k); if (!r) continue;
+    const q = clamp((p - ty.p0) / (ty.p1 - ty.p0)); if (q <= 0 && !ty.blank) continue;   // blank: hide the value the screenshot already has
+    let txt = ty.text.slice(0, Math.round(q * ty.text.length)); if (ty.pw) txt = '•'.repeat(txt.length);
+    const caret = q < 1 || (p - ty.p1) * pd < .5 ? `<span class="caret" style="opacity:${Math.floor(p * pd * 3) % 2 ? 1 : .2}"></span>` : '';
+    h += `<div class="typed" style="left:${(r.x + 2) * S}px;top:${(r.y + 2 - y) * S + TOP}px;width:${(r.w - 4) * S}px;height:${(r.h - 4) * S}px;padding-left:${12 * S}px;background:#fff;font-size:${(ty.center ? 24 : 15) * S}px;${ty.center ? 'justify-content:center;font-family:JetBrains Mono,monospace;font-weight:700;' : ''}">${txt}${caret}</div>`;
+  }
+  for (const o of sh.ring || []) {
+    const r = R(o.k); if (!r) continue;
+    const on = clamp((p - o.p0) * pd / .3) * clamp((o.p1 - p) * pd / .3); if (on <= 0) continue;
+    const pulse = 1 + .03 * Math.sin((p - o.p0) * pd * 7);
+    h += `<div class="ring" style="opacity:${on};left:${(r.x - 7) * S}px;top:${(r.y - 7 - y) * S + TOP}px;width:${(r.w + 14) * S}px;height:${(r.h + 14) * S}px;transform:scale(${pulse})"></div>`;
+  }
+  for (const o of sh.tap || []) {
+    const r = R(o.k); if (!r) continue;
+    const d = (p - o.p) * pd; if (d < -.5 || d > 1.1) continue;
+    const cx = (r.x + r.w / 2) * S, cy = (r.y + r.h / 2 - y) * S + TOP;
+    const press = d < 0 ? 1 + (-d) * .6 : d < .15 ? 1 - d * 2 : .7 + Math.min(.3, d - .15);
+    const op = d < -.3 ? (d + .5) / .2 : d > .8 ? (1.1 - d) / .3 : 1;
+    h += `<div class="tap" style="left:${cx}px;top:${cy}px;opacity:${op};transform:scale(${press})"></div>`;
+    if (d > 0) h += `<div class="wave" style="left:${cx}px;top:${cy}px;opacity:${clamp(1 - d)};transform:scale(${1 + d * 2.4})"></div>`;
+  }
+  return h;
+}
+
+function intro(t, lt) {
+  return `<div class="glow" style="top:260px;transform:scale(${1 + .05 * Math.sin(lt * 3)})"></div>
+    <div class="center" style="top:330px;${pop(lt, 0, .7)}"><img src="${A.logo}" style="width:240px;height:240px;border-radius:50px;background:#fff;padding:14px;object-fit:contain;box-shadow:0 30px 90px rgba(255,153,51,.35);transform:rotate(${Math.sin(lt * 2) * 3}deg)"></div>
+    <div class="center" style="top:640px;${fadeUp(lt, .3)}"><span class="pill">How-to guide · CTF Portal${shine(lt, 1.2, .8)}</span></div>
+    <div class="center" style="top:760px;${fadeUp(lt, .5)}"><div class="h1" style="font-size:108px;${lt > .5 && lt < 1.3 && Math.floor(lt * 30) % 4 ? `text-shadow:${(1.3 - lt) * 14}px 0 0 rgba(255,0,80,.8),${-(1.3 - lt) * 14}px 0 0 rgba(0,220,255,.8)` : ''}">${G.intro.hook}</div></div>
+    <div class="center" style="top:1080px">${G.intro.chips.map((c, i) => `<span class="chip" style="display:inline-block;${pop(lt, 1.4 + i * .3)}">${c}</span>`).join('')}</div>`;
+}
+function step(i) {
+  return (t, lt, d) => {
+    const st = G.steps[i], c = clip(`s${i + 1}`), pd = c.dur, p = (t - c.at) / pd;
+    const sh = [...st.shots].reverse().find((s) => p >= (s.from || 0)) || st.shots[0];
+    let scr = screen(sh, p, pd);
+    if (st.banner) {                                                            // email notification on the phone
+      const b = st.banner, q = ease(clamp((p - b.p0) * pd / .45)) * (1 - ease(clamp((p - b.p1) * pd / .45)));
+      if (q > 0) scr += `<div class="banner" style="top:${-140 + q * 210}px"><small><span>✉️ Email · Tech Guardians</span><span>now</span></small>${b.text}</div>`;
+    }
+    const phoneIn = ease(clamp(lt / .6));
+    return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Step ${i + 1} of ${NS}${shine(lt, .6, .8)}</span></div>
+        <div class="h1" style="margin-top:22px;white-space:nowrap;font-size:${Math.min(70, Math.floor(1640 / st.title.replace(/<[^>]+>/g, '').length))}px;${fadeUp(lt, .12)}">${st.title}</div></div>
+      <div class="phone" style="left:60px;top:${470 + (1 - phoneIn) * 900 + Math.sin(lt * 1.6) * 5}px;transform:rotate(${(1 - phoneIn) * 8 - 1.5}deg)"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div>${scr}</div></div>
+      <div style="position:absolute;left:640px;top:520px">
+        <div class="badge" style="${pop(lt, .15, .6)};margin-left:-10px"><div><b>${i + 1}</b><span>OF ${NS}</span></div></div>
+        <div class="dots" style="margin:10px 0 34px;${fadeUp(lt, .3)}">${G.steps.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'on' : ''}"></i>`).join('')}</div>
+        <div class="tip" style="${fadeUp(lt, .5, .5, 40)}">${st.tip}${shine(lt, 1.1, .9)}</div>
+      </div>`;
+  };
+}
+function cta(t, lt) {
+  const en = 1.6, d = lt - en - .1, pulse = lt > en ? 1 + .05 * Math.sin((lt - en) * 7) : 1;
+  const tap = d > -.4 && d < 1 ? `<div class="tapc" style="left:540px;top:1015px;opacity:${clamp(1 - d)};transform:scale(${d < 0 ? 1.4 + d : 1 + d * 2})"></div>` : '';
+  const typed = 'techguardians.in'.slice(0, Math.floor(clamp((lt - .5) / .7) * 16));
+  return `<div class="glow" style="top:300px;transform:scale(${1 + .06 * Math.sin(lt * 3)})"></div>
+    <div class="center" style="top:330px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:90px">Abhi apna account <em>banaiye</em> 👇</div></div>
+    <div class="center" style="top:660px;${pop(lt, .3, .5)}"><div class="url">${typed}&nbsp;</div></div>
+    <div class="center" style="top:940px;${pop(lt, en - .5, .6)}"><span class="enroll" style="transform:scale(${pulse});box-shadow:0 0 ${30 + 40 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)">👤 Create Account${shine(lt, en + .3, .8)}</span></div>${tap}
+    <div class="center" style="top:1150px;${fadeUp(lt, en + .4)}"><span class="chip">🔑 Password</span><span class="chip">✉️ Email OTP</span></div>`;
+}
+function end(t, lt) {
+  return `<div class="glow" style="top:300px"></div>
+    <div class="center" style="top:400px;${pop(lt, 0, .7)}"><div style="display:inline-block;position:relative;overflow:hidden;border-radius:60px;transform:rotate(${Math.sin(lt * 2) * 3}deg)"><img src="${A.logo}" style="display:block;width:300px;height:300px;background:#fff;padding:18px;object-fit:contain">${shine(lt, .8, .9)}</div></div>
+    <div class="center" style="top:770px;${fadeUp(lt, .4)}"><div class="h1" style="font-size:100px">Tech Guardians</div></div>
+    <div class="center" style="top:900px;${fadeUp(lt, .7)}"><div style="font-size:44px;font-weight:700;color:#cfe0ff">Keep Learning · Keep Sharing 🇮🇳</div></div>
+    <div class="center" style="top:1010px;${fadeUp(lt, 1)}"><div style="display:inline-flex;width:420px;height:16px;border-radius:9px;overflow:hidden"><i style="flex:1;background:#ff9933"></i><i style="flex:1;background:#fff"></i><i style="flex:1;background:#138808"></i></div></div>
+    <div class="center" style="top:1100px;${fadeUp(lt, 1.2)}"><span class="chip" style="font-size:44px;background:var(--ac);color:#140c02">techguardians.in</span></div>`;
+}
+const FN = { intro, cta, end }; G.steps.forEach((_, i) => FN[`s${i + 1}`] = step(i));
+const ORDER = Object.keys(SC);
+const hl = (s) => s.replace(/(techguardians\.in|\b(?:[A-Z][A-Za-z]*[A-Z0-9][A-Za-z0-9-]*|[A-Z]{2,}|\d+|My|Account|Request|Send|Sign|Verify|Email|FREE|Portal)\b)/g, '<i>$1</i>');
+
+const bg = document.getElementById('bgfx').getContext('2d'), fx = document.getElementById('fx').getContext('2d');
+function effects(t) {
+  bg.clearRect(0, 0, 1080, 1920); bg.font = '700 30px JetBrains Mono, monospace'; bg.textAlign = 'center';
+  for (let i = 0; i < 46; i++) {
+    const x = hash(i) * 1080, sp = 30 + hash(i + 50) * 60, y = 1920 - ((t * sp + hash(i + 99) * 1920) % 2000);
+    const a = .08 + .12 * hash(i + 7) * (.6 + .4 * Math.sin(t * 2 + i));
+    bg.fillStyle = i % 3 ? `rgba(255,255,255,${a})` : G.accent + '55';
+    if (i % 2) bg.fillText(hash(i + Math.floor(t * 2)) > .5 ? '1' : '0', x, y); else { bg.beginPath(); bg.arc(x, y, 3 + hash(i) * 4, 0, 7); bg.fill(); }
+  }
+  const sy = (t * 260) % 2300 - 200, gr = bg.createLinearGradient(0, sy - 120, 0, sy);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(255,255,255,.05)'); bg.fillStyle = gr; bg.fillRect(0, sy - 120, 1080, 120);
+  fx.clearRect(0, 0, 1080, 1920);
+  for (const n of ORDER.slice(1)) {
+    const p = (t - (SC[n][0] - .3)) / .58; if (p <= 0 || p >= 1) continue;
+    const x = -900 + ease(p) * 2900;
+    fx.save(); fx.transform(1, 0, -.35, 1, 0, 0);
+    fx.fillStyle = G.accent; fx.globalAlpha = .9; fx.fillRect(x, 0, 480, 1920);
+    fx.fillStyle = '#fff'; fx.globalAlpha = .8; fx.fillRect(x - 70, 0, 24, 1920); fx.fillRect(x + 520, 0, 12, 1920); fx.restore();
+  }
+  const cols = ['#ff9933', '#ffffff', '#138808', '#ffcc4d', G.accent];
+  const bursts = M.sparkles.map((tb) => [tb, 540, 900]).concat([[SC.cta[0] + 1.6, 540, 1015], [SC.end[0] + .3, 540, 550]]);
+  for (const [tb, cx, cy] of bursts) {
+    const dt = t - tb; if (dt < 0 || dt > 2.2) continue;
+    for (let i = 0; i < 70; i++) {
+      const ang = hash(i + tb) * Math.PI * 2, v = 500 + hash(i * 3 + tb) * 900;
+      const x = cx + Math.cos(ang) * v * dt * Math.exp(-dt * 1.2), y = cy + Math.sin(ang) * v * dt * Math.exp(-dt * 1.2) + 420 * dt * dt;
+      fx.save(); fx.translate(x, y); fx.rotate(dt * 8 + i); fx.globalAlpha = clamp((2.2 - dt) / .6); fx.fillStyle = cols[i % cols.length]; fx.fillRect(-9, -5, 18, 10); fx.restore();
+    }
+  }
+}
+
+window.render = function (t) {
+  document.getElementById('grid').style.transform = `translate(${(t * 6) % 60}px, ${(t * 10) % 60}px)`;
+  document.querySelector('#bar i').style.width = (100 * clamp(t / D.total)) + '%';
+  let html = '';
+  for (const name of ORDER) {
+    const [a, b] = SC[name], d = b - a;
+    if (t < a - .01 || t > b + .4) continue;
+    const lt = t - a, out = name === 'end' ? 0 : ease(clamp((t - b) / .4));
+    html += `<div class="scene" style="opacity:${1 - out};transform:translateX(${-out * 140}px) scale(${1 + lt * .003})">${FN[name](t, lt, d)}</div>`;
+  }
+  document.getElementById('stage').innerHTML = html;
+  effects(t);
+  const s = D.subs.find((x) => t >= x.t0 && t < x.t1 + .05);
+  let cap = '';
+  if (s && t < SC.end[0]) {
+    const w = s.text.split(' '), tot = w.reduce((a, x) => a + x.length + 2, 0), pr = clamp((t - s.t0) / (s.t1 - s.t0)) * tot;
+    let acc = 0;
+    cap = `<span style="${pop(t, s.t0, .22)}">` + w.map((x) => { const a0 = acc; acc += x.length + 2;
+      if (pr >= a0 && pr < acc) return `<b style="display:inline-block;margin:0 6px;color:#ffd54d;transform:scale(1.08)">${x}</b>`;
+      return pr < a0 ? `<span style="opacity:.6">${hl(x)}</span>` : hl(x); }).join(' ') + '</span>';
+  }
+  document.getElementById('cap').innerHTML = cap;
+  const chrome = t < SC.end[0] ? 1 : 1 - clamp((t - SC.end[0]) / .4);
+  for (const id of ['brand', 'wm', 'bar']) document.getElementById(id).style.opacity = chrome;
+};
+window.renderCover = function () {
+  window.render(0); document.getElementById('cap').innerHTML = ''; fx.clearRect(0, 0, 1080, 1920); document.getElementById('bar').style.opacity = 0;
+  const ph = (img, y, l, r) => `<div class="phone" style="left:${l}px;top:${y}px;transform:rotate(${r}deg) scale(.78);transform-origin:top left"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div><img src="${A.img[img]}" style="transform:translateY(${-160 * S}px)"></div></div>`;
+  document.getElementById('stage').innerHTML = `<div class="glow" style="top:700px"></div>
+    <div class="center" style="top:270px"><span class="pill" style="font-size:34px">How-to guide · 2 minute</span></div>
+    <div class="center" style="top:380px"><div class="h1" style="font-size:112px;letter-spacing:-3px">${G.intro.hook}</div></div>
+    ${ph('register-filled', 760, 90, -5)}${ph('otp-code', 800, 560, 5)}
+    <div class="center" style="top:1520px"><span class="chip" style="background:var(--ac);color:#140c02;font-size:40px">🔑 Password + ✉️ Email OTP</span></div>`;
+};
+window.ready = () => Promise.all(Object.values(imgs).map((i) => i.decode()));
+</script>
+</body></html>
