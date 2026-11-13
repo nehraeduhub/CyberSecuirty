@@ -33,5 +33,10 @@
     "day": 7,
     "id": "bank-kyc-sms",
     "rendered": "2026-11-13"
+  },
+  {
+    "day": 9,
+    "id": "telegram-task-job",
+    "rendered": "2026-11-13"
   }
 ]
