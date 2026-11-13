@@ -114,6 +114,19 @@ Check from a PC at a remote site: `nslookup remote.techguardinas.local` and `nsl
 Choose one:
 
 * **Your organisation's CA (preferred)** — request a server certificate with both names as Subject Alternative Names. Before installing, place three files in `deploy/certs/` on the server: `fullchain.pem` (server certificate + intermediates), `privkey.pem` (its key), `ca.crt` (root CA). Your PCs probably trust this CA already.
+* **A wildcard certificate you already own** (e.g. `*.gov.in` or `*.yourdept.gov.in`): a wildcard covers **one** name label only, so pick two names directly under it, e.g. `tgremote.gov.in` and `tgmesh.gov.in` (not `remote.inet.gov.in`). Copy the certificate, its private key and the intermediate certificate to the server, then:
+  ```bash
+  sudo ./setup.sh install-cert --cert wildcard.crt --key wildcard.key --chain intermediate.crt \
+       --portal tgremote.gov.in --mesh tgmesh.gov.in
+  ```
+  It checks that the key matches, the chain is complete, the certificate is valid and covers both names, then installs it, changes the names everywhere and restarts. For a public CA nothing has to be installed on PCs. Choose names that are not used by a real public site.
+  **Internal DNS:** do **not** create a `gov.in` zone on your DNS server (it would hide every other gov.in site). Create one small zone per name instead, each with an A record for the zone itself:
+  ```powershell
+  Add-DnsServerPrimaryZone -Name "tgremote.gov.in" -ReplicationScope Forest
+  Add-DnsServerResourceRecordA -ZoneName "tgremote.gov.in" -Name "@" -IPv4Address 10.20.30.40
+  Add-DnsServerPrimaryZone -Name "tgmesh.gov.in" -ReplicationScope Forest
+  Add-DnsServerResourceRecordA -ZoneName "tgmesh.gov.in" -Name "@" -IPv4Address 10.20.30.40
+  ```
 * **Let the installer create one** — if `deploy/certs/` is empty, `setup.sh` creates a dedicated "TechGuardinas Remote Internal CA" and the server certificate. You must then distribute the CA to every PC:
   * Group Policy Management → edit a GPO linked to all computers → *Computer Configuration → Policies → Windows Settings → Security Settings → Public Key Policies → Trusted Root Certification Authorities* → **Import** `TechGuardinas-Remote-Internal-CA.crt` (created next to `setup.sh`).
   * Single PC for testing: `certutil -addstore -f Root TechGuardinas-Remote-Internal-CA.crt` (administrator prompt).
@@ -260,6 +273,8 @@ All commands run in the `techguardinas-remote-assist` folder on the server.
 | Print the CA certificate | `./setup.sh export-ca` |
 | Diagnose agents not connecting / engine problems | `sudo ./setup.sh doctor` |
 | Repair portal ↔ engine link ("Remote engine error … noauth" / 502) | `sudo ./setup.sh repair-engine` |
+| Install a new/real certificate (and optionally new names) | `sudo ./setup.sh install-cert --cert c.crt --key c.key [--chain i.crt] [--portal name --mesh name]` |
+| Change host names | `sudo ./setup.sh set-hosts --portal <name> --mesh <name>` (reinstall agents afterwards) |
 | Change ports | `sudo ./setup.sh set-ports --https <port> --http <port>` (reinstall agents after an HTTPS port change) |
 | Reset the bootstrap admin password | `sudo ./setup.sh reset-admin-password` |
 | Emergency: stop all remote access | `sudo docker compose stop meshcentral` |

@@ -14,11 +14,14 @@ if [ -f .env ]; then
 fi
 [ -s deploy/secrets/mesh_login_key ] && ! grep -Eq '^[0-9a-f]{160}$' deploy/secrets/mesh_login_key && err "mesh_login_key must be 160 hex characters (run deploy/generate-secrets.sh)"
 if [ -s deploy/certs/fullchain.pem ] && [ -n "${PORTAL_HOSTNAME:-}" ]; then
-  sans=$(openssl x509 -in deploy/certs/fullchain.pem -noout -ext subjectAltName 2>/dev/null)
-  for h in "$PORTAL_HOSTNAME" "$MESH_HOSTNAME"; do echo "$sans" | grep -q "DNS:$h" || err "certificate has no SAN for $h"; done
-  openssl verify -CAfile deploy/certs/ca.crt deploy/certs/fullchain.pem >/dev/null 2>&1 || err "fullchain.pem does not verify against deploy/certs/ca.crt"
-  # Python 3.13+/OpenSSL 3 strict mode rejects CA certificates without keyUsage.
-  openssl x509 -in deploy/certs/ca.crt -noout -ext keyUsage 2>/dev/null | grep -q "Certificate Sign" || err "ca.crt lacks keyUsage keyCertSign (strict X.509 clients will reject it)"
+  # Works for exact names and wildcards (a wildcard covers exactly one name label).
+  for h in "$PORTAL_HOSTNAME" "$MESH_HOSTNAME"; do
+    openssl x509 -in deploy/certs/fullchain.pem -noout -checkhost "$h" 2>/dev/null | grep -q "does match" || err "certificate does not cover $h"
+  done
+  openssl verify -CAfile deploy/certs/ca.crt -untrusted deploy/certs/fullchain.pem deploy/certs/fullchain.pem >/dev/null 2>&1 \
+    || err "fullchain.pem does not verify against deploy/certs/ca.crt (missing intermediate certificate or wrong CA)"
+  # Strict X.509 clients reject CA certificates without keyUsage (warning only; some public roots lack it).
+  openssl x509 -in deploy/certs/ca.crt -noout -ext keyUsage 2>/dev/null | grep -q "Certificate Sign" || echo "WARNING: first certificate in ca.crt has no keyUsage keyCertSign"
 fi
 for img in techguardinas-remote/web:2.0.0 techguardinas-remote/frontend:2.0.0 techguardinas-remote/meshcentral:1.2.5 postgres:17-alpine redis:7-alpine nginx:1.29-alpine; do
   docker image inspect "$img" >/dev/null 2>&1 || err "image $img not loaded (see deploy/OFFLINE-IMAGES.md)"

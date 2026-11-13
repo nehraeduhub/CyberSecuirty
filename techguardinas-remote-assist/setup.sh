@@ -6,6 +6,8 @@
 #   Day-2:                                     sudo ./setup.sh status | start | stop | restart | logs [svc]
 #                                              sudo ./setup.sh backup | export-ca | reset-admin-password | uninstall
 #                                              sudo ./setup.sh set-ports --https 7443 --http 8008 | repair-engine | doctor
+#                                              sudo ./setup.sh install-cert --cert c.pem --key k.pem [--chain i.pem] [--portal n --mesh n]
+#                                              sudo ./setup.sh set-hosts --portal <name> --mesh <name>
 #
 # Non-interactive install: set PORTAL_HOSTNAME, MESH_HOSTNAME, SERVER_IP (optional), ADMIN_USER,
 # HTTPS_PORT / HTTP_PORT (optional) and ASSUME_YES=1 in the environment.
@@ -249,6 +251,116 @@ status() {
 
 backup() { need_root backup; need_install; ./deploy/backup-postgres.sh; }
 
+cert_covers() { # cert_covers <cert file> <host>
+  openssl x509 -in "$1" -noout -checkhost "$2" 2>/dev/null | grep -q "does match"
+}
+
+cert_names() { openssl x509 -in "$1" -noout -ext subjectAltName 2>/dev/null | tail -n +2 | tr -d ' '; }
+
+valid_host() { [[ "$1" =~ ^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)+$ ]]; }
+
+apply_hosts() { # apply_hosts <portal> <mesh>: rewrite every .env line that contains a host name
+  PORTAL_HOSTNAME=$1; MESH_HOSTNAME=$2
+  local portal mesh; portal=$(url_for "$PORTAL_HOSTNAME"); mesh=$(url_for "$MESH_HOSTNAME")
+  sed -i -e "s|^PORTAL_HOSTNAME=.*|PORTAL_HOSTNAME=$PORTAL_HOSTNAME|" \
+         -e "s|^MESH_HOSTNAME=.*|MESH_HOSTNAME=$MESH_HOSTNAME|" \
+         -e "s|^DJANGO_ALLOWED_HOSTS=.*|DJANGO_ALLOWED_HOSTS=$PORTAL_HOSTNAME|" \
+         -e "s|^CSRF_TRUSTED_ORIGINS=.*|CSRF_TRUSTED_ORIGINS=$portal|" \
+         -e "s|^PORTAL_PUBLIC_URL=.*|PORTAL_PUBLIC_URL=$portal|" \
+         -e "s|^MESH_PUBLIC_URL=.*|MESH_PUBLIC_URL=$mesh|" .env
+  export PORTAL_HOSTNAME MESH_HOSTNAME
+}
+
+restart_and_check() {
+  dc up -d --no-build
+  wait_healthy || true
+  repair_engine >/dev/null 2>&1 && c_ok "Portal can control the remote engine" || c_warn "Engine link not ready; run: sudo ./setup.sh doctor"
+}
+
+agents_warning() {
+  c_warn "Agents already INSTALLED on PCs (unattended) keep the old engine name/certificate and will go offline:"
+  c_warn "download the installers again (Groups & Agents) and reinstall them. Attended sessions are not affected."
+}
+
+install_cert() {
+  need_root install-cert
+  need_install
+  set -a; . ./.env; set +a
+  local cert="" key="" ca="" chain="" portal="" mesh=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --cert) cert=${2:-}; shift 2 ;; --key) key=${2:-}; shift 2 ;; --ca) ca=${2:-}; shift 2 ;;
+      --chain) chain=${2:-}; shift 2 ;; --portal) portal=${2:-}; shift 2 ;; --mesh) mesh=${2:-}; shift 2 ;;
+      *) die "Usage: sudo ./setup.sh install-cert --cert <cert.pem> --key <key.pem> [--chain <intermediate.pem>] [--ca <root.pem>] [--portal <name> --mesh <name>]" ;;
+    esac
+  done
+  [ -s "$cert" ] && [ -s "$key" ] || die "--cert and --key files are required"
+  local tmp; tmp=$(mktemp -d)
+  # PEM-normalise (accepts DER .cer/.crt too); keep any chain already in the cert file
+  if grep -q "BEGIN CERTIFICATE" "$cert"; then cp "$cert" "$tmp/full.pem"; else openssl x509 -inform DER -in "$cert" -out "$tmp/full.pem" || die "cannot read $cert"; fi
+  if [ -n "$chain" ]; then [ -s "$chain" ] || die "chain file not found: $chain"; cat "$chain" >> "$tmp/full.pem"; fi
+  openssl x509 -in "$tmp/full.pem" -out "$tmp/leaf.pem" 2>/dev/null || die "not a certificate: $cert"
+  openssl pkey -in "$key" -out "$tmp/key.pem" 2>/dev/null || die "cannot read private key $key (decrypt it first: openssl pkey -in key.pem -out key-plain.pem)"
+  [ "$(openssl x509 -in "$tmp/leaf.pem" -noout -pubkey)" = "$(openssl pkey -in "$tmp/key.pem" -pubout)" ] || die "the private key does not belong to this certificate"
+  local end; end=$(openssl x509 -in "$tmp/leaf.pem" -noout -enddate | cut -d= -f2)
+  openssl x509 -in "$tmp/leaf.pem" -noout -checkend 0 >/dev/null || die "certificate expired on $end"
+  # Root CA: given, or the server's public CA bundle (public certificates such as a *.gov.in wildcard)
+  if [ -n "$ca" ]; then cp "$ca" "$tmp/ca.pem"
+  else
+    local b; for b in /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt; do [ -s "$b" ] && { cp "$b" "$tmp/ca.pem"; break; }; done
+    [ -s "$tmp/ca.pem" ] || die "no --ca given and no system CA bundle found"
+  fi
+  openssl verify -CAfile "$tmp/ca.pem" -untrusted "$tmp/full.pem" "$tmp/leaf.pem" >/dev/null 2>&1 \
+    || die "certificate chain does not verify. Add the intermediate certificate with --chain <file> (and --ca <root> for a private CA)."
+  portal=${portal:-$PORTAL_HOSTNAME}; mesh=${mesh:-$MESH_HOSTNAME}
+  { valid_host "$portal" && valid_host "$mesh"; } || die "invalid host name"
+  local h; for h in "$portal" "$mesh"; do
+    cert_covers "$tmp/leaf.pem" "$h" || die "certificate does not cover $h. It covers: $(cert_names "$tmp/leaf.pem"). A wildcard covers ONE label only: *.gov.in covers tgremote.gov.in but NOT remote.inet.gov.in. Choose names with --portal <name> --mesh <name>."
+  done
+  c_ok "Certificate OK: $(openssl x509 -in "$tmp/leaf.pem" -noout -subject | sed 's/^subject=//'), valid until $end, covers $portal and $mesh"
+  local a=y; [ "${ASSUME_YES:-0}" = 1 ] || read -r -p "Install it and restart now? [y/N]: " a
+  case "$a" in y|Y|yes) ;; *) die "Cancelled" ;; esac
+  local bk; bk="deploy/certs/backup-$(date +%Y%m%d-%H%M%S)"; mkdir -p "$bk"; chmod 700 "$bk"
+  find deploy/certs -maxdepth 1 -type f ! -name README.txt -exec mv {} "$bk"/ \;
+  command install -m 644 "$tmp/full.pem" deploy/certs/fullchain.pem
+  command install -m 600 "$tmp/key.pem" deploy/certs/privkey.pem
+  command install -m 644 "$tmp/ca.pem" deploy/certs/ca.crt
+  rm -f "$tmp"/*.pem; rmdir "$tmp"
+  c_ok "Installed (previous files kept in $bk)"
+  if [ "$portal" != "$PORTAL_HOSTNAME" ] || [ "$mesh" != "$MESH_HOSTNAME" ]; then apply_hosts "$portal" "$mesh"; c_ok "Host names now: $portal and $mesh"; fi
+  agents_warning
+  restart_and_check
+  echo " Next: internal DNS A records for $portal and $mesh -> ${SERVER_IP:-<server IP>}, then open $(url_for "$portal")"
+}
+
+set_hosts() {
+  need_root set-hosts
+  need_install
+  set -a; . ./.env; set +a
+  local portal="" mesh=""
+  while [ $# -gt 0 ]; do
+    case "$1" in --portal) portal=${2:-}; shift 2 ;; --mesh) mesh=${2:-}; shift 2 ;;
+      *) die "Usage: sudo ./setup.sh set-hosts --portal <name> --mesh <name>" ;; esac
+  done
+  [ -n "$portal" ] && [ -n "$mesh" ] || die "Usage: sudo ./setup.sh set-hosts --portal <name> --mesh <name>"
+  { valid_host "$portal" && valid_host "$mesh" && [ "$portal" != "$mesh" ]; } || die "invalid or identical host names"
+  if ! cert_covers deploy/certs/fullchain.pem "$portal" || ! cert_covers deploy/certs/fullchain.pem "$mesh"; then
+    [ -s deploy/certs/ca.key ] || die "The installed certificate does not cover $portal / $mesh (it covers: $(cert_names deploy/certs/fullchain.pem)). Install one that does: sudo ./setup.sh install-cert --cert ... --key ... --portal $portal --mesh $mesh"
+    c_info "Re-issuing the server certificate for the new names from the existing internal CA (PCs keep trusting it)"
+    local d=deploy/certs san="DNS:$portal,DNS:$mesh"; [ -n "${SERVER_IP:-}" ] && san="$san,IP:$SERVER_IP"
+    openssl req -newkey rsa:2048 -nodes -subj "/CN=$portal" -keyout $d/privkey.pem -out $d/server.csr 2>/dev/null
+    printf "subjectAltName=%s\nextendedKeyUsage=serverAuth\nkeyUsage=critical,digitalSignature,keyEncipherment\nbasicConstraints=CA:FALSE\n" "$san" > $d/server.ext
+    openssl x509 -req -in $d/server.csr -CA $d/ca.crt -CAkey $d/ca.key -CAcreateserial -days 825 -extfile $d/server.ext -out $d/server.crt 2>/dev/null
+    cat $d/server.crt $d/ca.crt > $d/fullchain.pem; rm -f $d/server.csr $d/server.ext; chmod 600 $d/privkey.pem
+  fi
+  agents_warning
+  local a=y; [ "${ASSUME_YES:-0}" = 1 ] || read -r -p "Change host names to $portal and $mesh and restart? [y/N]: " a
+  case "$a" in y|Y|yes) ;; *) die "Cancelled" ;; esac
+  apply_hosts "$portal" "$mesh"
+  restart_and_check
+  c_ok "Host names now: $portal and $mesh. Add DNS A records for both -> ${SERVER_IP:-<server IP>}"
+}
+
 doctor() {
   need_root doctor
   need_install
@@ -388,8 +500,10 @@ case "${1:-}" in
   set-ports) shift; set_ports "$@" ;;
   repair-engine) repair_engine ;;
   doctor) doctor ;;
+  install-cert) shift; install_cert "$@" ;;
+  set-hosts) shift; set_hosts "$@" ;;
   export-ca) cat deploy/certs/ca.crt ;;
   reset-admin-password) reset_admin ;;
   uninstall) uninstall ;;
-  *) sed -n 2,12p "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
+  *) sed -n 2,13p "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
 esac

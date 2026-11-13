@@ -131,6 +131,17 @@ Add-DnsServerResourceRecordA -ZoneName &quot;techguardinas.local&quot; -Name &qu
 <p>Choose one:</p>
 <ul>
 <li><strong>Your organisation's CA (preferred)</strong> — request a server certificate with both names as Subject Alternative Names. Before installing, place three files in <code>deploy/certs/</code> on the server: <code>fullchain.pem</code> (server certificate + intermediates), <code>privkey.pem</code> (its key), <code>ca.crt</code> (root CA). Your PCs probably trust this CA already.</li>
+<li><strong>A wildcard certificate you already own</strong> (e.g. <code>*.gov.in</code> or <code>*.yourdept.gov.in</code>): a wildcard covers <strong>one</strong> name label only, so pick two names directly under it, e.g. <code>tgremote.gov.in</code> and <code>tgmesh.gov.in</code> (not <code>remote.inet.gov.in</code>). Copy the certificate, its private key and the intermediate certificate to the server, then:
+  <code>bash
+  sudo ./setup.sh install-cert --cert wildcard.crt --key wildcard.key --chain intermediate.crt \
+       --portal tgremote.gov.in --mesh tgmesh.gov.in</code>
+  It checks that the key matches, the chain is complete, the certificate is valid and covers both names, then installs it, changes the names everywhere and restarts. For a public CA nothing has to be installed on PCs. Choose names that are not used by a real public site.
+  <strong>Internal DNS:</strong> do <strong>not</strong> create a <code>gov.in</code> zone on your DNS server (it would hide every other gov.in site). Create one small zone per name instead, each with an A record for the zone itself:
+  <code>powershell
+  Add-DnsServerPrimaryZone -Name "tgremote.gov.in" -ReplicationScope Forest
+  Add-DnsServerResourceRecordA -ZoneName "tgremote.gov.in" -Name "@" -IPv4Address 10.20.30.40
+  Add-DnsServerPrimaryZone -Name "tgmesh.gov.in" -ReplicationScope Forest
+  Add-DnsServerResourceRecordA -ZoneName "tgmesh.gov.in" -Name "@" -IPv4Address 10.20.30.40</code></li>
 <li><strong>Let the installer create one</strong> — if <code>deploy/certs/</code> is empty, <code>setup.sh</code> creates a dedicated "TechGuardinas Remote Internal CA" and the server certificate. You must then distribute the CA to every PC:</li>
 <li>Group Policy Management → edit a GPO linked to all computers → <em>Computer Configuration → Policies → Windows Settings → Security Settings → Public Key Policies → Trusted Root Certification Authorities</em> → <strong>Import</strong> <code>TechGuardinas-Remote-Internal-CA.crt</code> (created next to <code>setup.sh</code>).</li>
 <li>Single PC for testing: <code>certutil -addstore -f Root TechGuardinas-Remote-Internal-CA.crt</code> (administrator prompt).</li>
@@ -338,6 +349,14 @@ When the session ends the technician has no further access. Close the support ag
 <tr>
 <td>Repair portal ↔ engine link ("Remote engine error … noauth" / 502)</td>
 <td><code>sudo ./setup.sh repair-engine</code></td>
+</tr>
+<tr>
+<td>Install a new/real certificate (and optionally new names)</td>
+<td><code>sudo ./setup.sh install-cert --cert c.crt --key c.key [--chain i.crt] [--portal name --mesh name]</code></td>
+</tr>
+<tr>
+<td>Change host names</td>
+<td><code>sudo ./setup.sh set-hosts --portal &lt;name&gt; --mesh &lt;name&gt;</code> (reinstall agents afterwards)</td>
 </tr>
 <tr>
 <td>Change ports</td>
