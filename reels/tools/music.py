@@ -143,7 +143,7 @@ def sfx(kind):
     return np.zeros(1)
 
 
-def build(duration, events, beat_start=5.5):
+def build(duration, events, beat_start=5.0, voice=None):
     n = int((duration + 1.5) * SR)
     music = np.zeros(n); fx = np.zeros(n)
     bpm = 100; spb = 60 / bpm; bar = spb * 4
@@ -176,9 +176,20 @@ def build(duration, events, beat_start=5.5):
     music[end - fade:end] *= np.linspace(1, 0, fade); music[end:] = 0
     for e in events:
         add(fx, sfx(e['type']), e['t'])
-    # duck music under hard SFX
-    mix = music * .5 + fx * .9
-    mix = np.tanh(mix * 1.1) * .9
+    vo = np.zeros(n)
+    for v in voice or []:
+        with wave.open(v['file']) as w:
+            a = np.frombuffer(w.readframes(w.getnframes()), '<i2').astype(float) / 32768
+            if w.getnchannels() == 2: a = a.reshape(-1, 2).mean(1)
+        add(vo, a, v['t'])
+    # sidechain: smooth voice envelope, music drops ~10 dB while RJ speaks
+    env_v = np.abs(vo)
+    k = int(.25 * SR); env_v = np.convolve(env_v, np.ones(k) / k, 'same')
+    env_v = np.clip(env_v / (env_v.max() + 1e-9) * 3, 0, 1)
+    duck = 1 - .68 * env_v
+    mvol = .5 if voice else .55
+    mix = music * mvol * duck + fx * (.55 if voice else .9) + vo * 1.0
+    mix = np.tanh(mix * 1.05) * .92
     return mix[: int(duration * SR)]
 
 
@@ -192,5 +203,5 @@ def write(path, x):
 
 if __name__ == '__main__':
     data = json.load(open(sys.argv[1]))
-    write(sys.argv[2], build(data['duration'], data['events']))
+    write(sys.argv[2], build(data['duration'], data['events'], voice=data.get('voice')))
     print('wrote', sys.argv[2])

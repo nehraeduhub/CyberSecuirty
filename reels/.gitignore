@@ -1,5 +1,4 @@
-output/*.wav
-output/*.events.json
-output/*.video.mp4
+output/
 voice/*
 !voice/.gitkeep
+models/*.onnx

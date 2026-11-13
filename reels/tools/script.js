@@ -1,33 +1,59 @@
-// Builds the voiceover script (with timings) + Instagram/Facebook caption for a reel.
+// SEO caption (Instagram / Facebook / YouTube Shorts) + voiceover script for a reel.
+const V = require('../data/voice.js');
 const mmss = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-function script({ crime: c, T, duration }) {
-  const r = (a, b) => `[${mmss(a)} - ${mmss(b)}]`;
+const camel = s => '#' + s.replace(/[^A-Za-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1)).join('');
+
+const BRAND = ['#CyberSafeJhunjhunu', '#CSJ', '#TechGuardians', '#CyberFouji', '#RJNehra'];
+const LOCAL = ['#Jhunjhunu', '#JhunjhunuNews', '#Shekhawati', '#Rajasthan', '#RajasthanNews', '#RajasthanPolice', '#Sikar', '#Churu'];
+const TOPIC = ['#CyberCrime', '#CyberSecurity', '#CyberAwareness', '#CyberSafety', '#OnlineFraud', '#ScamAlert', '#FraudAlert',
+  '#CyberJagrukta', '#SaavdhanRahein', '#DigitalIndia', '#1930', '#CyberDost', '#StaySafeOnline'];
+const REACH = ['#Reels', '#ReelsIndia', '#InstaReels', '#TrendingReels', '#ViralReels', '#Explore', '#HindiReels'];
+const HINDI = ['#साइबर_सुरक्षा', '#साइबर_ठगी', '#सावधान_रहें', '#झुंझुनूं', '#राजस्थान'];
+
+function caption({ crime: c, name, day }) {
+  const tagCrime = camel(c.tag);
+  const kw = c.tag.toLowerCase();
   const L = [];
-  L.push(`REEL: ${c.title} (${c.tag})`, `Duration: ${mmss(duration)}`, '');
-  L.push('=== VOICEOVER SCRIPT (RJ Nehra) ===', 'इसे अपनी आवाज़ में रिकॉर्ड करके voice/' + c.id + '.mp3 में रखें, render दोबारा चलाएँ।', '');
-  L.push(`${r(T.hook, T.title)} HOOK`, `${c.hook} ${c.hookSub}।`, '');
-  L.push(`${r(T.title, T.how)} INTRO`, `राम राम सा! मैं RJ नेहरा, साइबर सेफ झुंझुनूं से। आज का साइबर क्राइम है: ${c.title}। वीडियो आखिर तक देखिए, अंत में फोन की ज़रूरी सेटिंग बताऊँगा।`, '');
-  L.push(`${r(T.how, T.flags)} ठगी ऐसे होती है`);
-  c.steps.forEach((s, i) => L.push(`  ${i + 1}. ${s}।`));
-  L.push('');
-  L.push(`${r(T.flags, T.tips)} खतरे के 3 संकेत`, '  ' + c.flags.join('। ') + '। ये दिखे तो रुक जाइए।', '');
-  L.push(`${r(T.tips, T.settings)} ऐसे बचें`);
-  c.tips.forEach(s => L.push(`  • ${s}।`));
-  L.push('');
-  L.push(`${r(T.settings, T.help)} अभी करें ये सेटिंग (वीडियो रोककर साथ-साथ करें)`);
-  c.settings.forEach((s, i) => L.push(`  ${i + 1}. ${s.path.join(' > ')} > "${s.label}" को ${s.on ? 'ON' : 'OFF'} करें।`));
-  L.push('');
-  L.push(`${r(T.help, T.outro)} ठगी हो जाए तो`, '  घबराएँ नहीं, तुरंत 1930 पर कॉल करें। पहला एक घंटा सबसे कीमती है। cybercrime.gov.in पर शिकायत दर्ज करें और बैंक को कॉल करके खाता या कार्ड ब्लॉक करवाएँ।', '');
-  L.push(`${r(T.outro, duration)} OUTRO`, '  अब हम किसी के साथ कोई साइबर क्राइम नहीं होने देंगे। आप भी साइबर फौजी बनिए: वीडियो को फॉलो, शेयर कीजिए और परिवार के WhatsApp ग्रुप में ज़रूर भेजिए। जय हिंद!', '');
-  L.push('=== CAPTION ===', '');
-  L.push(`🚨 ${c.title}: ${c.hook}`, '', `❓ ठगी ऐसे होती है:`);
+  L.push(`FILE: ${name}`, '');
+  L.push('══════ INSTAGRAM / FACEBOOK CAPTION ══════', '');
+  L.push(`🚨 ${c.title} से सावधान! | ${c.tag} | Day ${day} | Cyber Safe Jhunjhunu`, '');
+  L.push(`${c.hook}`, `${c.hookSub}।`, '');
+  L.push('❓ ठगी कैसे होती है?');
   c.steps.forEach((s, i) => L.push(`${i + 1}️⃣ ${s}`));
+  L.push('', '🚩 खतरे के संकेत:'); c.flags.forEach(s => L.push(`🔴 ${s}`));
   L.push('', '🛡️ ऐसे बचें:'); c.tips.forEach(s => L.push(`✅ ${s}`));
-  L.push('', '⚙️ फोन सेटिंग:'); c.settings.forEach(s => L.push(`🔧 ${s.path.join(' › ')} › ${s.label}: ${s.on ? 'ON' : 'OFF'}`));
-  L.push('', '📞 ठगी हो तो तुरंत 1930 | 🌐 cybercrime.gov.in', '', 'अब हम किसी के साथ कोई साइबर क्राइम नहीं होने देंगे 🇮🇳',
-    'RJ Nehra | Master in AI Cyber Security | TechGuardians | Cyber Fouji', '');
-  const tag = '#' + c.tag.replace(/[^A-Za-z0-9 ]/g, '').split(' ').map(w => w[0].toUpperCase() + w.slice(1)).join('');
-  L.push(`#CyberSafeJhunjhunu #TechGuardians #CyberFouji #RJNehra #Jhunjhunu #Shekhawati #Rajasthan #RajasthanPolice #CyberCrime #CyberAwareness #CyberSafety #OnlineFraud #Scam #1930 ${tag} #साइबर_सुरक्षा #झुंझुनूं`);
+  L.push('', '⚙️ अभी करें ये फोन सेटिंग:');
+  c.settings.forEach(s => L.push(`🔧 ${s.path.join(' › ')} › ${s.label} → ${s.on ? 'ON' : 'OFF'}`));
+  L.push('', '📞 ठगी हो जाए तो तुरंत साइबर हेल्पलाइन 1930 पर कॉल करें', '🌐 शिकायत: cybercrime.gov.in', '');
+  L.push('👉 ये वीडियो परिवार और दोस्तों के WhatsApp ग्रुप में भेजें। किसी अपने को ठगी से बचाएँ 🙏');
+  L.push('💬 कमेंट करें: क्या आपके पास भी ऐसा मैसेज / कॉल आया है?');
+  L.push('🔔 रोज़ एक नया साइबर क्राइम और बचाव जानने के लिए Follow करें', '');
+  L.push('अब हम किसी के साथ कोई साइबर क्राइम नहीं होने देंगे 🇮🇳');
+  L.push('🎙️ RJ Nehra | Master in AI Cyber Security | Cyber Fouji', '📍 Cyber Safe Jhunjhunu (झुंझुनूं, राजस्थान) × TechGuardians', '');
+  const tags = [...BRAND, tagCrime, ...TOPIC, ...LOCAL, ...HINDI, ...REACH];
+  L.push(tags.join(' '), '');
+  L.push('══════ INSTAGRAM (max 5 hashtags, new rule) ══════', '');
+  L.push(['#CyberSafeJhunjhunu', tagCrime, '#CyberAwareness', '#Rajasthan', '#ScamAlert'].join(' '), '');
+  L.push('══════ YOUTUBE SHORTS ══════', '');
+  L.push(`TITLE: ${c.title} से सावधान! 🚨 ${c.tag} | 1930 | #Shorts`.slice(0, 100), '');
+  L.push('DESCRIPTION:', `${c.hook} ${c.hookSub}। इस वीडियो में जानिए ${c.title} कैसे होता है, इसके संकेत, बचाव और फोन की ज़रूरी सेटिंग।`,
+    'ठगी हो तो तुरंत 1930 पर कॉल करें या cybercrime.gov.in पर शिकायत करें।', 'RJ Nehra | Cyber Safe Jhunjhunu × TechGuardians', '#Shorts #CyberCrime #CyberAwareness #Rajasthan #Jhunjhunu', '');
+  L.push('TAGS: ' + [c.title, kw, 'cyber crime', 'cyber fraud', 'online fraud hindi', 'cyber awareness hindi', 'cyber safe jhunjhunu', 'jhunjhunu', 'rajasthan cyber crime',
+    'scam alert', '1930 helpline', 'rj nehra', 'tech guardians', 'cyber fouji', 'how to avoid online fraud', 'phone security settings'].join(', '), '');
+  L.push('══════ SEO KEYWORDS ══════', '');
+  L.push([c.title, kw, `${kw} kaise hota hai`, `${kw} se kaise bache`, 'cyber crime awareness in hindi', 'online fraud se kaise bache',
+    'rajasthan cyber fraud news', 'jhunjhunu cyber crime', 'cyber helpline 1930', 'mobile security settings hindi'].join(' | '), '');
+  L.push('BEST TIME TO POST: शाम 7 से 9 बजे (IST)', '');
+  return L.join('\n');
+}
+
+function script({ crime: c, T, duration, voice }) {
+  const lines = V.lines(c);
+  const L = [`VOICEOVER: ${c.title} (${mmss(duration)})`, 'अपनी आवाज़ में रिकॉर्ड करने के लिए: voice/' + c.id + '.mp3 रखें और render दोबारा चलाएँ।', ''];
+  for (const v of voice) {
+    const l = lines.find(x => x.key === v.key);
+    L.push(`[${mmss(v.t)}] (${v.key})  ${l ? l.say : ''}`);
+  }
   return L.join('\n') + '\n';
 }
-module.exports = { script };
+module.exports = { caption, script };

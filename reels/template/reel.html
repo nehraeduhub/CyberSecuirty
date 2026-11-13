@@ -25,28 +25,35 @@ body{font-family:'Poppins','Hind',sans-serif;color:#fff;position:relative}
 @keyframes gridmove{to{background-position:0 72px,72px 0}}
 #rain{position:absolute;inset:0;opacity:.35}
 #flash{position:absolute;inset:0;pointer-events:none;z-index:40}
+#leak{position:absolute;inset:0;pointer-events:none;z-index:29;mix-blend-mode:screen}
+#slices{position:absolute;left:0;right:0;top:322px;bottom:290px;pointer-events:none;z-index:41}
+#slices i{position:absolute;left:0;right:0;background:rgba(41,211,255,.25);mix-blend-mode:screen}
+@keyframes camZoom{from{transform:scale(1)}to{transform:scale(1.045)}}
 #vignette{position:absolute;inset:0;z-index:30;pointer-events:none;
   box-shadow:inset 0 0 220px 60px rgba(0,0,0,.65)}
 
 /* ---------- HEADER ---------- */
-#header{position:absolute;left:0;right:0;top:0;height:206px;background:var(--cream);z-index:50;
-  display:flex;align-items:center;padding:0 28px;gap:22px;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+#header{position:absolute;left:0;right:0;top:0;height:230px;background:linear-gradient(180deg,#fffaf0,var(--cream));z-index:50;
+  display:flex;align-items:center;padding:0 24px;gap:14px;box-shadow:0 8px 30px rgba(0,0,0,.45);overflow:visible}
+#header .shine2{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#header .shine2 i{position:absolute;top:0;bottom:0;width:160px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:sweep 5s ease-in-out infinite}
 #header::after{content:"";position:absolute;left:0;right:0;bottom:-18px;height:18px;
   background:radial-gradient(circle at 9px 9px,var(--orange) 6px,transparent 7px) 0 0/30px 18px,
   linear-gradient(var(--cream),var(--cream));}
-#header .csj{width:150px;height:150px;border-radius:50%;box-shadow:0 0 0 4px var(--olive),0 6px 18px rgba(0,0,0,.3);
+#header .csj{width:168px;height:168px;flex:none;border-radius:50%;box-shadow:0 0 0 4px var(--olive),0 6px 18px rgba(0,0,0,.3);
   animation:spinIn 1.2s ease-out both}
-#header .brand{flex:1;line-height:1}
-#header .brand .t1{color:var(--maroon);font-size:70px;font-weight:800;letter-spacing:.5px}
-#header .brand .t2{color:#2f4f1c;font-size:34px;font-weight:600;margin-top:10px}
+#header .brand{flex:1;line-height:1;text-align:center}
+#header .brand .t1{color:var(--maroon);font-size:68px;font-weight:800;letter-spacing:.5px;white-space:nowrap}
+#header .brand .t2{color:#2f4f1c;font-size:33px;font-weight:600;margin-top:10px}
+#header .brand .t3{display:inline-block;margin-top:12px;font-size:27px;font-weight:700;color:#fff;background:var(--navy);border-radius:30px;padding:4px 20px}
 #header .side{display:flex;flex-direction:column;align-items:center;gap:8px}
-#header .tg{height:118px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));animation:shieldGlow 2.4s ease-in-out infinite}
+#header .tg{height:170px;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));animation:shieldGlow 2.4s ease-in-out infinite}
 #header .side .pill{font-size:19px;font-weight:700;background:var(--orange);color:#fff;border-radius:30px;padding:2px 14px;letter-spacing:1px}
 @keyframes spinIn{from{transform:rotate(-200deg) scale(.3);opacity:0}to{transform:none;opacity:1}}
 @keyframes shieldGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-#progress{position:absolute;top:224px;left:28px;right:28px;height:10px;border-radius:10px;background:rgba(255,255,255,.12);z-index:50;overflow:hidden}
+#progress{position:absolute;top:252px;left:28px;right:28px;height:10px;border-radius:10px;background:rgba(255,255,255,.12);z-index:50;overflow:hidden}
 #progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),#fff 50%,var(--green));border-radius:10px;box-shadow:0 0 14px var(--orange)}
-#dayBadge{position:absolute;top:244px;left:50%;transform:translateX(-50%);white-space:nowrap;z-index:50;font-size:26px;font-weight:700;background:rgba(255,46,77,.15);
+#dayBadge{position:absolute;top:272px;left:50%;transform:translateX(-50%);white-space:nowrap;z-index:50;font-size:26px;font-weight:700;background:rgba(255,46,77,.15);
   border:2px solid var(--red);color:#ffd5db;border-radius:12px;padding:2px 14px}
 #dayBadge b{color:#fff}
 #liveDot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--red);margin-right:8px;vertical-align:2px;animation:blink 1s steps(2) infinite}
@@ -64,15 +71,21 @@ body{font-family:'Poppins','Hind',sans-serif;color:#fff;position:relative}
 #footer .rj .name{background:var(--olive);color:var(--gold);font-weight:800;font-size:40px;border-radius:14px;padding:4px 22px;letter-spacing:2px;box-shadow:0 4px 0 #2c3313}
 #footer .rj .role{white-space:nowrap;background:var(--orange);color:#fff;font-weight:700;font-size:22px;border-radius:30px;padding:5px 18px}
 #footer .rj .web{color:var(--navy);font-weight:700;font-size:22px;padding-left:6px}
-#footer .brands{display:contents}
-#footer .tgw{height:94px}
-#footer .cf{height:104px;animation:wave 3s ease-in-out infinite;transform-origin:20% 80%}
+#footer .eq{display:flex;align-items:flex-end;gap:5px;height:34px;margin-left:8px}
+#footer .eq i{width:8px;border-radius:4px;background:var(--maroon);height:6px}
+#footer .mic{display:flex;align-items:center;gap:8px;color:var(--maroon);font-weight:700;font-size:21px}
+#footer .h1930{display:flex;flex-direction:column;align-items:center;background:linear-gradient(180deg,#e2342d,#a90f18);border-radius:24px;padding:8px 22px 10px;
+  box-shadow:0 6px 0 #6d070d,0 0 0 4px var(--gold);animation:redPulse 1.4s infinite}
+#footer .h1930 small{font-size:21px;font-weight:700;color:#ffe9b0;white-space:nowrap}
+#footer .h1930 b{font-family:'Baloo 2';font-size:74px;line-height:.95;color:#fff;letter-spacing:2px}
+#footer .h1930 em{font-style:normal;font-size:18px;font-weight:600;color:#fff}
+#footer .cf{height:112px;animation:wave 3s ease-in-out infinite;transform-origin:20% 80%}
 @keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-2deg) scale(1.03)}}
 
 /* ---------- SCENES ---------- */
-#stage{position:absolute;left:0;right:0;top:296px;bottom:290px;z-index:10}
+#stage{position:absolute;left:0;right:0;top:322px;bottom:290px;z-index:10}
 .scene{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;padding:20px 48px 0}
-.scene.on{display:flex}
+.scene.on{display:flex;animation:camZoom 16s linear both}
 .a{animation-fill-mode:both;animation-timing-function:cubic-bezier(.2,.9,.3,1.2)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(80px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -213,6 +226,14 @@ body{font-family:'Poppins','Hind',sans-serif;color:#fff;position:relative}
 .done{position:absolute;right:-30px;top:400px;font-size:46px;font-weight:800;color:#0e7a47;background:#e8fff2;border:6px solid #0e7a47;border-radius:18px;padding:0 20px;z-index:5}
 .appBadge{margin-top:16px;font-size:30px;font-weight:700;color:#bfe9ff}
 
+
+/* COVER / THUMBNAIL */
+.cover{justify-content:center;text-align:center;gap:34px}
+.cover .warn{font-size:58px;font-weight:800;background:var(--red);padding:10px 40px;border-radius:20px;transform:rotate(-3deg);box-shadow:0 10px 0 #8a0a1c}
+.cover .emo{font-size:230px;line-height:1;filter:drop-shadow(0 20px 30px rgba(0,0,0,.6))}
+.cover .ct{font-size:136px;line-height:1.05;font-weight:800;background:linear-gradient(180deg,#fff 20%,#ffcf5a 75%,#ff9a2e);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 10px 0 rgba(0,0,0,.45))}
+.cover .ch{font-size:50px;font-weight:700;color:#fff;background:rgba(0,0,0,.45);border:3px solid var(--gold);border-radius:24px;padding:16px 30px;line-height:1.3}
+.cover .cday{font-size:42px;font-weight:800;color:#022;background:var(--cyan);border-radius:16px;padding:6px 28px}
 /* HELP */
 .help{justify-content:center;text-align:center;gap:26px}
 .help .q{font-size:62px;font-weight:800}
@@ -239,9 +260,10 @@ body{font-family:'Poppins','Hind',sans-serif;color:#fff;position:relative}
 <div id="bg"></div><div id="grid" class="g"></div><canvas id="rain" width="1080" height="1920"></canvas>
 
 <div id="header">
+  <div class="shine2"><i></i></div>
   <img class="csj" src="../assets/csj-logo.png" alt="">
-  <div class="brand"><div class="t1">साइबर सेफ झुंझुनूं</div><div class="t2">शेखावाटी का साइबर प्रहरी</div></div>
-  <div class="side"><img class="tg" src="../assets/tg-shield.png" alt=""><div class="pill">TECH GUARDIANS</div></div>
+  <div class="brand"><div class="t1">साइबर सेफ झुंझुनूं</div><div class="t2">शेखावाटी का साइबर प्रहरी</div><div class="t3">📍 झुंझुनूं, राजस्थान</div></div>
+  <img class="tg" src="../assets/tg-shield.png" alt="">
 </div>
 <div id="progress"><i></i></div>
 <div id="dayBadge"><span id="liveDot"></span>आज का साइबर क्राइम <b id="dayNo">#01</b></div>
@@ -253,16 +275,15 @@ body{font-family:'Poppins','Hind',sans-serif;color:#fff;position:relative}
   <div class="rj">
     <div class="name">RJ NEHRA</div>
     <div class="role">Master in AI Cyber Security</div>
-    <div class="web">🌐 techguardians.in</div>
+    <div class="mic">🎙️ आवाज़: RJ Nehra <span class="eq" id="eq"><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
   </div>
-  <div class="brands">
-    <img class="tgw" src="../assets/tg-wordmark.png" alt="">
-    <img class="cf" src="../assets/cyber-fouji-tag.png" alt="">
-  </div>
+  <div class="h1930"><small>साइबर हेल्पलाइन</small><b>1930</b><em>cybercrime.gov.in</em></div>
+  <img class="cf" src="../assets/cyber-fouji-tag.png" alt="">
 </div>
-<div id="vignette"></div><div id="flash"></div>
+<div id="leak"></div><div id="slices"><i></i><i></i><i></i><i></i><i></i></div><div id="vignette"></div><div id="flash"></div>
 
 <script src="../data/crimes.js"></script>
+<script src="../data/voice.js"></script>
 <script>
 (function(){
 const qs = new URLSearchParams(location.search);
@@ -272,7 +293,8 @@ const day = parseInt(qs.get('day') || '1', 10);
 document.getElementById('dayNo').textContent = '#' + String(day).padStart(2, '0');
 
 /* ---------- timeline (seconds) ---------- */
-const T = { hook: 0, title: 5.5, how: 11, flags: 35, tips: 45, settings: 57, help: 74, outro: 81, end: 88 };
+const TM = window.VOICE.timing(crime, window.DURATIONS || null);
+const T = TM.T, X = TM.X;
 const order = ['hook','title','how','flags','tips','settings','help','outro'];
 const events = [];
 const ev = (t, type) => events.push({ t: +t.toFixed(3), type });
@@ -306,7 +328,7 @@ scene('title','titleScene',`
   <div class="stay a" ${st(anim('zoomIn',.5,2.0),'pulse 1.2s ease-in-out 2.5s infinite')}>⏳ अंत तक देखें: फोन की ज़रूरी सेटिंग ⚙️</div>`);
 
 /* HOW */
-const msgT = [1.2, 2.8, 4.4, 6.0], stepT = [0.4, 6.4, 12.4, 18.4], otpT = 13.0, debitT = 19.6;
+const msgT = X.msgT, stepT = X.stepT, otpT = X.otpT, debitT = X.debitT;
 msgT.slice(0, crime.messages.length).forEach(t => ev(T.how + t, 'ping'));
 stepT.forEach(t => ev(T.how + t, 'pop'));
 ev(T.how + otpT, 'notif'); ev(T.how + debitT, 'error');
@@ -323,7 +345,7 @@ const btns = crime.platform === 'call' ? `<div class="callBtns"><span style="bac
 scene('how','how',`
   <div class="secHead hl a" ${st(anim('fadeUp',.4,0))} style="font-size:58px;margin-bottom:34px"><span class="ico" style="background:var(--red)">🎯</span>ठगी ऐसे होती है</div>
   <div class="stepWrap">
-    ${crime.steps.map((s, i) => `<div class="step s${i+1} a" ${st(anim(i%2?'slideR':'slideL',.55,stepT[i]), ...(i<3?[anim('outUp',.35,stepT[i]+5.65,'ease-in')]:[]))}>
+    ${crime.steps.map((s, i) => `<div class="step s${i+1} a" ${st(anim(i%2?'slideR':'slideL',.55,stepT[i]), ...(i<3?[anim('outUp',.35,stepT[i]+X.stepLen[i]-.35,'ease-in')]:[]))}>
        <div class="lab">STEP ${i+1}/4</div><div class="num">${i+1}</div><div class="txt">${esc(s)}</div></div>`).join('')}
   </div>
   <div class="phoneWrap a p-${crime.platform}" ${st(anim('fadeUp',.7,.2), anim('shake',.5,debitT,'linear'))}>
@@ -343,17 +365,17 @@ scene('how','how',`
   </div>`);
 
 /* FLAGS */
-const flagT = [1.2, 3.6, 6.0];
+const flagT = X.flagT;
 flagT.forEach(t => ev(T.flags + t, 'stamp'));
 scene('flags','flags',`
   <div class="secHead hl a" ${st(anim('zoomIn',.5,0))}><span class="ico" style="background:var(--red)">🚩</span>खतरे के 3 संकेत</div>
   <div class="cards">${crime.flags.map((f, i) => `<div class="card flag a" ${st(anim(i%2?'slideR':'slideL',.5,flagT[i]))}>
      <div class="ci">⚠️</div>${esc(f)}<div class="shine a" ${st(anim('sweep',1,flagT[i]+.4,'ease-in-out'))}></div></div>`).join('')}</div>
-  <div class="bigStamp a" style="position:relative;right:auto;bottom:auto;margin-top:46px;animation:${anim('stamp',.5,8.2)}">दिखे तो रुक जाएँ ✋</div>`);
-ev(T.flags + 8.2, 'stamp');
+  <div class="bigStamp a" style="position:relative;right:auto;bottom:auto;margin-top:46px;animation:${anim('stamp',.5,X.flagEnd)}">दिखे तो रुक जाएँ ✋</div>`);
+ev(T.flags + X.flagEnd, 'stamp');
 
 /* TIPS */
-const tipT = [1.0, 3.4, 5.8, 8.2];
+const tipT = X.tipT;
 tipT.forEach(t => ev(T.tips + t, 'success'));
 scene('tips','tips',`
   <div class="secHead hl a" ${st(anim('zoomIn',.5,0))}><span class="ico" style="background:var(--green)">🛡️</span>ऐसे बचें</div>
@@ -361,18 +383,18 @@ scene('tips','tips',`
      <div class="ci">✅</div>${esc(f)}<div class="shine a" ${st(anim('sweep',1,tipT[i]+.4,'ease-in-out'))}></div></div>`).join('')}</div>`);
 
 /* SETTINGS */
-const setBase = k => 1.6 + k * 5.1;
+const setBase = k => X.set[k].b;
 const settingsHtml = crime.settings.map((s, k) => {
-  const b = setBase(k), tglT = b + 3.0, doneT = b + 3.6;
-  s.path.forEach((_, i) => ev(T.settings + b + .3 + i * .42, 'tap'));
+  const b = setBase(k), L = X.set[k].len, stepC = Math.min(.42, L * .45 / s.path.length), tglT = b + Math.max(2.4, L * .55), doneT = tglT + .6;
+  s.path.forEach((_, i) => ev(T.settings + b + .3 + i * stepC, 'tap'));
   ev(T.settings + tglT, 'toggle'); ev(T.settings + doneT, 'success');
   const fromOn = !s.on;
-  const crumbs = s.path.map((p, i) => `${i ? `<span class="arrow a" ${st(anim('fadeIn',.2,b+.3+i*.42-.1))}>›</span>` : ''}<span class="chip ${i===s.path.length-1?'last':''} a" ${st(anim('zoomIn',.3,b+.3+i*.42))}>${esc(p)}</span>`).join('');
+  const crumbs = s.path.map((p, i) => `${i ? `<span class="arrow a" ${st(anim('fadeIn',.2,b+.3+i*stepC-.1))}>›</span>` : ''}<span class="chip ${i===s.path.length-1?'last':''} a" ${st(anim('zoomIn',.3,b+.3+i*stepC))}>${esc(p)}</span>`).join('');
   const c0 = fromOn ? '#1a73e8' : '#bdc1c6', c1 = s.on ? '#1a73e8' : '#bdc1c6';
   const x0 = fromOn ? 47 : 5, x1 = s.on ? 47 : 5;
   const kf = `tg${k}`, kk = `tk${k}`;
   return `<style>@keyframes ${kf}{from{background:${c0}}to{background:${c1}}}@keyframes ${kk}{from{left:${x0}px}to{left:${x1}px}}</style>
-  <div class="setItem a" ${st(anim('fadeIn',.35,b), ...(k<crime.settings.length-1?[anim('outFade',.3,b+4.8,'ease-in')]:[]))}>
+  <div class="setItem a" ${st(anim('fadeIn',.35,b), ...(k<crime.settings.length-1?[anim('outFade',.3,b+L-.3,'ease-in')]:[]))}>
     <div class="setCount">सेटिंग ${k+1}/${crime.settings.length} • ${esc(s.app)}</div>
     <div class="crumbs">${crumbs}</div>
     <div class="sphone a" ${st(anim('fadeUp',.5,b+.1))}><div class="sscreen">
@@ -402,11 +424,11 @@ scene('help','help',`
   <div class="big1930 hl a" ${st(anim('slamIn',.6,.3),'pulse 1s ease-in-out 1s infinite')}>1930</div>
   <div class="callNow a" ${st(anim('zoomIn',.4,.9),'redPulse 1.2s 1.3s infinite')}>📞 तुरंत कॉल करें, पहला 1 घंटा सबसे कीमती</div>
   <div class="helpList">
-    <div class="a" ${st(anim('slideL',.45,1.8))}>🌐 cybercrime.gov.in पर शिकायत दर्ज करें</div>
-    <div class="a" ${st(anim('slideR',.45,2.5))}>🏦 बैंक को कॉल करके खाता / कार्ड ब्लॉक करवाएँ</div>
-    <div class="a" ${st(anim('slideL',.45,3.2))}>📵 संदिग्ध कॉल / SMS: संचार साथी "चक्षु" पर रिपोर्ट</div>
+    <div class="a" ${st(anim('slideL',.45,X.helpT[2]))}>🌐 cybercrime.gov.in पर शिकायत दर्ज करें</div>
+    <div class="a" ${st(anim('slideR',.45,X.helpT[3]))}>🏦 बैंक को कॉल करके खाता / कार्ड ब्लॉक करवाएँ</div>
+    <div class="a" ${st(anim('slideL',.45,X.helpT[4]))}>📵 संदिग्ध कॉल / SMS: संचार साथी "चक्षु" पर रिपोर्ट</div>
   </div>`);
-[1.8, 2.5, 3.2].forEach(t => ev(T.help + t, 'pop'));
+X.helpT.slice(2).forEach(t => ev(T.help + t, 'pop'));
 
 /* OUTRO */
 ev(T.outro + .2, 'boom'); ev(T.outro + 2.6, 'tap');
@@ -423,8 +445,21 @@ scene('outro','outro',`
   <div class="a" ${st(anim('fadeUp',.5,2.4))} style="font-size:38px;font-weight:600;color:#ffd99a;line-height:1.4">ये वीडियो परिवार के WhatsApp ग्रुप में भेजें,<br>किसी अपने को ठगी से बचाएँ 🙏</div>
   <div class="tri a" ${st(anim('fadeIn',.5,0))}></div>`);
 
+/* COVER (thumbnail mode) */
+const THUMB = qs.has('thumb');
+if (THUMB){
+  T.cover = 0;
+  const emo = { whatsapp:'📱💸', sms:'✉️💸', telegram:'✈️💸', instagram:'📸🔓', olx:'🛒💸', facebook:'👥⚠️', web:'🌐💸', call:'📞🚨' }[crime.platform] || '📱💸';
+  scene('cover','cover',`
+    <div class="warn a" ${st(anim('zoomIn',.3,0))}>⚠️ सावधान राजस्थान!</div>
+    <div class="emo a" ${st(anim('zoomIn',.3,0))}>${emo}</div>
+    <div class="ct hl a" ${st(anim('zoomIn',.3,0))}>${esc(crime.title)}</div>
+    <div class="ch a" ${st(anim('fadeUp',.3,0))}>${esc(crime.hook)}</div>
+    <div class="cday a" ${st(anim('fadeUp',.3,0))}>▶ बचाव + फोन सेटिंग ज़रूर देखें</div>`);
+}
+
 /* TICKER */
-const tick = `🚨 ठगी हो तो तुरंत 1930 पर कॉल करें &nbsp;•&nbsp; 🌐 cybercrime.gov.in &nbsp;•&nbsp; 🔐 OTP / PIN किसी को न बताएँ &nbsp;•&nbsp; 📲 Follow करें: Cyber Safe Jhunjhunu &nbsp;•&nbsp; 🛡️ TechGuardians: Keep Learning Keep Sharing &nbsp;•&nbsp; `;
+const tick = `🚨 ठगी हो तो तुरंत 1930 पर कॉल करें &nbsp;•&nbsp; 🌐 cybercrime.gov.in &nbsp;•&nbsp; 🔐 OTP / PIN किसी को न बताएँ &nbsp;•&nbsp; 📲 Follow करें: Cyber Safe Jhunjhunu &nbsp;•&nbsp; 📍 Cyber Safe Jhunjhunu, झुंझुनूं (राजस्थान) • 🛡️ TechGuardians &nbsp;•&nbsp; `;
 document.getElementById('tickTrack').innerHTML = tick + tick;
 
 /* ---------- matrix rain (deterministic) ---------- */
@@ -442,13 +477,22 @@ function rain(t){
       cx.fillText(c.chars[(j + (t * 8 | 0)) % c.chars.length], c.x, y);
     }
   }
+  // glowing bokeh particles drifting upward
+  for (const p of dots){
+    const y = 1920 - ((p.off + t * p.sp) % 2100), x = p.x + Math.sin(t * p.w + p.off) * 40;
+    const g = cx.createRadialGradient(x, y, 0, x, y, p.r);
+    g.addColorStop(0, p.c); g.addColorStop(1, 'rgba(0,0,0,0)');
+    cx.fillStyle = g; cx.beginPath(); cx.arc(x, y, p.r, 0, 7); cx.fill();
+  }
 }
+const dots = Array.from({length: 22}, () => ({ x: rnd() * 1080, off: rnd() * 2100, sp: 30 + rnd() * 70, w: .5 + rnd(), r: 10 + rnd() * 30,
+  c: ['rgba(243,154,30,.55)','rgba(41,211,255,.5)','rgba(255,255,255,.45)','rgba(22,145,90,.5)'][rnd() * 4 | 0] }));
 
 /* ---------- seek ---------- */
-const flash = document.getElementById('flash'), prog = document.querySelector('#progress i');
+const flash = document.getElementById('flash'), prog = document.querySelector('#progress i'), leak = document.getElementById('leak'), slices = document.getElementById('slices'), eq = document.getElementById('eq');
 let active = null;
 function seek(t){
-  const k = order.slice().reverse().find(k => t >= T[k]) || 'hook';
+  const k = THUMB ? 'cover' : (order.slice().reverse().find(k => t >= T[k]) || 'hook');
   if (k !== active){ Object.values(scenes).forEach(s => s.classList.toggle('on', s.dataset.k === k)); active = k; }
   document.getAnimations().forEach(a => {
     const tgt = a.effect && a.effect.target; if (!tgt) return;
@@ -462,14 +506,30 @@ function seek(t){
   flash.style.background = `rgba(200,240,255,${(f * .55).toFixed(3)})`;
   // red tint during hook & debit
   const dbt = T.how + debitT;
-  const red = (t < 5.5 ? (.10 + .08 * Math.sin(t * 9)) : 0) + (t > dbt && t < dbt + 1.4 ? .25 * (1 - (t - dbt) / 1.4) : 0);
+  const red = (!THUMB && t < T.title ? (.10 + .08 * Math.sin(t * 9)) : 0) + (t > dbt && t < dbt + 1.4 ? .25 * (1 - (t - dbt) / 1.4) : 0);
   document.getElementById('vignette').style.boxShadow = `inset 0 0 220px 60px rgba(0,0,0,.65), inset 0 0 0 2000px rgba(255,0,40,${red.toFixed(3)})`;
+  // light leak drifting across the frame
+  const lx = 540 + 520 * Math.sin(t * .23), ly = 900 + 600 * Math.sin(t * .17 + 1);
+  leak.style.background = `radial-gradient(520px 420px at ${lx}px ${ly}px, rgba(243,154,30,.16), transparent 70%), radial-gradient(600px 500px at ${1080-lx}px ${1800-ly}px, rgba(41,211,255,.12), transparent 70%)`;
+  // glitch slices + camera shake around scene cuts
+  let g = 0; order.forEach((kk, i) => { if (i){ const d = t - T[kk]; if (d > -.18 && d < .22) g = 1 - Math.abs(d) / .22; } });
+  const fr = Math.floor(t * 30);
+  [...slices.children].forEach((el, i) => {
+    const r1 = Math.sin(fr * 12.9898 + i * 78.233) * 43758.5453 % 1, r2 = Math.sin(fr * 4.1 + i * 9.7) * 1000 % 1;
+    el.style.opacity = g > 0 ? 1 : 0; el.style.top = (Math.abs(r1) * 95) + '%'; el.style.height = (8 + Math.abs(r2) * 60) + 'px';
+    el.style.transform = `translateX(${(r2 * 120 * g).toFixed(1)}px)`;
+  });
+  stage.style.transform = g > 0 ? `translate(${(Math.sin(fr * 3.7) * 14 * g).toFixed(1)}px, ${(Math.cos(fr * 2.3) * 6 * g).toFixed(1)}px)` : '';
+  stage.style.filter = g > .3 ? `hue-rotate(${(g * 40).toFixed(0)}deg) saturate(1.4)` : '';
+  // RJ voice equalizer
+  const speaking = TM.voice.some(v => t >= v.t && t <= v.t + v.d);
+  [...eq.children].forEach((el, i) => { const h = speaking ? 6 + Math.abs(Math.sin(t * (9 + i * 2.3) + i)) * 28 : 6; el.style.height = h.toFixed(0) + 'px'; });
   const ct = document.getElementById('callTimer');
   if (ct){ const s = Math.max(0, t - T.how) | 0; ct.textContent = `00:${String(s % 60).padStart(2, '0')}`; }
   rain(t);
 }
 
-window.REEL = { crime, day, duration: T.end, events: events.sort((a, b) => a.t - b.t), T,
+window.REEL = { crime, day, duration: T.end, events: events.sort((a, b) => a.t - b.t), T, voice: TM.voice,
   seek, ready: document.fonts.ready.then(() => Promise.all([...document.images].map(i => i.complete ? 1 : new Promise(r => i.onload = i.onerror = r)))) };
 
 if (!qs.has('render')){
