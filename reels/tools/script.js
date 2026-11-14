@@ -16,7 +16,7 @@ function caption({ crime: c, name, day }) {
   const L = [];
   L.push(`FILE: ${name}`, '');
   L.push('══════ INSTAGRAM / FACEBOOK CAPTION ══════', '');
-  L.push(`🚨 ${c.title} से सावधान! | ${c.tag} | Day ${day} | Cyber Safe Jhunjhunu`, '');
+  L.push(`🚨 ${c.title} से सावधान! | ${c.tag} | Cyber Safe Jhunjhunu`, '');
   L.push(`${c.hook}`, `${c.hookSub}।`, '');
   L.push('❓ ठगी कैसे होती है?');
   c.steps.forEach((s, i) => L.push(`${i + 1}️⃣ ${s}`));

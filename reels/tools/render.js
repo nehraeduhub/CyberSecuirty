@@ -28,7 +28,7 @@ const slug = s => s.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
   if (id) { plan = { id, day: +(day || 1) }; crime = CRIMES.find(c => c.id === id); if (!crime) throw new Error('unknown crime id ' + id); }
   else { plan = pick(); crime = plan.breaking ? JSON.parse(fs.readFileSync(plan.breaking, 'utf8')) : CRIMES.find(c => c.id === plan.id); }
   const dd = String(plan.day).padStart(2, '0');
-  const name = `CSJ-Day${dd}-${slug(crime.tag)}`;
+  const name = `CSJ-${slug(crime.tag)}`;
   const work = path.join(ROOT, 'output', '.work', name); fs.mkdirSync(work, { recursive: true });
   const exp = path.join(ROOT, 'export'); fs.mkdirSync(exp, { recursive: true });
 
