@@ -98,7 +98,7 @@
     // first message bubbles during how.title + step 1, otp at step 3, debit at step 4
     const msgSpan = Math.min(1.6, (X.stepT[0] + X.stepLen[0] - 1.0) / Math.max(1, c.messages.length));
     X.msgT = c.messages.map((_, i) => 0.9 + i * msgSpan);
-    X.otpT = X.stepT[2] + 0.6; X.debitT = X.stepT[3] + 0.9;
+    X.otpT = X.stepT[(c.notif && c.notif.at != null) ? c.notif.at : 2] + 0.6; X.debitT = X.stepT[3] + 0.9;
     t = u;
     // FLAGS
     T.flags = t; u = V('flags.title', t + 0.2) + GAP; X.flagT = [];

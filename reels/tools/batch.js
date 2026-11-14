@@ -2,9 +2,13 @@
 // Day N uses crime number N from data/crimes.js and records it in data/used.json (so daily rotation continues after).
 const { spawn } = require('child_process'), fs = require('fs'), path = require('path');
 const { CRIMES } = require('../data/crimes.js');
-const [from, to, par = 3] = process.argv.slice(2).map(Number);
+// also accepts a list:  node tools/batch.js 2,3,4,8-20 [parallel=3]
+const argv = process.argv.slice(2);
+let days = [], par = 3;
+if (/[,-]/.test(argv[0])) { for (const part of argv[0].split(',')) { const [a, b = a] = part.split('-').map(Number); for (let d = a; d <= b; d++) days.push(d); } par = +(argv[1] || 3); }
+else { for (let d = +argv[0]; d <= +argv[1]; d++) days.push(d); par = +(argv[2] || 3); }
 const USED = path.join(__dirname, '../data/used.json');
-const queue = []; for (let d = from; d <= to; d++) queue.push(d);
+const queue = days;
 let running = 0, failed = 0;
 const start = new Date(Date.now() + 5.5 * 3600e3);
 function next() {

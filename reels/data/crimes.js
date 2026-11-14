@@ -9,7 +9,8 @@
  *  platform                  : whatsapp | sms | telegram | instagram | olx | call | facebook | web
  *  contact                   : name or number shown on the phone mockup
  *  messages                  : chat bubbles [{from:'them'|'me', text} | {from, file:'x.apk', size}]
- *  notif                     : optional mid-demo notification {title, text, leak}; default = stolen OTP
+ *  notif                     : optional mid-demo notification {title, text, leak}; default = stolen OTP; at = step index (default 2)
+ *  result                    : optional final overlay {label, sub, emoji}; default = DEBITED / money gone
  *  loss                      : amount shown as "debited" in the demo
  *  steps[4]                  : how the crime happens
  *  flags[3]                  : warning signs
@@ -40,6 +41,9 @@ const S = {
   chromeSafe: { app: 'Chrome', path: ['Chrome', 'Settings', 'Privacy and security', 'Safe Browsing'], label: 'Enhanced protection', on: true, say: 'क्रोम में, सेफ ब्राउज़िंग का एन्हांस्ड प्रोटेक्शन चालू कीजिए' },
   telegramPrivacy: { app: 'Telegram', path: ['Telegram', 'Settings', 'Privacy and Security', 'Groups & Channels'], label: 'Add me: My Contacts only', on: true, say: 'टेलीग्राम में, ग्रुप में सिर्फ कॉन्टैक्ट्स ही जोड़ सकें, ये सेट कीजिए' },
   dnd: { app: 'Android', path: ['Phone', 'SMS 1909', '"FULLY BLOCK"'], label: 'DND: block promo calls & SMS', on: true, say: 'उन्नीस सौ नौ पर फुली ब्लॉक लिखकर एस एम एस भेजिए, प्रमोशनल कॉल बंद हो जाएँगे' },
+  bankAlerts: { app: 'Bank App', path: ['Bank app', 'Services', 'Alerts & notifications'], label: 'SMS + Email transaction alerts', on: true, say: 'बैंक ऐप में, हर लेनदेन का एस एम एस और ईमेल अलर्ट चालू रखिए' },
+  contactsPerm: { app: 'Android', path: ['Settings', 'Apps', 'Permission manager', 'Contacts'], label: 'Loan app Contacts access', on: false, say: 'परमिशन मैनेजर में, लोन ऐप की कॉन्टैक्ट्स और फोटो की अनुमति हटा दीजिए' },
+  aepsOff: { app: 'Bank App', path: ['Bank app', 'Services', 'Aadhaar services'], label: 'AePS (Aadhaar payments)', on: false, say: 'ज़रूरत न हो, तो बैंक से आधार पेमेंट सेवा, यानी ए ई पी एस, बंद करवा दीजिए' },
   locationPhotos: { app: 'Camera', path: ['Camera', 'Settings', 'Location tags'], label: 'Save location in photos', on: false, say: 'कैमरा में, फोटो के साथ लोकेशन सेव करना बंद कीजिए' },
 };
 
@@ -147,11 +151,11 @@ const CRIMES = [
       'वर्दी की फोटो पर भरोसा न करें',
       'विज्ञापन OLX पर Report करें',
     ],
-    settings: [S.upiLimit, S.waSilence, S.waGroups],
+    settings: [S.upiLimit, S.spamFilter, S.waSilence],
   },
   {
     id: 'sextortion-video-call',
-    notif: { title: '🎥 Screen recording', text: 'आपका चेहरा रिकॉर्ड किया जा रहा है', leak: '⚠️ यही वीडियो ब्लैकमेल में इस्तेमाल होगा!' },
+    notif: { title: '🎥 Screen recording', text: 'आपका चेहरा रिकॉर्ड किया जा रहा है', leak: '⚠️ यही वीडियो ब्लैकमेल में इस्तेमाल होगा!', at: 1 },
     title: 'वीडियो कॉल सेक्सटॉर्शन',
     tag: 'Sextortion Video Call',
     hook: 'रात में अनजान वीडियो कॉल उठाया? अगली सुबह ब्लैकमेल! 📵',
@@ -163,6 +167,7 @@ const CRIMES = [
       { from: 'them', text: '₹50,000 दो वरना रिश्तेदारों को भेज देंगे' },
       { from: 'them', text: 'मैं दिल्ली पुलिस से बोल रहा हूँ, केस होगा' },
     ],
+    result: { label: 'BLACKMAIL', sub: 'डर के मारे बार-बार पैसे दिए', emoji: '😰' },
     loss: '₹2,10,000',
     steps: [
       'अनजान नंबर से दोस्ती या सीधे रात में वीडियो कॉल आता है',
@@ -284,6 +289,7 @@ const CRIMES = [
   },
   {
     id: 'electricity-bill',
+    notif: { title: '🖥️ Screen sharing started', text: 'Remote device is viewing your screen', leak: '⚠️ ठग आपका PIN और OTP देख रहा है!' },
     title: 'बिजली कनेक्शन कटेगा स्कैम',
     tag: 'Electricity Bill Disconnection Scam',
     hook: '"आज रात 9:30 बजे बिजली कट जाएगी" ⚡ ये मैसेज झूठा है',
@@ -415,11 +421,11 @@ const CRIMES = [
       'UPI ऐप में "Debit" लिखा हो तो रुक जाएँ',
       'खरीदार से आमने-सामने डील करें',
     ],
-    settings: [S.upiLimit, S.cardOnline, S.waSilence],
+    settings: [S.upiLimit, S.bankAlerts],
   },
   {
     id: 'wrong-upi-refund',
-    notif: { title: '🏦 Bank app • now', text: 'Available balance: ₹250', leak: '⚠️ खाते में कोई पैसा आया ही नहीं था!' },
+    notif: { title: '💸 UPI • now', text: '₹5,000 sent to +91 9XXXX X7788', leak: '⚠️ असल में कोई पैसा आया ही नहीं था!' },
     title: '"गलती से पैसे भेज दिए" स्कैम',
     tag: 'Wrong UPI Transfer Refund Scam',
     hook: '"भाई गलती से ₹5000 भेज दिए, लौटा दो" 🙏 रुकिए!',
@@ -449,11 +455,11 @@ const CRIMES = [
       'किसी लिंक या QR से "रिफंड" न करें',
       'नंबर को ब्लॉक करें और रिपोर्ट करें',
     ],
-    settings: [S.dnd, S.upiLimit, S.spamFilter],
+    settings: [S.bankAlerts, S.spamFilter, S.upiLimit],
   },
   {
     id: 'ai-voice-clone',
-    notif: { title: '🎙️ Voice check', text: 'ये आवाज़ रिकॉर्डेड / AI से बनी है', leak: '⚠️ बेटा सुरक्षित है, आवाज़ नकली है!' },
+    notif: { title: '🎙️ Voice check', text: 'ये आवाज़ रिकॉर्डेड / AI से बनी है', leak: '⚠️ बेटा सुरक्षित है, आवाज़ नकली है!', at: 1 },
     title: 'AI आवाज क्लोन स्कैम',
     tag: 'AI Voice Clone Emergency Scam',
     hook: 'फोन पर बेटे की रोती आवाज… पर बेटा वो नहीं था! 🎙️',
@@ -487,7 +493,7 @@ const CRIMES = [
   },
   {
     id: 'instant-loan-app',
-    notif: { title: '📂 App permission', text: 'Contacts, Photos, Gallery: Allowed', leak: '⚠️ आपके कॉन्टैक्ट्स और फोटो ठगों के पास!' },
+    notif: { title: '📂 App permission', text: 'Contacts, Photos, Gallery: Allowed', leak: '⚠️ आपके कॉन्टैक्ट्स और फोटो ठगों के पास!', at: 1 },
     title: 'इंस्टेंट लोन ऐप ब्लैकमेल',
     tag: 'Predatory Instant Loan App',
     hook: '₹5000 का लोन लिया… और फोटो गंदी करके वायरल! 💸',
@@ -499,6 +505,7 @@ const CRIMES = [
       { from: 'them', text: 'नहीं तो आपकी फोटो आपके सारे कॉन्टैक्ट्स को भेज देंगे' },
       { from: 'them', text: '2 घंटे का टाइम है ⏰' },
     ],
+    result: { label: 'BLACKMAIL', sub: '₹5,000 के लोन पर इतना वसूला', emoji: '😰' },
     loss: '₹65,000',
     steps: [
       'बिना कागज 5 मिनट में लोन का विज्ञापन',
@@ -517,7 +524,7 @@ const CRIMES = [
       'धमकी मिले तो पैसे न दें, 1930 पर शिकायत करें',
       'कॉन्टैक्ट्स को पहले से बता दें कि मॉर्फ फोटो आ सकती है',
     ],
-    settings: [S.smsPerm, S.playProtect, S.unknownApps],
+    settings: [S.contactsPerm, S.playProtect, S.unknownApps],
   },
   {
     id: 'sim-swap',
@@ -551,7 +558,7 @@ const CRIMES = [
       'अचानक नेटवर्क गायब हो तो तुरंत ऑपरेटर और बैंक को बताएँ',
       'संचार साथी पर अपने नाम की सिम चेक करें',
     ],
-    settings: [S.simLock, S.google2fa, S.wa2step],
+    settings: [S.wa2step, S.google2fa, S.bankAlerts],
   },
   {
     id: 'fake-customer-care',
@@ -623,7 +630,7 @@ const CRIMES = [
   },
   {
     id: 'agniveer-recruitment',
-    notif: { title: '📄 Joining_Letter.pdf', text: 'नकली मुहर और नकली दस्तखत वाला लेटर', leak: '⚠️ भर्ती सिर्फ मेरिट से होती है!' },
+    notif: { title: '📄 Joining_Letter.pdf', text: 'नकली मुहर और नकली दस्तखत वाला लेटर', leak: '⚠️ भर्ती सिर्फ मेरिट से होती है!', at: 1 },
     title: 'फौज भर्ती के नाम पर ठगी',
     tag: 'Fake Army / Agniveer Recruitment',
     hook: 'पैसे दो, फौज में पक्की भर्ती? 🪖 ये सबसे बड़ा झूठ है',
@@ -653,7 +660,7 @@ const CRIMES = [
       'ऐसा ऑफर देने वाले की सूचना पुलिस को दें',
       'माता-पिता भी यह बात जरूर समझें',
     ],
-    settings: [S.waGroups, S.chromeSafe, S.waSilence],
+    settings: [S.chromeSafe, S.waGroups, S.spamFilter],
   },
   {
     id: 'pension-echs-update',
@@ -720,7 +727,7 @@ const CRIMES = [
       'आधार की कॉपी पर "किस काम के लिए" लिखें',
       'Masked Aadhaar का इस्तेमाल करें',
     ],
-    settings: [S.aadhaarLock, S.upiLimit, S.cardOnline],
+    settings: [S.aadhaarLock, S.aepsOff, S.bankAlerts],
   },
   {
     id: 'dham-room-booking',
@@ -754,7 +761,7 @@ const CRIMES = [
       'पर्सनल UPI पर पूरा एडवांस न दें',
       'रिव्यू और वेबसाइट की उम्र जाँचें',
     ],
-    settings: [S.chromeSafe, S.upiLimit, S.cardOnline],
+    settings: [S.chromeSafe, S.upiLimit],
   },
   {
     id: 'fake-dp-officer',
@@ -788,11 +795,11 @@ const CRIMES = [
       'अपनी DP सिर्फ कॉन्टैक्ट्स को दिखाएँ',
       'नकली प्रोफाइल को Report करें',
     ],
-    settings: [S.waDp, S.waGroups, S.wa2step],
+    settings: [S.waDp, S.fbLock, S.instaPrivate],
   },
   {
     id: 'fake-shopping-site',
-    notif: { title: '📦 Order status', text: 'Tracking ID not found', leak: '⚠️ वेबसाइट नकली थी!' },
+    notif: { title: '💸 Payment • now', text: '₹4,999 paid online (COD not available)', leak: '⚠️ वेबसाइट नकली है, सामान नहीं आएगा!' },
     title: 'सस्ता सामान फेक वेबसाइट',
     tag: 'Fake Online Shopping Site',
     hook: '₹40,000 का फोन सिर्फ ₹4,999 में? 📱 सेल नहीं, स्कैम है',
@@ -871,6 +878,7 @@ const CRIMES = [
       { from: 'them', text: 'वेरिफाई करें: meta-badge-verify.com' },
       { from: 'them', text: 'अब जो कोड आया है वो भेजिए' },
     ],
+    result: { label: 'ACCOUNT HACKED', sub: 'अकाउंट से दोस्तों से पैसे माँगे गए', emoji: '🔓' },
     loss: 'अकाउंट + ₹30,000',
     steps: [
       'Meta / Instagram सपोर्ट बनकर ब्लू टिक या कॉपीराइट का मैसेज',
@@ -893,6 +901,7 @@ const CRIMES = [
   },
   {
     id: 'courier-parcel',
+    notif: { title: '💳 Card details submitted', text: 'Card number, expiry और CVV नकली साइट पर', leak: '⚠️ कार्ड की पूरी जानकारी ठग के पास!' },
     title: 'कूरियर पार्सल स्कैम',
     tag: 'Courier Parcel Delivery Scam',
     hook: '"आपका पार्सल डिलीवर नहीं हो पाया" 📦 ये लिंक मत खोलो',
@@ -926,6 +935,7 @@ const CRIMES = [
   },
   {
     id: 'screen-share-anydesk',
+    notif: { title: '🖥️ Screen sharing started', text: 'Remote device is viewing your screen', leak: '⚠️ ठग आपका PIN और OTP देख रहा है!' },
     title: 'स्क्रीन शेयर ऐप फ्रॉड',
     tag: 'Remote Access (AnyDesk) Fraud',
     hook: '"बस ये ऐप डाउनलोड कर लो, मैं ठीक कर देता हूँ" 🖥️',
@@ -1072,6 +1082,7 @@ const CRIMES = [
       { from: 'them', text: 'USB से कनेक्ट होते ही "Trust this device?"' },
       { from: 'me', text: 'Allow दबा दिया…' },
     ],
+    result: { label: 'DATA LEAKED', sub: 'निजी डेटा और पासवर्ड ठगों के पास', emoji: '🔓' },
     loss: 'डेटा + पासवर्ड',
     steps: [
       'स्टेशन, बस स्टैंड या कैफे में फ्री WiFi / USB चार्जिंग',
