@@ -6,7 +6,7 @@
 //
 //   node tools/render.js                  -> today's crime (rotation, no repeats) and marks it used
 //   node tools/render.js <crime-id> [day] -> a specific crime (rotation untouched)
-// Env: VOICE=rohan|pratham|priyamvada  SPEED=0.85  FPS=30  NOVOICE=1
+// Env: VOICE=rohan|pratham|priyamvada  SPEED=0.93  FPS=30  NOVOICE=1
 // Own recording: put voice/<crime-id>.mp3 and it replaces the AI voice (timeline then uses default pacing).
 const fs = require('fs'), path = require('path'), { spawn, execFileSync } = require('child_process');
 const { chromium } = require('playwright');
@@ -16,7 +16,7 @@ const V = require('../data/voice.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const FPS = +(process.env.FPS || 30);
-const VOICE = process.env.VOICE || 'rohan', SPEED = process.env.SPEED || '0.85';
+const VOICE = process.env.VOICE || 'rohan', SPEED = process.env.SPEED || '0.93';
 // cinematic grade: contrast, teal shadows / warm highlights, saturation, sharpen, light film grain
 const GRADE = 'eq=contrast=1.07:saturation=1.18:gamma=0.98,colorbalance=rs=-0.03:bs=0.05:rh=0.04:bh=-0.03,unsharp=5:5:0.6,noise=alls=2:allf=t,format=yuv420p';
 

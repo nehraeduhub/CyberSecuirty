@@ -3,7 +3,7 @@
 Usage: python3 tools/voice.py lines.json outdir [voice] [speed]
   lines.json = [{"key": "hook", "say": "..."}]
   voice      = rohan (male, default) | pratham (male) | priyamvada (female)
-  speed      = length_scale, <1 is faster (default 0.92)
+  speed      = length_scale, <1 is faster (default 0.93, calm pace)
 Writes outdir/<key>.wav (44.1k, processed) and prints {"key": seconds} JSON.
 Models: reels/models/hi_IN-<voice>-medium.onnx (see README for download).
 """
@@ -16,11 +16,12 @@ def main():
     lines = json.load(open(sys.argv[1]))
     out = sys.argv[2]
     voice = sys.argv[3] if len(sys.argv) > 3 else 'rohan'
-    speed = float(sys.argv[4]) if len(sys.argv) > 4 else 0.92
+    speed = float(sys.argv[4]) if len(sys.argv) > 4 else 0.93
     from piper import PiperVoice, SynthesisConfig
     model = os.path.join(ROOT, 'models', f'hi_IN-{voice}-medium.onnx')
     pv = PiperVoice.load(model)
-    cfg = SynthesisConfig(length_scale=speed, noise_scale=0.6, noise_w_scale=0.75)
+    # calm delivery: lower noise_scale = steadier, less excited intonation
+    cfg = SynthesisConfig(length_scale=speed, noise_scale=0.42, noise_w_scale=0.6)
     os.makedirs(out, exist_ok=True)
     durs = {}
     for ln in lines:
@@ -31,9 +32,10 @@ def main():
         # radio-voice chain: trim silences, de-rumble, presence EQ, compression, warmth, loudness
         af = ('silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,'
               'areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.05,areverse,'
-              'highpass=f=80,equalizer=f=200:t=q:w=1:g=2,equalizer=f=3200:t=q:w=1.2:g=3,'
-              'equalizer=f=7500:t=q:w=1:g=-2,acompressor=threshold=-20dB:ratio=3.5:attack=5:release=120:makeup=3,'
-              'aecho=0.8:0.5:28:0.08,aresample=44100,loudnorm=I=-15:TP=-1.5:LRA=7')
+              # soft, warm tone: gentle low warmth, no harsh presence boost, rolled-off highs, light compression
+              'highpass=f=70,equalizer=f=180:t=q:w=1:g=3,equalizer=f=3000:t=q:w=1.2:g=-1.5,'
+              'treble=g=-4:f=6000,acompressor=threshold=-22dB:ratio=2.2:attack=15:release=250:makeup=2,'
+              'aecho=0.8:0.4:35:0.06,aresample=44100,loudnorm=I=-16:TP=-2:LRA=9')
         subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', raw, '-af', af, '-ac', '1', '-ar', '44100', fin], check=True)
         os.remove(raw)
         with wave.open(fin) as w:
