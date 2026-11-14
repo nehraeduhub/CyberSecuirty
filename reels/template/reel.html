@@ -358,7 +358,9 @@ scene('how','how',`
       <div class="notch"></div>
       <div class="appbar"><span style="font-size:34px">←</span><div class="av">${icon}</div><div><div class="nm">${esc(crime.contact)}</div><div class="st">online</div></div></div>
       ${top}<div class="chat">${bubbles}</div>${btns}
-      <div class="notif a" ${st(anim('drop',.5,otpT), anim('outFade',.3,debitT,'linear'))}><b>📩 Messages • now</b>Your OTP for transaction is <b style="display:inline;color:#111;font-size:26px">482915</b>. Do not share.<span class="leak a" ${st(anim('fadeIn',.3,otpT+1.4))}>⚠️ OTP चोरी होकर ठग के पास पहुँचा!</span></div>
+      <div class="notif a" ${st(anim('drop',.5,otpT), anim('outFade',.3,debitT,'linear'))}>${crime.notif
+        ? `<b>${esc(crime.notif.title)}</b>${esc(crime.notif.text)}<span class="leak a" ${st(anim('fadeIn',.3,otpT+1.4))}>${esc(crime.notif.leak)}</span>`
+        : `<b>📩 Messages • now</b>Your OTP for transaction is <b style="display:inline;color:#111;font-size:26px">482915</b>. Do not share.<span class="leak a" ${st(anim('fadeIn',.3,otpT+1.4))}>⚠️ OTP चोरी होकर ठग के पास पहुँचा!</span>`}</div>
       <div class="debit a" ${st(anim('fadeIn',.3,debitT))}>
         <div class="x a" ${st(anim('slamIn',.5,debitT+.1))}>💸</div>
         <div class="dl">DEBITED</div>

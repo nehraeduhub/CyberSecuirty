@@ -9,6 +9,7 @@
  *  platform                  : whatsapp | sms | telegram | instagram | olx | call | facebook | web
  *  contact                   : name or number shown on the phone mockup
  *  messages                  : chat bubbles [{from:'them'|'me', text} | {from, file:'x.apk', size}]
+ *  notif                     : optional mid-demo notification {title, text, leak}; default = stolen OTP
  *  loss                      : amount shown as "debited" in the demo
  *  steps[4]                  : how the crime happens
  *  flags[3]                  : warning signs
@@ -81,6 +82,7 @@ const CRIMES = [
   },
   {
     id: 'digital-arrest',
+    notif: { title: '📹 Video call • 2 घंटे से चालू', text: 'कैमरा बंद करने या किसी से बात करने की मनाही', leak: '⚠️ असली पुलिस ऐसा कभी नहीं करती!' },
     title: 'डिजिटल अरेस्ट',
     tag: 'Digital Arrest Scam',
     hook: 'पुलिस वर्दी में वीडियो कॉल… और आप "गिरफ्तार"? 🚨',
@@ -114,6 +116,7 @@ const CRIMES = [
   },
   {
     id: 'olx-fake-fauji',
+    notif: { title: '💸 UPI • now', text: '₹2,150 paid: "Army gate-pass fee"', leak: '⚠️ सामान कभी नहीं आएगा!' },
     title: 'OLX पर फर्जी फौजी',
     tag: 'Fake Army Officer Marketplace Fraud',
     hook: 'फौजी बनकर बेच रहा था सस्ती बाइक… असली ठग निकला! 🏍️',
@@ -148,6 +151,7 @@ const CRIMES = [
   },
   {
     id: 'sextortion-video-call',
+    notif: { title: '🎥 Screen recording', text: 'आपका चेहरा रिकॉर्ड किया जा रहा है', leak: '⚠️ यही वीडियो ब्लैकमेल में इस्तेमाल होगा!' },
     title: 'वीडियो कॉल सेक्सटॉर्शन',
     tag: 'Sextortion Video Call',
     hook: 'रात में अनजान वीडियो कॉल उठाया? अगली सुबह ब्लैकमेल! 📵',
@@ -313,6 +317,7 @@ const CRIMES = [
   },
   {
     id: 'telegram-task-job',
+    notif: { title: '💸 UPI • now', text: '₹10,000 paid: "VIP task deposit"', leak: '⚠️ मुनाफा सिर्फ स्क्रीन पर है, असली नहीं!' },
     title: 'टेलीग्राम टास्क / पार्ट-टाइम जॉब',
     tag: 'Task-based Part-time Job Scam',
     hook: 'वीडियो लाइक करो, ₹5000 रोज कमाओ? 👍 ये जाल है',
@@ -346,6 +351,7 @@ const CRIMES = [
   },
   {
     id: 'stock-trading-group',
+    notif: { title: '📈 Trading app', text: 'Profit: +₹4,80,000 (withdrawal locked)', leak: '⚠️ ऐप नकली है, मुनाफा भी नकली!' },
     title: 'शेयर ट्रेडिंग ग्रुप स्कैम',
     tag: 'Fake Stock Trading Group',
     hook: '1 महीने में पैसा डबल? 📈 ये "ट्रेडिंग ग्रुप" नकली है',
@@ -379,6 +385,7 @@ const CRIMES = [
   },
   {
     id: 'qr-code-receive',
+    notif: { title: '💸 UPI • now', text: 'PIN डालते ही: ₹25,000 Paid', leak: '⚠️ पैसे आए नहीं, चले गए!' },
     title: 'QR कोड से "पैसे पाओ" स्कैम',
     tag: 'QR Code Receive-Money Fraud',
     hook: 'QR स्कैन करने से पैसे आते नहीं, जाते हैं! 📲',
@@ -412,6 +419,7 @@ const CRIMES = [
   },
   {
     id: 'wrong-upi-refund',
+    notif: { title: '🏦 Bank app • now', text: 'Available balance: ₹250', leak: '⚠️ खाते में कोई पैसा आया ही नहीं था!' },
     title: '"गलती से पैसे भेज दिए" स्कैम',
     tag: 'Wrong UPI Transfer Refund Scam',
     hook: '"भाई गलती से ₹5000 भेज दिए, लौटा दो" 🙏 रुकिए!',
@@ -445,6 +453,7 @@ const CRIMES = [
   },
   {
     id: 'ai-voice-clone',
+    notif: { title: '🎙️ Voice check', text: 'ये आवाज़ रिकॉर्डेड / AI से बनी है', leak: '⚠️ बेटा सुरक्षित है, आवाज़ नकली है!' },
     title: 'AI आवाज क्लोन स्कैम',
     tag: 'AI Voice Clone Emergency Scam',
     hook: 'फोन पर बेटे की रोती आवाज… पर बेटा वो नहीं था! 🎙️',
@@ -478,6 +487,7 @@ const CRIMES = [
   },
   {
     id: 'instant-loan-app',
+    notif: { title: '📂 App permission', text: 'Contacts, Photos, Gallery: Allowed', leak: '⚠️ आपके कॉन्टैक्ट्स और फोटो ठगों के पास!' },
     title: 'इंस्टेंट लोन ऐप ब्लैकमेल',
     tag: 'Predatory Instant Loan App',
     hook: '₹5000 का लोन लिया… और फोटो गंदी करके वायरल! 💸',
@@ -511,6 +521,7 @@ const CRIMES = [
   },
   {
     id: 'sim-swap',
+    notif: { title: '📶 No service', text: 'SIM deactivated • Emergency calls only', leak: '⚠️ आपका नंबर अब ठग के फोन में चालू!' },
     title: 'सिम स्वैप / eSIM फ्रॉड',
     tag: 'SIM Swap / eSIM Fraud',
     hook: 'अचानक फोन में "No Network"… और खाता खाली! 📶',
@@ -544,6 +555,7 @@ const CRIMES = [
   },
   {
     id: 'fake-customer-care',
+    notif: { title: '🖥️ Screen sharing started', text: 'Remote device is viewing your screen', leak: '⚠️ ठग आपका PIN और OTP देख रहा है!' },
     title: 'Google पर फर्जी कस्टमर केयर',
     tag: 'Fake Customer Care Number',
     hook: 'Google पर कस्टमर केयर नंबर ढूँढा? सावधान! 🔍',
@@ -577,6 +589,7 @@ const CRIMES = [
   },
   {
     id: 'kbc-lottery',
+    notif: { title: '💸 UPI • now', text: '₹12,500 paid: "Lottery GST"', leak: '⚠️ इनाम कभी नहीं आएगा!' },
     title: 'KBC लॉटरी स्कैम',
     tag: 'Fake Lottery / KBC Prize',
     hook: 'बधाई हो! आपने ₹25 लाख जीते 🎉 …पर टिकट तो लिया ही नहीं!',
@@ -610,6 +623,7 @@ const CRIMES = [
   },
   {
     id: 'agniveer-recruitment',
+    notif: { title: '📄 Joining_Letter.pdf', text: 'नकली मुहर और नकली दस्तखत वाला लेटर', leak: '⚠️ भर्ती सिर्फ मेरिट से होती है!' },
     title: 'फौज भर्ती के नाम पर ठगी',
     tag: 'Fake Army / Agniveer Recruitment',
     hook: 'पैसे दो, फौज में पक्की भर्ती? 🪖 ये सबसे बड़ा झूठ है',
@@ -676,6 +690,7 @@ const CRIMES = [
   },
   {
     id: 'aeps-biometric',
+    notif: { title: '🏧 AePS withdrawal', text: '₹10,000 withdrawn using fingerprint', leak: '⚠️ न OTP आया, न कॉल!' },
     title: 'आधार AePS बायोमेट्रिक फ्रॉड',
     tag: 'Aadhaar AePS Silent Withdrawal',
     hook: 'न OTP, न कॉल… फिर भी खाते से पैसे गायब! 👆',
@@ -709,6 +724,7 @@ const CRIMES = [
   },
   {
     id: 'dham-room-booking',
+    notif: { title: '💸 UPI • now', text: '₹6,600 paid: "Room booking advance"', leak: '⚠️ कोई बुकिंग हुई ही नहीं!' },
     title: 'धाम / होटल ऑनलाइन बुकिंग ठगी',
     tag: 'Fake Pilgrimage Room Booking',
     hook: 'मेले में धर्मशाला ऑनलाइन बुक की? 🛕 कमरा था ही नहीं!',
@@ -742,6 +758,7 @@ const CRIMES = [
   },
   {
     id: 'fake-dp-officer',
+    notif: { title: '🎁 Gift card sent', text: '₹50,000 Amazon gift card codes shared', leak: '⚠️ असली अफसर को पता भी नहीं!' },
     title: 'अफसर / दोस्त की DP लगाकर ठगी',
     tag: 'Impersonation via Profile Photo',
     hook: 'कलेक्टर साहब का मैसेज आया, "जरूरी काम है, पैसे भेजो"? 👔',
@@ -775,6 +792,7 @@ const CRIMES = [
   },
   {
     id: 'fake-shopping-site',
+    notif: { title: '📦 Order status', text: 'Tracking ID not found', leak: '⚠️ वेबसाइट नकली थी!' },
     title: 'सस्ता सामान फेक वेबसाइट',
     tag: 'Fake Online Shopping Site',
     hook: '₹40,000 का फोन सिर्फ ₹4,999 में? 📱 सेल नहीं, स्कैम है',
@@ -841,6 +859,7 @@ const CRIMES = [
   },
   {
     id: 'instagram-hack',
+    notif: { title: '🔐 Instagram', text: 'New login from unknown device', leak: '⚠️ अकाउंट अब ठग के कब्जे में!' },
     title: 'इंस्टाग्राम अकाउंट हैक',
     tag: 'Instagram Account Takeover',
     hook: '"ब्लू टिक चाहिए?" 💙 एक क्लिक और अकाउंट गया',
@@ -940,6 +959,7 @@ const CRIMES = [
   },
   {
     id: 'matrimonial-gift',
+    notif: { title: '💸 UPI • now', text: '₹45,000 paid: "Custom duty"', leak: '⚠️ कोई गिफ्ट था ही नहीं!' },
     title: 'मैट्रिमोनियल / विदेशी गिफ्ट स्कैम',
     tag: 'Matrimonial / Foreign Gift Scam',
     hook: 'विदेशी दोस्त ने गिफ्ट भेजा… कस्टम ड्यूटी ₹45,000? 🎁',
@@ -1006,6 +1026,7 @@ const CRIMES = [
   },
   {
     id: 'scholarship-scam',
+    notif: { title: '💸 UPI • now', text: 'PIN डालते ही: ₹26,000 Paid', leak: '⚠️ पैसे लेने के लिए PIN नहीं लगता!' },
     title: 'स्कॉलरशिप के नाम पर ठगी',
     tag: 'Fake Scholarship Call',
     hook: 'छात्रों! ₹48,000 स्कॉलरशिप का कॉल आया? 🎓',
@@ -1039,6 +1060,7 @@ const CRIMES = [
   },
   {
     id: 'free-wifi-charging',
+    notif: { title: '🔌 USB connected', text: 'File transfer / data access: Allowed', leak: '⚠️ आपका डेटा कॉपी हो रहा है!' },
     title: 'फ्री WiFi / चार्जिंग स्टेशन खतरा',
     tag: 'Public WiFi & Juice Jacking',
     hook: 'बस स्टैंड पर फ्री चार्जिंग? 🔌 फोन का डेटा भी "चार्ज" हो सकता है',
