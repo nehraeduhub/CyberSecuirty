@@ -62,7 +62,7 @@
     const L = [];
     const add = (key, text, say) => L.push({ key, text, say: speak(say == null ? text : say) });
     add('hook', c.hook);
-    add('intro', '', `राम राम सा! मैं आर जे नेहरा, साइबर सेफ झुंझुनूं से। आज का साइबर क्राइम, ${c.title}। अंत तक देखिए, फोन की सेटिंग भी बताऊँगा।`);
+    add('intro', '', `राम राम सा! साइबर सेफ झुंझुनूं में आपका स्वागत है। आज का साइबर क्राइम, ${c.title}। अंत तक देखिए, फोन की सेटिंग भी बताऊँगा।`);
     c.steps.forEach((s, i) => add('how.' + i, s));
     add('flags.title', '', 'खतरे के संकेत।');
     c.flags.forEach((s, i) => add('flags.' + i, s));
