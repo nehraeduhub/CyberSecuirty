@@ -26,8 +26,8 @@ FILE: CSJ-Fake-Army-Officer-Marketplace-Fraud
 
 ⚙️ अभी करें ये फोन सेटिंग:
 🔧 Bank app › UPI › Manage limits › Low daily UPI limit → ON
+🔧 Phone app › Settings › Caller ID & spam › Filter spam calls → ON
 🔧 WhatsApp › Settings › Privacy › Calls › Silence unknown callers → ON
-🔧 WhatsApp › Settings › Privacy › Groups › Groups: My contacts only → ON
 
 📞 ठगी हो जाए तो तुरंत साइबर हेल्पलाइन 1930 पर कॉल करें
 🌐 शिकायत: cybercrime.gov.in
