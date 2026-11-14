@@ -39,8 +39,10 @@ Output, a same-name set in `reels/export/`:
 
 Options: `VOICE=pratham` or `VOICE=priyamvada` (female), `SPEED=0.8` (faster), `node tools/render.js digital-arrest 5` (specific crime).
 
-**Save to Google Drive (`G:\My Drive\CSJ Reels`):** on your Windows PC, double-click `reels\tools\save-to-drive.bat`.
-It pulls the latest reels and copies the new files into that folder.
+**Save to Google Drive (`G:\My Drive\CSJ Reels`):** on your Windows PC, download only `reels/tools/save-to-drive.bat`
+(GitHub → file → "Download raw file") and double-click it. No Git or repo clone needed: it lists the reels on GitHub,
+skips the ones already in Drive, and downloads each new file to a temp file that is then moved into Drive,
+so no copy stays on the PC.
 
 ## No repeats + new Rajasthan crimes
 
