@@ -48,5 +48,20 @@
     "day": 10,
     "id": "stock-trading-group",
     "rendered": "2026-11-13"
+  },
+  {
+    "day": 11,
+    "id": "qr-code-receive",
+    "rendered": "2026-11-14"
+  },
+  {
+    "day": 12,
+    "id": "wrong-upi-refund",
+    "rendered": "2026-11-14"
+  },
+  {
+    "day": 13,
+    "id": "ai-voice-clone",
+    "rendered": "2026-11-14"
   }
 ]
