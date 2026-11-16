@@ -30,19 +30,32 @@ const slug = s => s.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const dd = String(plan.day).padStart(2, '0');
   const name = `CSJ-${slug(crime.tag)}`;
   const work = path.join(ROOT, 'output', '.work', name); fs.mkdirSync(work, { recursive: true });
-  const exp = path.join(ROOT, 'export'); fs.mkdirSync(exp, { recursive: true });
+  const exp = process.env.EXPORT_DIR ? path.resolve(process.env.EXPORT_DIR) : path.join(ROOT, 'export'); fs.mkdirSync(exp, { recursive: true });
 
   // 1) voiceover
   const own = ['mp3', 'm4a', 'wav', 'aac'].map(e => path.join(ROOT, 'voice', `${crime.id}.${e}`)).find(fs.existsSync);
   let durations = null;
   if (!own && !process.env.NOVOICE) {
     const linesFile = path.join(work, 'lines.json');
-    fs.writeFileSync(linesFile, JSON.stringify(V.lines(crime)));
-    console.log(`voice: synthesizing (${VOICE}, speed ${SPEED}) ...`);
-    durations = JSON.parse(execFileSync('python3', [path.join(__dirname, 'voice.py'), linesFile, path.join(work, 'vo'), VOICE, SPEED]).toString());
+    const voDir = path.join(work, 'vo');
+    if (process.env.SIMPLE_VOICE) {   // old single-pass voice (no direction / QC)
+      fs.writeFileSync(linesFile, JSON.stringify(V.lines(crime)));
+      durations = JSON.parse(execFileSync('python3', [path.join(__dirname, 'voice.py'), linesFile, voDir, VOICE, SPEED]).toString());
+    } else {                          // Voice Director: directions + QC + targeted re-generation
+      fs.writeFileSync(linesFile, JSON.stringify({ lines: V.lines(crime), lex: Object.fromEntries(V.WORDS), letters: V.LETTERS }));
+      console.log(`voice director: ${VOICE}, base speed ${SPEED} (directions, QC, re-generation) ...`);
+      durations = JSON.parse(execFileSync('python3', [path.join(__dirname, 'director.py'), 'direct', linesFile, voDir, VOICE, SPEED], { stdio: ['ignore', 'pipe', 'inherit'], maxBuffer: 1 << 24 }).toString());
+      // keep within 2 minutes without touching the pitch: gentle time-compress of every clip
+      const t1 = V.timing(crime, durations).T.end;
+      if (t1 > 118) {
+        const f = Math.min(1.08, (t1 - 6) / 112).toFixed(3);
+        console.log(`reel ${t1.toFixed(1)}s > 118s: tempo x${f}`);
+        durations = JSON.parse(execFileSync('python3', [path.join(__dirname, 'director.py'), 'tempo', voDir, f]).toString());
+      }
+    }
   }
   const tm = V.timing(crime, durations);
-  if (tm.T.end > 120) console.warn(`WARNING: reel is ${tm.T.end.toFixed(1)}s (>120). Use SPEED=0.8 or shorten lines.`);
+  if (tm.T.end > 120) console.warn(`WARNING: reel is ${tm.T.end.toFixed(1)}s (>120).`);
 
   // 2) page
   const browser = await chromium.launch();
@@ -95,6 +108,15 @@ const slug = s => s.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const S = require('./script');
   fs.writeFileSync(path.join(exp, `${name}-caption.txt`), S.caption({ crime, name, day: plan.day, duration: meta.duration }));
   fs.writeFileSync(path.join(work, 'voiceover-script.txt'), S.script({ crime, T: meta.T, duration: meta.duration, voice: meta.voice }));
+  // voice deliverables: voice-only track + direction / QC report (reels/voice-reports/<name>/)
+  const qcFile = path.join(work, 'vo', 'qc.json');
+  if (durations && fs.existsSync(qcFile)) {
+    const vr = path.join(ROOT, 'voice-reports', name); fs.mkdirSync(vr, { recursive: true });
+    execFileSync('python3', [path.join(__dirname, 'director.py'), 'track', evFile, path.join(vr, `${name}-voiceover.mp3`)]);
+    const qc = JSON.parse(fs.readFileSync(qcFile, 'utf8'));
+    fs.writeFileSync(path.join(vr, `${name}-voice-report.txt`), S.voiceReport({ crime, name, qc, voice: meta.voice, duration: meta.duration, voiceName: VOICE }));
+    console.log('voice  :', vr);
+  }
   if (!id) markUsed(plan);
   console.log(`\ndone in ${((Date.now() - t0) / 1000).toFixed(0)}s  (${meta.duration.toFixed(1)}s reel)`);
   for (const f of [final, thumb, path.join(exp, `${name}-caption.txt`)]) console.log('  ' + f);

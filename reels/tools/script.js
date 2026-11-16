@@ -56,4 +56,46 @@ function script({ crime: c, T, duration, voice }) {
   }
   return L.join('\n') + '\n';
 }
-module.exports = { caption, script };
+function voiceReport({ crime: c, name, qc, voice, duration, voiceName }) {
+  const at = Object.fromEntries(voice.map(v => [v.key, v]));
+  const ts = k => at[k] ? `${mmss(at[k].t)}.${String(Math.round((at[k].t % 1) * 10))}` : '--:--';
+  const pass = qc.filter(r => r.status === 'PASS').length;
+  const fixed = qc.filter(r => r.corrections.length);
+  const L = [];
+  L.push(`VOICE REPORT: ${name}`, `${c.title} (${c.tag})`, `Voice: ${voiceName} (Piper hi_IN, offline)  |  Reel: ${mmss(duration)}  |  Lines: ${qc.length}`, '');
+  L.push(`FINAL QC STATUS: ${pass === qc.length ? 'PASS' : 'PASS WITH REVIEW'} (${pass}/${qc.length} lines pass, ${qc.length - pass} need a human listen)`, '');
+  L.push('How QC works: every take is transcribed by Whisper large-v3-turbo and compared with the script',
+    '(CER = character error rate; spelling-equivalent forms count as equal). Also checked: speaking rate,',
+    'unplanned gaps, clipping, loudness. 3 takes per line; failing lines get correction rounds',
+    '(slower, steadier) and only those lines are regenerated. Final listening by a human is still advised.', '');
+  L.push('1) FINAL SCRIPT WITH VOICE DIRECTIONS', '-'.repeat(60));
+  for (const r of qc) L.push(`[${ts(r.key)}] (${r.key})`, `  ${r.markers}`, '');
+  L.push('2) SENTENCE-WISE VOICE DIRECTION SHEET', '-'.repeat(60));
+  L.push('time    | line        | pace   pitch  gain  | directions / emphasis');
+  for (const r of qc) for (const ch of r.chunks) {
+    const p = ch.params;
+    L.push(`${ts(r.key).padEnd(7)} | ${r.key.padEnd(11)} | ${String(p.ls).padEnd(6)} ${(p.pitch >= 0 ? '+' : '') + p.pitch.toFixed(1)}st ${(p.gain >= 0 ? '+' : '') + p.gain.toFixed(1)}dB | ${ch.emph ? '[EMPHASIZE ' + ch.emph + '] ' : ''}${ch.text}${ch.pause_after ? `  (+${ch.pause_after}s pause)` : ''}`);
+  }
+  L.push('', 'pace = Piper length_scale (higher = slower); pitch in semitones; gain relative to the reel loudness.', '');
+  L.push('3) TIMESTAMP-WISE CORRECTION REPORT', '-'.repeat(60));
+  if (!fixed.length) L.push('No corrections needed: every line passed on its first round.');
+  for (const r of fixed) {
+    L.push(`[${ts(r.key)}] ${r.key}: "${r.say}"`);
+    for (const k of r.corrections) L.push(`   round ${k.round}: problem = ${k.problem}`, `            action  = ${k.action}`);
+    const first = r.attempts[0];
+    L.push(`   result: take ${r.chosen} chosen, CER ${first.cer} -> ${r.final.cer}; status ${r.status}`, '');
+  }
+  L.push('', '4) LINE-BY-LINE QC RESULT', '-'.repeat(60));
+  for (const r of qc) {
+    L.push(`[${ts(r.key)}] ${r.status.padEnd(6)} ${r.key.padEnd(11)} CER ${String(r.final.cer).padEnd(5)} rate ${r.final.rate} ch/s  takes ${r.attempts.length}${r.final.issues.length ? '  issues: ' + r.final.issues.join('; ') : ''}`);
+    L.push(`         ASR heard: ${r.final.hyp}`);
+  }
+  L.push('', '5) KNOWN LIMITS OF THIS AI VOICE', '-'.repeat(60),
+    '- Piper has no emotion tags: directions are realised through pace, pitch, expressiveness, loudness and pauses.',
+    '  [WHISPER] is not used (the model cannot whisper naturally).',
+    '- The aspirated "झ" (as in झुंझुनूं) comes out close to "ज" in all three Hindi voices; no spelling fixes it.',
+    '  Context keeps it clear; a human recording (voice/<crime-id>.mp3) avoids it completely.',
+    '- ASR checks words, not feeling: emotion and naturalness still need one human listen before posting.');
+  return L.join('\n') + '\n';
+}
+module.exports = { caption, script, voiceReport };

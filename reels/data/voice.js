@@ -121,6 +121,6 @@
     return { T, X, voice, lines: ls };
   }
 
-  const api = { lines, timing, speak, num };
+  const api = { lines, timing, speak, num, WORDS, LETTERS };
   if (typeof module !== 'undefined') module.exports = api; else root.VOICE = api;
 })(this);
