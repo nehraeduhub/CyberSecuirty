@@ -13,7 +13,7 @@
    "⚡ Live lookups",
    "📞 1930 helpline"
   ],
-  "vo": "एक सौ पचास से ज़्यादा साइबर सेफ़्टी टूल्स, बिल्कुल फ़्री! टेक गार्डियन्स साइबर सेफ़्टी पोर्टल पर।",
+  "vo": "[EXCITED] एक सौ पचास से ज़्यादा साइबर सेफ़्टी टूल्स, [EMPHASIZE] बिल्कुल फ़्री! [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स साइबर सेफ़्टी पोर्टल पर।",
   "sub": "150+ cyber safety tools, bilkul FREE! Tech Guardians Cyber Safety Portal par."
  },
  "steps": [
@@ -22,7 +22,7 @@
    "icon": "📱",
    "title": "<em>Anjaan</em> number?",
    "tip": "📱 Spam / scam check",
-   "vo": "अनजान नंबर से कॉल आया? मोबाइल नंबर लुकअप से, स्पैम और स्कैम चेक कीजिए।",
+   "vo": "[QUESTIONING] अनजान नंबर से कॉल आया? [SHORT PAUSE] [CALM] मोबाइल नंबर लुकअप से, स्पैम और स्कैम चेक कीजिए।",
    "sub": "Anjaan number se call aaya? Mobile number lookup se spam aur scam check kijiye.",
    "shots": [
     {
@@ -52,7 +52,7 @@
    "icon": "🔓",
    "title": "Email / password <em>leak</em>?",
    "tip": "🔓 Breach check",
-   "vo": "आपका ईमेल या पासवर्ड, किसी डेटा लीक में तो नहीं? ब्रीच चेक से तुरंत पता कीजिए।",
+   "vo": "[SERIOUS] आपका ईमेल या पासवर्ड, किसी डेटा लीक में तो नहीं? [SHORT PAUSE] [CALM] ब्रीच चेक से, तुरंत पता कीजिए।",
    "sub": "Aapka email ya password kisi data leak me to nahi? Breach check se turant pata kijiye.",
    "shots": [
     {
@@ -87,7 +87,7 @@
    "icon": "🖼️",
    "title": "Asli ya <em>deepfake</em>?",
    "tip": "🔍 Photo forensics",
-   "vo": "फ़ोटो असली है या डीपफ़ेक? फ़ोटो फ़ॉरेंसिक्स से जाँचिए।",
+   "vo": "[QUESTIONING] फ़ोटो असली है, या डीपफ़ेक? [SHORT PAUSE] [CALM] फ़ोटो फ़ॉरेंसिक्स से जाँचिए।",
    "sub": "Photo asli hai ya deepfake? Photo forensics se jaanchiye.",
    "shots": [
     {
@@ -117,7 +117,7 @@
    "icon": "🏛️",
    "title": "<em>Sarkari</em> services",
    "tip": "🏛️ Ek click me",
-   "vo": "संचार साथी, साइबर क्राइम पोर्टल, जैसी सरकारी सर्विसेज़, एक क्लिक में।",
+   "vo": "[CALM] संचार साथी, साइबर क्राइम पोर्टल, जैसी सरकारी सर्विसेज़, [SHORT PAUSE] [CONFIDENT] एक क्लिक में।",
    "sub": "Sanchar Saathi, Cyber Crime Portal jaisi sarkari services — ek click me.",
    "shots": [
     {
@@ -147,7 +147,7 @@
    "icon": "1930",
    "title": "Turant <em>1930</em> call",
    "tip": "📞 1930 · cybercrime.gov.in",
-   "vo": "अगर फ़्रॉड हो जाए, तो तुरंत उन्नीस सौ तीस पर कॉल कीजिए, और साइबर क्राइम सपोर्ट फ़ॉर्म भरिए।",
+   "vo": "[WARNING] अगर फ़्रॉड हो जाए, [SHORT PAUSE] [SLOW] तो तुरंत उन्नीस सौ तीस पर कॉल कीजिए, [SHORT PAUSE] [SERIOUS] और साइबर क्राइम सपोर्ट फ़ॉर्म भरिए।",
    "sub": "Agar fraud ho jaye, to turant 1930 par call kijiye, aur Cyber Crime Support form bhariye.",
    "shots": [
     {
@@ -204,7 +204,7 @@
    "🆓 150+ tools",
    "📞 1930"
   ],
-  "vo": "सेफ़ रहिए, स्मार्ट रहिए। अभी खोलिए, टेक गार्डियन्स डॉट इन।",
+  "vo": "[POLITE] सेफ़ रहिए, स्मार्ट रहिए। [LONG PAUSE] [EXCITED] अभी खोलिए, [CONFIDENT] टेक गार्डियन्स डॉट इन।",
   "sub": "Safe rahiye, smart rahiye. Abhi kholiye — techguardians.in"
  },
  "cover": {
@@ -237,7 +237,7 @@
   "kind": "seen",
   "name": "B1-Website-Tour",
   "rom": "Tech Guardians Website Tour",
-  "vo": "टेक गार्डियन्स वेबसाइट टूर वाली रील देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] टेक गार्डियन्स वेबसाइट टूर वाली रील देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Tech Guardians Website Tour wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  }
 }

@@ -34,8 +34,10 @@ for label, names in groups:
                 for f in sorted(os.listdir(os.path.join(out, n))): z.write(os.path.join(out, n, f), f'{n}/{f}')
         mb = os.path.getsize(os.path.join(Z, zn)) / 1e6
         index.append((zn, mb, part)); print(f'{zn}  {mb:.0f} MB  {len(part)} reels')
+import shutil
+if os.path.exists(os.path.join(out, 'VOICE-QC-REPORT.md')): shutil.copy(os.path.join(out, 'VOICE-QC-REPORT.md'), Z)
 with open(os.path.join(Z, 'INDEX.md'), 'w', encoding='utf-8') as f:
-    f.write('# Tech Guardians reels — zip index\n\nEach reel folder has: `.mp4` (1080×1920), `-thumbnail.jpg`, `.srt` captions, `.txt` post caption + hashtags.\n\n')
+    f.write('# Tech Guardians reels — zip index\n\nEach reel folder has: `.mp4` (1080×1920), `-thumbnail.jpg`, `.srt` captions, `.txt` post caption + hashtags, `-voiceover.mp3` (voice only) and `-voice-script.md` (script with voice directions, direction sheet, correction report). Quality-check overview of all reels: `VOICE-QC-REPORT.md`.\n\n')
     for zn, mb, part in index: f.write(f'## {zn} ({mb:.0f} MB)\n' + ''.join(f'- {n}\n' for n in part) + '\n')
 if start:    # one reel a day: brand reels, then path by path in series order (the path reel, then its topics),
     # so the "Agli reel: Room N+1" line at the end of every topic reel matches what is posted next

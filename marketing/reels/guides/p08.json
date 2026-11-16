@@ -13,7 +13,7 @@
    "🚩 3 rooms",
    "🧪 30 tasks"
   ],
-  "vo": "साइबर डिटेक्टिव बनना है? डिजिटल फ़ॉरेंसिक्स पाथ।",
+  "vo": "[QUESTIONING] साइबर डिटेक्टिव बनना है? [LONG PAUSE] [EMPHASIZE] डिजिटल फ़ॉरेंसिक्स पाथ।",
   "sub": "Cyber detective banna hai? Digital Forensics path."
  },
  "steps": [
@@ -39,8 +39,8 @@
      ]
     }
    ],
-   "vo": "इस पाथ में तीन हैंडबुक्स हैं। डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स से, फ़ॉरेंसिक टूल्स तक।",
-   "sub": "Is path me 3 handbooks hain — Digital Forensics Fundamentals se Forensic Tools tak."
+   "vo": "[CALM] इस पाथ में तीन हैंडबुक्स हैं। [SHORT PAUSE] [CONFIDENT] डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स से, फ़ॉरेंसिक टूल्स तक।",
+   "sub": "Is path me 3 handbooks hain. Digital Forensics Fundamentals se Forensic Tools tak."
   },
   {
    "label": "3 CTF Rooms",
@@ -73,7 +73,7 @@
      "Forensic Tools"
     ]
    ],
-   "vo": "और तीन सीटीएफ़ रूम्स, जिनमें 30 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "vo": "[CALM] और तीन सीटीएफ़ रूम्स, जिनमें तीस हैंड्स-ऑन टास्क हैं। [SHORT PAUSE] [EMPHASIZE] हर रूम का पहला टास्क फ़्री है।",
    "sub": "Aur 3 CTF rooms, jinme 30 hands-on tasks hain. Har room ka pehla task FREE hai."
   },
   {
@@ -107,7 +107,7 @@
      "FTK, KAPE, Autopsy, Volatility"
     ]
    ],
-   "vo": "इस पाथ के बाद, आप सबूत ढूँढकर, कोर्ट में टिकने वाली रिपोर्ट बना पाएँगे।",
+   "vo": "[CONFIDENT] इस पाथ के बाद, [SHORT PAUSE] आप सबूत ढूँढकर, कोर्ट में टिकने वाली रिपोर्ट बना पाएँगे।",
    "sub": "Is path ke baad aap saboot dhoondhkar court me tikne wali report bana paayenge.",
    "confetti": 0.6
   }
@@ -119,7 +119,7 @@
    "📘 3 handbooks",
    "🚩 3 rooms"
   ],
-  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "vo": "[EXCITED] आज ही ये पाथ शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।",
   "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
  },
  "ref": {
@@ -127,7 +127,7 @@
   "name": "36-Digital-Forensics-Fundamentals",
   "rom": "Room 36 · Digital Forensics Fundamentals",
   "cover": "forensics-fundamentals",
-  "vo": "इस पाथ की पहली रील, डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] इस पाथ की पहली रील, डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स, देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Is path ki pehli reel — Digital Forensics Fundamentals — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  },
  "cover": {

@@ -13,7 +13,7 @@
    "🚩 2 rooms",
    "🧪 20 tasks"
   ],
-  "vo": "हैकर से एक क़दम आगे रहना है? थ्रेट इंटेलिजेंस पाथ।",
+  "vo": "[QUESTIONING] हैकर से एक क़दम आगे रहना है? [LONG PAUSE] [EMPHASIZE] थ्रेट इंटेलिजेंस पाथ।",
   "sub": "Hacker se ek kadam aage rehna hai? Threat Intelligence path."
  },
  "steps": [
@@ -38,8 +38,8 @@
      ]
     }
    ],
-   "vo": "इस पाथ में दो हैंडबुक्स हैं। साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स से, साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स तक।",
-   "sub": "Is path me 2 handbooks hain — Cyber Threat Intelligence: Foundations se Cyber Threat Intelligence: Operations tak."
+   "vo": "[CALM] इस पाथ में दो हैंडबुक्स हैं। [SHORT PAUSE] [CONFIDENT] साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स से, साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स तक।",
+   "sub": "Is path me 2 handbooks hain. Cyber Threat Intelligence: Foundations se Cyber Threat Intelligence: Operations tak."
   },
   {
    "label": "2 CTF Rooms",
@@ -68,7 +68,7 @@
      "Threat Intelligence Operations"
     ]
    ],
-   "vo": "और दो सीटीएफ़ रूम्स, जिनमें 20 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "vo": "[CALM] और दो सीटीएफ़ रूम्स, जिनमें बीस हैंड्स-ऑन टास्क हैं। [SHORT PAUSE] [EMPHASIZE] हर रूम का पहला टास्क फ़्री है।",
    "sub": "Aur 2 CTF rooms, jinme 20 hands-on tasks hain. Har room ka pehla task FREE hai."
   },
   {
@@ -102,7 +102,7 @@
      "Intel → blocked attack"
     ]
    ],
-   "vo": "इस पाथ के बाद, आप डेटा को इंटेलिजेंस में, और इंटेल को एक्शन में बदल पाएँगे।",
+   "vo": "[CONFIDENT] इस पाथ के बाद, [SHORT PAUSE] आप डेटा को इंटेलिजेंस में, और इंटेल को एक्शन में बदल पाएँगे।",
    "sub": "Is path ke baad aap data ko intelligence me, aur intel ko action me badal paayenge.",
    "confetti": 0.6
   }
@@ -114,7 +114,7 @@
    "📘 2 handbooks",
    "🚩 2 rooms"
   ],
-  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "vo": "[EXCITED] आज ही ये पाथ शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।",
   "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
  },
  "ref": {
@@ -122,7 +122,7 @@
   "name": "39-Cyber-Threat-Intelligence-Foundations",
   "rom": "Room 39 · Cyber Threat Intelligence: Foundations",
   "cover": "cti-foundations",
-  "vo": "इस पाथ की पहली रील, साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] इस पाथ की पहली रील, साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स, देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Is path ki pehli reel — Cyber Threat Intelligence: Foundations — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  },
  "cover": {

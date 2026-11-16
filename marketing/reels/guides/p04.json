@@ -13,7 +13,7 @@
    "🚩 4 rooms",
    "🧪 40 tasks"
   ],
-  "vo": "अटैकर को नेटवर्क पर देखना सीखिए। डिटेक्शन एंड रीकॉन पाथ।",
+  "vo": "[CONFIDENT] अटैकर को नेटवर्क पर देखना सीखिए। [SHORT PAUSE] [EMPHASIZE] डिटेक्शन एंड रीकॉन पाथ।",
   "sub": "Attacker ko network par dekhna seekhiye. Detection & Recon path."
  },
  "steps": [
@@ -40,8 +40,8 @@
      ]
     }
    ],
-   "vo": "इस पाथ में चार हैंडबुक्स हैं। आईडीएस आईपीएस से, एनमैप मास्टरी तक।",
-   "sub": "Is path me 4 handbooks hain — IDS / IPS se Nmap Mastery tak."
+   "vo": "[CALM] इस पाथ में चार हैंडबुक्स हैं। [SHORT PAUSE] [CONFIDENT] आईडीएस आईपीएस से, एनमैप मास्टरी तक।",
+   "sub": "Is path me 4 handbooks hain. IDS / IPS se Nmap Mastery tak."
   },
   {
    "label": "4 CTF Rooms",
@@ -78,7 +78,7 @@
      "Nmap Network Scanning"
     ]
    ],
-   "vo": "और चार सीटीएफ़ रूम्स, जिनमें 40 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "vo": "[CALM] और चार सीटीएफ़ रूम्स, जिनमें चालीस हैंड्स-ऑन टास्क हैं। [SHORT PAUSE] [EMPHASIZE] हर रूम का पहला टास्क फ़्री है।",
    "sub": "Aur 4 CTF rooms, jinme 40 hands-on tasks hain. Har room ka pehla task FREE hai."
   },
   {
@@ -112,7 +112,7 @@
      "Nmap scanning"
     ]
    ],
-   "vo": "इस पाथ के बाद, आप नेटवर्क पर हर संदिग्ध चीज़ पकड़ पाएँगे।",
+   "vo": "[CONFIDENT] इस पाथ के बाद, [SHORT PAUSE] आप नेटवर्क पर हर संदिग्ध चीज़ पकड़ पाएँगे।",
    "sub": "Is path ke baad aap network par har sandigdh cheez pakad paayenge.",
    "confetti": 0.6
   }
@@ -124,7 +124,7 @@
    "📘 4 handbooks",
    "🚩 4 rooms"
   ],
-  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "vo": "[EXCITED] आज ही ये पाथ शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।",
   "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
  },
  "ref": {
@@ -132,7 +132,7 @@
   "name": "16-IDS-IPS",
   "rom": "Room 16 · IDS / IPS",
   "cover": "ids-ips",
-  "vo": "इस पाथ की पहली रील, आईडीएस आईपीएस, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] इस पाथ की पहली रील, आईडीएस आईपीएस, देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Is path ki pehli reel — IDS / IPS — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  },
  "cover": {

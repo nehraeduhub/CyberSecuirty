@@ -13,7 +13,7 @@
    "🚩 3 rooms",
    "🧪 30 tasks"
   ],
-  "vo": "वर्चुअलाइज़ेशन, कंटेनर्स और डेटा सेंटर, पूरे स्टैक की सिक्योरिटी।",
+  "vo": "[CONFIDENT] वर्चुअलाइज़ेशन, कंटेनर्स और डेटा सेंटर, पूरे स्टैक की सिक्योरिटी। [SHORT PAUSE] [EMPHASIZE] ",
   "sub": "Virtualization, containers aur data centre — poore stack ki security."
  },
  "steps": [
@@ -39,8 +39,8 @@
      ]
     }
    ],
-   "vo": "इस पाथ में तीन हैंडबुक्स हैं। वर्चुअलाइज़ेशन सिक्योरिटी से, डेटा सेंटर सिक्योरिटी तक।",
-   "sub": "Is path me 3 handbooks hain — Virtualization Security se Data Centre Security tak."
+   "vo": "[CALM] इस पाथ में तीन हैंडबुक्स हैं। [SHORT PAUSE] [CONFIDENT] वर्चुअलाइज़ेशन सिक्योरिटी से, डेटा सेंटर सिक्योरिटी तक।",
+   "sub": "Is path me 3 handbooks hain. Virtualization Security se Data Centre Security tak."
   },
   {
    "label": "3 CTF Rooms",
@@ -73,7 +73,7 @@
      "Data Centre Security"
     ]
    ],
-   "vo": "और तीन सीटीएफ़ रूम्स, जिनमें 30 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "vo": "[CALM] और तीन सीटीएफ़ रूम्स, जिनमें तीस हैंड्स-ऑन टास्क हैं। [SHORT PAUSE] [EMPHASIZE] हर रूम का पहला टास्क फ़्री है।",
    "sub": "Aur 3 CTF rooms, jinme 30 hands-on tasks hain. Har room ka pehla task FREE hai."
   },
   {
@@ -107,7 +107,7 @@
      "Data centre & 3-2-1 backup"
     ]
    ],
-   "vo": "इस पाथ के बाद, आप सिलिकॉन से फ़ैसिलिटी तक, पूरा स्टैक सुरक्षित कर पाएँगे।",
+   "vo": "[CONFIDENT] इस पाथ के बाद, [SHORT PAUSE] आप सिलिकॉन से फ़ैसिलिटी तक, पूरा स्टैक सुरक्षित कर पाएँगे।",
    "sub": "Is path ke baad aap silicon se facility tak poora stack surakshit kar paayenge.",
    "confetti": 0.6
   }
@@ -119,7 +119,7 @@
    "📘 3 handbooks",
    "🚩 3 rooms"
   ],
-  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "vo": "[EXCITED] आज ही ये पाथ शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।",
   "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
  },
  "ref": {
@@ -127,7 +127,7 @@
   "name": "41-Virtualization-Security",
   "rom": "Room 41 · Virtualization Security",
   "cover": "virtualization-security",
-  "vo": "इस पाथ की पहली रील, वर्चुअलाइज़ेशन सिक्योरिटी, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] इस पाथ की पहली रील, वर्चुअलाइज़ेशन सिक्योरिटी, देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Is path ki pehli reel — Virtualization Security — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  },
  "cover": {

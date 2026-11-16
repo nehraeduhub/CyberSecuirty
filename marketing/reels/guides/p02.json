@@ -13,7 +13,7 @@
    "🚩 5 rooms",
    "🧪 50 tasks"
   ],
-  "vo": "नेटवर्क की गहरी समझ चाहिए? नेटवर्किंग पाथ।",
+  "vo": "[QUESTIONING] नेटवर्क की गहरी समझ चाहिए? [LONG PAUSE] [EMPHASIZE] नेटवर्किंग पाथ।",
   "sub": "Network ki gehri samajh chahiye? Networking path."
  },
  "steps": [
@@ -41,8 +41,8 @@
      ]
     }
    ],
-   "vo": "इस पाथ में पाँच हैंडबुक्स हैं। टीसीपी आईपी नेटवर्किंग से, एमपीएलएस सिक्योरिटी तक।",
-   "sub": "Is path me 5 handbooks hain — TCP/IP Networking se MPLS Security tak."
+   "vo": "[CALM] इस पाथ में पाँच हैंडबुक्स हैं। [SHORT PAUSE] [CONFIDENT] टीसीपी आईपी नेटवर्किंग से, एमपीएलएस सिक्योरिटी तक।",
+   "sub": "Is path me 5 handbooks hain. TCP/IP Networking se MPLS Security tak."
   },
   {
    "label": "5 CTF Rooms",
@@ -83,7 +83,7 @@
      "MPLS/VPN Security"
     ]
    ],
-   "vo": "और पाँच सीटीएफ़ रूम्स, जिनमें 50 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "vo": "[CALM] और पाँच सीटीएफ़ रूम्स, जिनमें पचास हैंड्स-ऑन टास्क हैं। [SHORT PAUSE] [EMPHASIZE] हर रूम का पहला टास्क फ़्री है।",
    "sub": "Aur 5 CTF rooms, jinme 50 hands-on tasks hain. Har room ka pehla task FREE hai."
   },
   {
@@ -117,7 +117,7 @@
      "Layer-2 attacks rokna"
     ]
    ],
-   "vo": "इस पाथ के बाद, आप नेटवर्क को अंदर से समझकर सुरक्षित कर पाएँगे।",
+   "vo": "[CONFIDENT] इस पाथ के बाद, [SHORT PAUSE] आप नेटवर्क को अंदर से समझकर सुरक्षित कर पाएँगे।",
    "sub": "Is path ke baad aap network ko andar se samajhkar surakshit kar paayenge.",
    "confetti": 0.6
   }
@@ -129,7 +129,7 @@
    "📘 5 handbooks",
    "🚩 5 rooms"
   ],
-  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "vo": "[EXCITED] आज ही ये पाथ शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।",
   "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
  },
  "ref": {
@@ -137,7 +137,7 @@
   "name": "07-TCP-IP-Networking",
   "rom": "Room 7 · TCP/IP Networking",
   "cover": "tcp-ip-networking",
-  "vo": "इस पाथ की पहली रील, टीसीपी आईपी नेटवर्किंग, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] इस पाथ की पहली रील, टीसीपी आईपी नेटवर्किंग, देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Is path ki pehli reel — TCP/IP Networking — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  },
  "cover": {

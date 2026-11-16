@@ -14,7 +14,7 @@
    "📘 Handbooks",
    "🛡️ Free tools"
   ],
-  "vo": "साइबर सिक्योरिटी सीखनी है? टेक गार्डियन्स पर सब कुछ, एक ही जगह मिलेगा। चलिए, वेबसाइट का टूर करते हैं।",
+  "vo": "[QUESTIONING] साइबर सिक्योरिटी सीखनी है? [LONG PAUSE] [CONFIDENT] टेक गार्डियन्स पर सब कुछ, [EMPHASIZE] एक ही जगह मिलेगा। [SHORT PAUSE] [EXCITED] चलिए, वेबसाइट का टूर करते हैं।",
   "sub": "Cyber security seekhni hai? Tech Guardians par sab kuch, ek hi jagah milega. Chaliye, website ka tour karte hain."
  },
  "steps": [
@@ -23,7 +23,7 @@
    "icon": "🎓",
    "title": "Live <em>training</em> + labs",
    "tip": "🎓 Live classes · Hands-on · Certificate",
-   "vo": "लाइव, मेंटर-लेड ट्रेनिंग प्रोग्राम्स, हैंड्स-ऑन लैब्स और सर्टिफ़िकेट के साथ।",
+   "vo": "[CONFIDENT] लाइव, मेंटर-लेड ट्रेनिंग प्रोग्राम्स, [SHORT PAUSE] [CALM] हैंड्स-ऑन लैब्स, और सर्टिफ़िकेट के साथ।",
    "sub": "Live, mentor-led training programs — hands-on labs aur certificate ke saath.",
    "shots": [
     {
@@ -57,7 +57,7 @@
    "icon": "🚩",
    "title": "<em>CTF</em> me practice karo",
    "tip": "🚩 Har room ka task 1 FREE",
-   "vo": "सीटीएफ़ पोर्टल पर, तैंतालीस रूम्स में हैंड्स-ऑन प्रैक्टिस कीजिए। हर रूम का पहला टास्क फ़्री है।",
+   "vo": "[CALM] सीटीएफ़ पोर्टल पर, तैंतालीस रूम्स में, हैंड्स-ऑन प्रैक्टिस कीजिए। [SHORT PAUSE] [EMPHASIZE] हर रूम का पहला टास्क फ़्री है।",
    "sub": "CTF Portal par 43 rooms me hands-on practice kijiye. Har room ka pehla task FREE hai.",
    "shots": [
     {
@@ -96,7 +96,7 @@
    "icon": "📘",
    "title": "<em>43</em> Handbooks",
    "tip": "👁 Look inside before you buy",
-   "vo": "तैंतालीस साइबर सिक्योरिटी हैंडबुक्स, ज़ीरो से मास्टरी तक। ख़रीदने से पहले, अंदर के पेज देखिए।",
+   "vo": "[CONFIDENT] तैंतालीस साइबर सिक्योरिटी हैंडबुक्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक। [SHORT PAUSE] [POLITE] ख़रीदने से पहले, अंदर के पेज देखिए।",
    "sub": "43 cyber security handbooks — zero se mastery tak. Khareedne se pehle andar ke page dekhiye.",
    "shots": [
     {
@@ -126,7 +126,7 @@
    "icon": "🛡️",
    "title": "<em>150+</em> free tools",
    "tip": "🆓 100% free access",
-   "vo": "साइबर सेफ़्टी पोर्टल पर, एक सौ पचास से ज़्यादा फ़्री टूल्स।",
+   "vo": "[CALM] साइबर सेफ़्टी पोर्टल पर, [SHORT PAUSE] [EMPHASIZE] एक सौ पचास से ज़्यादा फ़्री टूल्स।",
    "sub": "Cyber Safety Portal par 150+ FREE tools.",
    "shots": [
     {
@@ -156,7 +156,7 @@
    "icon": "📡",
    "title": "Live <em>threat</em> intel",
    "tip": "📰 Roz ki cyber news",
-   "vo": "लाइव थ्रेट इंटेलिजेंस, और रोज़ की साइबर न्यूज़।",
+   "vo": "[CONFIDENT] लाइव थ्रेट इंटेलिजेंस, [SHORT PAUSE] और रोज़ की साइबर न्यूज़।",
    "sub": "Live threat intelligence, aur roz ki cyber news.",
    "shots": [
     {
@@ -186,7 +186,7 @@
    "icon": "🏫",
    "title": "Events & <em>awareness</em>",
    "tip": "🏫 School · College · Office",
-   "vo": "और स्कूल, कॉलेज के लिए, अवेयरनेस सेशन्स और लाइव इवेंट्स।",
+   "vo": "[CALM] और स्कूल, कॉलेज के लिए, [SHORT PAUSE] अवेयरनेस सेशन्स, और लाइव इवेंट्स।",
    "sub": "Aur school, college ke liye awareness sessions aur live events.",
    "shots": [
     {
@@ -221,7 +221,7 @@
    "📘 PDF",
    "🛡️ Tools"
   ],
-  "vo": "आज ही विज़िट कीजिए, टेक गार्डियन्स डॉट इन। कीप लर्निंग, कीप शेयरिंग!",
+  "vo": "[POLITE] आज ही विज़िट कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन। [LONG PAUSE] [EXCITED] कीप लर्निंग, कीप शेयरिंग!",
   "sub": "Aaj hi visit kijiye — techguardians.in. Keep Learning, Keep Sharing!"
  },
  "cover": {
@@ -254,7 +254,7 @@
   "kind": "seen",
   "name": "B6-How-to-Create-Student-Account",
   "rom": "Student Account kaise banayein",
-  "vo": "स्टूडेंट अकाउंट कैसे बनाएँ वाली रील देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] स्टूडेंट अकाउंट कैसे बनाएँ वाली रील देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Student Account kaise banayein wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  }
 }

@@ -2,7 +2,7 @@
  "1": {
   "icon": "🛡️",
   "hook": "Cyber security <em>zero</em> se kaise shuru karein? 🤔",
-  "hookVo": "साइबर सिक्योरिटी ज़ीरो से कैसे शुरू करें? सबसे पहले, एक डिफ़ेंडर की तरह सोचना सीखिए।",
+  "hookVo": "[QUESTIONING] साइबर सिक्योरिटी, ज़ीरो से कैसे शुरू करें? [LONG PAUSE] [CONFIDENT] सबसे पहले, [SHORT PAUSE] [EMPHASIZE] एक डिफ़ेंडर की तरह सोचना सीखिए।",
   "hookSub": "Cyber security zero se kaise shuru karein? Sabse pehle, ek defender ki tarah sochna seekhiye.",
   "points": [
    "<b>Core concepts</b> aasaan bhasha me",
@@ -21,8 +21,8 @@
  "2": {
   "icon": "🔺",
   "hook": "Har security ka <em>base</em> sirf 3 shabd? 🔺",
-  "hookVo": "हर सिक्योरिटी का बेस, सिर्फ़ तीन शब्द। कॉन्फ़िडेंशियलिटी, इंटीग्रिटी और अवेलेबिलिटी।",
-  "hookSub": "Har security ka base sirf 3 shabd — Confidentiality, Integrity aur Availability.",
+  "hookVo": "[CONFIDENT] हर सिक्योरिटी का बेस, [SHORT PAUSE] [EMPHASIZE] सिर्फ़ तीन शब्द। [LONG PAUSE] [SLOW] कॉन्फ़िडेंशियलिटी, इंटीग्रिटी, और अवेलेबिलिटी।",
+  "hookSub": "Har security ka base, sirf 3 shabd. Confidentiality, Integrity aur Availability.",
   "points": [
    "<b>Confidentiality</b> — data secret",
    "<b>Integrity</b> — data badle nahi",
@@ -40,7 +40,7 @@
  "3": {
   "icon": "⚠️",
   "hook": "Threat, vuln aur risk — <em>farak</em> pata hai? ⚠️",
-  "hookVo": "थ्रेट, वल्नरेबिलिटी और रिस्क, इनमें फ़र्क़ पता है? ज़्यादातर लोग इन्हें एक ही समझते हैं।",
+  "hookVo": "[QUESTIONING] थ्रेट, वल्नरेबिलिटी और रिस्क, [SHORT PAUSE] इनमें फ़र्क़ पता है? [LONG PAUSE] [SERIOUS] ज़्यादातर लोग, इन्हें एक ही समझते हैं।",
   "hookSub": "Threat, vulnerability aur risk — inme farak pata hai? Zyadatar log inhe ek hi samajhte hain.",
   "points": [
    "Threat vs vuln vs <b>risk</b>",
@@ -59,7 +59,7 @@
  "4": {
   "icon": "🏗️",
   "hook": "Security baad me <em>jodte</em> ho? Galti yahin hai! 🏗️",
-  "hookVo": "सिक्योरिटी बाद में जोड़ते हो? असली ग़लती यहीं है। सिक्योरिटी शुरू से डिज़ाइन होनी चाहिए।",
+  "hookVo": "[QUESTIONING] सिक्योरिटी बाद में जोड़ते हो? [LONG PAUSE] [SERIOUS] असली ग़लती यहीं है। [SHORT PAUSE] [CONFIDENT] सिक्योरिटी, शुरू से डिज़ाइन होनी चाहिए।",
   "hookSub": "Security baad me jodte ho? Asli galti yahin hai. Security shuru se design honi chahiye.",
   "points": [
    "<b>Least privilege</b> & fail-safe",
@@ -78,7 +78,7 @@
  "5": {
   "icon": "🧅",
   "hook": "Ek <em>taala</em> kaafi hai? Bilkul nahi! 🧅",
-  "hookVo": "क्या एक ताला काफ़ी है? बिल्कुल नहीं! असली सिक्योरिटी में, कई लेयर्स एक दूसरे को कवर करती हैं।",
+  "hookVo": "[QUESTIONING] क्या एक ताला काफ़ी है? [LONG PAUSE] [EMPHASIZE] बिल्कुल नहीं! [LONG PAUSE] [CONFIDENT] असली सिक्योरिटी में, कई लेयर्स एक दूसरे को कवर करती हैं।",
   "hookSub": "Kya ek taala kaafi hai? Bilkul nahi! Asli security me kai layers ek doosre ko cover karti hain.",
   "points": [
    "<b>Prevent</b>, detect, correct",
@@ -97,7 +97,7 @@
  "6": {
   "icon": "🔐",
   "hook": "<em>Never trust</em>, always verify — matlab? 🔐",
-  "hookVo": "नेवर ट्रस्ट, ऑलवेज़ वेरिफ़ाई। आज की सिक्योरिटी में, कोई भी डिफ़ॉल्ट से ट्रस्टेड नहीं है।",
+  "hookVo": "[EMPHASIZE] नेवर ट्रस्ट, [SHORT PAUSE] ऑलवेज़ वेरिफ़ाई। [LONG PAUSE] [SERIOUS] आज की सिक्योरिटी में, कोई भी डिफ़ॉल्ट से ट्रस्टेड नहीं है।",
   "hookSub": "Never trust, always verify. Aaj ki security me koi bhi default se trusted nahi hai.",
   "points": [
    "<b>Identity</b> = naya perimeter",
@@ -116,7 +116,7 @@
  "7": {
   "icon": "packets",
   "hook": "Ek click pe <em>internet</em> me kya hota hai? 🌐",
-  "hookVo": "एक क्लिक पर, इंटरनेट में असल में क्या होता है? जवाब है, टीसीपी आईपी।",
+  "hookVo": "[QUESTIONING] एक क्लिक पर, इंटरनेट में असल में क्या होता है? [LONG PAUSE] [CONFIDENT] जवाब है, [SHORT PAUSE] [EMPHASIZE] टीसीपी आईपी।",
   "hookSub": "Ek click par internet me asal me kya hota hai? Jawab hai — TCP/IP.",
   "points": [
    "<b>TCP handshake</b> padhna",
@@ -135,7 +135,7 @@
  "8": {
   "icon": "🔌",
   "hook": "Hacker <em>switch port</em> se andar aa gaya? 🔌",
-  "hookVo": "हैकर ऑफ़िस के एक खुले स्विच पोर्ट से अंदर आ गया? नेटवर्क फ़ैब्रिक को हार्डन करना ज़रूरी है।",
+  "hookVo": "[WARNING] हैकर ऑफ़िस के एक खुले स्विच पोर्ट से, अंदर आ गया? [LONG PAUSE] [SERIOUS] नेटवर्क फ़ैब्रिक को हार्डन करना, [EMPHASIZE] ज़रूरी है।",
   "hookSub": "Hacker office ke ek khule switch port se andar aa gaya? Network fabric ko harden karna zaroori hai.",
   "points": [
    "<b>Port security</b>",
@@ -154,7 +154,7 @@
  "9": {
   "icon": "🧩",
   "hook": "VLAN laga diya, phir bhi <em>attack</em> paar? 🧩",
-  "hookVo": "वीलैन लगा दिया, फिर भी अटैकर दूसरे सेगमेंट में पहुँच गया? वीलैन हॉपिंग को समझना ज़रूरी है।",
+  "hookVo": "[QUESTIONING] वीलैन लगा दिया, [SHORT PAUSE] फिर भी अटैकर दूसरे सेगमेंट में पहुँच गया? [LONG PAUSE] [CONFIDENT] वीलैन हॉपिंग को समझना, [EMPHASIZE] ज़रूरी है।",
   "hookSub": "VLAN laga diya, phir bhi attacker doosre segment me pahunch gaya? VLAN hopping ko samajhna zaroori hai.",
   "points": [
    "<b>Access vs trunk</b> ports",
@@ -173,7 +173,7 @@
  "10": {
   "icon": "🚧",
   "hook": "Ek PC hack — <em>poora</em> network gaya? 🚧",
-  "hookVo": "एक कंप्यूटर हैक हुआ, और पूरा नेटवर्क गया? सही सेगमेंटेशन, अटैकर को वहीं रोक देता है।",
+  "hookVo": "[SERIOUS] एक कंप्यूटर हैक हुआ, [SHORT PAUSE] और पूरा नेटवर्क गया? [LONG PAUSE] [CONFIDENT] सही सेगमेंटेशन, [EMPHASIZE] अटैकर को वहीं रोक देता है।",
   "hookSub": "Ek computer hack hua, aur poora network gaya? Sahi segmentation attacker ko wahin rok deta hai.",
   "points": [
    "Trust ke hisaab se <b>zones</b>",
@@ -192,7 +192,7 @@
  "11": {
   "icon": "🛰️",
   "hook": "MPLS = <em>encryption</em>? Bada myth! 🛰️",
-  "hookVo": "क्या एमपीएलएस मतलब एन्क्रिप्शन? ये एक बड़ा मिथ है! कैरियर कोर की सिक्योरिटी समझिए।",
+  "hookVo": "[QUESTIONING] क्या एमपीएलएस मतलब एन्क्रिप्शन? [LONG PAUSE] [EMPHASIZE] ये एक बड़ा मिथ है! [SHORT PAUSE] [CONFIDENT] कैरियर कोर की सिक्योरिटी समझिए।",
   "hookSub": "Kya MPLS matlab encryption? Ye ek bada myth hai! Carrier core ki security samjhiye.",
   "points": [
    "<b>MPLS</b> forwarding",
@@ -211,7 +211,7 @@
  "12": {
   "icon": "firewall",
   "hook": "Kya ek <em>Firewall</em> har attack rok sakta hai? 🤔",
-  "hookVo": "क्या एक फ़ायरवॉल हर अटैक को रोक सकता है? जवाब है, नहीं! अगर उसके रूल्स सही नहीं हैं।",
+  "hookVo": "[QUESTIONING] क्या एक फ़ायरवॉल हर अटैक को रोक सकता है? [LONG PAUSE] [CONFIDENT] जवाब है, [SHORT PAUSE] [EMPHASIZE] नहीं! [LONG PAUSE] [SERIOUS] अगर उसके रूल्स सही नहीं हैं।",
   "hookSub": "Kya ek Firewall har attack rok sakta hai? Jawab hai — nahi! Agar uske rules sahi nahi hain.",
   "points": [
    "<b>Default-deny</b> policy banana",
@@ -237,7 +237,7 @@
  "13": {
   "icon": "⚖️",
   "hook": "Lakhon users, ek <em>front door</em> — safe kaise? ⚖️",
-  "hookVo": "लाखों यूज़र्स, और एक ही फ़्रंट डोर। उसे सुरक्षित कैसे रखें? लोड बैलेंसर और एडीसी से।",
+  "hookVo": "[CONFIDENT] लाखों यूज़र्स, [SHORT PAUSE] और एक ही फ़्रंट डोर। [SHORT PAUSE] [QUESTIONING] उसे सुरक्षित कैसे रखें? [LONG PAUSE] [EMPHASIZE] लोड बैलेंसर और एडीसी से।",
   "hookSub": "Lakhon users aur ek hi front door. Use surakshit kaise rakhein? Load balancer aur ADC se.",
   "points": [
    "<b>Balancing</b> & health checks",
@@ -256,7 +256,7 @@
  "14": {
   "icon": "firewall",
   "hook": "SQL injection <em>website</em> tak pahunche hi nahi! 🧱",
-  "hookVo": "एसक्यूएल इंजेक्शन जैसे अटैक, आपकी वेबसाइट तक पहुँचें ही नहीं। ये काम करता है, वेब एप्लिकेशन फ़ायरवॉल।",
+  "hookVo": "[WARNING] एसक्यूएल इंजेक्शन जैसे अटैक, [CONFIDENT] आपकी वेबसाइट तक पहुँचें ही नहीं। [LONG PAUSE] ये काम करता है, [SHORT PAUSE] [EMPHASIZE] वेब एप्लिकेशन फ़ायरवॉल।",
   "hookSub": "SQL injection jaise attack aapki website tak pahunchein hi nahi. Ye kaam karta hai Web Application Firewall.",
   "points": [
    "<b>OWASP Top 10</b> block",
@@ -275,7 +275,7 @@
  "15": {
   "icon": "🚀",
   "hook": "Apni <em>website</em> khud live karni hai? 🚀",
-  "hookVo": "अपनी वेबसाइट ख़ुद लाइव करनी है? सर्वर सेटअप से लेकर सिक्योरिटी तक, सब सीखिए।",
+  "hookVo": "[QUESTIONING] अपनी वेबसाइट ख़ुद लाइव करनी है? [LONG PAUSE] [CONFIDENT] सर्वर सेटअप से लेकर सिक्योरिटी तक, [EXCITED] सब सीखिए।",
   "hookSub": "Apni website khud live karni hai? Server setup se lekar security tak, sab seekhiye.",
   "points": [
    "<b>IIS</b>, XAMPP, Cloudflare, ngrok",
@@ -294,7 +294,7 @@
  "16": {
   "icon": "radar",
   "hook": "Attack ho raha hai — <em>pata</em> kaise chalega? 🚨",
-  "hookVo": "नेटवर्क पर अटैक हो रहा है, ये पता कैसे चलेगा? आईडीएस और आईपीएस से।",
+  "hookVo": "[WARNING] नेटवर्क पर अटैक हो रहा है, [SHORT PAUSE] [QUESTIONING] ये पता कैसे चलेगा? [LONG PAUSE] [EMPHASIZE] आईडीएस और आईपीएस से।",
   "hookSub": "Network par attack ho raha hai, ye pata kaise chalega? IDS aur IPS se.",
   "points": [
    "<b>Signature</b> vs anomaly",
@@ -313,7 +313,7 @@
  "17": {
   "icon": "packets",
   "hook": "Breach <em>flows</em> me chhupa tha! 📈",
-  "hookVo": "ब्रीच, नेटवर्क फ़्लोज़ में छुपा था, बस किसी ने देखा नहीं। नेटवर्क मॉनिटरिंग सीखिए।",
+  "hookVo": "[SERIOUS] ब्रीच, नेटवर्क फ़्लोज़ में छुपा था, [SHORT PAUSE] बस किसी ने देखा नहीं। [LONG PAUSE] [CONFIDENT] नेटवर्क मॉनिटरिंग सीखिए।",
   "hookSub": "Breach network flows me chhupa tha — bas kisi ne dekha nahi. Network monitoring seekhiye.",
   "points": [
    "<b>Baseline</b> banana",
@@ -332,7 +332,7 @@
  "18": {
   "icon": "packets",
   "hook": "Aapke network me <em>asal me</em> kya chal raha hai? 👀",
-  "hookVo": "आपके नेटवर्क में असल में क्या चल रहा है? हर पैकेट सच बताता है, बस उसे पढ़ना आना चाहिए।",
+  "hookVo": "[QUESTIONING] आपके नेटवर्क में, असल में क्या चल रहा है? [LONG PAUSE] [EMPHASIZE] हर पैकेट सच बताता है, [SHORT PAUSE] [CONFIDENT] बस उसे पढ़ना आना चाहिए।",
   "hookSub": "Aapke network me asal me kya chal raha hai? Har packet sach batata hai — bas use padhna aana chahiye.",
   "points": [
    "<b>Capture</b> vs <b>display</b> filters",
@@ -358,7 +358,7 @@
  "19": {
   "icon": "radar",
   "hook": "Network me kaun kaun <em>zinda</em> hai? 📡",
-  "hookVo": "आपके नेटवर्क में कौन कौन से डिवाइस ज़िंदा हैं, और कौन से पोर्ट खुले हैं? एनमैप बताता है।",
+  "hookVo": "[QUESTIONING] आपके नेटवर्क में कौन कौन से डिवाइस ज़िंदा हैं, [SHORT PAUSE] और कौन से पोर्ट खुले हैं? [LONG PAUSE] [EMPHASIZE] एनमैप बताता है।",
   "hookSub": "Aapke network me kaun kaun se devices zinda hain, aur kaun se port khule hain? Nmap batata hai.",
   "points": [
    "<b>Host</b> & port discovery",
@@ -377,7 +377,7 @@
  "20": {
   "icon": "🖥️",
   "hook": "<em>SOC</em> ke andar 24×7 hota kya hai? 🖥️",
-  "hookVo": "सॉक के अंदर, चौबीसों घंटे, होता क्या है? सिक्योरिटी ऑपरेशन्स सेंटर कैसे बनता है, समझिए।",
+  "hookVo": "[QUESTIONING] सॉक के अंदर, चौबीसों घंटे, होता क्या है? [LONG PAUSE] [CONFIDENT] सिक्योरिटी ऑपरेशन्स सेंटर कैसे बनता है, समझिए।",
   "hookSub": "SOC ke andar 24x7 hota kya hai? Security Operations Center kaise banta hai, samjhiye.",
   "points": [
    "People, process, <b>technology</b>",
@@ -396,7 +396,7 @@
  "21": {
   "icon": "🔎",
   "hook": "Lakhon logs me ek <em>attack</em> — dhoondhoge kaise? 🔎",
-  "hookVo": "लाखों लॉग्स में छुपा एक अटैक, ढूँढोगे कैसे? यही काम करता है, सीम।",
+  "hookVo": "[QUESTIONING] लाखों लॉग्स में छुपा एक अटैक, [SHORT PAUSE] ढूँढोगे कैसे? [LONG PAUSE] [CONFIDENT] यही काम करता है, [SHORT PAUSE] [EMPHASIZE] सीम।",
   "hookSub": "Lakhon logs me chhupa ek attack, dhoondhoge kaise? Yahi kaam karta hai SIEM.",
   "points": [
    "Logs <b>collect</b> & parse",
@@ -415,7 +415,7 @@
  "22": {
   "icon": "🔔",
   "hook": "Roz hazaaron alerts — <em>asli</em> wala kaunsa? 🔔",
-  "hookVo": "रोज़ हज़ारों अलर्ट्स, इनमें असली वाला कौन सा? अलर्ट फ़टीग से कैसे बचें, सीखिए।",
+  "hookVo": "[SERIOUS] रोज़ हज़ारों अलर्ट्स, [SHORT PAUSE] [QUESTIONING] इनमें असली वाला कौन सा? [LONG PAUSE] [CONFIDENT] अलर्ट फ़टीग से कैसे बचें, सीखिए।",
   "hookSub": "Roz hazaaron alerts — inme asli wala kaunsa? Alert fatigue se kaise bachein, seekhiye.",
   "points": [
    "Sahi <b>logs</b> pehle",
@@ -434,7 +434,7 @@
  "23": {
   "icon": "siren",
   "hook": "<em>Ransomware</em> attack ho gaya… ab kya karoge? 🚨",
-  "hookVo": "अगर आपकी कंपनी पर रैनसमवेयर अटैक हो जाए, तो पहले पाँच मिनट में आप क्या करोगे?",
+  "hookVo": "[SERIOUS] अगर आपकी कंपनी पर, रैनसमवेयर अटैक हो जाए, [SHORT PAUSE] तो पहले पाँच मिनट में, [SHORT PAUSE] [EMPHASIZE] आप क्या करोगे?",
   "hookSub": "Agar aapki company par ransomware attack ho jaye, to pehle 5 minute me aap kya karoge?",
   "points": [
    "<b>IR lifecycle</b> step by step",
@@ -460,7 +460,7 @@
  "24": {
   "icon": "radar",
   "hook": "Jo <em>alerts</em> nahi pakadte, use kaun pakdega? 🕵️",
-  "hookVo": "जो अटैक अलर्ट्स नहीं पकड़ते, उसे कौन पकड़ेगा? थ्रेट हंटर!",
+  "hookVo": "[QUESTIONING] जो अटैक अलर्ट्स नहीं पकड़ते, [SHORT PAUSE] उसे कौन पकड़ेगा? [LONG PAUSE] [EXCITED] थ्रेट हंटर!",
   "hookSub": "Jo attack alerts nahi pakadte, use kaun pakdega? Threat hunter!",
   "points": [
    "<b>Hypothesis</b> se hunting",
@@ -479,7 +479,7 @@
  "25": {
   "icon": "🤖",
   "hook": "Phishing alert ka <em>jawab</em> — 30 second me? 🤖",
-  "hookVo": "फ़िशिंग अलर्ट का जवाब, सिर्फ़ तीस सेकंड में? सोर और सिक्योरिटी ऑटोमेशन से।",
+  "hookVo": "[QUESTIONING] फ़िशिंग अलर्ट का जवाब, [EMPHASIZE] सिर्फ़ तीस सेकंड में? [LONG PAUSE] [CONFIDENT] सोर और सिक्योरिटी ऑटोमेशन से।",
   "hookSub": "Phishing alert ka jawab sirf 30 second me? SOAR aur security automation se.",
   "points": [
    "<b>Playbooks</b> jo kaam karein",
@@ -498,7 +498,7 @@
  "26": {
   "icon": "🧰",
   "hook": "Splunk, ELK, Wazuh — <em>ek</em> rule sab pe? 🧰",
-  "hookVo": "स्प्लंक, ईएलके, वाज़ुह, एक ही रूल सब पर चल सकता है? हाँ, सिग्मा से!",
+  "hookVo": "[QUESTIONING] स्प्लंक, ईएलके, वाज़ुह, [SHORT PAUSE] एक ही रूल सब पर चल सकता है? [LONG PAUSE] [EXCITED] हाँ, सिग्मा से!",
   "hookSub": "Splunk, ELK, Wazuh — ek hi rule sab par chal sakta hai? Haan, Sigma se!",
   "points": [
    "<b>Splunk</b> search",
@@ -517,7 +517,7 @@
  "27": {
   "icon": "🪟",
   "hook": "Phishing mail se <em>Admin</em> tak — kaise? 🪟",
-  "hookVo": "एक फ़िशिंग मेल से, एडमिन राइट्स तक, अटैकर कैसे पहुँचता है? विंडोज़ का सिक्योरिटी मॉडल समझिए।",
+  "hookVo": "[SERIOUS] एक फ़िशिंग मेल से, एडमिन राइट्स तक, [SHORT PAUSE] [QUESTIONING] अटैकर कैसे पहुँचता है? [LONG PAUSE] [CONFIDENT] विंडोज़ का सिक्योरिटी मॉडल समझिए।",
   "hookSub": "Ek phishing mail se admin rights tak attacker kaise pahunchta hai? Windows ka security model samjhiye.",
   "points": [
    "<b>SIDs</b>, tokens, ACLs",
@@ -536,7 +536,7 @@
  "28": {
   "icon": "🔒",
   "hook": "Default Windows = <em>khula</em> darwaza? 🔒",
-  "hookVo": "डिफ़ॉल्ट विंडोज़, मतलब अटैकर के लिए खुला दरवाज़ा? विंडोज़ हार्डनिंग सीखिए।",
+  "hookVo": "[QUESTIONING] डिफ़ॉल्ट विंडोज़, मतलब, [WARNING] अटैकर के लिए खुला दरवाज़ा? [LONG PAUSE] [CONFIDENT] विंडोज़ हार्डनिंग सीखिए।",
   "hookSub": "Default Windows matlab attacker ke liye khula darwaza? Windows hardening seekhiye.",
   "points": [
    "Security <b>baselines</b>",
@@ -555,7 +555,7 @@
  "29": {
   "icon": "🏰",
   "hook": "Ek user se <em>Domain Admin</em> tak! 🏰",
-  "hookVo": "एक आम यूज़र से, डोमेन एडमिन तक। एक्टिव डायरेक्टरी अटैक्स कैसे होते हैं, और कैसे रोकें?",
+  "hookVo": "[SERIOUS] एक आम यूज़र से, [EMPHASIZE] डोमेन एडमिन तक। [LONG PAUSE] [QUESTIONING] एक्टिव डायरेक्टरी अटैक्स कैसे होते हैं, [SHORT PAUSE] और कैसे रोकें?",
   "hookSub": "Ek aam user se Domain Admin tak. Active Directory attacks kaise hote hain, aur kaise rokein?",
   "points": [
    "<b>Kerberos</b> & krbtgt",
@@ -574,7 +574,7 @@
  "30": {
   "icon": "⚙️",
   "hook": "Ek <em>GPO</em> — hazaaron computers! ⚙️",
-  "hookVo": "एक जीपीओ, और हज़ारों कंप्यूटर्स पर असर। सही हो तो सुरक्षा, ग़लत हो तो ख़तरा।",
+  "hookVo": "[CONFIDENT] एक जीपीओ, [SHORT PAUSE] और हज़ारों कंप्यूटर्स पर असर। [LONG PAUSE] सही हो तो सुरक्षा, [SHORT PAUSE] [WARNING] ग़लत हो तो ख़तरा।",
   "hookSub": "Ek GPO, aur hazaaron computers par asar. Sahi ho to suraksha, galat ho to khatra.",
   "points": [
    "<b>LSDOU</b> processing order",
@@ -593,7 +593,7 @@
  "31": {
   "icon": "🦠",
   "hook": "Antivirus <em>chuka</em>, EDR ne pakda! 🦠",
-  "hookVo": "एंटीवायरस से अटैक छूट गया, लेकिन ईडीआर ने पकड़ लिया। कैसे? समझिए।",
+  "hookVo": "[SERIOUS] एंटीवायरस से अटैक छूट गया, [SHORT PAUSE] [EMPHASIZE] लेकिन ईडीआर ने पकड़ लिया। [LONG PAUSE] [QUESTIONING] कैसे? [CONFIDENT] समझिए।",
   "hookSub": "Antivirus se attack chhoot gaya, lekin EDR ne pakad liya. Kaise? Samjhiye.",
   "points": [
    "<b>Process tree</b> padhna",
@@ -612,7 +612,7 @@
  "32": {
   "icon": "⌨️",
   "hook": "Ek <em>PowerShell</em> line — poora attack? ⌨️",
-  "hookVo": "पावरशेल की एक लाइन, और पूरा अटैक? अटैकर्स इसे कैसे इस्तेमाल करते हैं, और कैसे पकड़ें?",
+  "hookVo": "[SERIOUS] पावरशेल की एक लाइन, [SHORT PAUSE] [EMPHASIZE] और पूरा अटैक? [LONG PAUSE] [QUESTIONING] अटैकर्स इसे कैसे इस्तेमाल करते हैं, [SHORT PAUSE] और कैसे पकड़ें?",
   "hookSub": "PowerShell ki ek line, aur poora attack? Attackers ise kaise istemaal karte hain, aur kaise pakdein?",
   "points": [
    "<b>Download cradle</b> pakadna",
@@ -631,7 +631,7 @@
  "33": {
   "icon": "🔬",
   "hook": "PC me <em>malware</em>? Live pakdo! 🔬",
-  "hookVo": "कंप्यूटर में मैलवेयर है? सिसइंटरनल्स टूल्स से, लाइव पकड़िए।",
+  "hookVo": "[QUESTIONING] कंप्यूटर में मैलवेयर है? [LONG PAUSE] [CONFIDENT] सिसइंटरनल्स टूल्स से, [EMPHASIZE] लाइव पकड़िए।",
   "hookSub": "Computer me malware hai? Sysinternals tools se live pakadiye.",
   "points": [
    "<b>Process Explorer</b>",
@@ -650,7 +650,7 @@
  "34": {
   "icon": "🐧",
   "hook": "Linux server <em>hack</em> hone se pehle! 🐧",
-  "hookVo": "लिनक्स सर्वर हैक होने से पहले, ये सेटिंग्स ज़रूर कीजिए।",
+  "hookVo": "[SERIOUS] लिनक्स सर्वर हैक होने से पहले, [SHORT PAUSE] [WARNING] ये सेटिंग्स ज़रूर कीजिए।",
   "hookSub": "Linux server hack hone se pehle, ye settings zaroor kijiye.",
   "points": [
    "<b>Permissions</b> & SUID",
@@ -669,7 +669,7 @@
  "35": {
   "icon": "📟",
   "hook": "Server pe koi <em>chhupa</em> baitha hai? 👀",
-  "hookVo": "आपके लिनक्स सर्वर पर कोई चुपचाप बैठा है? लॉग्स और ऑडिटडी से पता कीजिए।",
+  "hookVo": "[QUESTIONING] आपके लिनक्स सर्वर पर, कोई चुपचाप बैठा है? [LONG PAUSE] [CONFIDENT] लॉग्स और ऑडिटडी से, पता कीजिए।",
   "hookSub": "Aapke Linux server par koi chupchaap baitha hai? Logs aur auditd se pata kijiye.",
   "points": [
    "<b>journald</b> & central logs",
@@ -688,7 +688,7 @@
  "36": {
   "icon": "⚖️",
   "hook": "Evidence <em>court</em> me tike kaise? ⚖️",
-  "hookVo": "डिजिटल एविडेंस, कोर्ट में टिके कैसे? एक ग़लत क्लिक, और सबूत बेकार।",
+  "hookVo": "[QUESTIONING] डिजिटल एविडेंस, कोर्ट में टिके कैसे? [LONG PAUSE] [WARNING] एक ग़लत क्लिक, [SHORT PAUSE] और सबूत बेकार।",
   "hookSub": "Digital evidence court me tike kaise? Ek galat click, aur saboot bekaar.",
   "points": [
    "<b>Order of volatility</b>",
@@ -707,7 +707,7 @@
  "37": {
   "icon": "🧬",
   "hook": "Delete file bhi <em>sach</em> bolti hai! 🧬",
-  "hookVo": "डिलीट की हुई फ़ाइल भी सच बोलती है। डिस्क, मेमोरी, रजिस्ट्री और ब्राउज़र में छुपे सबूत ढूँढिए।",
+  "hookVo": "[EMPHASIZE] डिलीट की हुई फ़ाइल भी, सच बोलती है। [LONG PAUSE] [CONFIDENT] डिस्क, मेमोरी, रजिस्ट्री और ब्राउज़र में, छुपे सबूत ढूँढिए।",
   "hookSub": "Delete ki hui file bhi sach bolti hai. Disk, memory, registry aur browser me chhupe saboot dhoondhiye.",
   "points": [
    "<b>Disk</b> & file carving",
@@ -726,8 +726,8 @@
  "38": {
   "icon": "🛠️",
   "hook": "4 <em>free</em> tools, poori investigation! 🛠️",
-  "hookVo": "चार फ़्री प्रोफ़ेशनल टूल्स, और पूरी इन्वेस्टिगेशन। एफ़टीके इमेजर, केप, ऑटोप्सी और वोलैटिलिटी।",
-  "hookSub": "4 free professional tools, aur poori investigation — FTK Imager, KAPE, Autopsy aur Volatility.",
+  "hookVo": "[EXCITED] चार फ़्री प्रोफ़ेशनल टूल्स, [SHORT PAUSE] और पूरी इन्वेस्टिगेशन। [LONG PAUSE] [SLOW] एफ़टीके इमेजर, केप, ऑटोप्सी, और वोलैटिलिटी।",
+  "hookSub": "4 free professional tools, aur poori investigation. FTK Imager, KAPE, Autopsy aur Volatility.",
   "points": [
    "<b>FTK Imager</b> acquisition",
    "<b>KAPE</b> + Autopsy",
@@ -745,7 +745,7 @@
  "39": {
   "icon": "🎯",
   "hook": "Hacker ka <em>agla</em> move pehle se pata? 🎯",
-  "hookVo": "हैकर का अगला मूव, पहले से पता हो तो? यही है, साइबर थ्रेट इंटेलिजेंस।",
+  "hookVo": "[QUESTIONING] हैकर का अगला मूव, पहले से पता हो तो? [LONG PAUSE] [CONFIDENT] यही है, [SHORT PAUSE] [EMPHASIZE] साइबर थ्रेट इंटेलिजेंस।",
   "hookSub": "Hacker ka agla move pehle se pata ho to? Yahi hai Cyber Threat Intelligence.",
   "points": [
    "<b>Intelligence lifecycle</b>",
@@ -764,7 +764,7 @@
  "40": {
   "icon": "🛰️",
   "hook": "Intel se <em>attack</em> block — kaise? 🛰️",
-  "hookVo": "थ्रेट इंटेल से, अटैक को आने से पहले ब्लॉक कैसे करें? सीटीआई ऑपरेशन्स सीखिए।",
+  "hookVo": "[QUESTIONING] थ्रेट इंटेल से, अटैक को आने से पहले, ब्लॉक कैसे करें? [LONG PAUSE] [CONFIDENT] सीटीआई ऑपरेशन्स सीखिए।",
   "hookSub": "Threat intel se attack ko aane se pehle block kaise karein? CTI operations seekhiye.",
   "points": [
    "Safe <b>OSINT</b>",
@@ -783,7 +783,7 @@
  "41": {
   "icon": "💠",
   "hook": "VM se <em>bahar</em> nikal gaya attacker? 💠",
-  "hookVo": "अटैकर वर्चुअल मशीन से बाहर निकलकर, होस्ट तक पहुँच गया? इसे वीएम एस्केप कहते हैं।",
+  "hookVo": "[WARNING] अटैकर वर्चुअल मशीन से बाहर निकलकर, [SHORT PAUSE] होस्ट तक पहुँच गया? [LONG PAUSE] [CONFIDENT] इसे, [EMPHASIZE] वीएम एस्केप कहते हैं।",
   "hookSub": "Attacker virtual machine se bahar nikalkar host tak pahunch gaya? Ise VM escape kehte hain.",
   "points": [
    "<b>Hypervisor</b> Type 1 vs 2",
@@ -802,7 +802,7 @@
  "42": {
   "icon": "🐳",
   "hook": "Container <em>root</em> pe chal raha hai? 🐳",
-  "hookVo": "आपका डॉकर कंटेनर रूट पर चल रहा है? ये बहुत बड़ा ख़तरा है।",
+  "hookVo": "[QUESTIONING] आपका डॉकर कंटेनर, रूट पर चल रहा है? [LONG PAUSE] [WARNING] ये बहुत बड़ा ख़तरा है।",
   "hookSub": "Aapka Docker container root par chal raha hai? Ye bahut bada khatra hai.",
   "points": [
    "<b>Non-root</b> containers",
@@ -821,7 +821,7 @@
  "43": {
   "icon": "🏭",
   "hook": "Data centre security = sirf <em>firewall</em>? 🏭",
-  "hookVo": "डेटा सेंटर की सिक्योरिटी, मतलब सिर्फ़ फ़ायरवॉल? नहीं! गेट से लेकर बैकअप तक, सब ज़रूरी है।",
+  "hookVo": "[QUESTIONING] डेटा सेंटर की सिक्योरिटी, मतलब सिर्फ़ फ़ायरवॉल? [LONG PAUSE] [EMPHASIZE] नहीं! [LONG PAUSE] [CONFIDENT] गेट से लेकर बैकअप तक, सब ज़रूरी है।",
   "hookSub": "Data centre ki security matlab sirf firewall? Nahi! Gate se lekar backup tak, sab zaroori hai.",
   "points": [
    "<b>Physical</b> layered access",

@@ -13,14 +13,14 @@
    "✅ Task 1 FREE",
    "6 easy steps"
   ],
-  "vo": "सीटीएफ़ पोर्टल में एनरोल कैसे करें? छह आसान स्टेप्स में देखिए।",
+  "vo": "[QUESTIONING] सीटीएफ़ पोर्टल में एनरोल कैसे करें? [SHORT PAUSE] [CONFIDENT] छह आसान स्टेप्स में देखिए।",
   "sub": "CTF Portal me enroll kaise karein? 6 aasaan steps me dekhiye."
  },
  "steps": [
   {
    "title": "<em>CTF Portal</em> kholo",
    "tip": "🌐 techguardians.in",
-   "vo": "टेक गार्डियन्स डॉट इन के मेन्यू में, सीटीएफ़ पोर्टल खोलिए।",
+   "vo": "[CALM] टेक गार्डियन्स डॉट इन के मेन्यू में, [SHORT PAUSE] सीटीएफ़ पोर्टल खोलिए।",
    "sub": "techguardians.in ke menu me CTF Portal kholiye.",
    "shots": [
     {
@@ -50,7 +50,7 @@
   {
    "title": "Student account se <em>sign in</em>",
    "tip": "▶ Reel: Student Account kaise banayein",
-   "vo": "अपने स्टूडेंट अकाउंट से साइन इन कीजिए। अकाउंट नहीं है? तो पहले अकाउंट बनाइए।",
+   "vo": "[CALM] अपने स्टूडेंट अकाउंट से साइन इन कीजिए। [SHORT PAUSE] [QUESTIONING] अकाउंट नहीं है? [POLITE] तो पहले अकाउंट बनाइए।",
    "sub": "Apne student account se sign in kijiye. Account nahi hai? To pehle account banaiye.",
    "shots": [
     {
@@ -83,7 +83,7 @@
   {
    "title": "Task 1 <em>FREE</em> — shuru karo",
    "tip": "✅ Har room ka task 1 free",
-   "vo": "हर रूम का पहला टास्क फ़्री है। कोई भी रूम खोलिए, और सीखना शुरू कीजिए।",
+   "vo": "[EMPHASIZE] हर रूम का पहला टास्क फ़्री है। [SHORT PAUSE] [CALM] कोई भी रूम खोलिए, और सीखना शुरू कीजिए।",
    "sub": "Har room ka pehla task FREE hai. Koi bhi room kholiye, aur seekhna shuru kijiye.",
    "shots": [
     {
@@ -141,7 +141,7 @@
   {
    "title": "<em>Saare rooms</em> unlock karo",
    "tip": "🔓 Monthly ya annual plan",
-   "vo": "सारे रूम्स अनलॉक करने के लिए, मंथली या एनुअल प्लान चुनिए।",
+   "vo": "[CALM] सारे रूम्स अनलॉक करने के लिए, [SHORT PAUSE] मंथली या एनुअल प्लान चुनिए।",
    "sub": "Saare rooms unlock karne ke liye monthly ya annual plan chuniye.",
    "shots": [
     {
@@ -182,7 +182,7 @@
   {
    "title": "Details + <em>coupon</em>",
    "tip": "🎟️ Coupon code hai? Apply karo",
-   "vo": "अपनी डिटेल्स भरिए। कूपन कोड है, तो अप्लाई कीजिए।",
+   "vo": "[CALM] अपनी डिटेल्स भरिए। [SHORT PAUSE] [POLITE] कूपन कोड है, तो अप्लाई कीजिए।",
    "sub": "Apni details bhariye. Coupon code hai, to apply kijiye.",
    "shots": [
     {
@@ -210,7 +210,7 @@
   {
    "title": "<em>UPI</em> se pay + UTR",
    "tip": "📲 Verify hote hi sab unlock",
-   "vo": "यूपीआई से पेमेंट कीजिए, और ट्रांज़ैक्शन आईडी सबमिट कीजिए। वेरिफ़ाई होते ही, सारे रूम्स अनलॉक!",
+   "vo": "[CALM] यूपीआई से पेमेंट कीजिए, और ट्रांज़ैक्शन आईडी सबमिट कीजिए। [LONG PAUSE] [EXCITED] वेरिफ़ाई होते ही, सारे रूम्स अनलॉक!",
    "sub": "UPI se payment kijiye, aur transaction ID submit kijiye. Verify hote hi saare rooms unlock!",
    "shots": [
     {
@@ -286,14 +286,14 @@
    "🚩 43 rooms",
    "✅ Task 1 FREE"
   ],
-  "vo": "आज ही शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "vo": "[EXCITED] आज ही शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।",
   "sub": "Aaj hi shuru kijiye — techguardians.in par."
  },
  "ref": {
   "kind": "seen",
   "name": "B6-How-to-Create-Student-Account",
   "rom": "Student Account kaise banayein",
-  "vo": "स्टूडेंट अकाउंट कैसे बनाएँ वाली रील देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] स्टूडेंट अकाउंट कैसे बनाएँ वाली रील देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Student Account kaise banayein wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  },
  "cover": {

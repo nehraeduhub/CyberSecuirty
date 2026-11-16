@@ -2,10 +2,13 @@
 Usage: python3 -I tools/timeline.py <topics.json> <num> <work dir> <out dir>
 Writes <work>/data.json (read by template/topic.html), <out>/<name>.srt and <out>/<name>.txt."""
 import json, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from speak import caption_spans, plain
 
 topics, num, work, out = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4]
 t = next(x for x in json.load(open(topics, encoding='utf-8')) if x['num'] == num)
 vo = json.load(open(os.path.join(work, 'vo.json')))
+segs = json.load(open(os.path.join(work, 'vo-segs.json'), encoding='utf-8'))
 # scene: (gap before the voice, minimum scene length)
 PLAN = [('hook', .5, 5.5), ('learn', .35, 9), ('book', .35, 7), ('ctf', .35, 11.5), ('cta', .35, 6), ('ref', .3, 4.5)]
 TAIL = .6        # breath after each clip
@@ -32,29 +35,33 @@ def chunks(text, maxc=32):
             out[i - 1] += ' ' + out.pop(i)
     return out
 
+cl = {c['scene']: c for c in clips}
 subs = []
 for c in clips:
-    parts = chunks(t['sub'][c['scene']])
-    weights = [len(p) + 6 for p in parts]
-    s, tot = c['at'], sum(weights)
-    for p, w in zip(parts, weights):
-        d = c['dur'] * w / tot
-        subs.append({'t0': round(s, 3), 't1': round(s + d, 3), 'text': p.strip(' —')})
-        s += d
+    subs += caption_spans(t['sub'][c['scene']], segs[c['scene']], c['at'], c['dur'], chunks)
+
+def when(scene, word, after=0.0):
+    """Absolute time the voice starts the phrase containing `word` (start of the clip if not found)."""
+    c = cl[scene]
+    return round(c['at'] + next((s[0] for s in segs[scene] if word in s[2]), 0.0) + after, 3)
 
 # moments shared by the animation (template) and the sound effects (sfx.py)
-cl = {c['scene']: c for c in clips}
 marks = {
     'cards': [round(cl['learn']['at'] + cl['learn']['dur'] * (.2 + i * .27), 3) for i in range(3)],
     # "Task 1 FREE" pops when the voice says पहला टास्क फ़्री; the account card when it says सीटीएफ़ एक्सेस (by position in the text)
-    'free': round(cl['ctf']['at'] + cl['ctf']['dur'] * max(0, t['vo']['ctf'].find('पहला')) / len(t['vo']['ctf']) + .4, 3),
-    'account': round(cl['ctf']['at'] + cl['ctf']['dur'] * max(0, t['vo']['ctf'].find('सीटीएफ़ एक्सेस')) / len(t['vo']['ctf']), 3),
-    'acctref': round(cl['ctf']['at'] + cl['ctf']['dur'] * max(0, t['vo']['ctf'].find('वो रील')) / len(t['vo']['ctf']), 3),
+    'free': when('ctf', 'पहला', .4),
+    'account': when('ctf', 'सीटीएफ़ एक्सेस'),
+    'acctref': when('ctf', 'वो रील'),
     'url': round(scenes['cta'][0] + 1.2, 3),
-    'enroll': round(cl['cta']['at'] + cl['cta']['dur'] * .55, 3),
+    'enroll': when('cta', 'एनरोल'),
 }
 data = {'topic': t, 'scenes': scenes, 'clips': clips, 'subs': subs, 'marks': marks, 'total': total}
 json.dump(data, open(os.path.join(work, 'data.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+qclog = json.load(open(os.path.join(work, 'vo-qc.json'), encoding='utf-8')) if os.path.exists(os.path.join(work, 'vo-qc.json')) else {}
+json.dump({'voice': os.environ.get('VOICE', 'hm_omega'), 'speed': float(os.environ.get('VOICE_SPEED', '1.06')), 'total': total,
+           'clips': [{'scene': c['scene'], 'at': c['at'], 'file': f"vo-{c['scene']}.wav", 'script': t['vo'][c['scene']],
+                      'default': t.get('voStyle', {}).get(c['scene'], 'NORMAL'), 'segs': segs[c['scene']], 'qc': qclog.get(c['scene'], [])} for c in clips]},
+          open(os.path.join(work, 'voice.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
 def ts(x):
     ms = int(round(x * 1000)); return f'{ms // 3600000:02d}:{ms // 60000 % 60:02d}:{ms // 1000 % 60:02d},{ms % 1000:03d}'

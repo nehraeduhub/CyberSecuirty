@@ -13,13 +13,14 @@ cp "$R/legacy/launch/shield.png" "$W/logo.png"
 REFB=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1])).get('ref',{}).get('cover',''))" "$GJ")
 rm -f "$W/refcover.png"; [ -z "$REFB" ] || cp "${SITE:-$R/../..}/public/images/store/books/$REFB-cover.png" "$W/refcover.png"
 python3 -I "$R/tools/guide.py" "$GJ" "$W" "$O"
+python3 -I "$R/tools/voice_report.py" "$W" "$O" "$NAME"
 TOTAL=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['total'])" "$W/data.json")
 python3 -I "$R/tools/music.py" "$MOOD" "$TOTAL" "$W/music.wav" >/dev/null
 python3 -I "$R/tools/sfx.py" "$W/data.json" "$W/sfx.wav" >/dev/null
 IN=(-i "$W/music.wav" -i "$W/sfx.wav"); F=""; i=2; L=""
 while read -r FILE AT; do
   IN+=(-i "$W/$FILE"); MS=$(python3 -c "print(int($AT*1000))")
-  F+="[$i]aresample=48000,highpass=f=80,volume=1.4,pan=stereo|c0=c0|c1=c0,adelay=$MS|$MS[v$i];"; L+="[v$i]"; i=$((i+1))
+  F+="[$i]aresample=48000,highpass=f=80,volume=2.0,pan=stereo|c0=c0|c1=c0,adelay=$MS|$MS[v$i];"; L+="[v$i]"; i=$((i+1))
 done < <(python3 -I -c "import json,sys;[print(c['file'],c['at']) for c in json.load(open(sys.argv[1]))['clips']]" "$W/data.json")
 F+="${L}amix=inputs=$((i-2)):normalize=0,apad[vo];[vo]asplit[vo1][sc];[0]volume=$MUSIC_VOL[m];"
 F+="[m][sc]sidechaincompress=threshold=0.08:ratio=2:attack=30:release=450[md];[1]volume=$SFX_VOL[fx];[md][vo1][fx]amix=inputs=3:normalize=0:duration=first,loudnorm=I=-14:TP=-1.5:LRA=11[a]"

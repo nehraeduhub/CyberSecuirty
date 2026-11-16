@@ -240,3 +240,27 @@ Total **59**: 43 topic reels + 6 brand (B1–B6) + 10 learning-path reels (P01�
 in which zip — plus `calendar.csv`, a 59-day posting order starting 2026-11-16 (brand reels first, then each path reel
 followed by its topic reels). `tools/pack.py` regenerates both. The voice-over was never checked by ear — the owner
 should listen to a few reels before posting.
+
+## 15. Voice direction & voice QC (owner request 2026-11-16)
+
+The owner's "AI voice direction" brief: pauses at the right places, loud / soft / polite / serious delivery by meaning,
+one consistent voice, a quality check after generation and regeneration of the faulty parts only.
+
+- **Script format.** Voice lines (Devanagari) carry the owner's direction tags. Pauses: `[SHORT PAUSE]` 0.35 s,
+  `[LONG PAUSE]` 0.70 s, plus automatic comma 0.18 s / sentence end 0.42 s / question 0.55 s. Styles hold until the
+  next style tag: `[NORMAL] [CALM] [POLITE] [SOFT] [WHISPER] [SERIOUS] [WARNING] [SLOW] [EXCITED] [CONFIDENT] [LOUD]
+  [EMPHASIZE] [QUESTIONING]`. Scene defaults: hook CONFIDENT, learn CALM, book NORMAL, CTF NORMAL, CTA EXCITED,
+  reference POLITE (guides: intro CONFIDENT, steps CALM). Hooks are hand-directed (`scripts.json`), the repeated lines
+  (learn / book / CTF / CTA / reference) by pattern in `tools/make-topics.py` / `make-paths.py`, brand guides in `guides/*.json`.
+- **How it is spoken** (`tools/speak.py`). Kokoro has no emotion control and hardly pauses at commas (measured < 0.1 s),
+  so each phrase is spoken separately with its style's speed, loudness and pitch (small steps — LOUD is +3.5 dB, not
+  shouting) and joined with exact silences. Same voice (`hm_omega`) for everything. Kokoro output peaks above 1.0;
+  the old reels clipped there — phrases now get 0.7× headroom and a soft limiter.
+- **Quality check** (`tools/voice_qc.py`, needs `ASR_DIR` = sherpa-onnx-whisper-small, downloaded from the sherpa-onnx
+  GitHub releases). Per phrase: Whisper transcription compared with the script (consonant skeleton; 3 passes because
+  Whisper-small is weak at Hindi), gaps inside the phrase, speed, loudness, pitch, cut-off ending, clipping. A failing
+  phrase is regenerated in up to 6 variants and the best take kept. Nobody listens — the owner should.
+- **Deliverables per reel:** `<name>-voiceover.mp3` (voice only, as timed in the reel) and `<name>-voice-script.md`
+  (script with directions, sentence-wise direction sheet with timestamps, correction report, QC status).
+  `tools/voice_summary.py` writes `VOICE-QC-REPORT.md` for the whole series.
+- Reels got longer with the pauses (reel 12: 60 s → 73 s).

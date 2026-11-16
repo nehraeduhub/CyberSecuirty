@@ -12,14 +12,14 @@
    "✅ FREE",
    "✉️ Email OTP login"
   ],
-  "vo": "स्टूडेंट अकाउंट कैसे बनाएँ? सिर्फ़ दो मिनट में, स्टेप बाय स्टेप।",
+  "vo": "[QUESTIONING] स्टूडेंट अकाउंट कैसे बनाएँ? [SHORT PAUSE] [CONFIDENT] सिर्फ़ दो मिनट में, [CALM] स्टेप बाय स्टेप।",
   "sub": "Student account kaise banayein? Sirf 2 minute me, step by step."
  },
  "steps": [
   {
    "title": "Website kholo → <em>My Account</em>",
    "tip": "🌐 techguardians.in",
-   "vo": "टेक गार्डियन्स डॉट इन खोलिए, और मेन्यू में माय अकाउंट पर टैप कीजिए।",
+   "vo": "[CALM] टेक गार्डियन्स डॉट इन खोलिए, [SHORT PAUSE] और मेन्यू में, माय अकाउंट पर टैप कीजिए।",
    "sub": "techguardians.in kholiye, aur menu me My Account par tap kijiye.",
    "shots": [
     {
@@ -49,7 +49,7 @@
   {
    "title": "<em>Request account</em> par tap",
    "tip": "🆕 Naya account",
-   "vo": "अब, रिक्वेस्ट अकाउंट पर टैप कीजिए।",
+   "vo": "[CALM] अब, [SHORT PAUSE] रिक्वेस्ट अकाउंट पर टैप कीजिए।",
    "sub": "Ab Request account par tap kijiye.",
    "shots": [
     {
@@ -79,7 +79,7 @@
   {
    "title": "Apni <em>details</em> bharo ✍️",
    "tip": "📝 User ID + password likh kar rakhein",
-   "vo": "नाम, ईमेल, मोबाइल, यूज़र आईडी और पासवर्ड भरिए, इन्हें लिख कर रखिए, और सेंड रिक्वेस्ट दबाइए।",
+   "vo": "[CALM] नाम, ईमेल, मोबाइल, यूज़र आईडी और पासवर्ड भरिए, [SHORT PAUSE] [EMPHASIZE] इन्हें लिख कर रखिए, [SHORT PAUSE] [CALM] और सेंड रिक्वेस्ट दबाइए।",
    "sub": "Naam, email, mobile, user ID aur password bhariye, inhe likh kar rakhiye, aur Send request dabaiye.",
    "shots": [
     {
@@ -188,7 +188,7 @@
   {
    "title": "Request <em>sent!</em> ✅",
    "tip": "⏳ Approval ke baad account active",
-   "vo": "रिक्वेस्ट सेंड! अप्रूवल के बाद, अकाउंट एक्टिव हो जाएगा।",
+   "vo": "[EXCITED] रिक्वेस्ट सेंड! [SHORT PAUSE] [CALM] अप्रूवल के बाद, अकाउंट एक्टिव हो जाएगा।",
    "sub": "Request send! Approval ke baad account active ho jayega.",
    "confetti": 0.15,
    "shots": [
@@ -213,7 +213,7 @@
   {
    "title": "Sign in: <em>Option 1</em> 🔑",
    "tip": "🔑 User ID + password",
-   "vo": "साइन इन का पहला तरीका, यूज़र आईडी और पासवर्ड।",
+   "vo": "[CALM] साइन इन का पहला तरीका, [SHORT PAUSE] यूज़र आईडी और पासवर्ड।",
    "sub": "Sign in ka pehla tarika — user ID aur password.",
    "shots": [
     {
@@ -262,7 +262,7 @@
   {
    "title": "Option 2: <em>Email OTP</em> ✉️",
    "tip": "✉️ Password yaad rakhne ki zaroorat nahi",
-   "vo": "दूसरा तरीका, ईमेल ओटीपी। ईमेल कोड वाला ऑप्शन चुनिए, ईमेल डालिए, और सेंड कोड दबाइए।",
+   "vo": "[CALM] दूसरा तरीका, [SHORT PAUSE] [EMPHASIZE] ईमेल ओटीपी। [SHORT PAUSE] [CALM] ईमेल कोड वाला ऑप्शन चुनिए, ईमेल डालिए, और सेंड कोड दबाइए।",
    "sub": "Doosra tarika — Email OTP. Email code wala option chuniye, email daliye, aur Send code dabaiye.",
    "shots": [
     {
@@ -317,7 +317,7 @@
   {
    "title": "<em>6-digit code</em> dalo 🔢",
    "tip": "🔒 Code kisi ke saath share na karein",
-   "vo": "ईमेल पर आया छह अंकों का कोड डालिए, और साइन इन कीजिए। कोड किसी से शेयर मत कीजिए।",
+   "vo": "[CALM] ईमेल पर आया, छह अंकों का कोड डालिए, और साइन इन कीजिए। [LONG PAUSE] [WARNING] कोड किसी से शेयर मत कीजिए।",
    "sub": "Email par aaya 6 ankon ka code daliye, aur sign in kijiye. Code kisi se share mat kijiye.",
    "banner": {
     "p0": 0.0,
@@ -362,7 +362,7 @@
   {
    "title": "Account <em>ready!</em> 🎉",
    "tip": "🚩 Ab CTF Portal kholo",
-   "vo": "बस! अकाउंट तैयार है। अब सीटीएफ़ पोर्टल पर, पहला टास्क फ़्री में शुरू कीजिए।",
+   "vo": "[EXCITED] बस! [SHORT PAUSE] अकाउंट तैयार है। [SHORT PAUSE] [CONFIDENT] अब सीटीएफ़ पोर्टल पर, पहला टास्क फ़्री में शुरू कीजिए।",
    "sub": "Bas! Account taiyaar hai. Ab CTF Portal par pehla task FREE me shuru kijiye.",
    "confetti": 0.05,
    "shots": [
@@ -408,7 +408,7 @@
   }
  ],
  "cta": {
-  "vo": "अभी अपना अकाउंट बनाइए, टेक गार्डियन्स डॉट इन पर!",
+  "vo": "[EXCITED] अभी अपना अकाउंट बनाइए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर!",
   "sub": "Abhi apna account banaiye — techguardians.in par!"
  },
  "caption": "Tech Guardians par Student Account kaise banayein? 🎓 Sirf 2 minute — step by step.\n\n1️⃣ techguardians.in → Menu → My Account\n2️⃣ Request account\n3️⃣ Naam, email, mobile, user ID, password bharo → Send request\n4️⃣ Approval ke baad account active ✅\n5️⃣ Sign in: user ID + password 🔑\n6️⃣ Ya Email OTP se: email daalo → Send code → 6-digit code → Verify & sign in ✉️\n🔒 OTP kisi ke saath share na karein.\n\n🚩 Phir CTF Portal par pehla task FREE!\n👉 techguardians.in (link in bio)\nKeep Learning · Keep Sharing 🇮🇳",
@@ -427,7 +427,7 @@
   "kind": "seen",
   "name": "B2-How-to-Enroll-CTF-Portal",
   "rom": "CTF Portal me enroll kaise karein",
-  "vo": "सीटीएफ़ पोर्टल में एनरोल कैसे करें वाली रील देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] सीटीएफ़ पोर्टल में एनरोल कैसे करें वाली रील देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "CTF Portal me enroll kaise karein wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  }
 }

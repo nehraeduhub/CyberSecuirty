@@ -13,7 +13,7 @@
    "🚩 7 rooms",
    "🧪 70 tasks"
   ],
-  "vo": "विंडोज़ और एक्टिव डायरेक्टरी एक्सपर्ट बनना है? ये पाथ आपके लिए है।",
+  "vo": "[QUESTIONING] विंडोज़ और एक्टिव डायरेक्टरी एक्सपर्ट बनना है? [LONG PAUSE] [EMPHASIZE] ये पाथ आपके लिए है।",
   "sub": "Windows aur Active Directory expert banna hai? Ye path aapke liye hai."
  },
  "steps": [
@@ -43,8 +43,8 @@
      ]
     }
    ],
-   "vo": "इस पाथ में सात हैंडबुक्स हैं। विंडोज़ सिक्योरिटी से, सिसइंटरनल्स तक।",
-   "sub": "Is path me 7 handbooks hain — Windows Security se Sysinternals tak."
+   "vo": "[CALM] इस पाथ में सात हैंडबुक्स हैं। [SHORT PAUSE] [CONFIDENT] विंडोज़ सिक्योरिटी से, सिसइंटरनल्स तक।",
+   "sub": "Is path me 7 handbooks hain. Windows Security se Sysinternals tak."
   },
   {
    "label": "7 CTF Rooms",
@@ -93,7 +93,7 @@
      "Windows Sysinternals Suite"
     ]
    ],
-   "vo": "और सात सीटीएफ़ रूम्स, जिनमें 70 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "vo": "[CALM] और सात सीटीएफ़ रूम्स, जिनमें सत्तर हैंड्स-ऑन टास्क हैं। [SHORT PAUSE] [EMPHASIZE] हर रूम का पहला टास्क फ़्री है।",
    "sub": "Aur 7 CTF rooms, jinme 70 hands-on tasks hain. Har room ka pehla task FREE hai."
   },
   {
@@ -127,7 +127,7 @@
      "EDR, PowerShell, Sysinternals"
     ]
    ],
-   "vo": "इस पाथ के बाद, आप पूरी एंटरप्राइज़ विंडोज़ एस्टेट सुरक्षित कर पाएँगे।",
+   "vo": "[CONFIDENT] इस पाथ के बाद, [SHORT PAUSE] आप पूरी एंटरप्राइज़ विंडोज़ एस्टेट सुरक्षित कर पाएँगे।",
    "sub": "Is path ke baad aap poori enterprise Windows estate surakshit kar paayenge.",
    "confetti": 0.6
   }
@@ -139,7 +139,7 @@
    "📘 7 handbooks",
    "🚩 7 rooms"
   ],
-  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "vo": "[EXCITED] आज ही ये पाथ शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।",
   "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
  },
  "ref": {
@@ -147,7 +147,7 @@
   "name": "27-Windows-Security",
   "rom": "Room 27 · Windows Security",
   "cover": "windows-security",
-  "vo": "इस पाथ की पहली रील, विंडोज़ सिक्योरिटी, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] इस पाथ की पहली रील, विंडोज़ सिक्योरिटी, देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Is path ki pehli reel — Windows Security — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  },
  "cover": {

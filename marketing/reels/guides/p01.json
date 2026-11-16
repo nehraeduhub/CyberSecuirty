@@ -13,7 +13,7 @@
    "🚩 6 rooms",
    "🧪 62 tasks"
   ],
-  "vo": "साइबर सिक्योरिटी शुरू कहाँ से करें? कोर फ़ाउंडेशन्स पाथ से।",
+  "vo": "[QUESTIONING] साइबर सिक्योरिटी शुरू कहाँ से करें? [LONG PAUSE] [EMPHASIZE] कोर फ़ाउंडेशन्स पाथ से।",
   "sub": "Cyber security shuru kahan se karein? Core Foundations path se."
  },
  "steps": [
@@ -42,8 +42,8 @@
      ]
     }
    ],
-   "vo": "इस पाथ में छह हैंडबुक्स हैं। साइबर सिक्योरिटी फ़ंडामेंटल्स से, ज़ीरो ट्रस्ट तक।",
-   "sub": "Is path me 6 handbooks hain — Cybersecurity Fundamentals se Zero Trust tak."
+   "vo": "[CALM] इस पाथ में छह हैंडबुक्स हैं। [SHORT PAUSE] [CONFIDENT] साइबर सिक्योरिटी फ़ंडामेंटल्स से, ज़ीरो ट्रस्ट तक।",
+   "sub": "Is path me 6 handbooks hain. Cybersecurity Fundamentals se Zero Trust tak."
   },
   {
    "label": "6 CTF Rooms",
@@ -88,7 +88,7 @@
      "Zero Trust"
     ]
    ],
-   "vo": "और छह सीटीएफ़ रूम्स, जिनमें 62 हैंड्स-ऑन टास्क हैं। हर रूम का पहला टास्क फ़्री है।",
+   "vo": "[CALM] और छह सीटीएफ़ रूम्स, जिनमें बासठ हैंड्स-ऑन टास्क हैं। [SHORT PAUSE] [EMPHASIZE] हर रूम का पहला टास्क फ़्री है।",
    "sub": "Aur 6 CTF rooms, jinme 62 hands-on tasks hain. Har room ka pehla task FREE hai."
   },
   {
@@ -122,7 +122,7 @@
      "Har path ka base"
     ]
    ],
-   "vo": "इस पाथ के बाद, आपके पास हर एडवांस्ड टॉपिक का मज़बूत बेस होगा।",
+   "vo": "[CONFIDENT] इस पाथ के बाद, [SHORT PAUSE] आपके पास हर एडवांस्ड टॉपिक का मज़बूत बेस होगा।",
    "sub": "Is path ke baad aapke paas har advanced topic ka mazboot base hoga.",
    "confetti": 0.6
   }
@@ -134,7 +134,7 @@
    "📘 6 handbooks",
    "🚩 6 rooms"
   ],
-  "vo": "आज ही ये पाथ शुरू कीजिए, टेक गार्डियन्स डॉट इन पर।",
+  "vo": "[EXCITED] आज ही ये पाथ शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।",
   "sub": "Aaj hi ye path shuru kijiye — techguardians.in par."
  },
  "ref": {
@@ -142,7 +142,7 @@
   "name": "01-Cybersecurity-Fundamentals",
   "rom": "Room 1 · Cybersecurity Fundamentals",
   "cover": "cybersecurity-fundamentals",
-  "vo": "इस पाथ की पहली रील, साइबर सिक्योरिटी फ़ंडामेंटल्स, देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+  "vo": "[QUESTIONING] इस पाथ की पहली रील, साइबर सिक्योरिटी फ़ंडामेंटल्स, देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
   "sub": "Is path ki pehli reel — Cybersecurity Fundamentals — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
  },
  "cover": {

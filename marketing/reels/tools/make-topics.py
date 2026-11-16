@@ -21,10 +21,22 @@ HI = ('एक दो तीन चार पाँच छह सात आठ �
 ACCOUNT_REEL = {'name': 'B6-How-to-Create-Student-Account', 'rom': 'Student Account kaise banayein', 'dev': 'स्टूडेंट अकाउंट कैसे बनाएँ'}
 WEBSITE_REEL = {'name': 'B1-Website-Tour', 'rom': 'Tech Guardians Website Tour', 'dev': 'टेक गार्डियन्स वेबसाइट टूर'}
 
+# Voice directions (see tools/speak.py). Scene default styles: hook CONFIDENT, learn CALM, book NORMAL,
+# ctf NORMAL, cta EXCITED, ref POLITE.
+DEFAULT_STYLE = {'hook': 'CONFIDENT', 'learn': 'CALM', 'book': 'NORMAL', 'ctf': 'NORMAL', 'cta': 'EXCITED', 'ref': 'POLITE'}
+
 def ref_lines(ref, kind):
     if kind == 'next':
-        return (f"अगली रील में देखिए, {ref['dev']}। उसे मिस मत कीजिए!", f"Agli reel me dekhiye — {ref['rom']}. Use miss mat kijiye!")
-    return (f"{ref['dev']} वाली रील देखी क्या? नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।", f"{ref['rom']} wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye.")
+        return (f"[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] {ref['dev']}। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!",
+                f"Agli reel me dekhiye — {ref['rom']}. Use miss mat kijiye!")
+    return (f"[QUESTIONING] {ref['dev']} वाली रील देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
+            f"{ref['rom']} wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye.")
+
+def learn_directions(vo):
+    """'हमारे साथ आप सीखेंगे, कैसे A, कैसे B, और कैसे C।' -> polite opening, calm list, a pause before each item."""
+    vo = vo.replace('हमारे साथ आप सीखेंगे,', '[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM]', 1)
+    vo = vo.replace(', और कैसे', ', [SHORT PAUSE] और कैसे').replace(', कैसे', ', [SHORT PAUSE] कैसे')
+    return vo.replace('। सिर्फ़ अपने या अनुमति वाले नेटवर्क पर।', '। [LONG PAUSE] [WARNING] सिर्फ़ अपने या अनुमति वाले नेटवर्क पर।')
 
 out = []
 for room in rooms:
@@ -49,14 +61,15 @@ for i, t in enumerate(out):
     rv, rs = ref_lines(ref, ref['kind'])
     nh, kh = HI[t['num'] - 1], HI[t['tasks'] - 1]
     t['ref'] = ref; t['accountRef'] = ACCOUNT_REEL
-    t['vo'] = {'hook': s['hookVo'], 'learn': s['learnVo'],
-        'book': f"पहले हैंडबुक से कॉन्सेप्ट क्लियर करो। {t['tdev']}, ज़ीरो से मास्टरी तक, आसान भाषा में।",
-        'ctf': f"फिर सीटीएफ़ पोर्टल के रूम नंबर {nh} में, {kh} हैंड्स-ऑन टास्क से प्रैक्टिस करो। पहला टास्क बिल्कुल फ़्री है। सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। कैसे बनाएँ, वो रील देखी क्या?",
-        'cta': "पहले सीखो, फिर प्रैक्टिस करो। टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, और सीखना स्टार्ट करो!",
+    t['vo'] = {'hook': s['hookVo'], 'learn': learn_directions(s['learnVo']),
+        'book': f"पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] {t['tdev']}, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
+        'ctf': f"फिर सीटीएफ़ पोर्टल के, रूम नंबर {nh} में, [SHORT PAUSE] {kh} हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+        'cta': "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
         'ref': rv}
+    t['voStyle'] = DEFAULT_STYLE
     t['sub'] = {'hook': s['hookSub'], 'learn': s['learnSub'],
         'book': f"Pehle handbook se concept clear karo. {t['title']} — zero se mastery tak, aasaan bhasha me.",
-        'ctf': f"Phir CTF Portal ke Room {t['num']} me, {t['tasks']} hands-on tasks se practice karo. Pehla task bilkul FREE hai. CTF access ke liye apna account zaroor bana lein — kaise banayein, wo reel dekhi kya?",
+        'ctf': f"Phir CTF Portal ke Room {t['num']} me, {t['tasks']} hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
         'cta': "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
         'ref': rs}
 
