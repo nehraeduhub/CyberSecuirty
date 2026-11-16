@@ -87,7 +87,7 @@ def plan_line(key, text, base_ls):
         if key == 'outro':
             st = ['CONFIDENT', 'SLOW', 'LOUD'] if si == 0 else (['CONFIDENT', 'LOUD'] if 'जय हिंद' in sent else ['EXCITED'])
         if key == 'intro' and si == 0: st = ['POLITE', 'EXCITED']
-        phrases = [p.strip() for p in re.split(r'(?<=,)', sent) if p.strip()]
+        phrases = [p.strip(' …') for p in re.split(r'(?<=[,…])', sent) if p.strip(' …')]
         for pi, ph in enumerate(phrases):
             pause_after = PAUSE['SHORT'] if pi < len(phrases) - 1 else (PAUSE['LONG'] if si < len(sentences) - 1 else 0.0)
             kw = None

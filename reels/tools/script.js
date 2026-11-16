@@ -58,7 +58,7 @@ function script({ crime: c, T, duration, voice }) {
 }
 function voiceReport({ crime: c, name, qc, voice, duration, voiceName }) {
   const at = Object.fromEntries(voice.map(v => [v.key, v]));
-  const ts = k => at[k] ? `${mmss(at[k].t)}.${String(Math.round((at[k].t % 1) * 10))}` : '--:--';
+  const ts = k => { if (!at[k]) return '--:--'; const d = Math.round(at[k].t * 10); return `${mmss(Math.floor(d / 10))}.${d % 10}`; };
   const pass = qc.filter(r => r.status === 'PASS').length;
   const fixed = qc.filter(r => r.corrections.length);
   const L = [];

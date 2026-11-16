@@ -1,0 +1,184 @@
+VOICE REPORT: CSJ-Digital-Arrest-Scam
+डिजिटल अरेस्ट (Digital Arrest Scam)
+Voice: rohan (Piper hi_IN, offline)  |  Reel: 01:44  |  Lines: 21
+
+FINAL QC STATUS: PASS (21/21 lines pass, 0 need a human listen)
+
+How QC works: every take is transcribed by Whisper large-v3-turbo and compared with the script
+(CER = character error rate; spelling-equivalent forms count as equal). Also checked: speaking rate,
+unplanned gaps, clipping, loudness. 3 takes per line; failing lines get correction rounds
+(slower, steadier) and only those lines are regenerated. Final listening by a human is still advised.
+
+1) FINAL SCRIPT WITH VOICE DIRECTIONS
+------------------------------------------------------------
+[00:00.7] (hook)
+  [WARNING][LOUD][QUESTIONING] पुलिस वर्दी में वीडियो कॉल… और आप गिरफ्तार?
+
+[00:05.3] (intro)
+  [POLITE][EXCITED] राम राम सा! [LONG PAUSE] [POLITE][CONFIDENT] साइबर सेफ झुंझुनूं में आपका स्वागत है। [LONG PAUSE] [POLITE][CONFIDENT] आज का साइबर क्राइम, [SHORT PAUSE] [POLITE][CONFIDENT] डिजिटल अरेस्ट। [LONG PAUSE] [POLITE][CONFIDENT] अंत तक देखिए, [SHORT PAUSE] [POLITE][CONFIDENT] फोन की सेटिंग भी बताऊँगा।
+
+[00:16.3] (how.0)
+  [SERIOUS] कॉल आता है: आपके नाम का पार्सल सिम गैरकानूनी काम में पकड़ा गया।
+
+[00:21.7] (how.1)
+  [SERIOUS] वीडियो कॉल पर [SERIOUS] [EMPHASIZE]नकली[/EMPHASIZE] पुलिस, [SHORT PAUSE] [SERIOUS] थाना सेटअप और नकली वारंट दिखाते हैं।
+
+[00:28.0] (how.2)
+  [SERIOUS] घंटों कैमरे के सामने बिठाकर किसी से बात करने नहीं देते।
+
+[00:32.7] (how.3)
+  [SERIOUS][SLOW] वेरिफिकेशन के नाम पर सारी जमा-पूँजी ट्रांसफर करवा लेते हैं।
+
+[00:37.9] (flags.title)
+  [WARNING] खतरे के संकेत।
+
+[00:39.5] (flags.0)
+  [WARNING] डिजिटल अरेस्ट जैसा कोई कानून नहीं है।
+
+[00:42.8] (flags.1)
+  [WARNING] किसी को न बताने की [WARNING] [EMPHASIZE]धमकी[/EMPHASIZE]।
+
+[00:45.4] (flags.2)
+  [WARNING] पैसे सुरक्षित खाते में भेजने को कहना।
+
+[00:49.8] (tips.title)
+  [CONFIDENT] ऐसे बचें।
+
+[00:51.0] (tips.0)
+  [CALM][POLITE][SLOW] ऐसा कॉल आए तो [CALM][POLITE][SLOW] [EMPHASIZE]तुरंत[/EMPHASIZE] काट दें, [SHORT PAUSE] [CALM][POLITE][SLOW] डरें नहीं।
+
+[00:54.8] (tips.1)
+  [CALM][POLITE][SLOW] परिवार और नजदीकी थाने को [CALM][POLITE][SLOW] [EMPHASIZE]तुरंत[/EMPHASIZE] बताएँ।
+
+[00:58.5] (tips.2)
+  [CALM][POLITE][SLOW] वीडियो कॉल पर कभी आधार बैंक डिटेल न दिखाएँ।
+
+[01:02.5] (tips.3)
+  [CALM][POLITE][SLOW] संचार साथी के चक्षु पर नंबर रिपोर्ट करें।
+
+[01:06.6] (set.title)
+  [POLITE][CALM] अब फोन में ये सेटिंग कीजिए।
+
+[01:09.2] (set.0)
+  [CALM][POLITE][SLOW] व्हाट्सऐप में, [SHORT PAUSE] [CALM][POLITE][SLOW] [EMPHASIZE]अनजान[/EMPHASIZE] कॉलर को साइलेंस कर दीजिए।
+
+[01:14.4] (set.1)
+  [CALM][POLITE][SLOW] फोन ऐप में, [SHORT PAUSE] [CALM][POLITE][SLOW] स्पैम कॉल फ़िल्टर चालू कीजिए।
+
+[01:19.2] (set.2)
+  [CALM][POLITE][SLOW] बैंक ऐप में, [SHORT PAUSE] [CALM][POLITE][SLOW] यू पी आई की रोज़ की लिमिट कम रखिए।
+
+[01:24.3] (help)
+  [SERIOUS][SLOW] ठगी हो जाए, [SHORT PAUSE] [SERIOUS][SLOW] तो तुरंत [SERIOUS][SLOW] [EMPHASIZE]उन्नीस सौ तीस[/EMPHASIZE] पर कॉल कीजिए। [LONG PAUSE] [SERIOUS][SLOW] साइबर क्राइम डॉट जी ओ वी डॉट इन पर शिकायत कीजिए, [SHORT PAUSE] [SERIOUS][SLOW] और बैंक से खाता ब्लॉक करवाइए।
+
+[01:35.2] (outro)
+  [CONFIDENT][SLOW][LOUD] अब हम किसी के साथ, [SHORT PAUSE] [CONFIDENT][SLOW][LOUD] कोई [EMPHASIZE]साइबर क्राइम नहीं होने देंगे[/EMPHASIZE]। [LONG PAUSE] [EXCITED] साइबर सेफ झुंझुनूं को फॉलो और शेयर कीजिए। [LONG PAUSE] [CONFIDENT][LOUD] जय हिंद!
+
+2) SENTENCE-WISE VOICE DIRECTION SHEET
+------------------------------------------------------------
+time    | line        | pace   pitch  gain  | directions / emphasis
+00:00.7 | hook        | 0.902  +0.5st +3.5dB | पुलिस वर्दी में वीडियो कॉल… और आप गिरफ्तार?
+00:05.3 | intro       | 0.893  +1.0st +1.5dB | राम राम सा!  (+0.45s pause)
+00:05.3 | intro       | 0.93   +0.3st +1.0dB | साइबर सेफ झुंझुनूं में आपका स्वागत है।  (+0.45s pause)
+00:05.3 | intro       | 0.93   +0.3st +1.0dB | आज का साइबर क्राइम,  (+0.2s pause)
+00:05.3 | intro       | 0.93   +0.3st +1.0dB | डिजिटल अरेस्ट।  (+0.45s pause)
+00:05.3 | intro       | 0.93   +0.3st +1.0dB | अंत तक देखिए,  (+0.2s pause)
+00:05.3 | intro       | 0.93   +0.3st +1.0dB | फोन की सेटिंग भी बताऊँगा।
+00:16.3 | how.0       | 0.949  -0.6st +0.5dB | कॉल आता है: आपके नाम का पार्सल सिम गैरकानूनी काम में पकड़ा गया।
+00:21.7 | how.1       | 0.949  -0.6st +0.5dB | वीडियो कॉल पर  (+0.1s pause)
+00:21.7 | how.1       | 1.006  +0.0st +2.0dB | [EMPHASIZE नकली] नकली पुलिस,  (+0.2s pause)
+00:21.7 | how.1       | 0.949  -0.6st +0.5dB | थाना सेटअप और नकली वारंट दिखाते हैं।
+00:28.0 | how.2       | 0.949  -0.6st +0.5dB | घंटों कैमरे के सामने बिठाकर किसी से बात करने नहीं देते।
+00:32.7 | how.3       | 1.015  -0.6st +0.5dB | वेरिफिकेशन के नाम पर सारी जमा-पूँजी ट्रांसफर करवा लेते हैं।
+00:37.9 | flags.title | 0.902  +0.7st +1.5dB | खतरे के संकेत।
+00:39.5 | flags.0     | 0.902  +0.7st +1.5dB | डिजिटल अरेस्ट जैसा कोई कानून नहीं है।
+00:42.8 | flags.1     | 0.902  +0.7st +1.5dB | किसी को न बताने की  (+0.1s pause)
+00:42.8 | flags.1     | 0.956  +1.3st +3.0dB | [EMPHASIZE धमकी] धमकी।
+00:45.4 | flags.2     | 0.902  +0.7st +1.5dB | पैसे सुरक्षित खाते में भेजने को कहना।
+00:49.8 | tips.title  | 0.93   +0.0st +1.0dB | ऐसे बचें।
+00:51.0 | tips.0      | 1.025  +0.3st -0.5dB | ऐसा कॉल आए तो  (+0.1s pause)
+00:51.0 | tips.0      | 1.087  +0.9st +1.0dB | [EMPHASIZE तुरंत] तुरंत काट दें,  (+0.2s pause)
+00:51.0 | tips.0      | 1.025  +0.3st -0.5dB | डरें नहीं।
+00:54.8 | tips.1      | 1.025  +0.3st -0.5dB | परिवार और नजदीकी थाने को  (+0.1s pause)
+00:54.8 | tips.1      | 1.087  +0.9st +1.0dB | [EMPHASIZE तुरंत] तुरंत बताएँ।
+00:58.5 | tips.2      | 1.025  +0.3st -0.5dB | वीडियो कॉल पर कभी आधार बैंक डिटेल न दिखाएँ।
+01:02.5 | tips.3      | 1.025  +0.3st -0.5dB | संचार साथी के चक्षु पर नंबर रिपोर्ट करें।
+01:06.6 | set.title   | 0.958  -0.3st -0.5dB | अब फोन में ये सेटिंग कीजिए।
+01:09.2 | set.0       | 1.025  +0.3st -0.5dB | व्हाट्सऐप में,  (+0.2s pause)
+01:09.2 | set.0       | 1.087  +0.9st +1.0dB | [EMPHASIZE अनजान] अनजान कॉलर को साइलेंस कर दीजिए।
+01:14.4 | set.1       | 1.025  +0.3st -0.5dB | फोन ऐप में,  (+0.2s pause)
+01:14.4 | set.1       | 1.025  +0.3st -0.5dB | स्पैम कॉल फ़िल्टर चालू कीजिए।
+01:19.2 | set.2       | 1.025  +0.3st -0.5dB | बैंक ऐप में,  (+0.2s pause)
+01:19.2 | set.2       | 1.025  +0.3st -0.5dB | यू पी आई की रोज़ की लिमिट कम रखिए।
+01:24.3 | help        | 1.015  -0.6st +0.5dB | ठगी हो जाए,  (+0.2s pause)
+01:24.3 | help        | 1.015  -0.6st +0.5dB | तो तुरंत  (+0.1s pause)
+01:24.3 | help        | 1.076  +0.0st +2.0dB | [EMPHASIZE उन्नीस सौ तीस] उन्नीस सौ तीस पर कॉल कीजिए।  (+0.45s pause)
+01:24.3 | help        | 1.015  -0.6st +0.5dB | साइबर क्राइम डॉट जी ओ वी डॉट इन पर शिकायत कीजिए,  (+0.2s pause)
+01:24.3 | help        | 1.015  -0.6st +0.5dB | और बैंक से खाता ब्लॉक करवाइए।
+01:35.2 | outro       | 0.995  +0.0st +3.0dB | अब हम किसी के साथ,  (+0.2s pause)
+01:35.2 | outro       | 1.055  +0.6st +3.5dB | [EMPHASIZE साइबर क्राइम नहीं होने देंगे] कोई साइबर क्राइम नहीं होने देंगे।  (+0.45s pause)
+01:35.2 | outro       | 0.893  +1.0st +1.5dB | साइबर सेफ झुंझुनूं को फॉलो और शेयर कीजिए।  (+0.45s pause)
+01:35.2 | outro       | 0.93   +0.0st +3.0dB | जय हिंद!
+
+pace = Piper length_scale (higher = slower); pitch in semitones; gain relative to the reel loudness.
+
+3) TIMESTAMP-WISE CORRECTION REPORT
+------------------------------------------------------------
+[00:42.8] flags.1: "किसी को न बताने की धमकी।"
+   round 1: problem = pronunciation/words (CER 0.16)
+            action  = slower (+6%), steadier intonation, regenerated this line only
+   result: take fix1_#1 chosen, CER 0.158 -> 0.105; status PASS
+
+
+4) LINE-BY-LINE QC RESULT
+------------------------------------------------------------
+[00:00.7] PASS   hook        CER 0.032 rate 12.3 ch/s  takes 1
+         ASR heard: पुलिस वर्दी में वीडियो कॉल और आप गिरिफतार
+[00:05.3] PASS   intro       CER 0.111 rate 11.7 ch/s  takes 3
+         ASR heard: राम नामसा, साइबर सेफ जुन्जनू में आपका सागत है, आज का साइबर क्राइम, डिजिटल अरस, अंत तक देखिए, फोन की सेटिंग भी बताऊंगा.
+[00:16.3] PASS   how.0       CER 0.021 rate 11.9 ch/s  takes 1
+         ASR heard: कॉल आता है, आपके नाम का पार्सल सिम गैर कानूनी काम में पकड़ा गया,
+[00:21.7] PASS   how.1       CER 0.062 rate 11.3 ch/s  takes 1
+         ASR heard: वीडियो कॉल पर नकली पुलेस, थाना सेटरप और नकली वारंड दिखाते हैं।
+[00:28.0] PASS   how.2       CER 0     rate 12.4 ch/s  takes 1
+         ASR heard: घंटों कैमरे के सामने बिठा कर किसी से बात करने नहीं देते।
+[00:32.7] PASS   how.3       CER 0.022 rate 11.8 ch/s  takes 1
+         ASR heard: वेरिफिकेशन के नाम पर सारी जमापूंजी ट्रांसफर करवा लेते हैं.
+[00:37.9] PASS   flags.title CER 0.091 rate 11.5 ch/s  takes 3
+         ASR heard: खत्रे के संकेत
+[00:39.5] PASS   flags.0     CER 0.069 rate 12.1 ch/s  takes 1
+         ASR heard: डिजितल अरेस्ट जैसा कोई कानून नहीं है.
+[00:42.8] PASS   flags.1     CER 0.105 rate 10.3 ch/s  takes 6
+         ASR heard: किसी को ना बताने की धम की
+[00:45.4] PASS   flags.2     CER 0.034 rate 13.9 ch/s  takes 1
+         ASR heard: पैसे सुरक्षित खाते में भेजने को कहना,
+[00:49.8] PASS   tips.title  CER 0.143 rate 10.9 ch/s  takes 3
+         ASR heard: ऐसे बचें
+[00:51.0] PASS   tips.0      CER 0.077 rate 9.6 ch/s  takes 1
+         ASR heard: ऐसा कॉल आये तो तरंत काट दे, डरे नहीं.
+[00:54.8] PASS   tips.1      CER 0.103 rate 11.2 ch/s  takes 3
+         ASR heard: परिवार और नस्थी की ठाने को तुरंत बताए।
+[00:58.5] PASS   tips.2      CER 0.061 rate 10.9 ch/s  takes 1
+         ASR heard: वीडियो कॉल पर कभी आधार, बैंक डिटेल ना दिखाए.
+[01:02.5] PASS   tips.3      CER 0.034 rate 10.4 ch/s  takes 1
+         ASR heard: संचार साथी के चक्षु पर नंबर रिपोर्ट करें
+[01:06.6] PASS   set.title   CER 0.105 rate 11.2 ch/s  takes 3
+         ASR heard: अब फोन में ये सेटेंग कीजिए.
+[01:09.2] PASS   set.0       CER 0.059 rate 11 ch/s  takes 2
+         ASR heard: वहाँ सेप में अन्जान कॉलर को साइलेंस कर दीजिए।
+[01:14.4] PASS   set.1       CER 0.034 rate 11.3 ch/s  takes 3
+         ASR heard: फोन एप में स्पैम कॉल फिल्टर चालू कीजिए।
+[01:19.2] PASS   set.2       CER 0.062 rate 10.7 ch/s  takes 1
+         ASR heard: बैंक एप में UPI की रोज की लिमिट कम रखिये.
+[01:24.3] PASS   help        CER 0.118 rate 11.8 ch/s  takes 3
+         ASR heard: थगी हो जाए तो तुरन 1930 पर कॉल कीजिए cybercrime.gov.in पर शिकायत कीजिए और बैंक से खाता ब्लॉक करवाईए
+[01:35.2] PASS   outro       CER 0.067 rate 11.8 ch/s  takes 1
+         ASR heard: अब हम किसी के साथ कोई साइबर क्राइम नहीं होने देंगे। साइबर सेर्थ जजनु को फॉलो और शेयर कीजिए। जय हिंद!
+
+5) KNOWN LIMITS OF THIS AI VOICE
+------------------------------------------------------------
+- Piper has no emotion tags: directions are realised through pace, pitch, expressiveness, loudness and pauses.
+  [WHISPER] is not used (the model cannot whisper naturally).
+- The aspirated "झ" (as in झुंझुनूं) comes out close to "ज" in all three Hindi voices; no spelling fixes it.
+  Context keeps it clear; a human recording (voice/<crime-id>.mp3) avoids it completely.
+- ASR checks words, not feeling: emotion and naturalness still need one human listen before posting.
