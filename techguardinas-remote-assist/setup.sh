@@ -126,6 +126,14 @@ write_env() {
     grep -q '^HTTP_PORT=' .env || echo "HTTP_PORT=$HTTP_PORT" >> .env
     c_ok ".env exists — keeping it"; set -a; . ./.env; set +a; return
   fi
+  # A database from an earlier install (any folder) keeps that install's password: a new .env would not match it.
+  if docker volume inspect techguardinas-remote_pgdata >/dev/null 2>&1; then
+    local where; where=$(docker ps -a --filter label=com.docker.compose.project=techguardinas-remote \
+      --format '{{.Label "com.docker.compose.project.working_dir"}}' 2>/dev/null | sort -u | head -1)
+    [ -n "$where" ] && [ "$where" != "$ROOT" ] && [ -f "$where/.env" ] && \
+      die "An earlier install exists in $where (its database keeps that install's password). Run setup.sh from that folder, or copy its settings here first: cp $where/.env $where/ADMIN-CREDENTIALS.txt . && cp -a $where/deploy/certs $where/deploy/secrets deploy/ ; then re-run."
+    die "An earlier install's database exists (docker volume techguardinas-remote_pgdata) but its .env is not here. Copy that install's .env into this folder and re-run, or delete the old data for a clean start: sudo docker compose down -v"
+  fi
   local ip; ip=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}' || true)
   [ -n "$ip" ] || ip=$(hostname -I 2>/dev/null | awk '{print $1}')
   ask PORTAL_HOSTNAME "Portal host name (internal DNS)" "remote.techguardinas.local"
