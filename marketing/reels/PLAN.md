@@ -246,8 +246,9 @@ should listen to a few reels before posting.
 The owner's "AI voice direction" brief: pauses at the right places, loud / soft / polite / serious delivery by meaning,
 one consistent voice, a quality check after generation and regeneration of the faulty parts only.
 
-- **Script format.** Voice lines (Devanagari) carry the owner's direction tags. Pauses: `[SHORT PAUSE]` 0.35 s,
-  `[LONG PAUSE]` 0.70 s, plus automatic comma 0.18 s / sentence end 0.42 s / question 0.55 s. Styles hold until the
+- **Script format.** Voice lines (Devanagari) carry the owner's direction tags. Pauses: `[SHORT PAUSE]` 0.18 s,
+  `[LONG PAUSE]` 0.40 s, plus automatic comma 0.10 s / sentence end 0.25 s / question 0.32 s ("flow v2", matched to
+  the owner's reference reel: a presenter who keeps talking — ~73 % speech, pauses 0.1–0.2 s, longest 0.6 s). Styles hold until the
   next style tag: `[NORMAL] [CALM] [POLITE] [SOFT] [WHISPER] [SERIOUS] [WARNING] [SLOW] [EXCITED] [CONFIDENT] [LOUD]
   [EMPHASIZE] [QUESTIONING]`. Scene defaults: hook CONFIDENT, learn CALM, book NORMAL, CTF NORMAL, CTA EXCITED,
   reference POLITE (guides: intro CONFIDENT, steps CALM). Hooks are hand-directed (`scripts.json`), the repeated lines
@@ -263,4 +264,6 @@ one consistent voice, a quality check after generation and regeneration of the f
 - **Deliverables per reel:** `<name>-voiceover.mp3` (voice only, as timed in the reel) and `<name>-voice-script.md`
   (script with directions, sentence-wise direction sheet with timestamps, correction report, QC status).
   `tools/voice_summary.py` writes `VOICE-QC-REPORT.md` for the whole series.
-- Reels got longer with the pauses (reel 12: 60 s → 73 s).
+- Reel length with flow v2: reel 12 = 66 s. Captions are 2–4 words per line (reference style).
+- Voice cloning of the reference narrator was declined (someone else's voice). Cloning the owner's own voice would need
+  a cloning TTS (e.g. XTTS-v2 / IndicF5, hosted on Hugging Face — blocked in this environment) and a clean recording.

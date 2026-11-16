@@ -10,8 +10,8 @@ t = next(x for x in json.load(open(topics, encoding='utf-8')) if x['num'] == num
 vo = json.load(open(os.path.join(work, 'vo.json')))
 segs = json.load(open(os.path.join(work, 'vo-segs.json'), encoding='utf-8'))
 # scene: (gap before the voice, minimum scene length)
-PLAN = [('hook', .5, 5.5), ('learn', .35, 9), ('book', .35, 7), ('ctf', .35, 11.5), ('cta', .35, 6), ('ref', .3, 4.5)]
-TAIL = .6        # breath after each clip
+PLAN = [('hook', .4, 5.5), ('learn', .25, 9), ('book', .25, 7), ('ctf', .25, 11.5), ('cta', .25, 6), ('ref', .25, 4.5)]
+TAIL = .3        # breath after each clip (short: the voice flows from scene to scene)
 END = 3.2        # end card, music only
 scenes, clips, cur = {}, [], 0.0
 for name, lead, minimum in PLAN:
@@ -22,7 +22,7 @@ for name, lead, minimum in PLAN:
 scenes['end'] = [round(cur, 3), round(cur + END, 3)]
 total = round(cur + END, 2)
 
-def chunks(text, maxc=32):
+def chunks(text, maxc=20):
     """Caption lines: split at sentence/comma breaks, then evenly by words; no tiny leftovers."""
     import math
     clauses = [c.strip(' —') for c in re.split(r'(?<=[.?!,])\s+|\s+—\s+', text) if c.strip(' —')]
@@ -31,7 +31,7 @@ def chunks(text, maxc=32):
         w = c.split(); n = max(1, math.ceil(len(c) / maxc)); k = math.ceil(len(w) / n)
         out += [' '.join(w[i:i + k]) for i in range(0, len(w), k)]
     for i in range(len(out) - 1, 0, -1):
-        if len(out[i].split()) <= 1 or (len(out[i - 1]) + len(out[i]) <= 22):
+        if len(out[i].split()) <= 1 or (len(out[i - 1]) + len(out[i]) <= 14):
             out[i - 1] += ' ' + out.pop(i)
     return out
 

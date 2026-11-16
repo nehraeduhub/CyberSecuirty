@@ -5,8 +5,10 @@ speed / loudness / pitch of its direction, and joined to the next with a fixed s
 checked (tools/voice_qc.py) and regenerated if it fails — see render().
 
 A voice line is Devanagari text with direction tags (the owner's voice-direction list):
-  pauses     [SHORT PAUSE] 0.35 s   [LONG PAUSE] 0.70 s
-             and automatically: comma 0.18 s · end of sentence (। . !) 0.42 s · question (?) 0.55 s
+  pauses     [SHORT PAUSE] 0.18 s   [LONG PAUSE] 0.40 s
+             and automatically: comma 0.10 s · end of sentence (। . !) 0.25 s · question (?) 0.32 s
+             Short on purpose: the owner's reference reel (2026-11-16) talks ~73 % of the time with pauses of
+             0.1–0.2 s (longest 0.6 s) — a flowing presenter, not a reader who stops at every comma.
   styles     a style tag holds until the next style tag; every line starts in its scene's default style
              [NORMAL] [CALM] [POLITE] [SOFT] [WHISPER] [SERIOUS] [WARNING] [SLOW] [EXCITED]
              [CONFIDENT] [LOUD] [EMPHASIZE] [QUESTIONING]
@@ -31,9 +33,9 @@ STYLE = {
     'EMPHASIZE':   (0.93,  3.0,  0.5),
     'QUESTIONING': (0.98,  0.0,  0.4),
 }
-PAUSE_TAG = {'SHORT PAUSE': .35, 'LONG PAUSE': .70}
-PUNCT_PAUSE = {',': .18, '।': .42, '.': .42, '!': .42, '?': .55}
-JOIN = .07                                   # style change inside a phrase: just a breath
+PAUSE_TAG = {'SHORT PAUSE': .18, 'LONG PAUSE': .40}
+PUNCT_PAUSE = {',': .10, '।': .25, '.': .25, '!': .25, '?': .32}
+JOIN = .05                                   # style change inside a phrase: just a breath
 TAG = re.compile(r'\[([A-Z ]+)\]')
 
 def plain(text):

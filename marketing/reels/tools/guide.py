@@ -28,10 +28,10 @@ def tts(text, default):
     return f, sf.info(f).duration, meta['segs'], meta['qc']
 
 scenes, clips, cur = {}, [], 0.0
-items = [('intro', G['intro'], .4, 4)] + [(f's{i + 1}', s, .3, 3.8) for i, s in enumerate(G['steps'])] + [('cta', G['cta'], .3, 4.5)] + ([('ref', G['ref'], .3, 4.5)] if G.get('ref') else [])
+items = [('intro', G['intro'], .35, 4)] + [(f's{i + 1}', s, .25, 3.8) for i, s in enumerate(G['steps'])] + [('cta', G['cta'], .25, 4.5)] + ([('ref', G['ref'], .25, 4.5)] if G.get('ref') else [])
 for name, it, lead, minimum in items:
     f, dur, segs, qc = tts(it['vo'], DEFAULT.get(name, 'CALM'))
-    d = max(minimum, lead + dur + .4)
+    d = max(minimum, lead + dur + .3)
     scenes[name] = [round(cur, 3), round(cur + d, 3)]
     clips.append({'scene': name, 'at': round(cur + lead, 3), 'dur': round(dur, 3), 'file': os.path.basename(f), 'sub': it['sub'], 'segs': segs, 'qc': qc,
                   'script': it['vo'], 'default': DEFAULT.get(name, 'CALM')})
@@ -39,14 +39,14 @@ for name, it, lead, minimum in items:
 scenes['end'] = [round(cur, 3), round(cur + 3.2, 3)]
 total = round(cur + 3.2, 2)
 
-def chunks(text, maxc=32):
+def chunks(text, maxc=20):
     clauses = [c.strip(' —') for c in re.split(r'(?<=[.?!,])\s+|\s+—\s+', text) if c.strip(' —')]
     out = []
     for c in clauses:
         w = c.split(); n = max(1, math.ceil(len(c) / maxc)); k = math.ceil(len(w) / n)
         out += [' '.join(w[i:i + k]) for i in range(0, len(w), k)]
     for i in range(len(out) - 1, 0, -1):
-        if len(out[i].split()) <= 1 or (len(out[i - 1]) + len(out[i]) <= 22):
+        if len(out[i].split()) <= 1 or (len(out[i - 1]) + len(out[i]) <= 14):
             out[i - 1] += ' ' + out.pop(i)
     return out
 subs = []
