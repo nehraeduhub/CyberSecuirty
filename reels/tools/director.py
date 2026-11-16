@@ -36,7 +36,9 @@ STYLE = {  # ls = length_scale multiplier, ns/nw = expressiveness, pitch in semi
     'LOUD':        dict(gain_add=2.0),
     'SOFT':        dict(gain_add=-2.0),
 }
-PAUSE = {'SHORT': 0.20, 'LONG': 0.45, 'EMPH': 0.10}
+EXPLAINER = os.environ.get('VOICE_STYLE') == 'explainer'
+# explainer style flows like a conversation: short pauses, no artificial slow-downs
+PAUSE = {'SHORT': 0.14, 'LONG': 0.28, 'EMPH': 0.06} if EXPLAINER else {'SHORT': 0.20, 'LONG': 0.45, 'EMPH': 0.10}
 
 SECTION = [  # key regex -> styles
     (r'^hook$', ['WARNING', 'LOUD']),
@@ -60,7 +62,10 @@ EMPH = ['उन्नीस सौ तीस', 'कभी नहीं', 'कभ
 def styles_for(key):
     for rx, st in SECTION:
         if re.match(rx, key):
-            return list(st)
+            st = list(st)
+            if EXPLAINER:  # one steady conversational pace: no SLOW, polite parts stay friendly not formal
+                st = [x for x in st if x != 'SLOW'] or ['NORMAL']
+            return st
     return ['NORMAL']
 
 
@@ -87,6 +92,9 @@ def plan_line(key, text, base_ls):
         if key == 'outro':
             st = ['CONFIDENT', 'SLOW', 'LOUD'] if si == 0 else (['CONFIDENT', 'LOUD'] if 'जय हिंद' in sent else ['EXCITED'])
         if key == 'intro' and si == 0: st = ['POLITE', 'EXCITED']
+        if EXPLAINER and key == 'intro' and si > 0: st = ['CONFIDENT']
+        if EXPLAINER and key == 'outro':
+            st = ['CALM'] if si == 0 else (['CONFIDENT', 'LOUD'] if si == 1 else ['CONFIDENT'])
         phrases = [p.strip(' …') for p in re.split(r'(?<=[,…])', sent) if p.strip(' …')]
         for pi, ph in enumerate(phrases):
             pause_after = PAUSE['SHORT'] if pi < len(phrases) - 1 else (PAUSE['LONG'] if si < len(sentences) - 1 else 0.0)

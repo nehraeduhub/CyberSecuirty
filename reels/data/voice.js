@@ -58,9 +58,33 @@
   const ORD = ['पहली', 'दूसरी', 'तीसरी', 'चौथी'];
   const NUMS = ['पहला', 'दूसरा', 'तीसरा', 'चौथा'];
 
+  // 'classic' = announcer style (default). 'explainer' = conversational Hinglish explainer:
+  // faster flow, few long pauses, "चलिए, समझते हैं / ध्यान रहे / तो याद रखो", informal "करो".
+  const STYLE = () => (typeof window !== 'undefined' && window.VOICE_STYLE) || (typeof process !== 'undefined' && process.env && process.env.VOICE_STYLE) || 'classic';
+  const INFORMAL = [['करवाइए', 'करवाओ'], ['कर दीजिए', 'कर दो'], ['दीजिए', 'दो'], ['कीजिए', 'करो'], ['रखिए', 'रखो'], ['चुनिए', 'चुनो'], ['भेजिए', 'भेजो'],
+    ['दिखाइए', 'दिखाओ'], ['करें', 'करो'], ['रखें', 'रखो'], ['डालें', 'डालो'], ['दें', 'दो'], ['लें', 'लो'], ['पूछें', 'पूछो'], ['बताएँ', 'बताओ'],
+    ['जाएँ', 'जाओ'], ['चुनें', 'चुनो'], ['देखें', 'देखो'], ['जाँचें', 'जाँचो'], ['भेजें', 'भेजो'], ['समझाएँ', 'समझाओ'], ['खोलें', 'खोलो'], ['उठाएँ', 'उठाओ'],
+    ['डरें', 'डरो'], ['खोजें', 'खोजो'], ['दिखाएँ', 'दिखाओ'], ['रहें', 'रहो'], ['निकलें', 'निकलो'], ['भरें', 'भरो'], ['लिखें', 'लिखो']];
+  const informal = s => INFORMAL.reduce((t, [a, b]) => t.replace(new RegExp(a + '(?=[\\s,।!?.]|$)', 'g'), b), s);
+
   function lines(c) {
     const L = [];
-    const add = (key, text, say) => L.push({ key, text, say: speak(say == null ? text : say) });
+    const ex = STYLE() === 'explainer';
+    const add = (key, text, say) => L.push({ key, text, say: speak(ex ? informal(say == null ? text : say) : (say == null ? text : say)) });
+    if (ex) {
+      add('hook', c.hook);
+      add('intro', '', `राम राम सा! आज बात ${c.title} की। चलिए, एक मिनट में समझते हैं, ये होता कैसे है, और बचना कैसे है।`);
+      c.steps.forEach((s, i) => add('how.' + i, s));
+      add('flags.title', '', 'ध्यान रहे, ये तीन संकेत दिखें, तो रुक जाओ।');
+      c.flags.forEach((s, i) => add('flags.' + i, s));
+      add('tips.title', '', 'तो बचना कैसे है?');
+      c.tips.forEach((s, i) => add('tips.' + i, s));
+      add('set.title', '', 'और अभी, फोन में ये सेटिंग कर लो।');
+      c.settings.forEach((s, i) => add('set.' + i, s.label, `${s.say || `${s.app} में ${s.label} को ${s.on ? 'ऑन' : 'बंद'} करो`}`));
+      add('help', '', 'और अगर ठगी हो जाए, तो घबराओ मत। तुरंत उन्नीस सौ तीस पर कॉल करो, और साइबर क्राइम डॉट जी ओ वी डॉट इन पर शिकायत करो।');
+      add('outro', '', `तो याद रखो, ${c.tips[0]}। अब हम किसी के साथ कोई साइबर क्राइम नहीं होने देंगे। ऐसी और जानकारी के लिए, साइबर सेफ झुंझुनूं को फॉलो करो।`);
+      return L;
+    }
     add('hook', c.hook);
     add('intro', '', `राम राम सा! साइबर सेफ झुंझुनूं में आपका स्वागत है। आज का साइबर क्राइम, ${c.title}। अंत तक देखिए, फोन की सेटिंग भी बताऊँगा।`);
     c.steps.forEach((s, i) => add('how.' + i, s));
@@ -84,7 +108,8 @@
     };
     const voice = []; // {key, t, d}
     const V = (k, t) => { if (!ls.find(x => x.key === k)) return t; voice.push({ key: k, t: +t.toFixed(3), d: D(k) }); return t + D(k); };
-    const GAP = 0.35;
+    const ex = STYLE() === 'explainer';
+    const GAP = ex ? 0.15 : 0.35, STEP_MIN = ex ? 3.8 : 4.4, STEP_TAIL = ex ? 0.35 : 0.6, FLAG_TAIL = ex ? 0.9 : 1.4;
     const T = {}, X = {};
     let t = 0;
     // HOOK
@@ -94,7 +119,7 @@
     // HOW
     T.how = t; let u = t + 0.3;
     X.stepT = []; X.stepLen = [];
-    c.steps.forEach((_, i) => { X.stepT.push(u - T.how); const e = V('how.' + i, u + 0.25); const len = Math.max(4.4, e - u + 0.6); X.stepLen.push(len); u += len; });
+    c.steps.forEach((_, i) => { X.stepT.push(u - T.how); const e = V('how.' + i, u + 0.25); const len = Math.max(STEP_MIN, e - u + STEP_TAIL); X.stepLen.push(len); u += len; });
     // first message bubbles during how.title + step 1, otp at step 3, debit at step 4
     const msgSpan = Math.min(1.6, (X.stepT[0] + X.stepLen[0] - 1.0) / Math.max(1, c.messages.length));
     X.msgT = c.messages.map((_, i) => 0.9 + i * msgSpan);
@@ -103,7 +128,7 @@
     // FLAGS
     T.flags = t; u = V('flags.title', t + 0.2) + GAP; X.flagT = [];
     c.flags.forEach((_, i) => { X.flagT.push(u - T.flags); u = V('flags.' + i, u + 0.15) + GAP; });
-    X.flagEnd = u - T.flags; t = u + 1.4;
+    X.flagEnd = u - T.flags; t = u + FLAG_TAIL;
     // TIPS
     T.tips = t; u = V('tips.title', t + 0.2) + GAP; X.tipT = [];
     c.tips.forEach((_, i) => { X.tipT.push(u - T.tips); u = V('tips.' + i, u + 0.15) + GAP; });
@@ -121,6 +146,6 @@
     return { T, X, voice, lines: ls };
   }
 
-  const api = { lines, timing, speak, num, WORDS, LETTERS };
+  const api = { lines, timing, speak, num, WORDS, LETTERS, STYLE };
   if (typeof module !== 'undefined') module.exports = api; else root.VOICE = api;
 })(this);

@@ -61,7 +61,7 @@ const slug = s => s.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
   page.on('pageerror', e => console.error('pageerror:', e.message));
-  await page.addInitScript(([b, d]) => { if (b) window.BREAKING = b; window.DURATIONS = d; }, [plan.breaking ? crime : null, durations]);
+  await page.addInitScript(([b, d, st]) => { if (b) window.BREAKING = b; window.DURATIONS = d; if (st) window.VOICE_STYLE = st; }, [plan.breaking ? crime : null, durations, process.env.VOICE_STYLE || null]);
   const url = 'file://' + path.join(ROOT, 'template/reel.html') + `?id=${encodeURIComponent(crime.id)}&day=${plan.day}&render=1`;
   await page.goto(url);
   await page.evaluate(() => window.REEL.ready);
