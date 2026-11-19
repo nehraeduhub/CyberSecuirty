@@ -35,6 +35,7 @@ for N in "$@"; do
   # frames, rendered in JOBS parallel slices
   rm -rf "$W/frames"; NF=$(python3 -c "import math;print(math.ceil($TOTAL*30))"); STEP=$(( (NF + JOBS - 1) / JOBS ))
   for ((s=0; s<NF; s+=STEP)); do node "$R/tools/render.js" "$W" "$W/frames" "$s,$((s+STEP))" & done; wait
+  GOT=$(ls "$W/frames" | wc -l); [ "$GOT" -eq "$NF" ] || { echo "FRAMES MISSING: $GOT of $NF for topic $N"; exit 1; }
   ffmpeg -nostdin -loglevel error -y -framerate 30 -i "$W/frames/f%05d.jpg" -i "$W/mix.wav" -c:v libx264 -profile:v high -crf ${CRF:-21} -preset slow \
     -pix_fmt yuv420p -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart "$O/$NAME.mp4"
   node "$R/tools/render.js" "$W" "$W/frames" cover "$O/$NAME-thumbnail.jpg"

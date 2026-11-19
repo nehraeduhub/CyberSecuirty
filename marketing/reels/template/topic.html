@@ -745,7 +745,7 @@ const TRANS = [
   (p) => { const n = 10, h = 1920 / n; fx.fillStyle = AC; for (let i = 0; i < n; i++) { const q = clamp(p * 1.6 - i * .06); const w = q < .5 ? ease(q * 2) : 1 - ease((q - .5) * 2); const left = q < .5 ? 0 : 1080 * (1 - w); fx.globalAlpha = .95; fx.fillRect(left, i * h, 1080 * w, h + 1); } fx.globalAlpha = 1; },
   (p) => { const k = Math.sin(p * Math.PI); for (let i = 0; i < 14; i++) { const y = hash(i + Math.floor(p * 20)) * 1920, hh = 20 + hash(i * 7 + Math.floor(p * 20)) * 120, dx = (hash(i * 3 + Math.floor(p * 25)) - .5) * 300 * k; fx.globalAlpha = .7 * k; fx.fillStyle = [AC, '#22d3ee', '#ff0050', '#ffffff'][i % 4]; fx.fillRect(dx, y, 1080, hh); } fx.globalAlpha = 1; },
   (p) => { const k = Math.sin(p * Math.PI), gr = fx.createRadialGradient(540, 900, 0, 540, 900, 1300); gr.addColorStop(0, `rgba(255,255,255,${.85 * k})`); gr.addColorStop(.5, alpha(AC, .5 * k)); gr.addColorStop(1, 'rgba(255,255,255,0)'); fx.fillStyle = gr; fx.fillRect(0, 0, 1080, 1920);
-    fx.strokeStyle = alpha(AC, k); fx.lineWidth = 10; for (let r = 0; r < 3; r++) { fx.beginPath(); fx.arc(540, 900, ease(p) * 1400 - r * 160, 0, 7); fx.stroke(); } },
+    fx.strokeStyle = alpha(AC, k); fx.lineWidth = 10; for (let r = 0; r < 3; r++) { const rad = ease(p) * 1400 - r * 160; if (rad > 0) { fx.beginPath(); fx.arc(540, 900, rad, 0, 7); fx.stroke(); } } },
 ];
 function effects(t) {
   bg.clearRect(0, 0, 1080, 1920); BG[LK.theme % BG.length](t);
