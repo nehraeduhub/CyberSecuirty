@@ -272,8 +272,8 @@ one consistent voice, a quality check after generation and regeneration of the f
 
 - The owner's own voice (two recordings, ~2.6 min) replaces the Kokoro voice: Kokoro speaks the directed script,
   `tools/voice-clone-convert.py` (kNN-VC, weights from the kNN-VC GitHub release) turns it into the owner's voice,
-  then `ffmpeg rubberband=pitch=1.059463:formant=preserved` lifts it one semitone (owner asked for a slightly higher,
-  politer voice; kNN-VC itself lands on the recording's pitch). Timing is unchanged, so the video stays in sync.
+  then `ffmpeg rubberband=pitch=(f0+3)/f0:formant=preserved` lifts it by 3 Hz only (owner, 2026-11-19; one semitone
+  was too much; kNN-VC itself lands on the recording's pitch, ~180 Hz). Timing is unchanged, so the video stays in sync.
 - Delivery "flow v5": one utterance per sentence (commas flow inside), 0.35 s after a sentence / 0.45 s after a question,
   softer accents (EXCITED +1 dB, EMPHASIZE +1.5 dB, LOUD +2 dB), speed 1.14, `tools/pronunciation.json`
   (मास्टरी → मास्टेरी, रिकवरी, मॉनिटरिंग).

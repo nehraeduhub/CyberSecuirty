@@ -33,7 +33,7 @@ STYLE = {
     'EMPHASIZE':   (0.95,  1.5,  0.5),
     'QUESTIONING': (0.98,  0.0,  0.4),
 }
-BASE_PITCH = 1.0   # semitones added to every style: the owner asked for a slightly higher, politer voice (2026-11-19)
+BASE_PITCH = 0.0   # semitones added to every style (owner: keep the voice pitch; the cloned voice gets +3 Hz after conversion)
 PAUSE_TAG = {'SHORT PAUSE': .18, 'LONG PAUSE': .40}
 PUNCT_PAUSE = {',': .10, '।': .35, '.': .35, '!': .35, '?': .45}
 JOIN = .05                                   # style change inside a phrase: just a breath
