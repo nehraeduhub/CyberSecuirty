@@ -1,35 +1,49 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>Topic reel</title>
 <!-- Data-driven topic reel, 1080x1920. tools/render.js injects window.DATA (work/<num>/data.json + asset paths)
-     and calls window.render(t) for every frame, or window.renderCover() for the thumbnail. -->
+     and calls window.render(t) for every frame, or window.renderCover() for the thumbnail.
+     Every topic has its own look (topic.look from tools/make-topics.py): theme (colours, fonts, animated background),
+     hook / learn / book / ctf / cta / ref layouts, transition, caption style and cover layout, plus a format scene
+     ('fact': quiz, myth, compare, mistake, story, tip) and a topic animation (topic.iconAnim). -->
 <style>
+  @font-face{font-family:'Space Grotesk';font-weight:700;src:url(fonts/space-grotesk-latin-700-normal.woff2)}
+  @font-face{font-family:'Bebas Neue';font-weight:400;src:url(fonts/bebas-neue-latin-400-normal.woff2)}
+  @font-face{font-family:'Poppins';font-weight:800;src:url(fonts/poppins-latin-800-normal.woff2)}
+  @font-face{font-family:'Poppins';font-weight:600;src:url(fonts/poppins-latin-600-normal.woff2)}
+  @font-face{font-family:'Oswald';font-weight:700;src:url(fonts/oswald-latin-700-normal.woff2)}
+  @font-face{font-family:'Orbitron';font-weight:900;src:url(fonts/orbitron-latin-900-normal.woff2)}
+  @font-face{font-family:'Playfair Display';font-weight:900;src:url(fonts/playfair-display-latin-900-normal.woff2)}
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:1080px;height:1920px;overflow:hidden;background:#06152b;font-family:'Inter','Inter Display',system-ui,'Noto Color Emoji',sans-serif;color:#fff}
-  :root{--ac:#ff9933}
-  #bg{position:absolute;inset:0;background:radial-gradient(1100px 900px at 85% 8%,color-mix(in srgb,var(--ac) 28%,#123a73) 0%,transparent 60%),radial-gradient(900px 900px at 0% 100%,#0e2f5c 0%,transparent 60%),linear-gradient(180deg,#071a33,#0a2348 55%,#061428)}
+  :root{--ac:#ff9933;--fg:#fff;--muted:#cfe0ff;--card:rgba(255,255,255,.07);--cardb:rgba(255,255,255,.14);--capbg:rgba(3,10,22,.8);--capfg:#fff;
+        --hf:'Inter';--bf:'Inter';--ink:#140c02;--acx:var(--ac)}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:#06152b;font-family:var(--bf),'Inter',system-ui,'Noto Color Emoji',sans-serif;color:var(--fg)}
+  #bg{position:absolute;inset:0}
   #grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:60px 60px}
   .tri{position:absolute;left:0;right:0;top:0;height:14px;display:flex;z-index:9}
   .tri i{flex:1}.tri i:nth-child(1){background:#ff9933}.tri i:nth-child(2){background:#fff}.tri i:nth-child(3){background:#138808}
   #brand{position:absolute;top:96px;left:70px;display:flex;align-items:center;gap:20px;z-index:8}
   #brand img{width:84px;height:84px;border-radius:20px;background:#fff;padding:6px;object-fit:contain}
   #brand b{display:block;font-size:40px;font-weight:800;letter-spacing:-.5px}
-  #brand small{display:block;font-size:22px;color:var(--ac);font-weight:800;letter-spacing:4px;text-transform:uppercase;margin-top:3px}
-  #wm{position:absolute;top:118px;right:70px;font:800 28px Inter,sans-serif;color:#fff;opacity:.85;padding:10px 20px;border-radius:999px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);z-index:8}
-  #bar{position:absolute;left:70px;right:70px;top:216px;height:6px;border-radius:6px;background:rgba(255,255,255,.1);z-index:8}
+  #brand small{display:block;font-size:22px;color:var(--acx);font-weight:800;letter-spacing:4px;text-transform:uppercase;margin-top:3px}
+  #wm{position:absolute;top:118px;right:70px;font:800 28px Inter,sans-serif;color:var(--fg);opacity:.85;padding:10px 20px;border-radius:999px;background:var(--card);border:2px solid var(--cardb);z-index:8}
+  #bar{position:absolute;left:70px;right:70px;top:216px;height:6px;border-radius:6px;background:var(--cardb);z-index:8}
   #bar i{display:block;height:100%;border-radius:6px;background:var(--ac)}
   .scene{position:absolute;inset:0}
-  .pill{display:inline-flex;align-items:center;gap:12px;background:var(--ac);color:#140c02;font-weight:900;font-size:30px;letter-spacing:3px;padding:12px 26px;border-radius:999px;text-transform:uppercase}
-  .h1{font-size:84px;line-height:1.05;font-weight:900;letter-spacing:-1.8px}
-  em{font-style:normal;color:var(--ac)}
+  .pill{display:inline-flex;align-items:center;gap:12px;background:var(--ac);color:var(--ink);font-weight:900;font-size:30px;letter-spacing:3px;padding:12px 26px;border-radius:999px;text-transform:uppercase;font-family:'Inter'}
+  .h1{font-family:var(--hf),'Inter','Noto Color Emoji';line-height:1.06;font-weight:900;letter-spacing:-1.5px}
+  .th6 .h1{text-transform:uppercase;letter-spacing:1px;line-height:.98;font-weight:400}
+  .th3 .h1{letter-spacing:0}
+  em{font-style:normal;color:var(--acx)}
   .head{position:absolute;left:70px;right:70px;top:280px}
   .center{position:absolute;left:70px;right:70px;text-align:center}
-  .card{display:flex;align-items:center;gap:30px;padding:40px 38px;margin-bottom:34px;border-radius:30px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.14);font-size:46px;font-weight:600;line-height:1.2}
-  .card b{color:#fff;font-weight:900}
-  .card .ck{flex:none;width:76px;height:76px;border-radius:50%;background:var(--ac);color:#140c02;display:grid;place-items:center;font-size:44px;font-weight:900}
-  .card .num{color:var(--ac);font-weight:900;font-size:30px;letter-spacing:2px;display:block;margin-bottom:6px}
-  .chip{display:inline-block;margin:10px 8px;padding:16px 28px;border-radius:999px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);font-size:34px;font-weight:800}
-  .chip.ac{background:var(--ac);color:#140c02;border-color:var(--ac)}
-  .chip.gr{background:#138808;border-color:#2fbf2f}
+  .card{display:flex;align-items:center;gap:30px;padding:36px 38px;margin-bottom:30px;border-radius:30px;background:var(--card);border:2px solid var(--cardb);font-size:44px;font-weight:600;line-height:1.2;position:relative;overflow:hidden}
+  .card b{font-weight:900}
+  .th5 .card,.th5 .stat,.th5 .tile{box-shadow:0 18px 40px rgba(11,23,48,.12)}
+  .th2 .card,.th2 .tile,.th2 .stat{border-style:dashed}
+  .card .ck{flex:none;width:76px;height:76px;border-radius:50%;background:var(--ac);color:var(--ink);display:grid;place-items:center;font-size:44px;font-weight:900}
+  .num{color:var(--acx);font-weight:900;font-size:30px;letter-spacing:2px;display:block;margin-bottom:6px}
+  .chip{display:inline-block;margin:10px 8px;padding:16px 28px;border-radius:999px;background:var(--card);border:2px solid var(--cardb);font-size:34px;font-weight:800}
+  .chip.ac{background:var(--ac);color:var(--ink);border-color:var(--ac)}
   .book{position:absolute;border-radius:10px;box-shadow:0 40px 90px rgba(0,0,0,.6);transform-origin:50% 50%}
   .phone{position:absolute;width:500px;height:900px;border-radius:64px;background:#0b0f17;padding:16px;box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 3px #2a3550,inset 0 0 0 2px #1b2233}
   .screen{position:relative;width:468px;height:868px;border-radius:50px;overflow:hidden;background:#fff}
@@ -37,43 +51,93 @@
   .status{position:absolute;left:0;right:0;top:0;height:56px;background:#fff;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:6px 40px 0;font:700 20px Inter,sans-serif;color:#0b0f17}
   .notch{position:absolute;left:50%;top:24px;transform:translateX(-50%);width:130px;height:36px;border-radius:22px;background:#0b0f17;z-index:5}
   .ring{position:absolute;border:6px solid var(--ac);border-radius:16px;box-shadow:0 0 40px color-mix(in srgb,var(--ac) 80%,transparent);z-index:4}
-  .stat{width:370px;padding:24px 28px;margin-bottom:22px;border-radius:26px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.14)}
-  .stat small{display:block;font-size:24px;letter-spacing:3px;color:#9fb6db;font-weight:800;text-transform:uppercase}
+  .stat{width:370px;padding:24px 28px;margin-bottom:22px;border-radius:26px;background:var(--card);border:2px solid var(--cardb)}
+  .stat small{display:block;font-size:24px;letter-spacing:3px;color:var(--muted);font-weight:800;text-transform:uppercase}
   .stat b{display:block;font-size:44px;white-space:nowrap;font-weight:900;margin-top:4px}
-  .stat.free{background:#138808;border-color:#2fbf2f}.stat.free small{color:#d6ffd6}
-  .url{display:inline-block;padding:26px 50px;border-radius:28px;background:#fff;color:#0a2348;font-size:68px;font-weight:900;letter-spacing:-1px;box-shadow:0 30px 90px rgba(0,0,0,.45)}
-  .btn{display:inline-flex;align-items:center;gap:14px;margin:12px 10px;padding:24px 34px;border-radius:24px;font-size:38px;font-weight:900}
+  .stat.free{background:#138808;border-color:#2fbf2f;color:#fff}.stat.free small{color:#d6ffd6}
+  .stat.acct{background:linear-gradient(90deg,#ff9933,#ffcc4d);border-color:#ffcc4d;color:#140c02}
+  .url{display:inline-block;padding:26px 50px;border-radius:28px;background:#fff;color:#0a2348;font-size:68px;font-weight:900;letter-spacing:-1px;box-shadow:0 30px 90px rgba(0,0,0,.35)}
+  .btn{display:inline-flex;align-items:center;gap:14px;margin:12px 10px;padding:24px 34px;border-radius:24px;font-size:34px;font-weight:900}
   .glow{position:absolute;width:1000px;height:1000px;left:40px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--ac) 30%,transparent),transparent 65%)}
   #cap{position:absolute;left:60px;right:60px;top:1350px;text-align:center;z-index:9}
-  #cap>span{display:inline-block;max-width:960px;padding:18px 30px;border-radius:22px;background:rgba(3,10,22,.78);border:2px solid rgba(255,255,255,.12);font-size:52px;font-weight:800;line-height:1.18;letter-spacing:-.5px}
-  #cap span i{font-style:normal;color:var(--ac)}
+  #cap>span{display:inline-block;max-width:960px;font-size:52px;font-weight:800;line-height:1.18;letter-spacing:-.5px;color:var(--capfg)}
+  #cap.c0>span{padding:18px 30px;border-radius:22px;background:var(--capbg);border:2px solid var(--cardb)}
+  #cap.c1>span{font-size:58px;font-weight:900;text-shadow:0 0 2px #000,3px 3px 0 #000,-3px 3px 0 #000,3px -3px 0 #000,-3px -3px 0 #000,0 6px 24px rgba(0,0,0,.7);color:#fff}
+  #cap.c2{text-align:left}
+  #cap.c2>span{padding:18px 30px 18px 34px;border-radius:8px 22px 22px 8px;background:var(--capbg);border-left:12px solid var(--ac)}
+  #cap.c3>span{padding:14px 22px;border-radius:18px;background:var(--capbg)}
+  #cap span i{font-style:normal;color:var(--acx)}
+  #cap b{font-weight:900}
   canvas{position:absolute}
   .sh{position:absolute;top:-20%;bottom:-20%;width:34%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);pointer-events:none;z-index:3}
-  .wrap{position:absolute;overflow:hidden;border-radius:10px;box-shadow:0 40px 90px rgba(0,0,0,.6)}
+  .wrap{position:absolute;overflow:hidden;border-radius:10px;box-shadow:0 40px 90px rgba(0,0,0,.5)}
   .wrap img{display:block;width:100%}
-  .enroll{display:inline-flex;align-items:center;gap:18px;padding:32px 60px;border-radius:999px;background:linear-gradient(90deg,#ff9933,#ffcc4d);color:#140c02;font-size:62px;font-weight:900;letter-spacing:-1px;position:relative;overflow:hidden}
-  .tapc{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:8px solid #fff;z-index:12}
-  #cap b{font-weight:900}
-  .reel{position:absolute;width:420px;height:746px;border-radius:40px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 70%,#0a2348),#071a33 70%);border:4px solid rgba(255,255,255,.25);box-shadow:0 40px 120px rgba(0,0,0,.6)}
+  .enroll{display:inline-flex;align-items:center;gap:18px;padding:32px 60px;border-radius:999px;background:linear-gradient(90deg,#ff9933,#ffcc4d);color:#140c02;font-size:62px;font-weight:900;letter-spacing:-1px;position:relative;overflow:hidden;font-family:'Inter'}
+  .tapc{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:8px solid #fff;z-index:12;box-shadow:0 0 0 4px rgba(0,0,0,.3)}
+  .reel{position:absolute;width:420px;height:746px;border-radius:40px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 70%,#0a2348),#071a33 70%);border:4px solid rgba(255,255,255,.25);box-shadow:0 40px 120px rgba(0,0,0,.5);color:#fff}
   .reel .tag{position:absolute;left:24px;top:24px;padding:8px 18px;border-radius:999px;background:rgba(0,0,0,.45);font-size:24px;font-weight:900;letter-spacing:3px}
   .reel .ttl{position:absolute;left:28px;right:28px;bottom:96px;font-size:44px;font-weight:900;line-height:1.08;letter-spacing:-1px;text-shadow:0 4px 20px rgba(0,0,0,.6)}
   .reel .site{position:absolute;left:28px;bottom:36px;font-size:24px;font-weight:800;opacity:.85}
-  .play{position:absolute;left:50%;top:38%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:#0a2348;font-size:70px;box-shadow:0 0 0 0 rgba(255,255,255,.5)}
+  .play{position:absolute;left:50%;top:38%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:#0a2348;font-size:70px}
+  .tile{position:absolute;border-radius:30px;background:var(--card);border:2px solid var(--cardb);padding:34px 34px;font-size:40px;font-weight:600;line-height:1.2;overflow:hidden}
+  .tile b{font-weight:900}
+  .win{position:absolute;border-radius:24px;overflow:hidden;background:#0b1220;border:2px solid #263247;box-shadow:0 40px 100px rgba(0,0,0,.5);color:#e2e8f0}
+  .win .tb{height:58px;background:#151e2e;display:flex;align-items:center;gap:12px;padding:0 24px}
+  .win .tb i{width:18px;height:18px;border-radius:50%;display:block}
+  .win .tb span{margin-left:16px;font:700 22px 'JetBrains Mono',monospace;color:#94a3b8}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .opt{display:flex;align-items:center;gap:28px;padding:30px 34px;border-radius:28px;background:var(--card);border:3px solid var(--cardb);font-size:44px;font-weight:700;margin-bottom:28px;position:relative}
+  .opt .l{flex:none;width:80px;height:80px;border-radius:22px;background:var(--cardb);display:grid;place-items:center;font-size:42px;font-weight:900}
+  .opt.ok{background:#138808;border-color:#2fbf2f;color:#fff}.opt.ok .l{background:#fff;color:#138808}
+  .opt.no{opacity:.4}
+  .big{position:absolute;border-radius:34px;padding:40px 44px;font-size:50px;font-weight:800;line-height:1.18}
+  .big small{display:block;font-size:30px;letter-spacing:4px;font-weight:900;margin-bottom:14px}
+  .stamp{position:absolute;padding:14px 34px;border:10px solid #ef4444;color:#ef4444;font:900 84px 'Inter';letter-spacing:6px;border-radius:18px;background:rgba(255,255,255,.08)}
+  .step{position:absolute;left:190px;right:70px;padding:30px 34px;border-radius:28px;background:var(--card);border:2px solid var(--cardb);font-size:44px;font-weight:600;line-height:1.2}
+  .step b{font-weight:900;color:var(--acx)}
+  .dot{position:absolute;left:96px;width:64px;height:64px;margin-top:-32px;border-radius:50%;background:var(--ac);color:var(--ink);display:grid;place-items:center;font-size:30px;font-weight:900;box-shadow:0 0 0 10px color-mix(in srgb,var(--ac) 25%,transparent)}
 </style></head>
 <body>
 <div id="bg"></div><div id="grid"></div>
+<canvas id="bgfx" width="1080" height="1920" style="left:0;top:0"></canvas>
 <div class="tri"><i></i><i></i><i></i></div>
 <div id="brand"><img id="logo" alt=""><span><b>Tech Guardians</b><small id="pathlbl"></small></span></div>
 <div id="wm">techguardians.in</div>
 <div id="bar"><i></i></div>
 <canvas id="icon" width="940" height="560" style="left:70px;top:300px"></canvas>
-<canvas id="bgfx" width="1080" height="1920" style="left:0;top:0"></canvas>
 <div id="stage"></div>
 <canvas id="fx" width="1080" height="1920" style="left:0;top:0;z-index:10"></canvas>
 <div id="cap"></div>
 <script>
 const D = window.DATA, T = D.topic, A = D.assets, SC = D.scenes;
-document.documentElement.style.setProperty('--ac', T.accent);
+const LK = Object.assign({ theme: 0, hook: 0, learn: 0, book: 0, ctf: 0, cta: 0, ref: 0, trans: 0, cap: 0, cover: 0, lines: 0 }, T.look || {});
+const ORDER = (T.order || ['hook', 'learn', 'book', 'ctf', 'cta', 'ref']).concat(['end']);
+const F = T.fact || null;
+
+// ---------- themes ----------
+const THEMES = [
+  { name: 'navy', bg: 'radial-gradient(1100px 900px at 85% 8%,color-mix(in srgb,var(--ac) 28%,#123a73) 0%,transparent 60%),radial-gradient(900px 900px at 0% 100%,#0e2f5c 0%,transparent 60%),linear-gradient(180deg,#071a33,#0a2348 55%,#061428)', grid: true, hs: 1 },
+  { name: 'terminal', bg: 'radial-gradient(900px 900px at 50% 30%,#06301b,transparent 70%),#010805', fg: '#e8fff1', muted: '#86efac', card: 'rgba(16,185,129,.08)', cardb: 'rgba(52,211,153,.38)', capbg: 'rgba(0,12,6,.86)', hf: "'JetBrains Mono'", hs: .86 },
+  { name: 'blueprint', bg: 'linear-gradient(180deg,#0b47a8,#083178 60%,#062661)', muted: '#c7dcff', card: 'rgba(255,255,255,.07)', cardb: 'rgba(255,255,255,.55)', capbg: 'rgba(5,28,72,.85)', hf: "'Space Grotesk'", hs: 1 },
+  { name: 'neon', bg: 'linear-gradient(180deg,#0b0120 0%,#1d0840 55%,#3b0a5e 100%)', muted: '#f0c8ff', card: 'rgba(255,255,255,.06)', cardb: 'rgba(236,72,153,.5)', capbg: 'rgba(15,2,32,.85)', hf: "'Orbitron'", hs: .74 },
+  { name: 'hex', bg: 'radial-gradient(1000px 800px at 20% 10%,color-mix(in srgb,var(--ac) 20%,#0f172a),transparent 65%),linear-gradient(180deg,#0b1220,#111827)', muted: '#cbd5e1', card: 'rgba(148,163,184,.1)', cardb: 'rgba(148,163,184,.28)', capbg: 'rgba(2,6,15,.85)', hf: "'Poppins'", hs: .92 },
+  { name: 'paper', bg: 'radial-gradient(900px 700px at 90% 0%,color-mix(in srgb,var(--ac) 22%,#f6f1e7),transparent 70%),#f6f1e7', fg: '#0b1730', muted: '#475569', card: '#ffffff', cardb: 'rgba(11,23,48,.12)', capbg: 'rgba(11,23,48,.9)', capfg: '#fff', hf: "'Playfair Display'", hs: .98, light: true },
+  { name: 'bold', bg: '#0d0d0f', muted: '#d4d4d8', card: 'rgba(255,255,255,.06)', cardb: 'rgba(255,255,255,.2)', capbg: 'rgba(0,0,0,.85)', hf: "'Bebas Neue'", hs: 1.3 },
+  { name: 'circuit', bg: 'radial-gradient(1000px 900px at 80% 20%,color-mix(in srgb,var(--ac) 18%,#03252b),transparent 70%),#03171b', muted: '#a7f3d0', card: 'rgba(45,212,191,.07)', cardb: 'rgba(45,212,191,.3)', capbg: 'rgba(1,14,16,.86)', hf: "'Oswald'", hs: 1.06 },
+];
+const TH = THEMES[LK.theme % THEMES.length];
+if (TH.light && LK.cap === 1) LK.cap = 0;   // outlined captions read badly on the light theme
+const R = document.documentElement.style;
+R.setProperty('--ac', T.accent);
+if (TH.fg) R.setProperty('--fg', TH.fg);
+for (const [k, v] of [['muted', TH.muted], ['card', TH.card], ['cardb', TH.cardb], ['capbg', TH.capbg], ['capfg', TH.capfg], ['hf', TH.hf]]) if (v) R.setProperty('--' + k, v);
+if (TH.light) R.setProperty('--acx', 'color-mix(in srgb,var(--ac) 62%,#000)');
+document.body.classList.add('th' + LK.theme);
+document.getElementById('bg').style.background = TH.bg;
+document.getElementById('grid').style.display = TH.grid ? 'block' : 'none';
+const FG = TH.fg || '#ffffff';
+const fs = (n) => Math.round(n * TH.hs);
+
 document.getElementById('logo').src = A.logo;
 document.getElementById('pathlbl').textContent = `Room ${T.num} · ${T.path}`;
 
@@ -82,260 +146,648 @@ const back = (x) => { x = Math.max(0, Math.min(1, x)); const c = 1.7; return 1 +
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const keys = (k, t) => { if (t <= k[0][0]) return k[0][1]; for (let i = 1; i < k.length; i++) if (t <= k[i][0]) { const [a, va] = k[i - 1], [b, vb] = k[i]; return va + (vb - va) * ease((t - a) / (b - a)); } return k[k.length - 1][1]; };
 const fadeUp = (lt, at, d = .55, y = 50) => { const p = ease(clamp((lt - at) / d)); return `opacity:${p};transform:translateY(${(1 - p) * y}px)`; };
+const fadeX = (lt, at, d = .55, x = 120) => { const p = ease(clamp((lt - at) / d)); return `opacity:${p};transform:translateX(${(1 - p) * x}px)`; };
 const pop = (lt, at, d = .5) => { const p = clamp((lt - at) / d); return `opacity:${clamp(p * 2)};transform:scale(${.6 + .4 * back(p)})`; };
 const clip = (s) => D.clips.find((c) => c.scene === s);
 const M = D.marks;
 const shine = (lt, at, d = .9) => { const p = (lt - at) / d; return p > 0 && p < 1 ? `<i class="sh" style="left:${-40 + p * 150}%"></i>` : ''; };
 const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const strip = (h) => h.replace(/<[^>]+>/g, '');
+const V = LK.lines;   // wording variant for small labels
 const imgs = {};
 for (const k of ['cover', 'feature', 'room', 'task', 'logo', 'refcover']) { if (!A[k]) continue; const i = new Image(); i.src = A[k]; imgs[k] = i; }
 
-// ---------- hook icon animations (canvas) ----------
+// ---------- topic animations (canvas 940x560 above the hook) ----------
 const cv = document.getElementById('icon'), g = cv.getContext('2d');
+const AC = T.accent, RED = '#ef4444', GRN = '#22c55e';
+const alpha = (c, a) => c + Math.round(clamp(a) * 255).toString(16).padStart(2, '0');
 function rr(x, y, w, h, r) { g.beginPath(); g.roundRect(x, y, w, h, r); }
 function packet(x, y, col, r = 22) { g.fillStyle = col; g.shadowColor = col; g.shadowBlur = 24; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.shadowBlur = 0; }
+function txt(s, x, y, font, col, al = 'center') { g.font = font; g.fillStyle = col; g.textAlign = al; g.fillText(s, x, y); }
+function line(x1, y1, x2, y2, col, w = 3) { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); }
+function shieldPath(cx, cy, s) { g.beginPath(); g.moveTo(cx, cy - 1.1 * s); g.quadraticCurveTo(cx + .95 * s, cy - .85 * s, cx + .95 * s, cy - .5 * s); g.quadraticCurveTo(cx + .95 * s, cy + .6 * s, cx, cy + 1.15 * s); g.quadraticCurveTo(cx - .95 * s, cy + .6 * s, cx - .95 * s, cy - .5 * s); g.quadraticCurveTo(cx - .95 * s, cy - .85 * s, cx, cy - 1.1 * s); g.closePath(); }
 const ICONS = {
   firewall(t) {
-    const W = 940, H = 560, wx = 430;
-    for (let r = 0; r < 7; r++) for (let c = 0; c < 2; c++) {        // brick wall
+    const wx = 430;
+    for (let r = 0; r < 7; r++) for (let c = 0; c < 2; c++) {
       const off = r % 2 ? 40 : 0; rr(wx + c * 80 - off + 20, 60 + r * 64, 76, 58, 8);
       g.fillStyle = r % 2 ? '#c2410c' : '#ea580c'; g.fill(); g.strokeStyle = '#7c2d12'; g.lineWidth = 3; g.stroke();
     }
-    g.fillStyle = 'rgba(255,255,255,.9)'; g.font = '800 30px Inter'; g.textAlign = 'center'; g.fillText('FIREWALL', wx + 80, 40);
-    for (let i = 0; i < 6; i++) {                                     // packets: green pass, red bounce
+    txt('FIREWALL', wx + 80, 40, '800 30px Inter', FG);
+    for (let i = 0; i < 6; i++) {
       const ph = ((t * .55 + i / 6) % 1), lane = 110 + (i % 4) * 110, good = i % 2 === 0;
       let x = -40 + ph * 1040;
-      if (!good && x > wx - 10) { const k = (x - (wx - 10)) / 300; x = wx - 10 - k * 220; packet(x, lane + k * 40, `rgba(239,68,68,${1 - k})`); if (k < .35) { g.fillStyle = '#fff'; g.font = '900 44px Inter'; g.fillText('✕', wx - 60, lane - 30); } continue; }
-      packet(x, lane, good ? '#22c55e' : '#ef4444');
+      if (!good && x > wx - 10) { const k = (x - (wx - 10)) / 300; x = wx - 10 - k * 220; packet(x, lane + k * 40, `rgba(239,68,68,${1 - k})`); if (k < .35) txt('✕', wx - 60, lane - 30, '900 44px Inter', FG); continue; }
+      packet(x, lane, good ? GRN : RED);
     }
-    g.textAlign = 'left'; g.font = '700 26px Inter'; g.fillStyle = '#86efac'; g.fillText('● allow 443', 20, 530); g.fillStyle = '#fca5a5'; g.fillText('● deny 23', 230, 530);
+    txt('● allow 443', 20, 530, '700 26px Inter', '#16a34a', 'left'); txt('● deny 23', 230, 530, '700 26px Inter', RED, 'left');
   },
   packets(t) {
-    const W = 940;
-    for (let l = 0; l < 4; l++) {                                     // traffic lanes
-      const y = 90 + l * 110; g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 2; g.beginPath(); g.moveTo(20, y); g.lineTo(W - 20, y); g.stroke();
+    for (let l = 0; l < 4; l++) {
+      const y = 90 + l * 110; line(20, y, 920, y, alpha(FG, .15), 2);
       for (let k = 0; k < 5; k++) {
-        const x = ((t * (120 + l * 30) + k * 210 + l * 60) % (W + 80)) - 40, bad = l === 2 && k === 1;
-        rr(x - 40, y - 22, 80, 44, 10); g.fillStyle = bad ? '#ef4444' : ['#22d3ee', '#38bdf8', '#60a5fa', '#818cf8'][l]; g.fill();
-        g.fillStyle = '#04121f'; g.font = '800 20px JetBrains Mono, monospace'; g.textAlign = 'center'; g.fillText(bad ? 'SYN' : ['TCP', 'DNS', 'HTTP', 'TLS'][l], x, y + 7);
+        const x = ((t * (120 + l * 30) + k * 210 + l * 60) % 1020) - 40, bad = l === 2 && k === 1;
+        rr(x - 40, y - 22, 80, 44, 10); g.fillStyle = bad ? RED : ['#22d3ee', '#38bdf8', '#60a5fa', '#818cf8'][l]; g.fill();
+        txt(bad ? 'SYN' : ['TCP', 'DNS', 'HTTP', 'TLS'][l], x, y + 7, '800 20px JetBrains Mono', '#04121f');
       }
     }
-    const mx = 470 + Math.sin(t * 1.3) * 300, my = 260 + Math.cos(t * .9) * 90;  // magnifier
-    g.lineWidth = 14; g.strokeStyle = '#fff'; g.beginPath(); g.arc(mx, my, 90, 0, 7); g.stroke();
+    const mx = 470 + Math.sin(t * 1.3) * 300, my = 260 + Math.cos(t * .9) * 90;
+    g.lineWidth = 14; g.strokeStyle = FG; g.beginPath(); g.arc(mx, my, 90, 0, 7); g.stroke();
     g.fillStyle = 'rgba(34,211,238,.12)'; g.fill(); g.lineWidth = 22; g.beginPath(); g.moveTo(mx + 64, my + 64); g.lineTo(mx + 140, my + 140); g.stroke();
   },
   radar(t) {
     const cx = 470, cy = 270, R0 = 240;
-    g.strokeStyle = 'rgba(34,211,238,.35)'; g.lineWidth = 3;
+    g.strokeStyle = alpha(AC, .45); g.lineWidth = 3;
     for (let k = 1; k <= 3; k++) { g.beginPath(); g.arc(cx, cy, R0 * k / 3, 0, 7); g.stroke(); }
     g.beginPath(); g.moveTo(cx - R0, cy); g.lineTo(cx + R0, cy); g.moveTo(cx, cy - R0); g.lineTo(cx, cy + R0); g.stroke();
-    const a = t * 2.2; const gr = g.createConicGradient ? g.createConicGradient(a - .9, cx, cy) : null;
-    if (gr) { gr.addColorStop(0, 'rgba(34,211,238,0)'); gr.addColorStop(.14, 'rgba(34,211,238,.55)'); gr.addColorStop(.15, 'rgba(34,211,238,0)'); g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, R0, 0, 7); g.fill(); }
-    for (let i = 0; i < 7; i++) {                                     // blips light up as the beam passes
+    const a = t * 2.2, gr = g.createConicGradient(a - .9, cx, cy);
+    gr.addColorStop(0, alpha(AC, 0)); gr.addColorStop(.14, alpha(AC, .55)); gr.addColorStop(.15, alpha(AC, 0)); g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, R0, 0, 7); g.fill();
+    for (let i = 0; i < 7; i++) {
       const ang = hash(i) * 6.283, r = 50 + hash(i + 9) * 180, bx = cx + Math.cos(ang) * r, by = cy + Math.sin(ang) * r;
       const since = ((a - ang) % 6.283 + 6.283) % 6.283, on = Math.max(0, 1 - since / 2.5), bad = i === 3;
-      g.fillStyle = bad ? `rgba(239,68,68,${.3 + on})` : `rgba(134,239,172,${.2 + on})`; g.beginPath(); g.arc(bx, by, bad ? 14 : 10, 0, 7); g.fill();
+      g.fillStyle = bad ? `rgba(239,68,68,${.3 + on})` : `rgba(34,197,94,${.25 + on})`; g.beginPath(); g.arc(bx, by, bad ? 14 : 10, 0, 7); g.fill();
     }
-  },
-  emoji(t) {                                                          // generic: topic emoji with orbiting packets
-    const cx = 470, cy = 270;
-    for (let k = 0; k < 3; k++) { const p = (t * .6 + k / 3) % 1; g.strokeStyle = `${T.accent}${Math.round((1 - p) * 160).toString(16).padStart(2, '0')}`; g.lineWidth = 6; g.beginPath(); g.arc(cx, cy, 130 + p * 200, 0, 7); g.stroke(); }
-    for (let i = 0; i < 8; i++) { const a = t * (i % 2 ? 1.1 : -.8) + i * .785, r = 200 + (i % 3) * 18; packet(cx + Math.cos(a) * r, cy + Math.sin(a) * r * .55, i % 3 ? T.accent : '#ffffff', 12); }
-    g.save(); g.translate(cx, cy + Math.sin(t * 2.4) * 10); g.rotate(Math.sin(t * 1.6) * .08);
-    g.font = '200px Noto Color Emoji'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(T.icon, 0, 8); g.restore(); g.textBaseline = 'alphabetic';
   },
   siren(t) {
     const cx = 470, cy = 280;
     for (let k = 0; k < 4; k++) { const p = (t * .7 + k / 4) % 1; g.strokeStyle = `rgba(239,68,68,${1 - p})`; g.lineWidth = 8; g.beginPath(); g.arc(cx, cy, 120 + p * 300, 0, 7); g.stroke(); }
-    rr(cx - 210, cy - 140, 420, 260, 22); g.fillStyle = '#0b1220'; g.fill(); g.lineWidth = 8; g.strokeStyle = '#334155'; g.stroke();   // monitor
+    rr(cx - 210, cy - 140, 420, 260, 22); g.fillStyle = '#0b1220'; g.fill(); g.lineWidth = 8; g.strokeStyle = '#334155'; g.stroke();
     rr(cx - 50, cy + 120, 100, 50, 6); g.fillStyle = '#334155'; g.fill();
-    const blink = Math.sin(t * 8) > 0;
-    g.fillStyle = blink ? '#ef4444' : '#7f1d1d'; g.font = '900 34px Inter'; g.textAlign = 'center'; g.fillText('FILES ENCRYPTED', cx, cy - 60);
-    g.font = '90px Noto Color Emoji'; g.fillText('🔒', cx, cy + 70);
-    g.fillStyle = '#fca5a5'; g.font = '700 26px JetBrains Mono, monospace'; g.fillText(`00:0${4 - Math.floor(t) % 5}:${String(59 - Math.floor(t * 7) % 60).padStart(2, '0')}`, cx, cy + 105);
+    txt('FILES ENCRYPTED', cx, cy - 60, '900 34px Inter', Math.sin(t * 8) > 0 ? RED : '#7f1d1d');
+    txt('🔒', cx, cy + 70, '90px Noto Color Emoji', '#fff');
+    txt(`00:0${4 - Math.floor(t) % 5}:${String(59 - Math.floor(t * 7) % 60).padStart(2, '0')}`, cx, cy + 105, '700 26px JetBrains Mono', '#fca5a5');
+  },
+  shield(t) {
+    const cx = 470, cy = 270, s = 190 + 6 * Math.sin(t * 2);
+    for (let k = 0; k < 3; k++) { const p = (t * .5 + k / 3) % 1; g.globalAlpha = 1 - p; shieldPath(cx, cy, s + p * 120); g.strokeStyle = AC; g.lineWidth = 5; g.stroke(); }
+    g.globalAlpha = 1; shieldPath(cx, cy, s); const gr = g.createLinearGradient(cx, cy - s, cx, cy + s); gr.addColorStop(0, AC); gr.addColorStop(1, alpha(AC, .35)); g.fillStyle = gr; g.fill();
+    g.save(); shieldPath(cx, cy, s); g.clip(); const sy = cy - s * 1.2 + ((t * 160) % (s * 2.6)); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(cx - s, sy, s * 2, 18); g.restore();
+    const p = clamp((t % 3) / .8); g.strokeStyle = '#fff'; g.lineWidth = 22; g.lineCap = 'round'; g.beginPath(); g.moveTo(cx - 70, cy + 5);
+    if (p < .4) g.lineTo(cx - 70 + 60 * p / .4, cy + 5 + 60 * p / .4); else { g.lineTo(cx - 10, cy + 65); g.lineTo(cx - 10 + 110 * (p - .4) / .6, cy + 65 - 140 * (p - .4) / .6); } g.stroke(); g.lineCap = 'butt';
+  },
+  triad(t) {
+    const cx = 470, cy = 300, r = 220, rot = t * .4, labels = ['C', 'I', 'A'], names = ['Confidentiality', 'Integrity', 'Availability'];
+    const P = [0, 1, 2].map((i) => [cx + Math.cos(rot + i * 2.094 - 1.571) * r, cy + Math.sin(rot + i * 2.094 - 1.571) * r * .8]);
+    g.beginPath(); P.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); g.fillStyle = alpha(AC, .15); g.fill(); g.strokeStyle = AC; g.lineWidth = 6; g.stroke();
+    const k = Math.floor(t * .8) % 3;
+    P.forEach(([x, y], i) => { packet(x, y, i === k ? AC : alpha(FG, .85), 52); txt(labels[i], x, y + 20, '900 56px Inter', i === k ? '#140c02' : '#0b1730'); });
+    txt(names[k], cx, cy + 18, '800 40px Inter', FG);
+  },
+  gauge(t) {
+    const cx = 470, cy = 430, r = 300, v = .5 + .45 * Math.sin(t * 1.1);
+    for (let i = 0; i < 30; i++) { const a = Math.PI + i / 29 * Math.PI; g.strokeStyle = i < 10 ? GRN : i < 20 ? '#facc15' : RED; g.lineWidth = 22; g.beginPath(); g.arc(cx, cy, r, a - .045, a + .045); g.stroke(); }
+    const a = Math.PI + v * Math.PI; line(cx, cy, cx + Math.cos(a) * (r - 50), cy + Math.sin(a) * (r - 50), FG, 12); packet(cx, cy, FG, 24);
+    txt('RISK', cx, cy - 90, '900 44px Inter', FG); txt(v < .33 ? 'LOW' : v < .66 ? 'MEDIUM' : 'HIGH', cx, cy + 80, '900 40px Inter', v < .33 ? GRN : v < .66 ? '#facc15' : RED);
+  },
+  blueprint(t) {
+    const blocks = [[320, 400, 300, 90, 'Network'], [340, 300, 260, 90, 'OS'], [360, 200, 220, 90, 'App'], [380, 100, 180, 90, 'Data']];
+    blocks.forEach(([x, y, w, h, n], i) => {
+      const p = clamp((t % 6) - i * .5), yy = y - (1 - ease(p)) * 300; g.globalAlpha = clamp(p * 2);
+      rr(x, yy, w, h, 14); g.fillStyle = alpha(AC, .25 + i * .15); g.fill(); g.strokeStyle = AC; g.lineWidth = 4; g.setLineDash([12, 8]); g.stroke(); g.setLineDash([]);
+      txt(n, x + w / 2, yy + 56, '800 32px Inter', FG);
+    });
+    g.globalAlpha = 1; const p = clamp((t % 6) - 2.2); if (p > 0) { g.globalAlpha = p; shieldPath(700, 250, 80); g.fillStyle = GRN; g.fill(); txt('✓', 700, 275, '900 70px Inter', '#fff'); g.globalAlpha = 1; }
+    line(230, 60, 230, 490, alpha(FG, .4), 2); txt('Secure by design', 160, 530, '700 26px JetBrains Mono', alpha(FG, .7), 'left');
+  },
+  layers(t) {
+    const cx = 470, cy = 280, names = ['Data', 'App', 'Host', 'Network', 'Perimeter'];
+    for (let i = 4; i >= 0; i--) { const r = 60 + i * 48; g.beginPath(); g.ellipse(cx, cy, r * 1.5, r, 0, 0, 7); g.fillStyle = alpha(AC, .12 + (4 - i) * .1); g.fill(); g.strokeStyle = alpha(FG, .5); g.lineWidth = 3; g.stroke(); txt(names[i], cx, cy - r + 34, '700 22px Inter', FG); }
+    for (let k = 0; k < 4; k++) { const p = (t * .45 + k / 4) % 1, ang = k * 1.7 + .5, r = 340 - p * 300, stop = 108 + (k % 4) * 48; const rr2 = Math.max(stop, r); packet(cx + Math.cos(ang) * rr2 * 1.5, cy + Math.sin(ang) * rr2, r < stop ? alpha(RED, 1 - (stop - r) / 60) : RED, 14); }
+  },
+  nodes(t) {
+    const N = 9, pts = [...Array(N)].map((_, i) => [120 + hash(i + 3) * 700, 60 + hash(i + 17) * 440]);
+    const E = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 0], [1, 5], [2, 7], [0, 4]];
+    E.forEach(([a, b]) => line(pts[a][0], pts[a][1], pts[b][0], pts[b][1], alpha(FG, .2), 3));
+    E.forEach(([a, b], i) => { const p = (t * .6 + hash(i)) % 1; packet(pts[a][0] + (pts[b][0] - pts[a][0]) * p, pts[a][1] + (pts[b][1] - pts[a][1]) * p, i % 4 ? AC : GRN, 8); });
+    const k = Math.floor(t * 1.2) % N;
+    pts.forEach(([x, y], i) => { packet(x, y, i === k ? GRN : alpha(FG, .9), 26); if (i === k) txt('✓ verified', x, y - 40, '800 24px Inter', GRN); });
+  },
+  switch(t) {
+    rr(70, 170, 800, 220, 26); g.fillStyle = '#1f2937'; g.fill(); g.strokeStyle = '#4b5563'; g.lineWidth = 4; g.stroke();
+    for (let i = 0; i < 12; i++) {
+      const x = 110 + (i % 6) * 125, y = 205 + Math.floor(i / 6) * 95; rr(x, y, 90, 70, 8); g.fillStyle = '#0b1220'; g.fill();
+      const used = hash(i + 4) > .35, blink = used && Math.sin(t * 9 + i * 2) > 0, bad = i === 7 && Math.floor(t) % 4 > 1;
+      g.fillStyle = bad ? RED : used ? (blink ? GRN : '#14532d') : '#374151'; g.fillRect(x + 8, y + 8, 18, 10); g.fillStyle = used ? '#facc15' : '#374151'; g.fillRect(x + 64, y + 8, 18, 10);
+      if (bad) txt('🔒', x + 45, y + 58, '34px Noto Color Emoji', '#fff');
+    }
+    txt('SWITCH · port-security', 470, 450, '800 30px JetBrains Mono', FG);
+    for (let k = 0; k < 4; k++) { const p = (t * .5 + k / 4) % 1; packet(150 + k * 200, 140 - p * 120, alpha(AC, 1 - p), 10); }
+  },
+  globe(t) {
+    const cx = 470, cy = 280, r = 220;
+    g.strokeStyle = alpha(AC, .7); g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.stroke();
+    for (let k = 0; k < 6; k++) { const ph = (t * .5 + k / 6) % 1 * Math.PI; const w = Math.abs(Math.cos(ph)) * r; g.beginPath(); g.ellipse(cx, cy, w, r, 0, 0, 7); g.strokeStyle = alpha(FG, .18); g.stroke(); }
+    for (let k = -2; k <= 2; k++) { const y = cy + k * 80, w = Math.sqrt(r * r - (k * 80) ** 2); g.beginPath(); g.ellipse(cx, y, w, w * .18, 0, 0, 7); g.strokeStyle = alpha(FG, .18); g.stroke(); }
+    for (let i = 0; i < 4; i++) {
+      const a = hash(i) * 6.28, b = a + 1.6 + hash(i + 5), x1 = cx + Math.cos(a) * r * .8, y1 = cy + Math.sin(a) * r * .6, x2 = cx + Math.cos(b) * r * .8, y2 = cy + Math.sin(b) * r * .6;
+      const p = (t * .5 + i / 4) % 1; g.strokeStyle = alpha(AC, .8); g.lineWidth = 4; g.beginPath(); g.moveTo(x1, y1); g.quadraticCurveTo((x1 + x2) / 2, Math.min(y1, y2) - 140, x2, y2); g.stroke();
+      const q = 1 - p, bx = q * q * x1 + 2 * q * p * (x1 + x2) / 2 + p * p * x2, by = q * q * y1 + 2 * q * p * (Math.min(y1, y2) - 140) + p * p * y2; packet(bx, by, i === 2 ? RED : '#fff', 10); packet(x1, y1, AC, 9); packet(x2, y2, AC, 9);
+    }
+  },
+  balance(t) {
+    const lb = [150, 280]; rr(lb[0] - 90, lb[1] - 60, 180, 120, 20); g.fillStyle = AC; g.fill(); txt('LB', lb[0], lb[1] + 16, '900 44px Inter', '#140c02');
+    const S = [[740, 110], [740, 280], [740, 450]];
+    S.forEach(([x, y], i) => { line(lb[0] + 90, lb[1], x - 80, y, alpha(FG, .25), 4); rr(x - 80, y - 55, 160, 110, 16); g.fillStyle = '#1e293b'; g.fill(); g.strokeStyle = alpha(FG, .4); g.lineWidth = 3; g.stroke(); txt(`srv ${i + 1}`, x, y + 12, '800 28px JetBrains Mono', '#e2e8f0'); packet(x + 55, y - 35, Math.sin(t * 6 + i) > -.5 ? GRN : '#14532d', 8); });
+    for (let k = 0; k < 6; k++) { const p = (t * .8 + k / 6) % 1, s = S[k % 3]; if (p < .4) packet(-20 + p / .4 * (lb[0] - 70), lb[1], '#fff', 12); else { const q = (p - .4) / .6; packet(lb[0] + 90 + (s[0] - 80 - lb[0] - 90) * q, lb[1] + (s[1] - lb[1]) * q, AC, 12); } }
+  },
+  terminal(t) {
+    rr(40, 20, 860, 520, 24); g.fillStyle = '#0b1220'; g.fill(); g.strokeStyle = '#334155'; g.lineWidth = 3; g.stroke(); rr(40, 20, 860, 60, 24); g.fillStyle = '#1e293b'; g.fill();
+    ['#ef4444', '#f59e0b', '#22c55e'].forEach((c, i) => packet(80 + i * 34, 50, c, 9));
+    const L = { 15: ['$ sudo systemctl start nginx', '$ certbot --nginx', '✓ HTTPS enabled', '$ chmod 640 config.php'], 26: ['title: Brute force', 'logsource: auth', 'detection: failed > 10', 'condition: selection'],
+      32: ['PS> Get-WinEvent 4104', 'ScriptBlock: IEX (...)', '⚠ encoded command', 'AMSI: blocked ✓'], 34: ['$ sudo sshd -T | grep root', 'permitrootlogin no', '$ ufw status', 'Status: active ✓'] }[T.num] || ['$ whoami', 'defender', '$ scan --all', '✓ secure'];
+    const n = Math.floor(t * 9); let used = 0;
+    L.forEach((s, i) => { const show = clamp(n - used, 0, s.length); used += s.length + 4; if (show <= 0) return; const ok = s.startsWith('✓') || s.endsWith('✓'), warn = s.startsWith('⚠'); txt(s.slice(0, show), 80, 150 + i * 90, '700 36px JetBrains Mono', ok ? '#4ade80' : warn ? '#fbbf24' : s[0] === '$' || s.startsWith('PS') ? '#e2e8f0' : '#93c5fd', 'left'); });
+    if (Math.floor(t * 3) % 2) { g.fillStyle = '#e2e8f0'; g.fillRect(80, 150 + Math.min(3, Math.floor(n / 30)) * 90 + 14, 22, 8); }
+  },
+  chart(t) {
+    line(80, 480, 880, 480, alpha(FG, .4), 3); line(80, 40, 80, 480, alpha(FG, .4), 3);
+    g.strokeStyle = AC; g.lineWidth = 6; g.beginPath(); const n = 60, sp = Math.floor((t * 8) % (n + 20));
+    for (let i = 0; i <= Math.min(n, sp); i++) { const x = 80 + i * 800 / n, spike = i > 38 && i < 44 ? 260 * Math.sin((i - 38) / 6 * Math.PI) : 0, y = 400 - 60 * hash(i) - spike; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke(); line(80, 300, 880, 300, alpha('#facc15', .8), 3); txt('baseline', 860, 290, '700 24px JetBrains Mono', '#facc15', 'right');
+    if (sp > 41) { packet(80 + 41 * 800 / n, 140, RED, 18); txt('ANOMALY!', 80 + 41 * 800 / n, 100, '900 34px Inter', RED); }
+  },
+  logs(t) {
+    const L = ['sshd: Failed password root', 'GET /index.html 200', 'sshd: Accepted publickey', 'firewall: DROP 23/tcp', 'sudo: session opened', 'GET /admin 403', 'sshd: Failed password admin', 'kernel: usb attached'];
+    g.save(); rr(40, 20, 860, 520, 20); g.clip(); g.fillStyle = 'rgba(2,6,15,.75)'; g.fillRect(40, 20, 860, 520);
+    const off = (t * 70) % 60, base = Math.floor(t * 70 / 60);
+    for (let i = 0; i < 10; i++) { const k = base + i, s = L[k % L.length], y = 530 - i * 60 + off - 60, bad = s.includes('Failed'); if (bad) { g.fillStyle = 'rgba(239,68,68,.22)'; g.fillRect(40, y - 36, 860, 50); } txt(`${String(10 + (k * 7) % 50).padStart(2, '0')}:${String((k * 13) % 60).padStart(2, '0')}  ${s}`, 70, y, '600 28px JetBrains Mono', bad ? '#fca5a5' : '#cbd5e1', 'left'); }
+    g.restore(); txt('SIEM · correlate', 870, 520, '800 26px Inter', AC, 'right');
+  },
+  magnifier(t) {
+    const cols = 12, rows = 6;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const x = 110 + c * 66, y = 80 + r * 70, bad = r === 3 && c === 8; packet(x, y, bad ? RED : alpha(FG, .3), bad ? 14 : 10); }
+    const p = (t * .25) % 1, mx = 110 + p * 726, my = 80 + 210 + Math.sin(t * 1.7) * 160, near = Math.hypot(mx - (110 + 8 * 66), my - (80 + 3 * 70)) < 90;
+    g.lineWidth = 14; g.strokeStyle = near ? RED : FG; g.beginPath(); g.arc(mx, my, 90, 0, 7); g.stroke(); g.lineWidth = 22; g.beginPath(); g.moveTo(mx + 64, my + 64); g.lineTo(mx + 130, my + 130); g.stroke();
+    if (near) txt('FOUND!', mx, my - 110, '900 40px Inter', RED);
+  },
+  windows(t) {
+    const cx = 470, cy = 270, s = 130, gap = 14;
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([dx, dy], i) => { const p = ease(clamp((t % 5) * 1.5 - i * .25)); g.globalAlpha = p; g.fillStyle = ['#38bdf8', '#60a5fa', '#3b82f6', '#2563eb'][i]; g.fillRect(cx + (dx < 0 ? -s - gap / 2 : gap / 2), cy + (dy < 0 ? -s - gap / 2 : gap / 2) + (1 - p) * 60, s, s); });
+    g.globalAlpha = 1; const p = clamp((t % 5) - 1.8); if (p > 0) { g.globalAlpha = p; txt('🔐', cx + 190, cy + 160, '110px Noto Color Emoji', '#fff'); g.globalAlpha = 1; }
+    txt('SID · Token · ACL · UAC', cx, 540, '800 30px JetBrains Mono', FG);
+  },
+  tree(t) {
+    const root = [470, 70], mid = [[230, 250], [470, 250], [710, 250]], leaves = mid.flatMap(([x]) => [[x - 80, 440], [x + 80, 440]]);
+    mid.forEach((m) => line(root[0], root[1] + 40, m[0], m[1] - 40, alpha(FG, .3), 4)); leaves.forEach((l, i) => line(mid[Math.floor(i / 2)][0], mid[Math.floor(i / 2)][1] + 40, l[0], l[1] - 30, alpha(FG, .3), 4));
+    const path = [leaves[1], mid[0], root], p = (t * .35) % 1, seg = Math.min(1, Math.floor(p * 2)), q = (p * 2) % 1;
+    const [a, b] = [path[seg], path[seg + 1]]; packet(a[0] + (b[0] - a[0]) * q, a[1] + (b[1] - a[1]) * q, RED, 14);
+    rr(root[0] - 110, root[1] - 40, 220, 80, 18); g.fillStyle = AC; g.fill(); txt('Domain Admin', root[0], root[1] + 12, '800 28px Inter', '#140c02');
+    mid.forEach(([x, y], i) => { rr(x - 90, y - 40, 180, 80, 18); g.fillStyle = '#1e293b'; g.fill(); txt(['OU: IT', 'OU: HR', 'Servers'][i], x, y + 12, '700 26px Inter', '#e2e8f0'); });
+    leaves.forEach(([x, y], i) => { packet(x, y, i === 1 ? RED : alpha(FG, .85), 26); txt('👤', x, y + 12, '30px Noto Color Emoji', '#fff'); });
+  },
+  hexdump(t) {
+    const hex = '0123456789ABCDEF';
+    for (let r = 0; r < 8; r++) { txt(`0x${(r * 16).toString(16).padStart(4, '0')}`, 60, 60 + r * 62, '600 26px JetBrains Mono', alpha(FG, .5), 'left');
+      for (let c = 0; c < 12; c++) { const v = hex[Math.floor(hash(r * 12 + c + Math.floor(t * 4) * (r === 4 ? 0 : 1)) * 16)] + hex[Math.floor(hash(r * 31 + c) * 16)], hit = r === 4 && c >= 3 && c <= 6; if (hit) { g.fillStyle = alpha(AC, .35 + .25 * Math.sin(t * 5)); g.fillRect(208 + c * 56, 30 + r * 62, 52, 42); } txt(v, 234 + c * 56, 60 + r * 62, '700 28px JetBrains Mono', hit ? FG : alpha(FG, .7)); } }
+    txt('FF D8 FF E0 → JPEG recovered ✓', 470, 545, '800 28px JetBrains Mono', GRN);
+  },
+  vms(t) {
+    rr(120, 420, 700, 90, 16); g.fillStyle = AC; g.fill(); txt('HYPERVISOR', 470, 478, '900 36px Inter', '#140c02');
+    for (let i = 0; i < 3; i++) { const x = 150 + i * 225, y = 150 + Math.sin(t * 2 + i) * 8; rr(x, y, 190, 230, 18); g.fillStyle = '#1e293b'; g.fill(); g.strokeStyle = alpha(FG, .4); g.lineWidth = 3; g.stroke(); txt(`VM ${i + 1}`, x + 95, y + 60, '800 32px Inter', '#e2e8f0'); txt(['🐧', '🪟', '🐳'][i], x + 95, y + 160, '70px Noto Color Emoji', '#fff'); }
+    const p = (t * .4) % 1, esc = p > .5; packet(245 + (esc ? 0 : 0), 300 - (esc ? (p - .5) * 2 * 120 : 0) + (esc ? 0 : p * 2 * 120), esc ? RED : '#facc15', 14);
+    if (esc) txt('✕ escape blocked', 470, 90, '900 34px Inter', GRN);
+  },
+  boxes(t) {
+    for (let i = 0; i < 6; i++) { const col = i % 3, row = Math.floor(i / 3), p = ease(clamp((t % 6) - i * .3)), x = 180 + col * 200, y = 300 - row * 150 - (1 - p) * 300;
+      g.globalAlpha = p; rr(x, y, 180, 130, 12); g.fillStyle = ['#0ea5e9', '#06b6d4', '#14b8a6'][col]; g.fill(); g.strokeStyle = '#082f49'; g.lineWidth = 4; g.stroke();
+      for (let k = 1; k < 4; k++) line(x + k * 45, y + 10, x + k * 45, y + 120, 'rgba(8,47,73,.5)', 4); txt(i === 4 ? 'root ✕' : 'uid 1000', x + 90, y + 76, '800 24px JetBrains Mono', i === 4 ? '#fecaca' : '#fff'); }
+    g.globalAlpha = 1; txt('🐳', 820, 120, '110px Noto Color Emoji', '#fff'); rr(130, 460, 680, 20, 10); g.fillStyle = alpha(FG, .3); g.fill();
+  },
+  racks(t) {
+    for (let r = 0; r < 4; r++) { const x = 90 + r * 205; rr(x, 40, 170, 470, 14); g.fillStyle = '#111827'; g.fill(); g.strokeStyle = '#374151'; g.lineWidth = 4; g.stroke();
+      for (let u = 0; u < 9; u++) { const y = 62 + u * 49; rr(x + 14, y, 142, 38, 6); g.fillStyle = '#1f2937'; g.fill(); for (let l = 0; l < 3; l++) { const on = Math.sin(t * (6 + l) + r * 3 + u * 1.3 + l) > .2; g.fillStyle = on ? (l === 2 && u === 4 && r === 2 ? RED : GRN) : '#14532d'; g.fillRect(x + 108 + l * 14, y + 14, 9, 9); } } }
+    const p = (t * .3) % 1; txt('🔐 badge · 📹 CCTV · ⚡ UPS', 470, 548, '800 28px Inter', FG); g.fillStyle = alpha(AC, .15); g.fillRect(60 + p * 780, 30, 60, 490);
+  },
+  emoji(t) {
+    const cx = 470, cy = 270;
+    for (let k = 0; k < 3; k++) { const p = (t * .6 + k / 3) % 1; g.strokeStyle = alpha(AC, (1 - p) * .65); g.lineWidth = 6; g.beginPath(); g.arc(cx, cy, 130 + p * 200, 0, 7); g.stroke(); }
+    for (let i = 0; i < 8; i++) { const a = t * (i % 2 ? 1.1 : -.8) + i * .785, r = 200 + (i % 3) * 18; packet(cx + Math.cos(a) * r, cy + Math.sin(a) * r * .55, i % 3 ? AC : FG, 12); }
+    g.save(); g.translate(cx, cy + Math.sin(t * 2.4) * 10); g.rotate(Math.sin(t * 1.6) * .08);
+    g.font = '200px Noto Color Emoji'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(T.icon, 0, 8); g.restore(); g.textBaseline = 'alphabetic';
   },
 };
+const ICON_FN = ICONS[T.iconAnim] || ICONS[T.icon] || ICONS.emoji;
 
-// ---------- scenes ----------
-function hook(t, lt) {
-  const html = T.hook.replace(/(<em>.*?<\/em>|\S+)/g, (w, _m, i) => `<span class="w">${w}</span>`);
-  let k = 0; const out = html.replace(/<span class="w">/g, () => `<span class="w" style="display:inline-block;${pop(lt, .25 + (k++) * .14, .4)}">`);
-  const gl = lt > .2 && lt < 1.1 && Math.floor(lt * 30) % 4 !== 0 ? (1.1 - lt) : 0;     // RGB-split glitch
-  const gx = gl * 14 * Math.sin(lt * 90), gy = gl * 6 * Math.cos(lt * 70);
+// ---------- hook ----------
+function words(html, lt, at, step, style) { let k = 0; return html.replace(/(<em>.*?<\/em>|\S+)/g, (w) => `<span style="display:inline-block;${style(lt, at + (k++) * step)}">${w}</span>`); }
+function hook0(t, lt) {
+  const gl = lt > .2 && lt < 1.1 && Math.floor(lt * 30) % 4 !== 0 ? (1.1 - lt) : 0, gx = gl * 14 * Math.sin(lt * 90), gy = gl * 6 * Math.cos(lt * 70);
   const tsh = gl ? `text-shadow:${gx}px ${gy}px 0 rgba(255,0,80,.8),${-gx}px ${-gy}px 0 rgba(0,220,255,.8)` : '';
-  const zoom = 1 + .02 * Math.sin(lt * 1.5);
   return `<div class="center" style="top:880px;${fadeUp(lt, .05)}"><span class="pill" style="position:relative;overflow:hidden">${T.title}${shine(lt, 1.4, .8)}</span></div>
-    <div class="center" style="top:990px;transform:scale(${zoom})"><div class="h1" style="font-size:94px;${tsh}">${out}</div></div>`;
+    <div class="center" style="top:990px;transform:scale(${1 + .02 * Math.sin(lt * 1.5)})"><div class="h1" style="font-size:${fs(94)}px;${tsh}">${words(T.hook, lt, .25, .14, (l, a) => pop(l, a, .4))}</div></div>`;
 }
-function learn(t, lt) {
-  const c = clip('learn'), base = c.at - SC.learn[0];
-  const cards = T.points.map((p, i) => {
-    const at = M.cards[i] - SC.learn[0], q = ease(clamp((lt - at) / .5)), dir = i % 2 ? 1 : -1;
-    const lit = lt > at + .2 ? `border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,rgba(255,255,255,.05))` : '';
-    return `<div class="card" style="position:relative;overflow:hidden;opacity:${q};transform:translateX(${(1 - q) * 360 * dir}px) rotate(${(1 - q) * 4 * dir}deg);${lit}"><span class="ck" style="${pop(lt, at + .15, .45)}">✓</span><span><span class="num">0${i + 1}</span>${p}</span>${shine(lt, at + .45)}</div>`;
-  }).join('');
-  return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Humare saath</span></div>
-    <div class="h1" style="margin:26px 0 48px;${fadeUp(lt, .15)}">Aap <em>seekhenge</em> <span style="display:inline-block;transform:translateY(${Math.abs(Math.sin(lt * 4)) * 14}px)">👇</span></div>${cards}</div>`;
+function hook1(t, lt) {   // terminal typewriter
+  const plain = strip(T.hook), n = Math.floor(clamp((lt - .3) / 1.6) * plain.length), shown = plain.slice(0, n);
+  const em = (T.hook.match(/<em>(.*?)<\/em>/) || [])[1] || '';
+  const out = em && shown.includes(em) ? shown.replace(em, `<em>${em}</em>`) : shown;
+  return `<div class="win" style="left:70px;right:70px;top:880px;${fadeUp(lt, 0)}"><div class="tb"><i style="background:#ef4444"></i><i style="background:#f59e0b"></i><i style="background:#22c55e"></i><span>room-${String(T.num).padStart(2, '0')} — ${T.slug}.sh</span></div>
+      <div style="padding:40px 44px 50px"><div class="mono" style="font-size:30px;color:#86efac;margin-bottom:20px">$ ./${T.slug} --explain</div>
+      <div class="h1" style="font-size:${fs(76)}px;color:#f8fafc;font-family:'JetBrains Mono','Noto Color Emoji';letter-spacing:-2px">${out}<span style="opacity:${Math.floor(lt * 3) % 2 ? 1 : 0};color:var(--ac)">▌</span></div></div></div>
+    <div style="position:absolute;left:70px;top:820px;${fadeX(lt, .1, .5, -80)}"><span class="pill">${T.title}</span></div>`;
 }
-function book(t, lt, d) {
-  const tilt = keys([[0, -35], [1.2, -14], [d, -8]], lt), s = keys([[0, .7], [1.1, 1], [d, 1.04]], lt);
-  const fx = keys([[0, 1200], [1.6, 1200], [2.6, 560], [d, 540]], lt);
-  return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Step 1 · Handbook 📘</span></div>
-      <div class="h1" style="margin-top:26px;font-size:74px;white-space:nowrap;${fadeUp(lt, .15)}">Pehle <em>Handbook</em> se samjho</div></div>
-    <div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1600px">
+function hook2(t, lt) {   // huge stacked words, alternating slide-in, left aligned
+  let k = 0; const parts = T.hook.match(/(<em>.*?<\/em>|\S+)/g);
+  const lines = []; let cur = '';
+  for (const w of parts) { if ((strip(cur) + ' ' + strip(w)).length > 13 && cur) { lines.push(cur); cur = w; } else cur = cur ? cur + ' ' + w : w; }
+  if (cur) lines.push(cur);
+  const sz = fs(lines.length > 4 ? 92 : 112);
+  return `<div style="position:absolute;left:70px;top:860px;${fadeUp(lt, 0)}"><span class="pill">${T.title}</span></div>
+    <div style="position:absolute;left:70px;right:40px;top:950px">${lines.map((l) => { const d = k++ % 2 ? 1 : -1, p = ease(clamp((lt - .2 - k * .22) / .45)); return `<div class="h1" style="font-size:${sz}px;opacity:${p};transform:translateX(${(1 - p) * 300 * d}px) skewX(${(1 - p) * -12 * d}deg)">${l}</div>`; }).join('')}</div>
+    <div style="position:absolute;left:70px;top:${950 + lines.length * sz * 1.05 + 20}px;height:14px;width:${ease(clamp((lt - .6) / .8)) * 500}px;background:var(--ac);border-radius:8px"></div>`;
+}
+function hook3(t, lt) {   // mask reveal from below a line, title as outlined text
+  return `<div class="center" style="top:860px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:${fs(64)}px;color:transparent;-webkit-text-stroke:3px var(--ac)">${T.title}</div></div>
+    <div class="center" style="top:${1000}px"><div class="h1" style="font-size:${fs(90)}px;line-height:1.12">${words(T.hook, lt, .3, .12, (l, a) => { const p = ease(clamp((l - a) / .45)); return `clip-path:inset(0 0 ${(1 - p) * 100}% 0);transform:translateY(${(1 - p) * 60}px)`; })}</div></div>
+    <div class="center" style="top:${1260}px"><div style="display:inline-block;height:10px;width:${ease(clamp((lt - .2) / .9)) * 760}px;background:linear-gradient(90deg,transparent,var(--ac),transparent)"></div></div>`;
+}
+const HOOK = [hook0, hook1, hook2, hook3];
+
+// ---------- format scene ('fact') ----------
+const LABEL = { quiz: '🧠 Quick Quiz', myth: '🧐 Myth vs Fact', compare: '⚔️ Farak samjho', mistake: '🚫 Common galti', story: '🎬 Real scenario', tip: '💡 Pro Tip' };
+function fact(t, lt, d) {
+  const S = SC.fact[0], rv = M.reveal - S, st = (M.fact || []).map((x) => x - S), k = F.kind;
+  const head = `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${LABEL[k]}</span></div></div>`;
+  if (k === 'quiz') {
+    const cd = Math.ceil(clamp(rv - lt, 0, 3)), on = lt >= rv;
+    const opts = F.opts.map((o, i) => { const cls = on ? (i === F.ans ? 'ok' : 'no') : ''; const sc = on && i === F.ans ? 1 + .04 * Math.sin((lt - rv) * 8) : 1;
+      return `<div class="opt ${cls}" style="${fadeX(lt, .5 + i * .25, .45, i % 2 ? 160 : -160)};transform:scale(${sc})"><span class="l">${on && i === F.ans ? '✓' : on ? '✕' : 'ABC'[i]}</span><span>${o}</span>${on && i === F.ans ? shine(lt, rv + .2) : ''}</div>`; }).join('');
+    const ring = !on && lt > 1 ? `<div style="position:absolute;right:70px;top:270px;width:130px;height:130px;border-radius:50%;border:10px solid var(--ac);display:grid;place-items:center;font:900 64px Inter;transform:scale(${1 + .1 * Math.abs(Math.sin(lt * 6))})">${cd || ''}</div>` : '';
+    return head + ring + `<div class="head" style="top:400px"><div class="h1" style="font-size:${fs(74)}px;margin-bottom:56px;${fadeUp(lt, .2)}">${F.q}</div>${opts}</div>`;
+  }
+  if (k === 'myth') {
+    const on = lt >= rv, sp = clamp((lt - rv) / .35);
+    return head + `<div class="big" style="left:70px;right:70px;top:420px;background:color-mix(in srgb,#ef4444 18%,var(--card));border:3px solid #ef4444;${fadeUp(lt, .3)};${on ? `opacity:${1 - .35 * sp}` : ''}"><small style="color:#ef4444">❌ MYTH</small>${F.myth}</div>
+      ${on ? `<div class="stamp" style="left:560px;top:560px;opacity:${sp};transform:rotate(-12deg) scale(${2.4 - 1.4 * back(sp)})">FALSE</div>` : ''}
+      <div class="big" style="left:70px;right:70px;top:820px;background:color-mix(in srgb,#22c55e 20%,var(--card));border:3px solid #22c55e;${fadeUp(lt, rv, .5, 120)}"><small style="color:#22c55e">✅ FACT</small>${F.fact}${shine(lt, rv + .6)}</div>`;
+  }
+  if (k === 'compare') {
+    const sum = st[st.length - 1] || rv + 2, vs = clamp((lt - .6) / .5);
+    const col = (s, x, at, dir) => `<div class="tile" style="left:${x}px;top:430px;width:440px;height:600px;text-align:center;${fadeX(lt, at, .55, 200 * dir)}">
+        <div style="font-size:120px;line-height:1.1;margin:10px 0 20px">${s.icon}</div><div class="h1" style="font-size:${fs(s.name.length > 10 ? 58 : 72)}px;color:var(--acx);margin-bottom:26px">${s.name}</div><div style="font-size:38px;color:var(--fg)">${s.line}</div></div>`;
+    return head + col(F.a, 70, .3, -1) + col(F.b, 570, rv - .1, 1) +
+      `<div style="position:absolute;left:470px;top:650px;width:140px;height:140px;border-radius:50%;background:var(--ac);color:var(--ink);display:grid;place-items:center;font:900 54px Inter;opacity:${vs};transform:rotate(${(1 - vs) * 360}deg) scale(${.5 + .5 * back(vs)});box-shadow:0 0 0 12px color-mix(in srgb,var(--ac) 30%,transparent)">VS</div>
+      <div class="center" style="top:1090px;${pop(lt, sum, .5)}"><span class="chip" style="font-size:44px;padding:22px 40px">${F.sum}</span></div>`;
+  }
+  if (k === 'mistake') {
+    const s = ease(clamp((lt - rv + .3) / .6));
+    return head + `<div class="big" style="left:70px;right:70px;top:430px;background:var(--card);border:3px solid #ef4444;${fadeUp(lt, .3)}"><small style="color:#ef4444">🚫 GALTI</small><span style="position:relative">${F.wrong}<i style="position:absolute;left:0;top:52%;height:8px;width:${s * 100}%;background:#ef4444;border-radius:4px"></i></span></div>
+      <div style="position:absolute;left:500px;top:${740}px;font-size:90px;${pop(lt, rv - .2)}">⬇️</div>
+      <div class="big" style="left:70px;right:70px;top:880px;background:#138808;color:#fff;border:3px solid #2fbf2f;${pop(lt, rv, .55)}"><small style="color:#d6ffd6">✅ SAHI TAREEKA</small>${F.right}${shine(lt, rv + .6)}</div>`;
+  }
+  // story / tip: steps appear sentence by sentence
+  const times = k === 'tip' ? st.slice(1, 4) : st.slice(0, 3);
+  const top = 470, gap = 250, cur = times.filter((x) => lt >= x).length - 1;
+  const lineH = cur < 0 ? 0 : gap * cur + ease(clamp((lt - times[Math.max(0, cur)]) / .5)) * 0;
+  const steps = F.steps.map((s, i) => { const at = times[i] ?? (.8 + i), p = ease(clamp((lt - at) / .45)), lit = i === cur;
+    const body = F.mono ? `<span class="mono" style="font-size:40px;color:var(--acx)">${s}</span>` : s;
+    return `<div class="dot" style="top:${top + 70 + i * gap}px;${pop(lt, at - .05, .4)}">${k === 'tip' ? i + 1 : ['①', '②', '③'][i]}</div>
+      <div class="step" style="top:${top + i * gap}px;opacity:${p};transform:translateX(${(1 - p) * 160}px) scale(${lit ? 1.02 : 1});${lit ? 'border-color:var(--ac)' : ''}">${body}</div>`; }).join('');
+  return head + `<div class="head" style="top:370px"><div class="h1" style="font-size:${fs(64)}px;${fadeUp(lt, .15)}">${F.label}</div></div>
+    <div style="position:absolute;left:124px;top:${top + 70}px;width:8px;height:${Math.max(0, lineH)}px;background:var(--ac);border-radius:4px"></div>${steps}`;
+}
+
+// ---------- learn ----------
+const LEARN_PILL = ['Humare saath', 'Is reel me', 'Aaj ka topic', 'Chaliye samjhein', 'Aap seekhenge'];
+const LEARN_H = ['Aap <em>seekhenge</em> 👇', '3 cheezein <em>pakki</em> ✅', 'Kya <em>milega</em>? 👇', 'Seedhi <em>baat</em> 👇', 'Aaj ka <em>plan</em> 📋'];
+function learnHead(lt) { return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${LEARN_PILL[V]}</span></div><div class="h1" style="font-size:${fs(80)}px;margin:24px 0 46px;${fadeUp(lt, .15)}">${LEARN_H[LK.learn]}</div></div>`; }
+const cardAt = (i) => M.cards[i] - SC.learn[0];
+function learn0(t, lt) {
+  return learnHead(lt) + `<div class="head" style="top:520px">${T.points.map((p, i) => { const at = cardAt(i), q = ease(clamp((lt - at) / .5)), dir = i % 2 ? 1 : -1;
+    const lit = lt > at + .2 ? `border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,var(--card))` : '';
+    return `<div class="card" style="opacity:${q};transform:translateX(${(1 - q) * 360 * dir}px) rotate(${(1 - q) * 4 * dir}deg);${lit}"><span class="ck" style="${pop(lt, at + .15, .45)}">✓</span><span><span class="num">0${i + 1}</span>${p}</span>${shine(lt, at + .45)}</div>`; }).join('')}</div>`;
+}
+function learn1(t, lt) {   // vertical timeline
+  const last = T.points.length - 1, prog = clamp((lt - cardAt(0)) / (cardAt(last) - cardAt(0) + .3));
+  return learnHead(lt) + `<div style="position:absolute;left:124px;top:600px;width:8px;height:${prog * 500}px;background:var(--ac);border-radius:4px"></div>` +
+    T.points.map((p, i) => { const at = cardAt(i); return `<div class="dot" style="top:${600 + i * 250}px;${pop(lt, at, .4)}">${i + 1}</div><div class="step" style="top:${530 + i * 250}px;${fadeX(lt, at + .05, .45, 140)}">${p}</div>`; }).join('');
+}
+function learn2(t, lt) {   // bento tiles flipping in
+  const pos = [[70, 540, 940, 250], [70, 820, 455, 400], [555, 820, 455, 400]];
+  return learnHead(lt) + T.points.map((p, i) => { const at = cardAt(i), q = ease(clamp((lt - at) / .55)), [x, y, w, h] = pos[i];
+    return `<div class="tile" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;transform:perspective(1200px) rotateX(${(1 - q) * -80}deg);transform-origin:top;opacity:${q};${lt > at + .3 ? 'border-color:var(--ac)' : ''}">
+      <div style="font:900 ${i ? 90 : 70}px var(--hf),Inter;color:var(--acx);opacity:.9;margin-bottom:10px">0${i + 1}</div><div style="font-size:${i ? 38 : 42}px">${p}</div>${shine(lt, at + .5)}</div>`; }).join('');
+}
+function learn3(t, lt) {   // terminal: points typed as output
+  let html = '';
+  T.points.forEach((p, i) => { const at = cardAt(i), s = strip(p), n = Math.floor(clamp((lt - at) / .9) * s.length); if (lt < at - .3) return;
+    html += `<div style="margin-bottom:34px"><div style="color:#86efac;font-size:30px">$ learn --step ${i + 1}</div><div style="font-size:38px;color:#f1f5f9;margin-top:8px">${n >= s.length ? '✔ ' + p : s.slice(0, n) + '▌'}</div></div>`; });
+  return learnHead(lt) + `<div class="win mono" style="left:70px;right:70px;top:540px;height:740px;${fadeUp(lt, .2)}"><div class="tb"><i style="background:#ef4444"></i><i style="background:#f59e0b"></i><i style="background:#22c55e"></i><span>techguardians@room${T.num}:~</span></div><div style="padding:40px 44px">${html}</div></div>`;
+}
+function learn4(t, lt) {   // one point at a time, huge number
+  const i = Math.max(0, T.points.filter((_, k) => lt >= cardAt(k) - .1).length - 1), at = cardAt(i), q = ease(clamp((lt - at + .1) / .5));
+  const dots = T.points.map((_, k) => `<i style="display:inline-block;width:${k === i ? 60 : 20}px;height:20px;border-radius:10px;margin:0 8px;background:${k <= i ? 'var(--ac)' : 'var(--cardb)'}"></i>`).join('');
+  return learnHead(lt) + `<div style="position:absolute;left:70px;top:520px;font:900 ${fs(300)}px var(--hf),Inter;color:var(--acx);opacity:${.25 + .75 * q};transform:translateY(${(1 - q) * 80}px)">0${i + 1}</div>
+    <div style="position:absolute;left:70px;right:70px;top:880px;font-size:62px;font-weight:800;line-height:1.18;opacity:${q};transform:translateX(${(1 - q) * 200}px)">${T.points[i]}</div>
+    <div class="center" style="top:1240px">${dots}</div>`;
+}
+const LEARN = [learn0, learn1, learn2, learn3, learn4];
+
+// ---------- book ----------
+const BOOK_PILL = ['Step 1 · Handbook 📘', '📘 PDF Handbook', 'Pehle padho 📘', '📘 Theory first', '📘 Handbook'];
+const BOOK_H = ['Pehle <em>Handbook</em> se samjho', 'Poori <em>handbook</em> ready', '<em>Theory</em> pakki karo', 'Zero → <em>Mastery</em>', 'Sab kuch <em>ek jagah</em>'];
+function bookHead(lt) { return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${BOOK_PILL[V]}</span></div><div class="h1" style="margin-top:24px;font-size:${fs(70)}px;${fadeUp(lt, .15)}">${BOOK_H[(V + LK.book) % 5]}</div></div>`; }
+const bookChips = (lt, top, left = 90) => `<div class="center" style="top:${top}px;text-align:left;left:${left}px"><span class="chip" style="${pop(lt, 2.4)}">📄 ${T.pages} pages · PDF</span><span class="chip" style="${pop(lt, 2.7)}">Part ${T.series} of 43</span><span class="chip ac" style="${pop(lt, 3)}">Zero → Mastery</span></div>`;
+function book0(t, lt, d) {
+  const tilt = keys([[0, -35], [1.2, -14], [d, -8]], lt), s = keys([[0, .7], [1.1, 1], [d, 1.04]], lt), fx = keys([[0, 1200], [1.6, 1200], [2.6, 560], [d, 540]], lt);
+  return bookHead(lt) + `<div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1600px">
       <div class="wrap" style="left:100px;top:${520 + Math.sin(lt * 2) * 8}px;width:430px;transform:rotateY(${-tilt}deg) scale(${s});opacity:${clamp(lt / .4)}"><img src="${A.cover}">${shine(lt, 1.2, 1)}${shine(lt, 4.5, 1)}</div>
-      <div class="wrap" style="left:${fx}px;top:${620 + Math.cos(lt * 2) * 8}px;width:420px;transform:rotate(${keys([[1.6, 12], [2.6, 4]], lt)}deg)"><img src="${A.feature}">${shine(lt, 3, .9)}</div>
-    </div>
-    <div class="center" style="top:1180px;text-align:left;left:90px">
-      <span class="chip" style="${pop(lt, 2.4)}">📄 ${T.pages} pages · PDF</span><span class="chip" style="${pop(lt, 2.7)}">Part ${T.series} of 43</span><span class="chip ac" style="${pop(lt, 3)}">Zero → Mastery</span></div>`;
+      <div class="wrap" style="left:${fx}px;top:${620 + Math.cos(lt * 2) * 8}px;width:420px;transform:rotate(${keys([[1.6, 12], [2.6, 4]], lt)}deg)"><img src="${A.feature}">${shine(lt, 3, .9)}</div></div>` + bookChips(lt, 1180);
 }
-function ctf(t, lt, d) {
-  const sh = A.shots, S = 468 / 390, room = sh.room, cards = room.cards;
-  const want = (T.showTasks || [2, 5, 8]).map((n) => cards[n - 1]).filter(Boolean);
-  const swap = d * .68;                                           // switch to the task-1 lesson
-  const maxY = room.h - 812 / S;
-  const sy = keys([[0, 0], [1.2, 0], [2.4, Math.min(maxY, 560)], [3.4, Math.min(maxY, 560)], [4.4, maxY], [d, maxY]], lt);
+function book1(t, lt, d) {   // centre spin-in, pages fan behind
+  const sp = keys([[0, 540], [1.3, 0], [d, -6]], lt), fan = ease(clamp((lt - 1.4) / .8));
+  return bookHead(lt) + `<div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1800px">
+      ${[-1, 1].map((s) => `<div class="wrap" style="left:330px;top:560px;width:420px;opacity:${fan};transform:translateX(${s * fan * 250}px) rotate(${s * fan * 10}deg) scale(.86)"><img src="${A.feature}"></div>`).join('')}
+      <div class="wrap" style="left:310px;top:${520 + Math.sin(lt * 2) * 8}px;width:460px;transform:rotateY(${sp}deg);opacity:${clamp(lt / .3)}"><img src="${A.cover}">${shine(lt, 1.6, 1)}</div></div>` + bookChips(lt, 1190, 70).replace('text-align:left', 'text-align:center');
+}
+function book2(t, lt, d) {   // laptop with the feature page, cover in front
+  const lid = keys([[0, -85], [1, 0]], lt), cy = keys([[0, 1600], [1.5, 1600], [2.3, 700]], lt);
+  return bookHead(lt) + `<div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1600px">
+      <div style="position:absolute;left:140px;top:470px;width:800px;height:520px;border-radius:26px 26px 0 0;background:#0b0f17;padding:22px;transform-origin:bottom;transform:rotateX(${lid}deg);box-shadow:0 30px 80px rgba(0,0,0,.5)"><div style="width:100%;height:100%;border-radius:10px;overflow:hidden;background:#fff"><img src="${A.feature}" style="width:100%;transform:translateY(${-keys([[1, 0], [d, 260]], lt)}px)"></div></div>
+      <div style="position:absolute;left:80px;top:990px;width:920px;height:36px;border-radius:0 0 30px 30px;background:linear-gradient(#cbd5e1,#64748b)"></div>
+      <div class="wrap" style="left:600px;top:${cy}px;width:300px;transform:rotate(${keys([[1.5, 20], [2.3, 6]], lt)}deg)"><img src="${A.cover}">${shine(lt, 2.6)}</div></div>` + bookChips(lt, 1090);
+}
+function book3(t, lt, d) {   // cover drops with a bounce, feature rises, chips stamp
+  const drop = back(clamp(lt / .8)), rise = ease(clamp((lt - .9) / .7));
+  return bookHead(lt) + `<div class="wrap" style="left:120px;top:${-600 + drop * 1120}px;width:420px;transform:rotate(${-6 + Math.sin(lt * 1.5) * 1.5}deg)"><img src="${A.cover}">${shine(lt, 1.1)}</div>
+    <div class="wrap" style="left:560px;top:${1700 - rise * 1080}px;width:400px;transform:rotate(${5 - Math.sin(lt * 1.5) * 1.5}deg)"><img src="${A.feature}"></div>` + bookChips(lt, 1180);
+}
+const BOOK = [book0, book1, book2, book3];
+
+// ---------- ctf ----------
+const CTF_PILL = ['Step 2 · CTF Portal 🚩', '🚩 Hands-on practice', 'Ab practice 🚩', '🚩 CTF Challenge', '🚩 Labs in browser'];
+const CTF_H = ['Phir <em>CTF</em> me practice karo', 'Haath se <em>karke</em> seekho', '<em>Real</em> tasks, real skills', 'Ab <em>challenge</em> ki baari', 'Seekha hua <em>pakka</em> karo'];
+function phoneScreen(lt, d) {
+  const sh = A.shots, S = 468 / 390, room = sh.room, cards = room.cards, want = (T.showTasks || [2, 5, 8]).map((n) => cards[n - 1]).filter(Boolean), swap = d * .68;
+  const maxY = room.h - 812 / S, sy = keys([[0, 0], [1.2, 0], [2.4, Math.min(maxY, 560)], [3.4, Math.min(maxY, 560)], [4.4, maxY], [d, maxY]], lt);
   let scr = `<img src="${A.room}" style="transform:translateY(${-sy * S}px)">`;
-  want.forEach((r, i) => {
-    const at = 2.5 + i * .8 + (i ? .9 : 0), on = clamp((lt - at) / .3) * clamp((swap - .2 - lt) / .3);
-    if (on > 0) scr += `<div class="ring" style="opacity:${on};left:${(r.x - 6) * S}px;top:${(r.y - 6 - sy) * S + 56}px;width:${(r.w + 12) * S}px;height:${(r.h + 12) * S}px"></div>`;
-  });
+  want.forEach((r, i) => { const at = 2.5 + i * .8 + (i ? .9 : 0), on = clamp((lt - at) / .3) * clamp((swap - .2 - lt) / .3);
+    if (on > 0) scr += `<div class="ring" style="opacity:${on};left:${(r.x - 6) * S}px;top:${(r.y - 6 - sy) * S + 56}px;width:${(r.w + 12) * S}px;height:${(r.h + 12) * S}px"></div>`; });
   const tp = clamp((lt - swap) / .5), ty = keys([[swap, 0], [swap + 1, 0], [d, Math.min(380, sh.task.h - 812 / S)]], lt);
   if (tp > 0) scr += `<img src="${A.task}" style="z-index:2;opacity:${tp};transform:translateY(${-ty * S}px)">`;
-  const phoneY = keys([[0, 1900], [.9, 450]], lt) + (lt > 1 ? Math.sin(lt * 1.8) * 6 : 0);
-  return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">Step 2 · CTF Portal 🚩</span></div>
-      <div class="h1" style="margin-top:26px;font-size:72px;white-space:nowrap;${fadeUp(lt, .15)}">Phir <em>CTF</em> me practice karo</div></div>
-    <div class="phone" style="left:70px;top:${phoneY}px;transform:rotate(${keys([[0, 6], [.9, -2]], lt)}deg)"><div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div>${scr}</div></div>
-    <div style="position:absolute;left:600px;top:480px">
-      <div class="stat" style="${fadeUp(lt, 1, .5, 40)}"><small>Room</small><b>${T.num} · ${T.difficulty}</b></div>
-      <div class="stat" style="${fadeUp(lt, 1.4, .5, 40)}"><small>Hands-on</small><b>${T.tasks} tasks</b></div>
-      <div class="stat" style="${fadeUp(lt, 1.8, .5, 40)}"><small>Labs + hints</small><b>In browser</b></div>
-      <div class="stat free" style="position:relative;overflow:hidden;${pop(lt, M.free - SC.ctf[0], .5)};box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(47,191,47,.7)"><small>Start now</small><b>Task 1 FREE ✅</b>${shine(lt, M.free - SC.ctf[0] + .5, .8)}</div>
-      <div class="stat" style="position:relative;overflow:hidden;background:linear-gradient(90deg,#ff9933,#ffcc4d);border-color:#ffcc4d;color:#140c02;${pop(lt, M.account - SC.ctf[0], .5)};transform-origin:center;box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)"><small style="color:#5a3300;white-space:nowrap;letter-spacing:2px;font-size:22px">👤 CTF access ke liye</small><b style="font-size:36px">Account banayein</b>${shine(lt, M.account - SC.ctf[0] + .5, .8)}</div>
-      <div style="${pop(lt, M.acctref - SC.ctf[0], .45)};display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:#fff;color:#0a2348;font-size:24px;font-weight:900;white-space:nowrap">▶ Reel: ${T.accountRef.rom}</div></div>`;
+  return `<div class="screen"><div class="notch"></div><div class="status"><span>9:41</span><span>▮▮▮</span></div>${scr}</div>`;
 }
-function cta(t, lt) {
-  const ue = M.url - SC.cta[0], en = M.enroll - SC.cta[0], typed = 'techguardians.in'.slice(0, Math.floor(clamp((lt - ue) / .7) * 16));
-  const pulse = lt > en ? 1 + .05 * Math.sin((lt - en) * 7) : 1, d = lt - en - .1;
-  const tap = d > -.4 && d < 1 ? `<div class="tapc" style="left:540px;top:1035px;opacity:${clamp(1 - d)};transform:scale(${d < 0 ? 1.4 + d : 1 + d * 2})"></div>` : '';
+const glowPulse = (lt, c) => `box-shadow:0 0 ${20 + 30 * Math.abs(Math.sin(lt * 4))}px ${c}`;
+function ctfStats(lt, w = 370) {
+  const f = M.free - SC.ctf[0], a = M.account - SC.ctf[0], r = M.acctref - SC.ctf[0];
+  return `<div class="stat" style="width:${w}px;${fadeUp(lt, 1, .5, 40)}"><small>Room</small><b>${T.num} · ${T.difficulty}</b></div>
+    <div class="stat" style="width:${w}px;${fadeUp(lt, 1.4, .5, 40)}"><small>Hands-on</small><b>${T.tasks} tasks</b></div>
+    <div class="stat" style="width:${w}px;${fadeUp(lt, 1.8, .5, 40)}"><small>Labs + hints</small><b>In browser</b></div>
+    <div class="stat free" style="width:${w}px;position:relative;overflow:hidden;${pop(lt, f, .5)};${glowPulse(lt, 'rgba(47,191,47,.7)')}"><small>Start now</small><b>Task 1 FREE ✅</b>${shine(lt, f + .5, .8)}</div>
+    <div class="stat acct" style="width:${w}px;position:relative;overflow:hidden;${pop(lt, a, .5)};${glowPulse(lt, 'rgba(255,170,60,.7)')}"><small style="color:#5a3300;white-space:nowrap;letter-spacing:2px;font-size:22px">👤 CTF access ke liye</small><b style="font-size:36px">Account banayein</b>${shine(lt, a + .5, .8)}</div>
+    <div style="${pop(lt, r, .45)};display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:#fff;color:#0a2348;font-size:22px;font-weight:900;white-space:nowrap;max-width:${w + 20}px;box-shadow:0 6px 20px rgba(0,0,0,.2)">▶ Reel: ${T.accountRef.rom}</div>`;
+}
+function ctfHead(lt) { return `<div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${CTF_PILL[(V + 1) % 5]}</span></div><div class="h1" style="margin-top:24px;font-size:${fs(68)}px;${fadeUp(lt, .15)}">${CTF_H[(V + LK.ctf * 2) % 5]}</div></div>`; }
+function ctf0(t, lt, d) {
+  const y = keys([[0, 1900], [.9, 450]], lt) + (lt > 1 ? Math.sin(lt * 1.8) * 6 : 0);
+  return ctfHead(lt) + `<div class="phone" style="left:70px;top:${y}px;transform:rotate(${keys([[0, 6], [.9, -2]], lt)}deg)">${phoneScreen(lt, d)}</div><div style="position:absolute;left:600px;top:480px">${ctfStats(lt)}</div>`;
+}
+function ctf1(t, lt, d) {   // mirrored: phone slides in from the right
+  const x = keys([[0, 1200], [.9, 510]], lt) + (lt > 1 ? Math.cos(lt * 1.6) * 6 : 0);
+  return ctfHead(lt) + `<div class="phone" style="left:${x}px;top:450px;transform:rotate(${keys([[0, -8], [.9, 2]], lt)}deg)">${phoneScreen(lt, d)}</div><div style="position:absolute;left:70px;top:480px">${ctfStats(lt, 400)}</div>`;
+}
+function ctf2(t, lt, d) {   // phone in 3D, stats as tilted floating badges
+  const ry = keys([[0, -70], [1.1, -16]], lt) + Math.sin(lt * 1.2) * 3;
+  return ctfHead(lt) + `<div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1500px"><div class="phone" style="left:120px;top:450px;transform:rotateY(${ry}deg) rotateX(4deg) scale(.96);transform-origin:left center">${phoneScreen(lt, d)}</div></div>
+    <div style="position:absolute;left:600px;top:470px;transform:rotate(3deg)">${ctfStats(lt, 380)}</div>`;
+}
+const CTF = [ctf0, ctf1, ctf2];
+
+// ---------- cta ----------
+const CTA_H = ['Seekho 📘 <span style="color:var(--ac)">→</span> Practice 🚩', 'Aaj hi <em>shuru</em> karo 🚀', 'Skill banao, <em>defender</em> bano', 'Aapki <em>journey</em> yahan se', 'Seekho · Practice · <em>Grow</em>'];
+const ctaTimes = () => ({ ue: M.url - SC.cta[0], en: M.enroll - SC.cta[0] });
+const typedUrl = (lt, ue) => 'techguardians.in'.slice(0, Math.floor(clamp((lt - ue) / .7) * 16));
+const tap = (lt, en, x, y) => { const d = lt - en - .1; return d > -.4 && d < 1 ? `<div class="tapc" style="left:${x}px;top:${y}px;opacity:${clamp(1 - d)};transform:scale(${d < 0 ? 1.4 + d : 1 + d * 2})"></div>` : ''; };
+const enrollBtn = (lt, en, label = '🚀 Abhi Enroll karo') => `<span class="enroll" style="transform:scale(${lt > en ? 1 + .05 * Math.sin((lt - en) * 7) : 1});${glowPulse(lt, 'rgba(255,170,60,.7)')}">${label}${shine(lt, en + .3, .8)}</span>`;
+const ctaChips = (lt, en, top) => `<div class="center" style="top:${top}px;${fadeUp(lt, en + .4)}"><span class="btn" style="background:var(--card);border:2px solid var(--cardb)">📘 PDF Handbooks</span><span class="btn" style="background:#138808;color:#fff">🚩 CTF Portal</span></div>`;
+function cta0(t, lt) {
+  const { ue, en } = ctaTimes(), typed = typedUrl(lt, ue);
   return `<div class="glow" style="top:300px;transform:scale(${1 + .06 * Math.sin(lt * 3)})"></div>
-    <div class="center" style="top:300px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:76px;white-space:nowrap">Seekho 📘 <span style="color:var(--ac)">→</span> Practice 🚩</div></div>
-    <div class="center" style="top:${keys([[0, 640], [ue, 640], [ue + .5, 520]], lt)}px;${pop(lt, ue - .3, .5)}"><div class="url">${typed}<span style="opacity:${Math.floor(lt * 3) % 2 && typed.length < 16 ? 1 : 0}">|</span>&nbsp;</div></div>
-    <div class="center" style="top:${en > 0 ? 720 : 720}px;${fadeUp(lt, en - .9)}"><div style="font-size:46px;font-weight:800;color:#cfe0ff">Abhi enroll karo aur seekhna start karo 👇</div></div>
-    <div class="center" style="top:960px;${pop(lt, en - .5, .6)}"><span class="enroll" style="transform:scale(${pulse});box-shadow:0 0 ${30 + 40 * Math.abs(Math.sin(lt * 4))}px rgba(255,170,60,.7)">🚀 Abhi Enroll karo${shine(lt, en + .3, .8)}</span></div>${tap}
-    <div class="center" style="top:1170px;${fadeUp(lt, en + .4)}"><span class="btn" style="background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);font-size:34px">📘 PDF Handbooks</span><span class="btn" style="background:#138808;font-size:34px">🚩 CTF Portal</span></div>`;
+    <div class="center" style="top:300px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:${fs(72)}px">${CTA_H[(V + 2) % 5]}</div></div>
+    <div class="center" style="top:${keys([[0, 640], [ue, 640], [ue + .5, 560]], lt)}px;${pop(lt, ue - .3, .5)}"><div class="url">${typed}<span style="opacity:${Math.floor(lt * 3) % 2 && typed.length < 16 ? 1 : 0}">|</span>&nbsp;</div></div>
+    <div class="center" style="top:760px;${fadeUp(lt, en - .9)}"><div style="font-size:46px;font-weight:800;color:var(--muted)">Abhi enroll karo aur seekhna start karo 👇</div></div>
+    <div class="center" style="top:960px;${pop(lt, en - .5, .6)}">${enrollBtn(lt, en)}</div>${tap(lt, en, 540, 1035)}` + ctaChips(lt, en, 1170);
 }
-function ref(t, lt, d) {
-  const R = T.ref, next = R.kind === 'next', q = back(clamp((lt - .2) / .6));
-  const cover = A.refcover ? `<img src="${A.refcover}" style="position:absolute;left:50%;top:110px;width:210px;margin-left:-105px;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.5);transform:rotate(-4deg)">` : `<img src="${A.logo}" style="position:absolute;left:50%;top:150px;width:200px;margin-left:-100px;border-radius:40px;background:#fff;padding:12px">`;
-  const pulse = 1 + .08 * Math.abs(Math.sin(lt * 3.5));
+function cta1(t, lt) {   // browser window
+  const { ue, en } = ctaTimes(), typed = typedUrl(lt, ue), load = clamp((lt - ue - .8) / .6);
+  return `<div class="center" style="top:300px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:${fs(72)}px">${CTA_H[(V + 3) % 5]}</div></div>
+    <div class="win" style="left:70px;right:70px;top:480px;height:720px;background:#f8fafc;color:#0a2348;${fadeUp(lt, .2, .6, 120)}">
+      <div class="tb" style="background:#e2e8f0"><i style="background:#ef4444"></i><i style="background:#f59e0b"></i><i style="background:#22c55e"></i>
+        <div style="margin-left:24px;flex:1;height:40px;border-radius:20px;background:#fff;display:flex;align-items:center;padding:0 20px;font:700 26px Inter;color:#0a2348">🔒 ${typed}<span style="opacity:${Math.floor(lt * 3) % 2 ? 1 : 0}">|</span></div></div>
+      <div style="height:6px;background:var(--ac);width:${load * 100}%"></div>
+      <div style="padding:50px;text-align:center;opacity:${load}"><img src="${A.logo}" style="width:150px;height:150px;object-fit:contain"><div style="font:900 60px Inter;margin:16px 0 8px">Tech Guardians</div><div style="font:700 34px Inter;color:#475569;margin-bottom:46px">📘 Handbooks · 🚩 CTF Portal</div>
+        <div style="${pop(lt, en - .4, .6)}">${enrollBtn(lt, en, '🚀 Enroll Now')}</div></div></div>${tap(lt, en, 540, 1050)}`;
+}
+function cta2(t, lt) {   // terminal
+  const { ue, en } = ctaTimes(), cmd = '$ open https://techguardians.in', n = Math.floor(clamp((lt - ue + .4) / 1) * cmd.length);
+  const outs = ['✔ PDF Handbooks — 43 topics', '✔ CTF Portal — hands-on rooms', '✔ Task 1 FREE in every room'];
+  return `<div class="center" style="top:300px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:${fs(72)}px">${CTA_H[(V + 4) % 5]}</div></div>
+    <div class="win mono" style="left:70px;right:70px;top:470px;height:500px;${fadeUp(lt, .15)}"><div class="tb"><i style="background:#ef4444"></i><i style="background:#f59e0b"></i><i style="background:#22c55e"></i><span>bash</span></div>
+      <div style="padding:40px 44px;font-size:34px;line-height:1.7"><div style="color:#f1f5f9">${cmd.slice(0, n)}${n < cmd.length ? '▌' : ''}</div>${outs.map((o, i) => `<div style="color:#86efac;${fadeUp(lt, ue + .8 + i * .3, .3, 20)}">${o}</div>`).join('')}</div></div>
+    <div class="center" style="top:1040px;${pop(lt, en - .5, .6)}">${enrollBtn(lt, en)}</div>${tap(lt, en, 540, 1115)}`;
+}
+function cta3(t, lt) {   // kinetic stamps
+  const { ue, en } = ctaTimes(), W = [['SEEKHO.', 0], ['PRACTICE.', .5], ['ENROLL!', Math.max(1, en - .3)]];
+  return W.map(([w, at], i) => { const p = clamp((lt - at) / .35); return `<div class="center" style="top:${300 + i * 190}px"><div class="h1" style="font-size:${fs(150)}px;font-family:'Bebas Neue',var(--hf);letter-spacing:4px;color:${i === 2 ? 'var(--acx)' : 'var(--fg)'};opacity:${clamp(p * 2)};transform:scale(${2.2 - 1.2 * back(p)}) rotate(${(i - 1) * -3}deg)">${w}</div></div>`; }).join('') +
+    `<div class="center" style="top:930px;${pop(lt, ue, .5)}"><div class="url" style="transform:rotate(-2deg)">techguardians.in</div></div>
+     <div class="center" style="top:1110px;${pop(lt, en - .2, .6)}">${enrollBtn(lt, en, '👉 Abhi Enroll karo')}</div>${tap(lt, en, 540, 1185)}`;
+}
+const CTA = [cta0, cta1, cta2, cta3];
+
+// ---------- ref ----------
+function refCover(w, top) { return A.refcover ? `<img src="${A.refcover}" style="width:${w}px;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.45)">` : `<img src="${A.logo}" style="width:${w}px;border-radius:40px;background:#fff;padding:12px">`; }
+function ref0(t, lt) {
+  const Rf = T.ref, next = Rf.kind === 'next', q = back(clamp((lt - .2) / .6)), pulse = 1 + .08 * Math.abs(Math.sin(lt * 3.5));
   return `<div class="glow" style="top:330px"></div>
-    <div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${next ? 'Agli reel 👉' : 'Ye reel dekhi kya? 👀'}</span></div>
-      <div class="h1" style="margin-top:22px;font-size:78px;${fadeUp(lt, .12)}">${next ? 'Next: <em>miss</em> mat karna!' : 'Ye reel <em>dekhi</em> kya?'}</div></div>
+    <div class="head"><div style="${fadeUp(lt, 0)}"><span class="pill">${next ? 'Agli reel 👉' : 'Ye reel bhi dekhiye 👀'}</span></div>
+      <div class="h1" style="margin-top:22px;font-size:${fs(76)}px;${fadeUp(lt, .12)}">${next ? 'Next: <em>miss</em> mat karna!' : 'Ye reel bhi <em>dekhiye</em>'}</div></div>
     <div class="reel" style="left:330px;top:${500 + Math.sin(lt * 2) * 8}px;opacity:${clamp((lt - .2) / .3)};transform:scale(${.6 + .4 * q}) rotate(${(1 - q) * -8 + Math.sin(lt * 1.5) * 1.5}deg)">
-      <span class="tag">▶ REEL</span>${cover}
-      <div class="play" style="transform:scale(${pulse})">▶</div>
-      <div class="ttl">${R.rom}</div><div class="site">techguardians.in</div></div>
+      <span class="tag">▶ REEL</span><div style="position:absolute;left:50%;top:110px;transform:translateX(-50%) rotate(-4deg)">${refCover(210)}</div>
+      <div class="play" style="transform:scale(${pulse})">▶</div><div class="ttl">${Rf.rom}</div><div class="site">techguardians.in</div></div>
     <div class="center" style="top:1270px;${fadeUp(lt, .9)}"><span class="chip ac" style="font-size:34px">👆 Profile pe dekhiye</span></div>`;
 }
+function ref1(t, lt, d) {   // "up next" card with loading bar
+  const Rf = T.ref, next = Rf.kind === 'next', p = clamp((lt - .6) / Math.max(1, d - 1));
+  return `<div class="center" style="top:330px;${fadeUp(lt, 0)}"><div class="h1" style="font-size:${fs(110)}px;letter-spacing:2px">${next ? 'UP <em>NEXT</em>' : 'ZAROOR <em>DEKHIYE</em>'}</div></div>
+    <div class="tile" style="left:70px;right:70px;width:auto;top:560px;height:560px;display:flex;gap:40px;align-items:center;${fadeX(lt, .2, .6, 300)}">
+      <div style="flex:none;transform:rotate(-3deg)">${refCover(300)}</div>
+      <div><div class="num">▶ ${next ? 'AGLI REEL' : 'REEL'}</div><div class="h1" style="font-size:${fs(Rf.rom.length > 30 ? 52 : 62)}px;margin:10px 0 30px">${Rf.rom}</div><div style="font-size:30px;color:var(--muted);font-weight:700">techguardians.in · Profile pe</div></div>
+      <div style="position:absolute;left:0;bottom:0;height:12px;width:${p * 100}%;background:var(--ac)"></div></div>`;
+}
+function ref2(t, lt) {   // swipe up
+  const Rf = T.ref, b = Math.abs(Math.sin(lt * 3.2)) * 40;
+  return `<div class="center" style="top:${330 - b}px;${fadeUp(lt, 0)}"><div style="font-size:150px;line-height:1">⬆️</div></div>
+    <div class="center" style="top:540px;${fadeUp(lt, .15)}"><div class="h1" style="font-size:${fs(70)}px">${Rf.kind === 'next' ? 'Agli reel <em>ready</em> hai' : 'Ye reel bhi <em>dekhiye</em>'}</div></div>
+    <div class="center" style="top:720px;${pop(lt, .4, .6)}"><div style="display:inline-block;transform:rotate(${Math.sin(lt * 1.4) * 3}deg)">${refCover(250)}</div></div>
+    <div class="center" style="top:1130px;${fadeUp(lt, .7)}"><span class="chip ac" style="font-size:38px">▶ ${Rf.rom}</span></div>`;
+}
+const REF = [ref0, ref1, ref2];
+
 function end(t, lt) {
   return `<div class="glow" style="top:300px"></div>
     <div class="center" style="top:400px;${pop(lt, 0, .7)}"><div style="display:inline-block;position:relative;overflow:hidden;border-radius:60px;transform:rotate(${Math.sin(lt * 2) * 3}deg)"><img src="${A.logo}" style="display:block;width:300px;height:300px;background:#fff;padding:18px;object-fit:contain">${shine(lt, .8, .9)}</div></div>
-    <div class="center" style="top:770px;${fadeUp(lt, .4)}"><div class="h1" style="font-size:100px">Tech Guardians</div></div>
-    <div class="center" style="top:900px;${fadeUp(lt, .7)}"><div style="font-size:44px;font-weight:700;color:#cfe0ff">Keep Learning · Keep Sharing 🇮🇳</div></div>
-    <div class="center" style="top:1010px;${fadeUp(lt, 1)}"><div style="display:inline-flex;width:420px;height:16px;border-radius:9px;overflow:hidden"><i style="flex:1;background:#ff9933"></i><i style="flex:1;background:#fff"></i><i style="flex:1;background:#138808"></i></div></div>
-    <div class="center" style="top:1100px;${fadeUp(lt, 1.2)}"><span class="chip ac" style="font-size:44px">techguardians.in</span></div>`;
+    <div class="center" style="top:770px;${fadeUp(lt, .4)}"><div class="h1" style="font-size:${fs(100)}px">Tech Guardians</div></div>
+    <div class="center" style="top:${770 + fs(100) * 1.2 + 20}px;${fadeUp(lt, .7)}"><div style="font-size:44px;font-weight:700;color:var(--muted)">Keep Learning · Keep Sharing 🇮🇳</div></div>
+    <div class="center" style="top:1040px;${fadeUp(lt, 1)}"><div style="display:inline-flex;width:420px;height:16px;border-radius:9px;overflow:hidden"><i style="flex:1;background:#ff9933"></i><i style="flex:1;background:#fff"></i><i style="flex:1;background:#138808"></i></div></div>
+    <div class="center" style="top:1120px;${fadeUp(lt, 1.2)}"><span class="chip ac" style="font-size:44px">techguardians.in</span></div>`;
 }
-const FN = { hook, learn, book, ctf, cta, ref, end };
-const ORDER = ['hook', 'learn', 'book', 'ctf', 'cta', 'ref', 'end'];
-const hl = (s) => s.replace(/(techguardians\.in|\b(?:[A-Z][A-Za-z]*[A-Z0-9][A-Za-z0-9-]*|[A-Z]{2,}|\d+|Firewall|Wireshark|Incident|Response|Ransomware|Room|Security|Mastery)\b)/g, '<i>$1</i>');
+const FN = { hook: HOOK[LK.hook], fact, learn: LEARN[LK.learn], book: BOOK[LK.book], ctf: CTF[LK.ctf], cta: CTA[LK.cta], ref: REF[LK.ref], end };
+const hl = (s) => s.replace(/(techguardians\.in|\b(?:[A-Z][A-Za-z]*[A-Z0-9][A-Za-z0-9-]*|[A-Z]{2,}|\d+|Firewall|Wireshark|Incident|Response|Ransomware|Room|Security|Mastery|Myth|Sach)\b)/g, '<i>$1</i>');
+
+// scene in / out per transition style
+function sceneStyle(name, lt, out) {
+  const enter = clamp(lt / .4), tr = LK.trans;
+  let x = 0, y = 0, s = 1 + lt * .003, r = 0, o = 1 - out, sk = 0;
+  if (tr === 0) x = -out * 140;
+  if (tr === 1) { s *= 1 - .15 * out; }
+  if (tr === 2) { y = -out * 80; }
+  if (tr === 3) { sk = out * 12; x = out * 60 * Math.sin(lt * 70); if (lt < .3 && name !== ORDER[0]) x += (.3 - lt) * 80 * Math.sin(lt * 90); }
+  if (tr === 4) { s *= (1 + out * .25) * (name === ORDER[0] ? 1 : 1 + .12 * (1 - ease(enter))); }
+  if (name === ORDER[0] && lt < .45) { const k = (.45 - lt) * 30; x += k * Math.sin(lt * 80); y += k * Math.cos(lt * 65); }
+  return `opacity:${o};transform:translate(${x}px,${y}px) scale(${s}) rotate(${r}deg) skewX(${sk}deg)`;
+}
 
 window.render = function (t) {
-  document.getElementById('grid').style.transform = `translate(${(t * 6) % 60}px, ${(t * 10) % 60}px)`;
+  if (TH.grid) document.getElementById('grid').style.transform = `translate(${(t * 6) % 60}px, ${(t * 10) % 60}px)`;
   document.querySelector('#bar i').style.width = (100 * clamp(t / D.total)) + '%';
   let html = '';
   for (const name of ORDER) {
     const [a, b] = SC[name], d = b - a;
     if (t < a - .01 || t > b + .45) continue;
     const lt = t - a, out = name === 'end' ? 0 : ease(clamp((t - b) / .45));
-    const shake = name === 'hook' && lt < .45 ? (.45 - lt) * 30 : 0;
-    html += `<div class="scene" style="opacity:${1 - out};transform:translate(${-out * 140 + shake * Math.sin(lt * 80)}px,${shake * Math.cos(lt * 65)}px) scale(${1 + lt * .003})">${FN[name](t, lt, d)}</div>`;
+    html += `<div class="scene" style="${sceneStyle(name, lt, out)}">${FN[name](t, lt, d)}</div>`;
   }
   document.getElementById('stage').innerHTML = html;
-  // hook icon on the canvas
   const ha = SC.hook[1];
   g.clearRect(0, 0, 940, 560);
   const io = t < ha ? ease(clamp(t / .5)) : 1 - ease(clamp((t - ha) / .45));
   cv.style.opacity = io; cv.style.transform = `scale(${.85 + .15 * io})`;
-  if (io > 0) (ICONS[T.icon] || ICONS.emoji)(t);
+  if (io > 0) ICON_FN(t);
   effects(t);
-  // captions, karaoke style: the word being spoken lights up
+  captions(t);
+  const chrome = t < SC.end[0] ? 1 : 1 - clamp((t - SC.end[0]) / .4);
+  for (const id of ['brand', 'wm', 'bar']) document.getElementById(id).style.opacity = chrome * (id === 'wm' ? .85 : 1);
+};
+
+function captions(t) {
+  const el = document.getElementById('cap'); el.className = 'c' + LK.cap;
   const s = D.subs.find((x) => t >= x.t0 && t < x.t1 + .05);
   let cap = '';
   if (s && t < SC.end[0]) {
     const w = s.text.split(' '), tot = w.reduce((a, x) => a + x.length + 2, 0), pr = clamp((t - s.t0) / (s.t1 - s.t0)) * tot;
     let acc = 0;
-    cap = `<span style="${pop(t, s.t0, .22)}">` + w.map((x) => {
-      const a0 = acc; acc += x.length + 2;
-      if (pr >= a0 && pr < acc) return `<b style="display:inline-block;margin:0 6px;color:#ffd54d;transform:scale(1.08)">${x}</b>`;
-      return pr < a0 ? `<span style="opacity:.6">${hl(x)}</span>` : hl(x);
-    }).join(' ') + '</span>';
+    const cur = LK.cap === 3 ? (x) => `<b style="display:inline-block;margin:0 4px;padding:0 12px;border-radius:12px;background:var(--ac);color:var(--ink)">${x}</b>`
+      : LK.cap === 1 ? (x) => `<b style="display:inline-block;margin:0 6px;color:var(--ac);transform:scale(1.12) rotate(-2deg)">${x}</b>`
+      : (x) => `<b style="display:inline-block;margin:0 6px;color:#ffd54d;transform:scale(1.08)">${x}</b>`;
+    const enter = LK.cap === 2 ? fadeX(t, s.t0, .22, -60) : pop(t, s.t0, .22);
+    cap = `<span style="${enter}">` + w.map((x) => { const a0 = acc; acc += x.length + 2; if (pr >= a0 && pr < acc) return cur(x); return pr < a0 ? `<span style="opacity:.6">${hl(x)}</span>` : hl(x); }).join(' ') + '</span>';
   }
-  document.getElementById('cap').innerHTML = cap;
-  const chrome = t < SC.end[0] ? 1 : 1 - clamp((t - SC.end[0]) / .4);
-  for (const id of ['brand', 'wm', 'bar']) document.getElementById(id).style.opacity = chrome * (id === 'wm' ? .85 : 1);
-};
+  el.innerHTML = cap;
+}
 
-// ---------- effect layers ----------
+// ---------- background + transitions + confetti ----------
 const bg = document.getElementById('bgfx').getContext('2d'), fx = document.getElementById('fx').getContext('2d');
+const BG = [
+  (t) => {   // navy: drifting binary + dots, scan line
+    bg.font = '700 30px JetBrains Mono'; bg.textAlign = 'center';
+    for (let i = 0; i < 46; i++) { const x = hash(i) * 1080, sp = 30 + hash(i + 50) * 60, y = 1920 - ((t * sp + hash(i + 99) * 1920) % 2000), a = .08 + .12 * hash(i + 7) * (.6 + .4 * Math.sin(t * 2 + i));
+      bg.fillStyle = i % 3 ? `rgba(255,255,255,${a})` : AC + '55'; if (i % 2) bg.fillText(hash(i + Math.floor(t * 2)) > .5 ? '1' : '0', x, y); else { bg.beginPath(); bg.arc(x, y, 3 + hash(i) * 4, 0, 7); bg.fill(); } }
+    const sy = (t * 260) % 2300 - 200, gr = bg.createLinearGradient(0, sy - 120, 0, sy); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(255,255,255,.05)'); bg.fillStyle = gr; bg.fillRect(0, sy - 120, 1080, 120);
+  },
+  (t) => {   // terminal: matrix rain + scanlines
+    bg.font = '700 32px JetBrains Mono'; bg.textAlign = 'center';
+    for (let c = 0; c < 27; c++) { const sp = 120 + hash(c) * 220, head = ((t * sp + hash(c + 3) * 2400) % 2400) - 200;
+      for (let k = 0; k < 16; k++) { const y = head - k * 40; if (y < 0 || y > 1920) continue; bg.fillStyle = k === 0 ? 'rgba(220,255,230,.5)' : `rgba(34,197,94,${.28 * (1 - k / 16)})`; bg.fillText(String.fromCharCode(0x30A0 + Math.floor(hash(c * 97 + k + Math.floor(t * 6)) * 90)), 20 + c * 40, y); } }
+    bg.fillStyle = 'rgba(0,0,0,.18)'; for (let y = 0; y < 1920; y += 6) bg.fillRect(0, y, 1080, 2);
+  },
+  (t) => {   // blueprint: fine grid, compass circles, dimension lines
+    bg.strokeStyle = 'rgba(255,255,255,.08)'; bg.lineWidth = 1; for (let x = 0; x <= 1080; x += 36) { bg.beginPath(); bg.moveTo(x, 0); bg.lineTo(x, 1920); bg.stroke(); } for (let y = 0; y <= 1920; y += 36) { bg.beginPath(); bg.moveTo(0, y); bg.lineTo(1080, y); bg.stroke(); }
+    bg.strokeStyle = 'rgba(255,255,255,.16)'; for (let x = 0; x <= 1080; x += 180) { bg.beginPath(); bg.moveTo(x, 0); bg.lineTo(x, 1920); bg.stroke(); }
+    bg.strokeStyle = 'rgba(255,255,255,.22)'; bg.lineWidth = 2; bg.setLineDash([14, 10]);
+    [[900, 1650, 260], [140, 420, 180]].forEach(([x, y, r], i) => { bg.beginPath(); bg.arc(x, y, r, t * .3 * (i ? -1 : 1), t * .3 * (i ? -1 : 1) + 5.2); bg.stroke(); bg.beginPath(); bg.moveTo(x - r - 30, y); bg.lineTo(x + r + 30, y); bg.moveTo(x, y - r - 30); bg.lineTo(x, y + r + 30); bg.stroke(); });
+    bg.setLineDash([]); bg.fillStyle = 'rgba(255,255,255,.3)'; bg.font = '600 22px JetBrains Mono'; bg.textAlign = 'left'; bg.fillText(`ROOM-${String(T.num).padStart(2, '0')} / REV ${(Math.floor(t) % 9) + 1}`, 70, 1890);
+  },
+  (t) => {   // neon: synthwave sun + moving perspective floor
+    const hz = 1240, sun = bg.createLinearGradient(0, hz - 420, 0, hz); sun.addColorStop(0, '#fde047'); sun.addColorStop(1, '#ec4899');
+    bg.save(); bg.beginPath(); bg.arc(540, hz, 340, Math.PI, 0); bg.clip(); bg.fillStyle = sun; bg.globalAlpha = .55; bg.fillRect(200, hz - 340, 680, 340);
+    bg.fillStyle = '#1d0840'; for (let k = 0; k < 7; k++) { const y = hz - 40 - k * 44; bg.fillRect(200, y, 680, 6 + k * 1.5); } bg.restore(); bg.globalAlpha = 1;
+    bg.strokeStyle = 'rgba(236,72,153,.55)'; bg.lineWidth = 2; for (let i = -14; i <= 14; i++) { bg.beginPath(); bg.moveTo(540 + i * 40, hz); bg.lineTo(540 + i * 260, 1920); bg.stroke(); }
+    for (let k = 0; k < 14; k++) { const p = ((k + (t * 1.2) % 1) / 14), y = hz + Math.pow(p, 2.2) * (1920 - hz); bg.strokeStyle = `rgba(236,72,153,${.15 + .5 * p})`; bg.beginPath(); bg.moveTo(0, y); bg.lineTo(1080, y); bg.stroke(); }
+    for (let i = 0; i < 40; i++) { bg.fillStyle = `rgba(255,255,255,${.2 + .5 * Math.abs(Math.sin(t * 2 + i))})`; bg.fillRect(hash(i) * 1080, hash(i + 40) * 1100, 3, 3); }
+  },
+  (t) => {   // hex mesh with pulsing cells
+    const s = 54, h = s * Math.sqrt(3); bg.lineWidth = 2;
+    for (let r = 0; r < 1920 / h + 2; r++) for (let c = 0; c < 1080 / (s * 1.5) + 2; c++) { const x = c * s * 1.5, y = r * h + (c % 2 ? h / 2 : 0), pulse = Math.max(0, Math.sin(t * 1.5 - hash(r * 31 + c) * 9));
+      bg.beginPath(); for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; bg.lineTo(x + Math.cos(a) * s * .92, y + Math.sin(a) * s * .92); } bg.closePath();
+      bg.strokeStyle = 'rgba(148,163,184,.1)'; bg.stroke(); if (pulse > .85) { bg.fillStyle = alpha(AC, (pulse - .85) * 1.6); bg.fill(); } }
+  },
+  (t) => {   // paper: dot pattern + soft blobs
+    bg.fillStyle = 'rgba(11,23,48,.08)'; for (let y = 30; y < 1920; y += 40) for (let x = 30; x < 1080; x += 40) { bg.beginPath(); bg.arc(x, y, 2.2, 0, 7); bg.fill(); }
+    for (let i = 0; i < 3; i++) { const x = 540 + Math.sin(t * .4 + i * 2) * 420, y = 400 + i * 600 + Math.cos(t * .5 + i) * 120, gr = bg.createRadialGradient(x, y, 0, x, y, 360); gr.addColorStop(0, alpha(AC, .2)); gr.addColorStop(1, alpha(AC, 0)); bg.fillStyle = gr; bg.fillRect(x - 360, y - 360, 720, 720); }
+  },
+  (t) => {   // bold: big accent diagonal band + moving stripes
+    bg.save(); bg.translate(540, 960); bg.rotate(-.35); bg.fillStyle = alpha(AC, .9); bg.fillRect(-1400, 380 + Math.sin(t * .8) * 30, 2800, 260); bg.fillStyle = alpha(AC, .25); bg.fillRect(-1400, -860, 2800, 90);
+    bg.fillStyle = 'rgba(255,255,255,.04)'; for (let k = -30; k < 30; k++) bg.fillRect(-1400, k * 70 + (t * 40) % 70, 2800, 22); bg.restore();
+  },
+  (t) => {   // circuit traces with travelling electrons
+    bg.lineWidth = 3; bg.lineCap = 'round';
+    for (let i = 0; i < 16; i++) { const y0 = 140 + i * 115, x1 = 120 + hash(i) * 300, x2 = x1 + 160 + hash(i + 5) * 300, dy = (hash(i + 9) > .5 ? 1 : -1) * 70;
+      const P = [[0, y0], [x1, y0], [x1 + 70, y0 + dy], [x2, y0 + dy], [x2 + 70, y0], [1080, y0]];
+      bg.strokeStyle = alpha(AC, .2); bg.beginPath(); P.forEach(([x, y], k) => k ? bg.lineTo(x, y) : bg.moveTo(x, y)); bg.stroke();
+      bg.fillStyle = alpha(AC, .45); bg.beginPath(); bg.arc(x1, y0, 7, 0, 7); bg.arc(x2 + 70, y0, 7, 0, 7); bg.fill();
+      const L = P.slice(1).map((p, k) => Math.hypot(p[0] - P[k][0], p[1] - P[k][1])), tot = L.reduce((a, b) => a + b); let d = ((t * 260 + hash(i + 2) * tot) % tot), k = 0; while (d > L[k]) { d -= L[k]; k++; }
+      const q = d / L[k], ex = P[k][0] + (P[k + 1][0] - P[k][0]) * q, ey = P[k][1] + (P[k + 1][1] - P[k][1]) * q; bg.fillStyle = '#fff'; bg.shadowColor = AC; bg.shadowBlur = 18; bg.beginPath(); bg.arc(ex, ey, 6, 0, 7); bg.fill(); bg.shadowBlur = 0; }
+    bg.lineCap = 'butt';
+  },
+];
+const TRANS = [
+  (p) => { const x = -900 + ease(p) * 2900; fx.save(); fx.transform(1, 0, -.35, 1, 0, 0); fx.fillStyle = AC; fx.globalAlpha = .92; fx.fillRect(x, 0, 520, 1920); fx.fillStyle = '#fff'; fx.globalAlpha = .8; fx.fillRect(x - 70, 0, 26, 1920); fx.fillRect(x + 560, 0, 12, 1920); fx.restore(); },
+  (p) => { fx.save(); fx.fillStyle = AC; fx.globalAlpha = .95; fx.beginPath(); if (p < .5) fx.arc(540, 900, ease(p * 2) * 1250, 0, 7); else { fx.rect(0, 0, 1080, 1920); fx.arc(540, 900, ease((p - .5) * 2) * 1250, 0, 7, true); } fx.fill('evenodd'); fx.restore(); },
+  (p) => { const n = 10, h = 1920 / n; fx.fillStyle = AC; for (let i = 0; i < n; i++) { const q = clamp(p * 1.6 - i * .06); const w = q < .5 ? ease(q * 2) : 1 - ease((q - .5) * 2); const left = q < .5 ? 0 : 1080 * (1 - w); fx.globalAlpha = .95; fx.fillRect(left, i * h, 1080 * w, h + 1); } fx.globalAlpha = 1; },
+  (p) => { const k = Math.sin(p * Math.PI); for (let i = 0; i < 14; i++) { const y = hash(i + Math.floor(p * 20)) * 1920, hh = 20 + hash(i * 7 + Math.floor(p * 20)) * 120, dx = (hash(i * 3 + Math.floor(p * 25)) - .5) * 300 * k; fx.globalAlpha = .7 * k; fx.fillStyle = [AC, '#22d3ee', '#ff0050', '#ffffff'][i % 4]; fx.fillRect(dx, y, 1080, hh); } fx.globalAlpha = 1; },
+  (p) => { const k = Math.sin(p * Math.PI), gr = fx.createRadialGradient(540, 900, 0, 540, 900, 1300); gr.addColorStop(0, `rgba(255,255,255,${.85 * k})`); gr.addColorStop(.5, alpha(AC, .5 * k)); gr.addColorStop(1, 'rgba(255,255,255,0)'); fx.fillStyle = gr; fx.fillRect(0, 0, 1080, 1920);
+    fx.strokeStyle = alpha(AC, k); fx.lineWidth = 10; for (let r = 0; r < 3; r++) { fx.beginPath(); fx.arc(540, 900, ease(p) * 1400 - r * 160, 0, 7); fx.stroke(); } },
+];
 function effects(t) {
-  bg.clearRect(0, 0, 1080, 1920);                                     // drifting binary + dots
-  bg.font = '700 30px JetBrains Mono, monospace'; bg.textAlign = 'center';
-  for (let i = 0; i < 46; i++) {
-    const x = hash(i) * 1080, sp = 30 + hash(i + 50) * 60, y = 1920 - ((t * sp + hash(i + 99) * 1920) % 2000);
-    const a = .08 + .12 * hash(i + 7) * (.6 + .4 * Math.sin(t * 2 + i));
-    bg.fillStyle = i % 3 ? `rgba(255,255,255,${a})` : T.accent + '55';
-    if (i % 2) bg.fillText(hash(i + Math.floor(t * 2)) > .5 ? '1' : '0', x, y); else { bg.beginPath(); bg.arc(x, y, 3 + hash(i) * 4, 0, 7); bg.fill(); }
-  }
-  const sy = (t * 260) % 2300 - 200; const gr = bg.createLinearGradient(0, sy - 120, 0, sy);   // scan line
-  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(255,255,255,.05)'); bg.fillStyle = gr; bg.fillRect(0, sy - 120, 1080, 120);
+  bg.clearRect(0, 0, 1080, 1920); BG[LK.theme % BG.length](t);
   fx.clearRect(0, 0, 1080, 1920);
-  for (const n of ['learn', 'book', 'ctf', 'cta', 'ref', 'end']) {           // diagonal swipe between scenes
-    const p = (t - (SC[n][0] - .32)) / .62; if (p <= 0 || p >= 1) continue;
-    const x = -900 + ease(p) * 2900;
-    fx.save(); fx.transform(1, 0, -.35, 1, 0, 0);
-    fx.fillStyle = T.accent; fx.globalAlpha = .92; fx.fillRect(x, 0, 520, 1920);
-    fx.fillStyle = '#fff'; fx.globalAlpha = .8; fx.fillRect(x - 70, 0, 26, 1920); fx.fillRect(x + 560, 0, 12, 1920);
-    fx.restore();
-    if (p > .35 && p < .65) { fx.fillStyle = `rgba(255,255,255,${.18 * (1 - Math.abs(p - .5) / .15)})`; fx.fillRect(0, 0, 1080, 1920); }
-  }
+  for (const n of ORDER.slice(1)) { const p = (t - (SC[n][0] - .32)) / .62; if (p > 0 && p < 1) TRANS[LK.trans](p); }
   const bursts = [[M.free, 785, 1150], [M.enroll, 540, 1035], [SC.end[0] + .3, 540, 550]];
-  const cols = ['#ff9933', '#ffffff', '#138808', '#ffcc4d', T.accent];
-  for (const [tb, cx, cy] of bursts) {                                  // confetti
+  if (M.reveal && F && ['quiz', 'myth', 'mistake'].includes(F.kind)) bursts.push([M.reveal, 540, 900]);
+  const cols = ['#ff9933', '#ffffff', '#138808', '#ffcc4d', AC];
+  for (const [tb, cx, cy] of bursts) {
     const dt = t - tb; if (dt < 0 || dt > 2.2) continue;
     for (let i = 0; i < 70; i++) {
       const ang = hash(i + tb) * Math.PI * 2, v = 500 + hash(i * 3 + tb) * 900;
       const x = cx + Math.cos(ang) * v * dt * Math.exp(-dt * 1.2), y = cy + Math.sin(ang) * v * dt * Math.exp(-dt * 1.2) + 420 * dt * dt;
-      fx.save(); fx.translate(x, y); fx.rotate(dt * 8 + i); fx.globalAlpha = clamp((2.2 - dt) / .6);
-      fx.fillStyle = cols[i % cols.length]; fx.fillRect(-9, -5, 18, 10); fx.restore();
+      fx.save(); fx.translate(x, y); fx.rotate(dt * 8 + i); fx.globalAlpha = clamp((2.2 - dt) / .6); fx.fillStyle = cols[i % cols.length]; fx.fillRect(-9, -5, 18, 10); fx.restore();
     }
   }
 }
 
-// Thumbnail / cover (1080x1920): hook + book + room badge, readable as a small tile.
+// ---------- thumbnail (1080x1920; tools/thumb_brand.py adds the brand strip at y 1662–1878) ----------
+const KIND_BADGE = { quiz: '🧠 QUIZ', myth: '🧐 MYTH vs FACT', compare: '⚔️ VS', mistake: '🚫 BADI GALTI', story: '🎬 REAL CASE', tip: '💡 PRO TIP' };
 window.renderCover = function () {
-  window.render(0); document.getElementById('cap').innerHTML = ''; fx.clearRect(0, 0, 1080, 1920); g.clearRect(0, 0, 940, 560); cv.style.opacity = 0;
+  window.render(SC.hook[0] + 2.2); document.getElementById('cap').innerHTML = ''; fx.clearRect(0, 0, 1080, 1920); g.clearRect(0, 0, 940, 560); cv.style.opacity = 0;
   document.getElementById('bar').style.opacity = 0;
-  document.getElementById('stage').innerHTML = `<div class="glow" style="top:700px"></div>
-    <div class="center" style="top:270px"><span class="pill" style="font-size:36px">Room ${T.num} · ${T.path}</span></div>
-    <div class="center" style="top:370px"><div style="display:flex;flex-direction:column;align-items:center;gap:34px">
-      <div class="h1" style="font-size:${T.title.length > 26 ? 88 : T.title.length > 16 ? 104 : 118}px;letter-spacing:-3px">${T.title}</div>
-      <div style="font-size:${T.title.length > 26 ? 48 : 54}px;font-weight:800;line-height:1.2;color:#e6eeff">${T.hook}</div></div></div>
-    <div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1600px">
-      <img class="book" src="${A.cover}" style="left:120px;top:880px;width:400px;transform:rotateY(14deg) rotate(-4deg)">
-      <img class="book" src="${A.task}" style="left:560px;top:930px;width:400px;height:560px;object-fit:cover;object-position:top;border-radius:24px;border:10px solid #0b0f17;transform:rotate(5deg)"></div>
-    <div class="center" style="top:1560px"><span class="chip ac" style="font-size:40px">📘 Handbook + 🚩 CTF</span><span class="chip" style="font-size:40px">techguardians.in</span></div>`;
+  const tsz = fs(T.title.length > 26 ? 88 : T.title.length > 16 ? 104 : 118), badge = F ? `<span class="chip" style="font-size:38px;background:#fff;color:#0a2348;border-color:#fff">${KIND_BADGE[F.kind]}</span>` : '';
+  const room = `<span class="pill" style="font-size:36px">Room ${T.num} · ${T.path}</span>`;
+  const books = (y) => `<div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1600px">
+      <img class="book" src="${A.cover}" style="left:120px;top:${y}px;width:400px;transform:rotateY(14deg) rotate(-4deg)">
+      <img class="book" src="${A.task}" style="left:560px;top:${y + 50}px;width:400px;height:560px;object-fit:cover;object-position:top;border-radius:24px;border:10px solid #0b0f17;transform:rotate(5deg)"></div>`;
+  const L = [
+    () => `<div class="glow" style="top:700px"></div><div class="center" style="top:270px">${room}</div>
+      <div class="center" style="top:370px"><div style="display:flex;flex-direction:column;align-items:center;gap:30px"><div class="h1" style="font-size:${tsz}px;letter-spacing:-2px">${T.title}</div>
+      <div style="font-size:${T.title.length > 26 ? 48 : 54}px;font-weight:800;line-height:1.2">${T.hook}</div>${badge}</div></div>${books(960)}`,
+    () => `<div style="position:absolute;left:70px;top:270px">${room}</div><div style="position:absolute;left:70px;right:70px;top:380px"><div class="h1" style="font-size:${Math.round(tsz * 1.12)}px;letter-spacing:-2px;line-height:1">${T.title}</div>
+      <div style="height:14px;width:300px;background:var(--ac);border-radius:8px;margin:34px 0"></div><div style="font-size:56px;font-weight:800;line-height:1.2;max-width:900px">${T.hook}</div><div style="margin-top:26px">${badge}</div></div>
+      <div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1600px"><img class="book" src="${A.cover}" style="left:560px;top:1060px;width:420px;transform:rotateY(-16deg) rotate(6deg)"></div>
+      <div style="position:absolute;left:80px;top:1130px;font-size:300px;line-height:1">${T.icon.length <= 2 || /\p{Extended_Pictographic}/u.test(T.icon) ? T.icon : '🛡️'}</div>`,
+    () => `<div style="position:absolute;left:0;right:0;top:230px;height:${tsz * 2.6 + 260}px;background:var(--ac);transform:skewY(-4deg);transform-origin:left"></div>
+      <div style="position:absolute;left:70px;right:70px;top:300px;color:#140c02"><div style="font:900 34px Inter;letter-spacing:4px">ROOM ${T.num} · ${T.path.toUpperCase()}</div><div class="h1" style="font-size:${tsz}px;letter-spacing:-2px;margin-top:20px;color:#140c02">${T.title}</div></div>
+      <div class="center" style="top:${tsz * 2.6 + 560}px"><div style="font-size:56px;font-weight:800;line-height:1.2">${T.hook}</div><div style="margin-top:24px">${badge}</div></div>${books(tsz * 2.6 + 880 > 1100 ? 1100 : tsz * 2.6 + 880)}`,
+  ];
+  document.getElementById('stage').innerHTML = L[LK.cover % L.length]();
 };
-window.ready = () => Promise.all(Object.values(imgs).map((i) => i.decode()));
+window.ready = () => Promise.all(Object.values(imgs).map((i) => i.decode())).then(() => document.fonts.load("900 40px 'Playfair Display'")).then(() => Promise.all(["700 40px 'Space Grotesk'", "400 40px 'Bebas Neue'", "800 40px 'Poppins'", "700 40px 'Oswald'", "900 40px 'Orbitron'"].map((f) => document.fonts.load(f))));
 </script>
 </body></html>

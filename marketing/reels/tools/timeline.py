@@ -10,7 +10,9 @@ t = next(x for x in json.load(open(topics, encoding='utf-8')) if x['num'] == num
 vo = json.load(open(os.path.join(work, 'vo.json')))
 segs = json.load(open(os.path.join(work, 'vo-segs.json'), encoding='utf-8'))
 # scene: (gap before the voice, minimum scene length)
-PLAN = [('hook', .4, 5.5), ('learn', .25, 9), ('book', .25, 7), ('ctf', .25, 11.5), ('cta', .25, 6), ('ref', .25, 4.5)]
+MIN = {'hook': 5.5, 'fact': 7, 'learn': 9, 'book': 7, 'ctf': 11.5, 'cta': 6, 'ref': 4.5}
+ORDER = t.get('order', ['hook', 'learn', 'book', 'ctf', 'cta', 'ref'])
+PLAN = [(n, .4 if i == 0 else .25, MIN[n]) for i, n in enumerate(ORDER)]
 TAIL = .3        # breath after each clip (short: the voice flows from scene to scene)
 END = 3.2        # end card, music only
 scenes, clips, cur = {}, [], 0.0
@@ -55,6 +57,12 @@ marks = {
     'url': round(scenes['cta'][0] + 1.2, 3),
     'enroll': when('cta', 'एनरोल'),
 }
+if 'fact' in cl:   # format scene (formats.json): sentence starts drive story / tip steps, the reveal word the answer
+    c = cl['fact']; starts = sorted({s[3]: c['at'] + s[0] for s in reversed(segs['fact'])}.items())
+    marks['fact'] = [round(x, 3) for _, x in starts]
+    marks['reveal'] = when('fact', t['fact'].get('reveal', '§'), .1) if t['fact'].get('reveal') else marks['fact'][-1]
+    marks['taps'] = marks['fact'][1:] if t['fact']['kind'] in ('story', 'tip') else []
+    marks['sparkles'] = [marks['reveal']] if t['fact']['kind'] in ('quiz', 'myth', 'mistake', 'compare') else []
 data = {'topic': t, 'scenes': scenes, 'clips': clips, 'subs': subs, 'marks': marks, 'total': total}
 json.dump(data, open(os.path.join(work, 'data.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 qclog = json.load(open(os.path.join(work, 'vo-qc.json'), encoding='utf-8')) if os.path.exists(os.path.join(work, 'vo-qc.json')) else {}

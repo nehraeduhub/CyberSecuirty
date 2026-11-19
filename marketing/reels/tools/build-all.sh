@@ -16,7 +16,7 @@ for G in b1 b2 b3 b4 b5 account p01 p02 p03 p04 p05 p06 p07 p08 p09 p10; do
   "$R/tools/build-guide.sh" "$R/guides/$G.json" >> "$LOG" 2>&1 </dev/null || echo "FAILED guide $G" >> "$LOG"
 done
 while read -r N NAME; do
-  done_reel "$NAME" && continue
+  done_reel "$NAME" && [ -f "$R/out/$NAME/look-v1" ] && continue
   echo "$(date +%H:%M:%S) topic $N $NAME" >> "$LOG"
   "$R/tools/build.sh" "$N" >> "$LOG" 2>&1 </dev/null || echo "FAILED topic $N" >> "$LOG"
 done < <(python3 -I -c "import json,sys;[print(t['num'],t['name']) for t in json.load(open(sys.argv[1]))]" "$R/topics.json")
