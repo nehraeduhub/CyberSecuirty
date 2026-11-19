@@ -6,7 +6,7 @@ param([string]$Dest = "G:\My Drive\TG Reels", [switch]$SkipPosted)
 
 $src = $PSScriptRoot
 $zips = Get-ChildItem $src -Filter "TechGuardians-Reels-*.zip"
-"ZIP found: $($zips.Count) (expected 18)"
+"ZIP found: $($zips.Count) (expected 19)"
 if ($zips.Count -eq 0) { "No ZIP files next to this script."; exit 1 }
 if (-not (Test-Path $Dest)) { New-Item -ItemType Directory $Dest | Out-Null }
 
