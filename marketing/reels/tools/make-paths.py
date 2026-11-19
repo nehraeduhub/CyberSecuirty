@@ -36,8 +36,8 @@ for i, p in enumerate(paths, 1):
      'cta': {'headline': 'Ye path <em>shuru</em> kijiye 👇', 'button': f"🚩 Room {first['num']} se start", 'chips': [f'📘 {n} handbooks', f'🚩 {n} rooms'],
              'vo': '[EXCITED] आज ही ये पाथ शुरू कीजिए, [SHORT PAUSE] [CONFIDENT] टेक गार्डियन्स डॉट इन पर।', 'sub': 'Aaj hi ye path shuru kijiye — techguardians.in par.'},
      'ref': {'kind': 'seen', 'name': first['name'], 'rom': f"Room {first['num']} · {first['title']}", 'cover': first['book'],
-             'vo': f"[QUESTIONING] इस पाथ की पहली रील, {first['tdev']}, देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
-             'sub': f"Is path ki pehli reel — {first['title']} — dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."},
+             'vo': f"[POLITE] इस पाथ की पहली रील, {first['tdev']}, प्रोफ़ाइल पर ज़रूर देखिए।",
+             'sub': f"Is path ki pehli reel — {first['title']} — profile par zaroor dekhiye."},
      'cover': {'pill': f"Learning Path · {n} rooms", 'hook': L['hook'], 'covers': covers, 'chip': f'📘 {n} handbooks · 🚩 {tasks} tasks'},
      'caption': f"{re.sub('<[^>]+>', '', L['hook'])}\n\n{p['title']} path — {p['desc']}\n\n📘 {n} handbooks: " + ', '.join(t['title'] for t in ts)
                 + f"\n🚩 {n} CTF rooms · {tasks} hands-on tasks · har room ka task 1 FREE\n🎯 " + ' · '.join(L['out'])

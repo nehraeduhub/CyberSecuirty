@@ -63,7 +63,7 @@
    "hook": "[QUESTIONING] साइबर सिक्योरिटी, ज़ीरो से कैसे शुरू करें? [LONG PAUSE] [CONFIDENT] सबसे पहले, [SHORT PAUSE] [EMPHASIZE] एक डिफ़ेंडर की तरह सोचना सीखिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे साइबर सिक्योरिटी के कोर कॉन्सेप्ट्स काम करते हैं, [SHORT PAUSE] कैसे हैश और फ़िशिंग को पहचानते हैं, [SHORT PAUSE] और कैसे एक असली सिक्योरिटी माइंडसेट बनाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] साइबर सिक्योरिटी फ़ंडामेंटल्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर एक में, [SHORT PAUSE] बारह हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर एक में, [SHORT PAUSE] बारह हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] द सीआईए ट्रायड। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -79,7 +79,7 @@
    "hook": "Cyber security zero se kaise shuru karein? Sabse pehle, ek defender ki tarah sochna seekhiye.",
    "learn": "Humare saath aap seekhenge — kaise cyber security ke core concepts kaam karte hain, kaise hash aur phishing ko pehchante hain, aur kaise ek asli security mindset banate hain.",
    "book": "Pehle handbook se concept clear karo. Cybersecurity Fundamentals — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 1 me, 12 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 1 me, 12 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 2 · The CIA Triad. Use miss mat kijiye!"
   }
@@ -146,7 +146,7 @@
    "hook": "[CONFIDENT] हर सिक्योरिटी का बेस, [SHORT PAUSE] [EMPHASIZE] सिर्फ़ तीन शब्द। [LONG PAUSE] [SLOW] कॉन्फ़िडेंशियलिटी, इंटीग्रिटी, और अवेलेबिलिटी।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे डेटा को सीक्रेट रखते हैं, [SHORT PAUSE] कैसे साबित करते हैं कि डेटा बदला नहीं गया, [SHORT PAUSE] और कैसे सर्विस को हमेशा चालू रखते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] द सीआईए ट्रायड, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर दो में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर दो में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] थ्रेट्स, वल्नरेबिलिटीज़ एंड रिस्क्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -162,7 +162,7 @@
    "hook": "Har security ka base, sirf 3 shabd. Confidentiality, Integrity aur Availability.",
    "learn": "Humare saath aap seekhenge — kaise data ko secret rakhte hain, kaise saabit karte hain ki data badla nahi gaya, aur kaise service ko hamesha chalu rakhte hain.",
    "book": "Pehle handbook se concept clear karo. The CIA Triad — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 2 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 2 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 3 · Threats, Vulnerabilities & Risks. Use miss mat kijiye!"
   }
@@ -229,7 +229,7 @@
    "hook": "[QUESTIONING] थ्रेट, वल्नरेबिलिटी और रिस्क, [SHORT PAUSE] इनमें फ़र्क़ पता है? [LONG PAUSE] [SERIOUS] ज़्यादातर लोग, इन्हें एक ही समझते हैं।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे थ्रेट, वल्नरेबिलिटी और रिस्क को अलग पहचानते हैं, [SHORT PAUSE] कैसे सीवीएसएस से सीवेरिटी स्कोर करते हैं, [SHORT PAUSE] और कैसे रिस्क के हिसाब से फ़ैसले लेते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] थ्रेट्स, वल्नरेबिलिटीज़ एंड रिस्क्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तीन में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तीन में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] सिक्योरिटी आर्किटेक्चर। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -245,7 +245,7 @@
    "hook": "Threat, vulnerability aur risk — inme farak pata hai? Zyadatar log inhe ek hi samajhte hain.",
    "learn": "Humare saath aap seekhenge — kaise threat, vulnerability aur risk ko alag pehchante hain, kaise CVSS se severity score karte hain, aur kaise risk ke hisaab se faisle lete hain.",
    "book": "Pehle handbook se concept clear karo. Threats, Vulnerabilities & Risks — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 3 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 3 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 4 · Security Architecture. Use miss mat kijiye!"
   }
@@ -312,7 +312,7 @@
    "hook": "[QUESTIONING] सिक्योरिटी बाद में जोड़ते हो? [LONG PAUSE] [SERIOUS] असली ग़लती यहीं है। [SHORT PAUSE] [CONFIDENT] सिक्योरिटी, शुरू से डिज़ाइन होनी चाहिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे लीस्ट प्रिविलेज और फ़ेल-सेफ़ डिज़ाइन लगाते हैं, [SHORT PAUSE] कैसे थ्रेट मॉडलिंग करते हैं, [SHORT PAUSE] और कैसे एक फ़्लैट नेटवर्क को सुरक्षित बनाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] सिक्योरिटी आर्किटेक्चर, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चार में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चार में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] डिफ़ेंस इन डेप्थ। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -328,7 +328,7 @@
    "hook": "Security baad me jodte ho? Asli galti yahin hai. Security shuru se design honi chahiye.",
    "learn": "Humare saath aap seekhenge — kaise least privilege aur fail-safe design lagate hain, kaise threat modeling karte hain, aur kaise ek flat network ko surakshit banate hain.",
    "book": "Pehle handbook se concept clear karo. Security Architecture — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 4 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 4 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 5 · Defense in Depth. Use miss mat kijiye!"
   }
@@ -395,7 +395,7 @@
    "hook": "[QUESTIONING] क्या एक ताला काफ़ी है? [LONG PAUSE] [EMPHASIZE] बिल्कुल नहीं! [LONG PAUSE] [CONFIDENT] असली सिक्योरिटी में, कई लेयर्स एक दूसरे को कवर करती हैं।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे प्रिवेंट, डिटेक्ट और करेक्ट कंट्रोल्स लगाते हैं, [SHORT PAUSE] कैसे लेयर्स एक दूसरे को कवर करती हैं, [SHORT PAUSE] और कैसे सिंगल पॉइंट ऑफ़ फ़ेलियर हटाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] डिफ़ेंस इन डेप्थ, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर पाँच में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर पाँच में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] ज़ीरो ट्रस्ट। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -411,7 +411,7 @@
    "hook": "Kya ek taala kaafi hai? Bilkul nahi! Asli security me kai layers ek doosre ko cover karti hain.",
    "learn": "Humare saath aap seekhenge — kaise prevent, detect aur correct controls lagate hain, kaise layers ek doosre ko cover karti hain, aur kaise single point of failure hatate hain.",
    "book": "Pehle handbook se concept clear karo. Defense in Depth — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 5 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 5 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 6 · Zero Trust. Use miss mat kijiye!"
   }
@@ -478,7 +478,7 @@
    "hook": "[EMPHASIZE] नेवर ट्रस्ट, [SHORT PAUSE] ऑलवेज़ वेरिफ़ाई। [LONG PAUSE] [SERIOUS] आज की सिक्योरिटी में, कोई भी डिफ़ॉल्ट से ट्रस्टेड नहीं है।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे आइडेंटिटी को नया पेरिमीटर बनाते हैं, [SHORT PAUSE] कैसे माइक्रो-सेगमेंटेशन करते हैं, [SHORT PAUSE] और कैसे रिस्क के हिसाब से एमएफ़ए माँगते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] ज़ीरो ट्रस्ट, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर छह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर छह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] टीसीपी आईपी नेटवर्किंग। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -494,7 +494,7 @@
    "hook": "Never trust, always verify. Aaj ki security me koi bhi default se trusted nahi hai.",
    "learn": "Humare saath aap seekhenge — kaise identity ko naya perimeter banate hain, kaise micro-segmentation karte hain, aur kaise risk ke hisaab se MFA maangte hain.",
    "book": "Pehle handbook se concept clear karo. Zero Trust — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 6 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 6 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 7 · TCP/IP Networking. Use miss mat kijiye!"
   }
@@ -561,7 +561,7 @@
    "hook": "[QUESTIONING] एक क्लिक पर, इंटरनेट में असल में क्या होता है? [LONG PAUSE] [CONFIDENT] जवाब है, [SHORT PAUSE] [EMPHASIZE] टीसीपी आईपी।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे टीसीपी हैंडशेक पढ़ते हैं, [SHORT PAUSE] कैसे पोर्ट्स और प्राइवेट आईपी रेंज पहचानते हैं, [SHORT PAUSE] और कैसे मैन इन द मिडल अटैक रोकते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] टीसीपी आईपी नेटवर्किंग, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सात में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सात में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] रूटिंग एंड स्विचिंग सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -577,7 +577,7 @@
    "hook": "Ek click par internet me asal me kya hota hai? Jawab hai — TCP/IP.",
    "learn": "Humare saath aap seekhenge — kaise TCP handshake padhte hain, kaise ports aur private IP ranges pehchante hain, aur kaise man-in-the-middle attack rokte hain.",
    "book": "Pehle handbook se concept clear karo. TCP/IP Networking — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 7 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 7 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 8 · Routing & Switching Security. Use miss mat kijiye!"
   }
@@ -644,7 +644,7 @@
    "hook": "[WARNING] हैकर ऑफ़िस के एक खुले स्विच पोर्ट से, अंदर आ गया? [LONG PAUSE] [SERIOUS] नेटवर्क फ़ैब्रिक को हार्डन करना, [EMPHASIZE] ज़रूरी है।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे पोर्ट सिक्योरिटी लगाते हैं, [SHORT PAUSE] कैसे रूटिंग प्रोटोकॉल्स को प्रोटेक्ट करते हैं, [SHORT PAUSE] और कैसे बीजीपी हाइजैक रोकते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] रूटिंग एंड स्विचिंग सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर आठ में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर आठ में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] वीलैन एंड वीआरएफ़। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -660,7 +660,7 @@
    "hook": "Hacker office ke ek khule switch port se andar aa gaya? Network fabric ko harden karna zaroori hai.",
    "learn": "Humare saath aap seekhenge — kaise port security lagate hain, kaise routing protocols ko protect karte hain, aur kaise BGP hijack rokte hain.",
    "book": "Pehle handbook se concept clear karo. Routing & Switching Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 8 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 8 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 9 · VLAN & VRF. Use miss mat kijiye!"
   }
@@ -727,7 +727,7 @@
    "hook": "[QUESTIONING] वीलैन लगा दिया, [SHORT PAUSE] फिर भी अटैकर दूसरे सेगमेंट में पहुँच गया? [LONG PAUSE] [CONFIDENT] वीलैन हॉपिंग को समझना, [EMPHASIZE] ज़रूरी है।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे एक्सेस और ट्रंक पोर्ट्स सेट करते हैं, [SHORT PAUSE] कैसे वीलैन हॉपिंग रोकते हैं, [SHORT PAUSE] और कैसे वीआरएफ़ से रास्ते अलग करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] वीलैन एंड वीआरएफ़, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर नौ में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर नौ में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] नेटवर्क सेगमेंटेशन। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -743,7 +743,7 @@
    "hook": "VLAN laga diya, phir bhi attacker doosre segment me pahunch gaya? VLAN hopping ko samajhna zaroori hai.",
    "learn": "Humare saath aap seekhenge — kaise access aur trunk ports set karte hain, kaise VLAN hopping rokte hain, aur kaise VRF se raaste alag karte hain.",
    "book": "Pehle handbook se concept clear karo. VLAN & VRF — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 9 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 9 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 10 · Network Segmentation. Use miss mat kijiye!"
   }
@@ -810,7 +810,7 @@
    "hook": "[SERIOUS] एक कंप्यूटर हैक हुआ, [SHORT PAUSE] और पूरा नेटवर्क गया? [LONG PAUSE] [CONFIDENT] सही सेगमेंटेशन, [EMPHASIZE] अटैकर को वहीं रोक देता है।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे ट्रस्ट के हिसाब से ज़ोन्स बनाते हैं, [SHORT PAUSE] कैसे लैटरल मूवमेंट रोकते हैं, [SHORT PAUSE] और कैसे सिर्फ़ जंप होस्ट से एक्सेस देते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] नेटवर्क सेगमेंटेशन, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर दस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर दस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] एमपीएलएस सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -826,7 +826,7 @@
    "hook": "Ek computer hack hua, aur poora network gaya? Sahi segmentation attacker ko wahin rok deta hai.",
    "learn": "Humare saath aap seekhenge — kaise trust ke hisaab se zones banate hain, kaise lateral movement rokte hain, aur kaise sirf jump host se access dete hain.",
    "book": "Pehle handbook se concept clear karo. Network Segmentation — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 10 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 10 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 11 · MPLS Security. Use miss mat kijiye!"
   }
@@ -893,7 +893,7 @@
    "hook": "[QUESTIONING] क्या एमपीएलएस मतलब एन्क्रिप्शन? [LONG PAUSE] [EMPHASIZE] ये एक बड़ा मिथ है! [SHORT PAUSE] [CONFIDENT] कैरियर कोर की सिक्योरिटी समझिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे एमपीएलएस पैकेट्स फ़ॉरवर्ड करता है, [SHORT PAUSE] कैसे कस्टमर्स के रास्ते अलग रहते हैं, [SHORT PAUSE] और कैसे कंट्रोल प्लेन को प्रोटेक्ट करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] एमपीएलएस सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर ग्यारह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर ग्यारह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] फ़ायरवॉल सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -909,7 +909,7 @@
    "hook": "Kya MPLS matlab encryption? Ye ek bada myth hai! Carrier core ki security samjhiye.",
    "learn": "Humare saath aap seekhenge — kaise MPLS packets forward karta hai, kaise customers ke raaste alag rehte hain, aur kaise control plane ko protect karte hain.",
    "book": "Pehle handbook se concept clear karo. MPLS Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 11 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 11 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 12 · Firewall Security. Use miss mat kijiye!"
   }
@@ -978,7 +978,7 @@
    "hook": "[QUESTIONING] क्या एक फ़ायरवॉल हर अटैक को रोक सकता है? [LONG PAUSE] [CONFIDENT] जवाब है, [SHORT PAUSE] [EMPHASIZE] नहीं! [LONG PAUSE] [SERIOUS] अगर उसके रूल्स सही नहीं हैं।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे डिफ़ॉल्ट डिनाई पॉलिसी बनाते हैं, [SHORT PAUSE] कैसे ज़ोन्स और सेगमेंटेशन करते हैं, [SHORT PAUSE] और कैसे स्टेटफ़ुल इंस्पेक्शन के साथ नैट रूल्स लिखते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] फ़ायरवॉल सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बारह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बारह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] लोड बैलेंसर एंड एडीसी सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -994,7 +994,7 @@
    "hook": "Kya ek Firewall har attack rok sakta hai? Jawab hai — nahi! Agar uske rules sahi nahi hain.",
    "learn": "Humare saath aap seekhenge — kaise default-deny policy banate hain, kaise zones aur segmentation karte hain, aur kaise stateful inspection ke saath NAT rules likhte hain.",
    "book": "Pehle handbook se concept clear karo. Firewall Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 12 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 12 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 13 · Load Balancer & ADC Security. Use miss mat kijiye!"
   }
@@ -1061,7 +1061,7 @@
    "hook": "[CONFIDENT] लाखों यूज़र्स, [SHORT PAUSE] और एक ही फ़्रंट डोर। [SHORT PAUSE] [QUESTIONING] उसे सुरक्षित कैसे रखें? [LONG PAUSE] [EMPHASIZE] लोड बैलेंसर और एडीसी से।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे लोड बैलेंसिंग और हेल्थ चेक्स सेट करते हैं, [SHORT PAUSE] कैसे टीएलएस को सुरक्षित टर्मिनेट करते हैं, [SHORT PAUSE] और कैसे रेट लिमिटिंग लगाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] लोड बैलेंसर एंड एडीसी सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तेरह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तेरह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] वेब एप्लिकेशन फ़ायरवॉल। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1077,7 +1077,7 @@
    "hook": "Lakhon users aur ek hi front door. Use surakshit kaise rakhein? Load balancer aur ADC se.",
    "learn": "Humare saath aap seekhenge — kaise load balancing aur health checks set karte hain, kaise TLS ko surakshit terminate karte hain, aur kaise rate limiting lagate hain.",
    "book": "Pehle handbook se concept clear karo. Load Balancer & ADC Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 13 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 13 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 14 · Web Application Firewall. Use miss mat kijiye!"
   }
@@ -1144,7 +1144,7 @@
    "hook": "[WARNING] एसक्यूएल इंजेक्शन जैसे अटैक, [CONFIDENT] आपकी वेबसाइट तक पहुँचें ही नहीं। [LONG PAUSE] ये काम करता है, [SHORT PAUSE] [EMPHASIZE] वेब एप्लिकेशन फ़ायरवॉल।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे ओवास्प टॉप टेन अटैक्स ब्लॉक करते हैं, [SHORT PAUSE] कैसे मॉडसिक्योरिटी डिप्लॉय करते हैं, [SHORT PAUSE] और कैसे वर्चुअल पैचिंग करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] वेब एप्लिकेशन फ़ायरवॉल, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चौदह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चौदह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] वेब सर्वर सेटअप एंड होस्टिंग। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1160,7 +1160,7 @@
    "hook": "SQL injection jaise attack aapki website tak pahunchein hi nahi. Ye kaam karta hai Web Application Firewall.",
    "learn": "Humare saath aap seekhenge — kaise OWASP Top 10 attacks block karte hain, kaise ModSecurity deploy karte hain, aur kaise virtual patching karte hain.",
    "book": "Pehle handbook se concept clear karo. Web Application Firewall — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 14 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 14 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 15 · Web Server Setup & Hosting. Use miss mat kijiye!"
   }
@@ -1227,7 +1227,7 @@
    "hook": "[QUESTIONING] अपनी वेबसाइट ख़ुद लाइव करनी है? [LONG PAUSE] [CONFIDENT] सर्वर सेटअप से लेकर सिक्योरिटी तक, [EXCITED] सब सीखिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे वेब सर्वर सेटअप करते हैं, [SHORT PAUSE] कैसे टीएलएस सर्टिफ़िकेट लगाते हैं, [SHORT PAUSE] और कैसे सर्वर को हार्डन करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] वेब सर्वर सेटअप एंड होस्टिंग, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर पंद्रह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर पंद्रह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] आईडीएस आईपीएस। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1243,7 +1243,7 @@
    "hook": "Apni website khud live karni hai? Server setup se lekar security tak, sab seekhiye.",
    "learn": "Humare saath aap seekhenge — kaise web server setup karte hain, kaise TLS certificate lagate hain, aur kaise server ko harden karte hain.",
    "book": "Pehle handbook se concept clear karo. Web Server Setup & Hosting — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 15 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 15 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 16 · IDS / IPS. Use miss mat kijiye!"
   }
@@ -1310,7 +1310,7 @@
    "hook": "[WARNING] नेटवर्क पर अटैक हो रहा है, [SHORT PAUSE] [QUESTIONING] ये पता कैसे चलेगा? [LONG PAUSE] [EMPHASIZE] आईडीएस और आईपीएस से।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे सिग्नेचर और एनॉमली डिटेक्शन काम करते हैं, [SHORT PAUSE] कैसे अपना डिटेक्शन रूल लिखते हैं, [SHORT PAUSE] और कैसे फ़ालतू अलर्ट्स कम करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] आईडीएस आईपीएस, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सोलह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सोलह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] नेटवर्क मॉनिटरिंग। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1326,7 +1326,7 @@
    "hook": "Network par attack ho raha hai, ye pata kaise chalega? IDS aur IPS se.",
    "learn": "Humare saath aap seekhenge — kaise signature aur anomaly detection kaam karte hain, kaise apna detection rule likhte hain, aur kaise faltu alerts kam karte hain.",
    "book": "Pehle handbook se concept clear karo. IDS / IPS — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 16 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 16 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 17 · Network Monitoring. Use miss mat kijiye!"
   }
@@ -1393,7 +1393,7 @@
    "hook": "[SERIOUS] ब्रीच, नेटवर्क फ़्लोज़ में छुपा था, [SHORT PAUSE] बस किसी ने देखा नहीं। [LONG PAUSE] [CONFIDENT] नेटवर्क मॉनिटरिंग सीखिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे नॉर्मल ट्रैफ़िक की बेसलाइन बनाते हैं, [SHORT PAUSE] कैसे नेटफ़्लो और एसएनएमपी से डेटा लेते हैं, [SHORT PAUSE] और कैसे फ़्लोज़ में अटैक पकड़ते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] नेटवर्क मॉनिटरिंग, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सत्रह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सत्रह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] वायरशार्क मास्टरी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1409,7 +1409,7 @@
    "hook": "Breach network flows me chhupa tha — bas kisi ne dekha nahi. Network monitoring seekhiye.",
    "learn": "Humare saath aap seekhenge — kaise normal traffic ki baseline banate hain, kaise NetFlow aur SNMP se data lete hain, aur kaise flows me attack pakadte hain.",
    "book": "Pehle handbook se concept clear karo. Network Monitoring — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 17 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 17 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 18 · Wireshark Mastery. Use miss mat kijiye!"
   }
@@ -1478,7 +1478,7 @@
    "hook": "[QUESTIONING] आपके नेटवर्क में, असल में क्या चल रहा है? [LONG PAUSE] [EMPHASIZE] हर पैकेट सच बताता है, [SHORT PAUSE] [CONFIDENT] बस उसे पढ़ना आना चाहिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे कैप्चर और डिस्प्ले फ़िल्टर्स लगाते हैं, [SHORT PAUSE] कैसे टीसीपी स्ट्रीम को फ़ॉलो करते हैं, [SHORT PAUSE] और कैसे वायर पर अटैक को पकड़ते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] वायरशार्क मास्टरी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर अठारह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर अठारह में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] एनमैप मास्टरी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1494,7 +1494,7 @@
    "hook": "Aapke network me asal me kya chal raha hai? Har packet sach batata hai — bas use padhna aana chahiye.",
    "learn": "Humare saath aap seekhenge — kaise capture aur display filters lagate hain, kaise TCP stream ko follow karte hain, aur kaise wire par attack ko pakadte hain.",
    "book": "Pehle handbook se concept clear karo. Wireshark Mastery — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 18 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 18 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 19 · Nmap Mastery. Use miss mat kijiye!"
   }
@@ -1561,7 +1561,7 @@
    "hook": "[QUESTIONING] आपके नेटवर्क में कौन कौन से डिवाइस ज़िंदा हैं, [SHORT PAUSE] और कौन से पोर्ट खुले हैं? [LONG PAUSE] [EMPHASIZE] एनमैप बताता है।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे होस्ट और पोर्ट्स डिस्कवर करते हैं, [SHORT PAUSE] कैसे सर्विस और ऑपरेटिंग सिस्टम पहचानते हैं, [SHORT PAUSE] और कैसे एनएसई स्क्रिप्ट्स चलाते हैं। [LONG PAUSE] [WARNING] सिर्फ़ अपने या अनुमति वाले नेटवर्क पर।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] एनमैप मास्टरी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर उन्नीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर उन्नीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] सॉक आर्किटेक्चर। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1577,7 +1577,7 @@
    "hook": "Aapke network me kaun kaun se devices zinda hain, aur kaun se port khule hain? Nmap batata hai.",
    "learn": "Humare saath aap seekhenge — kaise host aur ports discover karte hain, kaise service aur OS pehchante hain, aur kaise NSE scripts chalate hain. Sirf apne ya permission wale network par.",
    "book": "Pehle handbook se concept clear karo. Nmap Mastery — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 19 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 19 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 20 · SOC Architecture. Use miss mat kijiye!"
   }
@@ -1644,7 +1644,7 @@
    "hook": "[QUESTIONING] सॉक के अंदर, चौबीसों घंटे, होता क्या है? [LONG PAUSE] [CONFIDENT] सिक्योरिटी ऑपरेशन्स सेंटर कैसे बनता है, समझिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे सॉक में पीपल, प्रोसेस और टेक्नोलॉजी जुड़ते हैं, [SHORT PAUSE] कैसे एल वन, एल टू, एल थ्री एनालिस्ट काम करते हैं, [SHORT PAUSE] और कैसे डिटेक्शन्स को अटैक फ़्रेमवर्क से मैप करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] सॉक आर्किटेक्चर, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] सीम। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1660,7 +1660,7 @@
    "hook": "SOC ke andar 24x7 hota kya hai? Security Operations Center kaise banta hai, samjhiye.",
    "learn": "Humare saath aap seekhenge — kaise SOC me people, process aur technology judte hain, kaise L1, L2, L3 analyst kaam karte hain, aur kaise detections ko ATT&CK se map karte hain.",
    "book": "Pehle handbook se concept clear karo. SOC Architecture — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 20 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 20 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 21 · SIEM. Use miss mat kijiye!"
   }
@@ -1727,7 +1727,7 @@
    "hook": "[QUESTIONING] लाखों लॉग्स में छुपा एक अटैक, [SHORT PAUSE] ढूँढोगे कैसे? [LONG PAUSE] [CONFIDENT] यही काम करता है, [SHORT PAUSE] [EMPHASIZE] सीम।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे लॉग्स कलेक्ट और पार्स करते हैं, [SHORT PAUSE] कैसे कोरिलेशन रूल्स बनाते हैं, [SHORT PAUSE] और कैसे ब्रूट फ़ोर्स अटैक पकड़ते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] सीम, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर इक्कीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर इक्कीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] लॉग एंड अलर्ट मैनेजमेंट। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1743,7 +1743,7 @@
    "hook": "Lakhon logs me chhupa ek attack, dhoondhoge kaise? Yahi kaam karta hai SIEM.",
    "learn": "Humare saath aap seekhenge — kaise logs collect aur parse karte hain, kaise correlation rules banate hain, aur kaise brute force attack pakadte hain.",
    "book": "Pehle handbook se concept clear karo. SIEM — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 21 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 21 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 22 · Log & Alert Management. Use miss mat kijiye!"
   }
@@ -1810,7 +1810,7 @@
    "hook": "[SERIOUS] रोज़ हज़ारों अलर्ट्स, [SHORT PAUSE] [QUESTIONING] इनमें असली वाला कौन सा? [LONG PAUSE] [CONFIDENT] अलर्ट फ़टीग से कैसे बचें, सीखिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे ज़रूरी लॉग्स पहले कलेक्ट करते हैं, [SHORT PAUSE] कैसे अलर्ट्स की सीवेरिटी तय करते हैं, [SHORT PAUSE] और कैसे डुप्लिकेट और फ़ालतू अलर्ट्स हटाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] लॉग एंड अलर्ट मैनेजमेंट, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बाईस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बाईस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] इंसिडेंट रिस्पॉन्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1826,7 +1826,7 @@
    "hook": "Roz hazaaron alerts — inme asli wala kaunsa? Alert fatigue se kaise bachein, seekhiye.",
    "learn": "Humare saath aap seekhenge — kaise zaroori logs pehle collect karte hain, kaise alerts ki severity tay karte hain, aur kaise duplicate aur faltu alerts hatate hain.",
    "book": "Pehle handbook se concept clear karo. Log & Alert Management — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 22 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 22 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 23 · Incident Response. Use miss mat kijiye!"
   }
@@ -1895,7 +1895,7 @@
    "hook": "[SERIOUS] अगर आपकी कंपनी पर, रैनसमवेयर अटैक हो जाए, [SHORT PAUSE] तो पहले पाँच मिनट में, [SHORT PAUSE] [EMPHASIZE] आप क्या करोगे?",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे इंसिडेंट रिस्पॉन्स लाइफ़साइकल को स्टेप बाय स्टेप फ़ॉलो करते हैं, [SHORT PAUSE] कैसे एविडेंस खोए बिना अटैक को कंटेन करते हैं, [SHORT PAUSE] और कैसे रिकवरी के बाद सिस्टम को हार्डन करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] इंसिडेंट रिस्पॉन्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तेईस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तेईस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] थ्रेट हंटिंग। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1911,7 +1911,7 @@
    "hook": "Agar aapki company par ransomware attack ho jaye, to pehle 5 minute me aap kya karoge?",
    "learn": "Humare saath aap seekhenge — kaise Incident Response lifecycle ko step by step follow karte hain, kaise evidence khoye bina attack ko contain karte hain, aur kaise recovery ke baad system ko harden karte hain.",
    "book": "Pehle handbook se concept clear karo. Incident Response — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 23 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 23 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 24 · Threat Hunting. Use miss mat kijiye!"
   }
@@ -1978,7 +1978,7 @@
    "hook": "[QUESTIONING] जो अटैक अलर्ट्स नहीं पकड़ते, [SHORT PAUSE] उसे कौन पकड़ेगा? [LONG PAUSE] [EXCITED] थ्रेट हंटर!",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे हाइपोथिसिस बनाकर हंट करते हैं, [SHORT PAUSE] कैसे पर्सिस्टेंस और सीटू बीकन्स ढूँढते हैं, [SHORT PAUSE] और कैसे हंट को डिटेक्शन रूल में बदलते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] थ्रेट हंटिंग, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चौबीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चौबीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] सोर एंड सिक्योरिटी ऑटोमेशन। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -1994,7 +1994,7 @@
    "hook": "Jo attack alerts nahi pakadte, use kaun pakdega? Threat hunter!",
    "learn": "Humare saath aap seekhenge — kaise hypothesis banakar hunt karte hain, kaise persistence aur C2 beacons dhoondhte hain, aur kaise hunt ko detection rule me badalte hain.",
    "book": "Pehle handbook se concept clear karo. Threat Hunting — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 24 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 24 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 25 · SOAR & Security Automation. Use miss mat kijiye!"
   }
@@ -2061,7 +2061,7 @@
    "hook": "[QUESTIONING] फ़िशिंग अलर्ट का जवाब, [EMPHASIZE] सिर्फ़ तीस सेकंड में? [LONG PAUSE] [CONFIDENT] सोर और सिक्योरिटी ऑटोमेशन से।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे प्लेबुक्स बनाते हैं, [SHORT PAUSE] कैसे एनरिचमेंट और ट्राइएज ऑटोमेट करते हैं, [SHORT PAUSE] और कैसे ज़रूरी फ़ैसलों पर इंसान को लूप में रखते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] सोर एंड सिक्योरिटी ऑटोमेशन, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर पच्चीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर पच्चीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] सॉक टूल्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2077,7 +2077,7 @@
    "hook": "Phishing alert ka jawab sirf 30 second me? SOAR aur security automation se.",
    "learn": "Humare saath aap seekhenge — kaise playbooks banate hain, kaise enrichment aur triage automate karte hain, aur kaise zaroori faislon par insaan ko loop me rakhte hain.",
    "book": "Pehle handbook se concept clear karo. SOAR & Security Automation — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 25 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 25 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 26 · SOC Tools: Splunk · ELK · Wazuh · Sigma. Use miss mat kijiye!"
   }
@@ -2144,7 +2144,7 @@
    "hook": "[QUESTIONING] स्प्लंक, ईएलके, वाज़ुह, [SHORT PAUSE] एक ही रूल सब पर चल सकता है? [LONG PAUSE] [EXCITED] हाँ, सिग्मा से!",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे स्प्लंक में सर्च करते हैं, [SHORT PAUSE] कैसे ईएलके और वाज़ुह इस्तेमाल करते हैं, [SHORT PAUSE] और कैसे सिग्मा रूल एक बार लिखकर हर जगह चलाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] सॉक टूल्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर छब्बीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर छब्बीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] विंडोज़ सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2160,7 +2160,7 @@
    "hook": "Splunk, ELK, Wazuh — ek hi rule sab par chal sakta hai? Haan, Sigma se!",
    "learn": "Humare saath aap seekhenge — kaise Splunk me search karte hain, kaise ELK aur Wazuh istemaal karte hain, aur kaise Sigma rule ek baar likhkar har jagah chalate hain.",
    "book": "Pehle handbook se concept clear karo. SOC Tools: Splunk · ELK · Wazuh · Sigma — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 26 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 26 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 27 · Windows Security. Use miss mat kijiye!"
   }
@@ -2227,7 +2227,7 @@
    "hook": "[SERIOUS] एक फ़िशिंग मेल से, एडमिन राइट्स तक, [SHORT PAUSE] [QUESTIONING] अटैकर कैसे पहुँचता है? [LONG PAUSE] [CONFIDENT] विंडोज़ का सिक्योरिटी मॉडल समझिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे एसआईडी, टोकन्स और एसीएल काम करते हैं, [SHORT PAUSE] कैसे यूएसी और प्रिविलेजेस संभालते हैं, [SHORT PAUSE] और कैसे पास द हैश अटैक रोकते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] विंडोज़ सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सत्ताईस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सत्ताईस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] विंडोज़ हार्डनिंग। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2243,7 +2243,7 @@
    "hook": "Ek phishing mail se admin rights tak attacker kaise pahunchta hai? Windows ka security model samjhiye.",
    "learn": "Humare saath aap seekhenge — kaise SID, tokens aur ACL kaam karte hain, kaise UAC aur privileges sambhalte hain, aur kaise pass-the-hash attack rokte hain.",
    "book": "Pehle handbook se concept clear karo. Windows Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 27 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 27 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 28 · Windows Hardening. Use miss mat kijiye!"
   }
@@ -2310,7 +2310,7 @@
    "hook": "[QUESTIONING] डिफ़ॉल्ट विंडोज़, मतलब, [WARNING] अटैकर के लिए खुला दरवाज़ा? [LONG PAUSE] [CONFIDENT] विंडोज़ हार्डनिंग सीखिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे सिक्योरिटी बेसलाइन्स लगाते हैं, [SHORT PAUSE] कैसे लैप्स और बिटलॉकर सेट करते हैं, [SHORT PAUSE] और कैसे अटैक सरफ़ेस कम करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] विंडोज़ हार्डनिंग, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर अट्ठाईस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर अट्ठाईस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] एक्टिव डायरेक्टरी सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2326,7 +2326,7 @@
    "hook": "Default Windows matlab attacker ke liye khula darwaza? Windows hardening seekhiye.",
    "learn": "Humare saath aap seekhenge — kaise security baselines lagate hain, kaise LAPS aur BitLocker set karte hain, aur kaise attack surface kam karte hain.",
    "book": "Pehle handbook se concept clear karo. Windows Hardening — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 28 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 28 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 29 · Active Directory Security. Use miss mat kijiye!"
   }
@@ -2393,7 +2393,7 @@
    "hook": "[SERIOUS] एक आम यूज़र से, [EMPHASIZE] डोमेन एडमिन तक। [LONG PAUSE] [QUESTIONING] एक्टिव डायरेक्टरी अटैक्स कैसे होते हैं, [SHORT PAUSE] और कैसे रोकें?",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे कर्बेरोस और टिकट्स काम करते हैं, [SHORT PAUSE] कैसे कर्बेरोस्टिंग और डीसी सिंक पकड़ते हैं, [SHORT PAUSE] और कैसे टियर्ड एडमिन मॉडल लगाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] एक्टिव डायरेक्टरी सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर उनतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर उनतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] ग्रुप पॉलिसी सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2409,7 +2409,7 @@
    "hook": "Ek aam user se Domain Admin tak. Active Directory attacks kaise hote hain, aur kaise rokein?",
    "learn": "Humare saath aap seekhenge — kaise Kerberos aur tickets kaam karte hain, kaise Kerberoasting aur DCSync pakadte hain, aur kaise tiered admin model lagate hain.",
    "book": "Pehle handbook se concept clear karo. Active Directory Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 29 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 29 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 30 · Group Policy Security. Use miss mat kijiye!"
   }
@@ -2476,7 +2476,7 @@
    "hook": "[CONFIDENT] एक जीपीओ, [SHORT PAUSE] और हज़ारों कंप्यूटर्स पर असर। [LONG PAUSE] सही हो तो सुरक्षा, [SHORT PAUSE] [WARNING] ग़लत हो तो ख़तरा।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे ग्रुप पॉलिसी का प्रोसेसिंग ऑर्डर काम करता है, [SHORT PAUSE] कैसे पुरानी पासवर्ड ग़लतियाँ ढूँढते हैं, [SHORT PAUSE] और कैसे जीपीओ के बदलाव डिटेक्ट करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] ग्रुप पॉलिसी सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] एंडपॉइंट डिटेक्शन एंड रिस्पॉन्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2492,7 +2492,7 @@
    "hook": "Ek GPO, aur hazaaron computers par asar. Sahi ho to suraksha, galat ho to khatra.",
    "learn": "Humare saath aap seekhenge — kaise Group Policy ka processing order kaam karta hai, kaise purani password galtiyan dhoondhte hain, aur kaise GPO ke badlaav detect karte hain.",
    "book": "Pehle handbook se concept clear karo. Group Policy Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 30 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 30 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 31 · Endpoint Detection & Response. Use miss mat kijiye!"
   }
@@ -2559,7 +2559,7 @@
    "hook": "[SERIOUS] एंटीवायरस से अटैक छूट गया, [SHORT PAUSE] [EMPHASIZE] लेकिन ईडीआर ने पकड़ लिया। [LONG PAUSE] [QUESTIONING] कैसे? [CONFIDENT] समझिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे प्रोसेस ट्री पढ़ते हैं, [SHORT PAUSE] कैसे बिहेवियर से अटैक डिटेक्ट करते हैं, [SHORT PAUSE] और कैसे होस्ट को आइसोलेट करके रोलबैक करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] एंडपॉइंट डिटेक्शन एंड रिस्पॉन्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर इकतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर इकतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] पावरशेल सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2575,7 +2575,7 @@
    "hook": "Antivirus se attack chhoot gaya, lekin EDR ne pakad liya. Kaise? Samjhiye.",
    "learn": "Humare saath aap seekhenge — kaise process tree padhte hain, kaise behaviour se attack detect karte hain, aur kaise host ko isolate karke rollback karte hain.",
    "book": "Pehle handbook se concept clear karo. Endpoint Detection & Response — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 31 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 31 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 32 · PowerShell Security. Use miss mat kijiye!"
   }
@@ -2642,7 +2642,7 @@
    "hook": "[SERIOUS] पावरशेल की एक लाइन, [SHORT PAUSE] [EMPHASIZE] और पूरा अटैक? [LONG PAUSE] [QUESTIONING] अटैकर्स इसे कैसे इस्तेमाल करते हैं, [SHORT PAUSE] और कैसे पकड़ें?",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे डाउनलोड क्रेडल और एनकोडेड कमांड्स पकड़ते हैं, [SHORT PAUSE] कैसे स्क्रिप्ट ब्लॉक लॉगिंग चालू करते हैं, [SHORT PAUSE] और कैसे एएमएसआई और कंस्ट्रेन्ड मोड लगाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] पावरशेल सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बत्तीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बत्तीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] सिसइंटरनल्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2658,7 +2658,7 @@
    "hook": "PowerShell ki ek line, aur poora attack? Attackers ise kaise istemaal karte hain, aur kaise pakdein?",
    "learn": "Humare saath aap seekhenge — kaise download cradle aur encoded commands pakadte hain, kaise script-block logging chalu karte hain, aur kaise AMSI aur constrained mode lagate hain.",
    "book": "Pehle handbook se concept clear karo. PowerShell Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 32 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 32 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 33 · Sysinternals. Use miss mat kijiye!"
   }
@@ -2725,7 +2725,7 @@
    "hook": "[QUESTIONING] कंप्यूटर में मैलवेयर है? [LONG PAUSE] [CONFIDENT] सिसइंटरनल्स टूल्स से, [EMPHASIZE] लाइव पकड़िए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे प्रोसेस एक्सप्लोरर से संदिग्ध प्रोसेस पहचानते हैं, [SHORT PAUSE] कैसे ऑटोरन्स से पर्सिस्टेंस ढूँढते हैं, [SHORT PAUSE] और कैसे सिसमॉन से लॉगिंग करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] सिसइंटरनल्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तैंतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तैंतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] लिनक्स सिक्योरिटी हार्डनिंग। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2741,7 +2741,7 @@
    "hook": "Computer me malware hai? Sysinternals tools se live pakadiye.",
    "learn": "Humare saath aap seekhenge — kaise Process Explorer se sandigdh process pehchante hain, kaise Autoruns se persistence dhoondhte hain, aur kaise Sysmon se logging karte hain.",
    "book": "Pehle handbook se concept clear karo. Sysinternals — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 33 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 33 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 34 · Linux Security: Hardening. Use miss mat kijiye!"
   }
@@ -2808,7 +2808,7 @@
    "hook": "[SERIOUS] लिनक्स सर्वर हैक होने से पहले, [SHORT PAUSE] [WARNING] ये सेटिंग्स ज़रूर कीजिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे परमिशन्स और एसयूआईडी सही रखते हैं, [SHORT PAUSE] कैसे एसएसएच को कीज़ से सुरक्षित करते हैं, [SHORT PAUSE] और कैसे फ़ायरवॉल और सीलिनक्स लगाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] लिनक्स सिक्योरिटी हार्डनिंग, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चौंतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चौंतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] लिनक्स सिक्योरिटी मॉनिटरिंग। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2824,7 +2824,7 @@
    "hook": "Linux server hack hone se pehle, ye settings zaroor kijiye.",
    "learn": "Humare saath aap seekhenge — kaise permissions aur SUID sahi rakhte hain, kaise SSH ko keys se surakshit karte hain, aur kaise firewall aur SELinux lagate hain.",
    "book": "Pehle handbook se concept clear karo. Linux Security: Hardening — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 34 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 34 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 35 · Linux Security: Monitoring. Use miss mat kijiye!"
   }
@@ -2891,7 +2891,7 @@
    "hook": "[QUESTIONING] आपके लिनक्स सर्वर पर, कोई चुपचाप बैठा है? [LONG PAUSE] [CONFIDENT] लॉग्स और ऑडिटडी से, पता कीजिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे लॉग्स को सेंट्रल करते हैं, [SHORT PAUSE] कैसे ऑडिटडी और एड से बदलाव पकड़ते हैं, [SHORT PAUSE] और कैसे वेबशेल और रूटकिट ढूँढते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] लिनक्स सिक्योरिटी मॉनिटरिंग, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर पैंतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर पैंतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2907,7 +2907,7 @@
    "hook": "Aapke Linux server par koi chupchaap baitha hai? Logs aur auditd se pata kijiye.",
    "learn": "Humare saath aap seekhenge — kaise logs ko central karte hain, kaise auditd aur AIDE se badlaav pakadte hain, aur kaise webshell aur rootkit dhoondhte hain.",
    "book": "Pehle handbook se concept clear karo. Linux Security: Monitoring — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 35 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 35 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 36 · Digital Forensics Fundamentals. Use miss mat kijiye!"
   }
@@ -2974,7 +2974,7 @@
    "hook": "[QUESTIONING] डिजिटल एविडेंस, कोर्ट में टिके कैसे? [LONG PAUSE] [WARNING] एक ग़लत क्लिक, [SHORT PAUSE] और सबूत बेकार।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे ऑर्डर ऑफ़ वोलैटिलिटी से सबूत लेते हैं, [SHORT PAUSE] कैसे इमेजिंग और हैशिंग करते हैं, [SHORT PAUSE] और कैसे चेन ऑफ़ कस्टडी बनाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] डिजिटल फ़ॉरेंसिक्स फ़ंडामेंटल्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर छत्तीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर छत्तीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] फ़ॉरेंसिक डोमेन्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -2990,7 +2990,7 @@
    "hook": "Digital evidence court me tike kaise? Ek galat click, aur saboot bekaar.",
    "learn": "Humare saath aap seekhenge — kaise order of volatility se saboot lete hain, kaise imaging aur hashing karte hain, aur kaise chain of custody banate hain.",
    "book": "Pehle handbook se concept clear karo. Digital Forensics Fundamentals — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 36 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 36 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 37 · Forensic Domains. Use miss mat kijiye!"
   }
@@ -3057,7 +3057,7 @@
    "hook": "[EMPHASIZE] डिलीट की हुई फ़ाइल भी, सच बोलती है। [LONG PAUSE] [CONFIDENT] डिस्क, मेमोरी, रजिस्ट्री और ब्राउज़र में, छुपे सबूत ढूँढिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे डिस्क से डिलीटेड फ़ाइल्स निकालते हैं, [SHORT PAUSE] कैसे मेमोरी फ़ॉरेंसिक्स करते हैं, [SHORT PAUSE] और कैसे रजिस्ट्री और ब्राउज़र से सबूत जोड़ते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] फ़ॉरेंसिक डोमेन्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सैंतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर सैंतीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] फ़ॉरेंसिक टूल्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -3073,7 +3073,7 @@
    "hook": "Delete ki hui file bhi sach bolti hai. Disk, memory, registry aur browser me chhupe saboot dhoondhiye.",
    "learn": "Humare saath aap seekhenge — kaise disk se deleted files nikalte hain, kaise memory forensics karte hain, aur kaise registry aur browser se saboot jodte hain.",
    "book": "Pehle handbook se concept clear karo. Forensic Domains — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 37 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 37 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 38 · Forensic Tools. Use miss mat kijiye!"
   }
@@ -3140,7 +3140,7 @@
    "hook": "[EXCITED] चार फ़्री प्रोफ़ेशनल टूल्स, [SHORT PAUSE] और पूरी इन्वेस्टिगेशन। [LONG PAUSE] [SLOW] एफ़टीके इमेजर, केप, ऑटोप्सी, और वोलैटिलिटी।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे एफ़टीके इमेजर से सबूत लेते हैं, [SHORT PAUSE] कैसे केप और ऑटोप्सी से ट्राइएज करते हैं, [SHORT PAUSE] और कैसे वोलैटिलिटी से मेमोरी एनालाइज़ करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] फ़ॉरेंसिक टूल्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर अड़तीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर अड़तीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -3156,7 +3156,7 @@
    "hook": "4 free professional tools, aur poori investigation. FTK Imager, KAPE, Autopsy aur Volatility.",
    "learn": "Humare saath aap seekhenge — kaise FTK Imager se saboot lete hain, kaise KAPE aur Autopsy se triage karte hain, aur kaise Volatility se memory analyse karte hain.",
    "book": "Pehle handbook se concept clear karo. Forensic Tools — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 38 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 38 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 39 · Cyber Threat Intelligence: Foundations. Use miss mat kijiye!"
   }
@@ -3223,7 +3223,7 @@
    "hook": "[QUESTIONING] हैकर का अगला मूव, पहले से पता हो तो? [LONG PAUSE] [CONFIDENT] यही है, [SHORT PAUSE] [EMPHASIZE] साइबर थ्रेट इंटेलिजेंस।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे इंटेलिजेंस लाइफ़साइकल चलती है, [SHORT PAUSE] कैसे माइटर अटैक फ़्रेमवर्क इस्तेमाल करते हैं, [SHORT PAUSE] और कैसे थ्रेट एक्टर्स की प्रोफ़ाइल बनाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] साइबर थ्रेट इंटेलिजेंस फ़ाउंडेशन्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर उनतालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर उनतालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -3239,7 +3239,7 @@
    "hook": "Hacker ka agla move pehle se pata ho to? Yahi hai Cyber Threat Intelligence.",
    "learn": "Humare saath aap seekhenge — kaise intelligence lifecycle chalti hai, kaise MITRE ATT&CK istemaal karte hain, aur kaise threat actors ki profile banate hain.",
    "book": "Pehle handbook se concept clear karo. Cyber Threat Intelligence: Foundations — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 39 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 39 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 40 · Cyber Threat Intelligence: Operations. Use miss mat kijiye!"
   }
@@ -3306,7 +3306,7 @@
    "hook": "[QUESTIONING] थ्रेट इंटेल से, अटैक को आने से पहले, ब्लॉक कैसे करें? [LONG PAUSE] [CONFIDENT] सीटीआई ऑपरेशन्स सीखिए।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे सुरक्षित ओसिंट करते हैं, [SHORT PAUSE] कैसे स्टिक्स, टैक्सी और मिस्प से इंटेल शेयर करते हैं, [SHORT PAUSE] और कैसे सॉक में अलर्ट्स एनरिच करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] साइबर थ्रेट इंटेलिजेंस ऑपरेशन्स, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर चालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] वर्चुअलाइज़ेशन सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -3322,7 +3322,7 @@
    "hook": "Threat intel se attack ko aane se pehle block kaise karein? CTI operations seekhiye.",
    "learn": "Humare saath aap seekhenge — kaise surakshit OSINT karte hain, kaise STIX, TAXII aur MISP se intel share karte hain, aur kaise SOC me alerts enrich karte hain.",
    "book": "Pehle handbook se concept clear karo. Cyber Threat Intelligence: Operations — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 40 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 40 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 41 · Virtualization Security. Use miss mat kijiye!"
   }
@@ -3389,7 +3389,7 @@
    "hook": "[WARNING] अटैकर वर्चुअल मशीन से बाहर निकलकर, [SHORT PAUSE] होस्ट तक पहुँच गया? [LONG PAUSE] [CONFIDENT] इसे, [EMPHASIZE] वीएम एस्केप कहते हैं।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे हाइपरवाइज़र काम करता है, [SHORT PAUSE] कैसे वीएम एस्केप से बचते हैं, [SHORT PAUSE] और कैसे मैनेजमेंट प्लेन को हार्डन करते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] वर्चुअलाइज़ेशन सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर इकतालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर इकतालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] कंटेनर सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -3405,7 +3405,7 @@
    "hook": "Attacker virtual machine se bahar nikalkar host tak pahunch gaya? Ise VM escape kehte hain.",
    "learn": "Humare saath aap seekhenge — kaise hypervisor kaam karta hai, kaise VM escape se bachte hain, aur kaise management plane ko harden karte hain.",
    "book": "Pehle handbook se concept clear karo. Virtualization Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 41 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 41 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 42 · Container Security. Use miss mat kijiye!"
   }
@@ -3472,7 +3472,7 @@
    "hook": "[QUESTIONING] आपका डॉकर कंटेनर, रूट पर चल रहा है? [LONG PAUSE] [WARNING] ये बहुत बड़ा ख़तरा है।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे कंटेनर्स को नॉन-रूट चलाते हैं, [SHORT PAUSE] कैसे इमेजेस को स्कैन और साइन करते हैं, [SHORT PAUSE] और कैसे कुबरनेटीज़ आरबैक लगाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] कंटेनर सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बयालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर बयालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
    "ref": "[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] डेटा सेंटर सिक्योरिटी। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!"
   },
@@ -3488,7 +3488,7 @@
    "hook": "Aapka Docker container root par chal raha hai? Ye bahut bada khatra hai.",
    "learn": "Humare saath aap seekhenge — kaise containers ko non-root chalate hain, kaise images ko scan aur sign karte hain, aur kaise Kubernetes RBAC lagate hain.",
    "book": "Pehle handbook se concept clear karo. Container Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 42 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 42 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
    "ref": "Agli reel me dekhiye — Room 43 · Data Centre Security. Use miss mat kijiye!"
   }
@@ -3554,9 +3554,9 @@
    "hook": "[QUESTIONING] डेटा सेंटर की सिक्योरिटी, मतलब सिर्फ़ फ़ायरवॉल? [LONG PAUSE] [EMPHASIZE] नहीं! [LONG PAUSE] [CONFIDENT] गेट से लेकर बैकअप तक, सब ज़रूरी है।",
    "learn": "[POLITE] हमारे साथ आप सीखेंगे, [SHORT PAUSE] [CALM] कैसे फ़िज़िकल एक्सेस को लेयर्स में सुरक्षित करते हैं, [SHORT PAUSE] कैसे पावर और कूलिंग संभालते हैं, [SHORT PAUSE] और कैसे थ्री टू वन बैकअप बनाते हैं।",
    "book": "पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] डेटा सेंटर सिक्योरिटी, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तैंतालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+   "ctf": "फिर सीटीएफ़ पोर्टल के, रूम नंबर तैंतालीस में, [SHORT PAUSE] दस हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
    "cta": "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
-   "ref": "[QUESTIONING] टेक गार्डियन्स वेबसाइट टूर वाली रील देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।"
+   "ref": "[POLITE] टेक गार्डियन्स वेबसाइट टूर वाली रील भी, प्रोफ़ाइल पर ज़रूर देखिए।"
   },
   "voStyle": {
    "hook": "CONFIDENT",
@@ -3570,9 +3570,9 @@
    "hook": "Data centre ki security matlab sirf firewall? Nahi! Gate se lekar backup tak, sab zaroori hai.",
    "learn": "Humare saath aap seekhenge — kaise physical access ko layers me surakshit karte hain, kaise power aur cooling sambhalte hain, aur kaise 3-2-1 backup banate hain.",
    "book": "Pehle handbook se concept clear karo. Data Centre Security — zero se mastery tak, aasaan bhasha me.",
-   "ctf": "Phir CTF Portal ke Room 43 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+   "ctf": "Phir CTF Portal ke Room 43 me, 10 hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
    "cta": "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
-   "ref": "Tech Guardians Website Tour wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+   "ref": "Tech Guardians Website Tour wali reel bhi profile par zaroor dekhiye."
   }
  }
 ]

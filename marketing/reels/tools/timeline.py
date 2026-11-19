@@ -51,7 +51,7 @@ marks = {
     # "Task 1 FREE" pops when the voice says पहला टास्क फ़्री; the account card when it says सीटीएफ़ एक्सेस (by position in the text)
     'free': when('ctf', 'पहला', .4),
     'account': when('ctf', 'सीटीएफ़ एक्सेस'),
-    'acctref': when('ctf', 'वो रील'),
+    'acctref': when('ctf', 'सीटीएफ़ एक्सेस', 1.6),
     'url': round(scenes['cta'][0] + 1.2, 3),
     'enroll': when('cta', 'एनरोल'),
 }

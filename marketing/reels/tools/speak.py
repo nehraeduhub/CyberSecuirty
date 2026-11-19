@@ -25,16 +25,17 @@ STYLE = {
     'SOFT':        (0.93, -4.0,  0.0),
     'WHISPER':     (0.90, -7.0, -0.2),   # Kokoro cannot really whisper: this is "very soft and slow"
     'SERIOUS':     (0.94,  0.5, -0.8),
-    'WARNING':     (0.92,  2.0, -0.5),
+    'WARNING':     (0.92,  1.0, -0.5),
     'SLOW':        (0.88,  0.0,  0.0),
-    'EXCITED':     (1.04,  2.0,  0.8),
+    'EXCITED':     (1.04,  1.0,  0.8),
     'CONFIDENT':   (0.98,  1.5, -0.2),
-    'LOUD':        (0.97,  3.5,  0.3),
-    'EMPHASIZE':   (0.93,  3.0,  0.5),
+    'LOUD':        (0.97,  2.0,  0.3),
+    'EMPHASIZE':   (0.95,  1.5,  0.5),
     'QUESTIONING': (0.98,  0.0,  0.4),
 }
+BASE_PITCH = 1.0   # semitones added to every style: the owner asked for a slightly higher, politer voice (2026-11-19)
 PAUSE_TAG = {'SHORT PAUSE': .18, 'LONG PAUSE': .40}
-PUNCT_PAUSE = {',': .10, '।': .25, '.': .25, '!': .25, '?': .32}
+PUNCT_PAUSE = {',': .10, '।': .35, '.': .35, '!': .35, '?': .45}
 JOIN = .05                                   # style change inside a phrase: just a breath
 TAG = re.compile(r'\[([A-Z ]+)\]')
 import json as _json, os as _os
@@ -71,6 +72,7 @@ def pieces(text, default='NORMAL'):
 def synth(kokoro, text, style, voice, speed, lang='hi', tweak=1.0):
     """One phrase in one style -> float32 samples (24 kHz), silence trimmed, gain and pitch applied."""
     f, gain, st = STYLE[style]
+    st += BASE_PITCH
     r = 2 ** (st / 12)                       # pitch: speak slower by r, then play back faster by r
     s, sr = kokoro.create(for_tts(text), voice=voice, speed=speed * f * tweak / r, lang=lang)
     s = np.asarray(s, dtype=np.float32) * .7      # Kokoro peaks go above 1.0 (would clip in a 16-bit wav): leave headroom
@@ -88,20 +90,19 @@ def synth(kokoro, text, style, voice, speed, lang='hi', tweak=1.0):
 
 def groups(text, default='NORMAL'):
     """Flowing delivery (news / promo read, owner's request 2026-11-19): phrases are joined into one utterance until
-    a [LONG PAUSE] or a new sentence in a different style. A style tag in the middle of a sentence does not break
-    the sentence (Kokoro stresses the words itself); [SHORT PAUSE] and commas stay inside the utterance."""
+    the sentence ends (then a clear pause, 0.35 s / 0.45 s after a question) or a [LONG PAUSE]. A style tag in the
+    middle of a sentence does not break it (Kokoro stresses the words itself); [SHORT PAUSE] and commas stay inside."""
     out = []
     for p in pieces(text, default):
         g = out[-1] if out else None
         starts_sentence = g is None or g['parts'][-1]['ends']
-        if g is None or g['pause'] >= PAUSE_TAG['LONG PAUSE'] or (starts_sentence and p['style'] != g['style']):
+        if g is None or starts_sentence or g['pause'] >= PAUSE_TAG['LONG PAUSE']:
             out.append({'style': p['style'], 'parts': [p], 'pause': p['pause']})
         else:
             g['parts'].append(p); g['pause'] = p['pause']
     for g in out:
         g['text'] = ' '.join(x['text'] for x in g['parts'])
         g['ends'] = g['parts'][-1]['ends']
-        if g['pause'] < PAUSE_TAG['LONG PAUSE'] and g is not out[-1]: g['pause'] = PUNCT_PAUSE['।']
     if out: out[-1]['pause'] = 0.0
     return out
 

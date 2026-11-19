@@ -267,3 +267,15 @@ one consistent voice, a quality check after generation and regeneration of the f
 - Reel length with flow v2: reel 12 = 66 s. Captions are 2–4 words per line (reference style).
 - Voice cloning of the reference narrator was declined (someone else's voice). Cloning the owner's own voice would need
   a cloning TTS (e.g. XTTS-v2 / IndicF5, hosted on Hugging Face — blocked in this environment) and a clean recording.
+
+## 16. Owner's cloned voice (sample stage, 2026-11-19)
+
+- The owner's own voice (two recordings, ~2.6 min) replaces the Kokoro voice: Kokoro speaks the directed script,
+  `tools/voice-clone-convert.py` (kNN-VC, weights from the kNN-VC GitHub release) turns it into the owner's voice,
+  then `ffmpeg rubberband=pitch=1.059463:formant=preserved` lifts it one semitone (owner asked for a slightly higher,
+  politer voice; kNN-VC itself lands on the recording's pitch). Timing is unchanged, so the video stays in sync.
+- Delivery "flow v5": one utterance per sentence (commas flow inside), 0.35 s after a sentence / 0.45 s after a question,
+  softer accents (EXCITED +1 dB, EMPHASIZE +1.5 dB, LOUD +2 dB), speed 1.14, `tools/pronunciation.json`
+  (मास्टरी → मास्टेरी, रिकवरी, मॉनिटरिंग).
+- Removed "कैसे बनाएँ? वो रील देखी क्या?" from the CTF line; "seen this reel?" endings became "… वाली रील भी, प्रोफ़ाइल पर ज़रूर देखिए।".
+- Bulk (all 59 reels) waits for the owner's approval of the reel 12 sample.

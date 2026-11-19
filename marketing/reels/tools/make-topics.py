@@ -29,8 +29,8 @@ def ref_lines(ref, kind):
     if kind == 'next':
         return (f"[POLITE] अगली रील में देखिए, [SHORT PAUSE] [CONFIDENT] {ref['dev']}। [LONG PAUSE] [EXCITED] उसे मिस मत कीजिए!",
                 f"Agli reel me dekhiye — {ref['rom']}. Use miss mat kijiye!")
-    return (f"[QUESTIONING] {ref['dev']} वाली रील देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
-            f"{ref['rom']} wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye.")
+    return (f"[POLITE] {ref['dev']} वाली रील भी, प्रोफ़ाइल पर ज़रूर देखिए।",
+            f"{ref['rom']} wali reel bhi profile par zaroor dekhiye.")
 
 def learn_directions(vo):
     """'हमारे साथ आप सीखेंगे, कैसे A, कैसे B, और कैसे C।' -> polite opening, calm list, a pause before each item."""
@@ -63,13 +63,13 @@ for i, t in enumerate(out):
     t['ref'] = ref; t['accountRef'] = ACCOUNT_REEL
     t['vo'] = {'hook': s['hookVo'], 'learn': learn_directions(s['learnVo']),
         'book': f"पहले हैंडबुक से, कॉन्सेप्ट क्लियर करो। [LONG PAUSE] [CONFIDENT] {t['tdev']}, [SHORT PAUSE] ज़ीरो से मास्टरी तक, [CALM] आसान भाषा में।",
-        'ctf': f"फिर सीटीएफ़ पोर्टल के, रूम नंबर {nh} में, [SHORT PAUSE] {kh} हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें। [SHORT PAUSE] [QUESTIONING] कैसे बनाएँ? वो रील देखी क्या?",
+        'ctf': f"फिर सीटीएफ़ पोर्टल के, रूम नंबर {nh} में, [SHORT PAUSE] {kh} हैंड्स-ऑन टास्क से प्रैक्टिस करो। [LONG PAUSE] [EXCITED] पहला टास्क, [EMPHASIZE] बिल्कुल फ़्री है! [LONG PAUSE] [POLITE] सीटीएफ़ एक्सेस के लिए, अपना अकाउंट ज़रूर बना लें।",
         'cta': "[CONFIDENT] पहले सीखो, [SHORT PAUSE] फिर प्रैक्टिस करो। [LONG PAUSE] [EXCITED] टेक गार्डियन्स डॉट इन पर, अभी एनरोल करो, [SHORT PAUSE] और सीखना स्टार्ट करो!",
         'ref': rv}
     t['voStyle'] = DEFAULT_STYLE
     t['sub'] = {'hook': s['hookSub'], 'learn': s['learnSub'],
         'book': f"Pehle handbook se concept clear karo. {t['title']} — zero se mastery tak, aasaan bhasha me.",
-        'ctf': f"Phir CTF Portal ke Room {t['num']} me, {t['tasks']} hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein. Kaise banayein? Wo reel dekhi kya?",
+        'ctf': f"Phir CTF Portal ke Room {t['num']} me, {t['tasks']} hands-on tasks se practice karo. Pehla task bilkul FREE hai! CTF access ke liye apna account zaroor bana lein.",
         'cta': "Pehle seekho, phir practice karo. techguardians.in par abhi enroll karo — aur seekhna start karo!",
         'ref': rs}
 

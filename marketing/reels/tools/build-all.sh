@@ -8,7 +8,7 @@ set -uo pipefail
 R="$(cd "$(dirname "$0")/.." && pwd)"; LOG="${1:-$R/work/build-all.log}"; export SKIP_CAPTURE=1
 python3 -I "$R/tools/make-topics.py" "${SITE:-$R/../..}" "$R" >/dev/null
 python3 -I "$R/tools/make-paths.py" "${SITE:-$R/../..}" "$R" >/dev/null
-done_reel() { ls "$R/out/$1/$1.mp4" "$R/out/$1/$1-thumbnail.jpg" >/dev/null 2>&1 && grep -q "flow v4" "$R/out/$1/$1-voice-script.md" 2>/dev/null; }
+done_reel() { ls "$R/out/$1/$1.mp4" "$R/out/$1/$1-thumbnail.jpg" >/dev/null 2>&1 && grep -q "flow v5" "$R/out/$1/$1-voice-script.md" 2>/dev/null; }
 for G in b1 b2 b3 b4 b5 account p01 p02 p03 p04 p05 p06 p07 p08 p09 p10; do
   NAME=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['name'])" "$R/guides/$G.json")
   done_reel "$NAME" && continue

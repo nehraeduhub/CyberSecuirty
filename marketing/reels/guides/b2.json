@@ -293,8 +293,8 @@
   "kind": "seen",
   "name": "B6-How-to-Create-Student-Account",
   "rom": "Student Account kaise banayein",
-  "vo": "[QUESTIONING] स्टूडेंट अकाउंट कैसे बनाएँ वाली रील देखी क्या? [SHORT PAUSE] [POLITE] नहीं देखी, तो प्रोफ़ाइल पर ज़रूर देखिए।",
-  "sub": "Student Account kaise banayein wali reel dekhi kya? Nahi dekhi, to profile par zaroor dekhiye."
+  "vo": "[POLITE] स्टूडेंट अकाउंट कैसे बनाएँ वाली रील भी, प्रोफ़ाइल पर ज़रूर देखिए।",
+  "sub": "Student Account kaise banayein wali reel bhi profile par zaroor dekhiye."
  },
  "cover": {
   "pill": "How-to guide · 6 steps",
