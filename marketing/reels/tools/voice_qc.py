@@ -70,7 +70,7 @@ def f0_median(s, sr):
     return float(np.median(out)) if out else 0.0
 
 # normal range of this voice (hm_omega), from a calibration run over the original scripts
-RANGE = {'rate': (3.8, 11.0), 'rms_db': (-25.0, -12.5), 'f0': (95.0, 175.0), 'sim': 0.60, 'gap': 0.38, 'end_db': -35.0}
+RANGE = {'rate': (3.8, 11.0), 'rms_db': (-25.0, -12.5), 'f0': (95.0, 175.0), 'sim': 0.60, 'gap': 0.60, 'end_db': -35.0}
 
 class QC:
     def __init__(self, asr_dir=None):

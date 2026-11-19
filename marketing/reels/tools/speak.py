@@ -86,17 +86,62 @@ def synth(kokoro, text, style, voice, speed, lang='hi', tweak=1.0):
     s[:n] *= ramp; s[len(s) - n:] *= ramp[::-1]
     return s, sr, raw
 
-def render(kokoro, text, voice, speed, default='NORMAL', qc=None, lang='hi'):
-    """Whole voice line -> (samples, sr, segments, log).
-    segments: [t0, t1, phrase, sentence index, style, pause after]; log: QC result per phrase (and every retry)."""
-    sr, chunks, segs, log, t, sent = 24000, [], [], [], 0.0, 0
+def groups(text, default='NORMAL'):
+    """Flowing delivery (news / promo read, owner's request 2026-11-19): phrases are joined into one utterance until
+    a [LONG PAUSE] or a new sentence in a different style. A style tag in the middle of a sentence does not break
+    the sentence (Kokoro stresses the words itself); [SHORT PAUSE] and commas stay inside the utterance."""
+    out = []
     for p in pieces(text, default):
-        s, sr, raw = synth(kokoro, p['text'], p['style'], voice, speed, lang)
-        if qc: s, entry = qc.check_and_fix(kokoro, p, s, raw, voice, speed, lang); entry['at'] = round(t, 3); log.append(entry)
-        segs.append([round(t, 3), round(t + len(s) / sr, 3), p['text'], sent, p['style'], p['pause']])
-        chunks += [s, np.zeros(int(p['pause'] * sr), np.float32)]
-        t += len(s) / sr + p['pause']
-        if p['ends']: sent += 1
+        g = out[-1] if out else None
+        starts_sentence = g is None or g['parts'][-1]['ends']
+        if g is None or g['pause'] >= PAUSE_TAG['LONG PAUSE'] or (starts_sentence and p['style'] != g['style']):
+            out.append({'style': p['style'], 'parts': [p], 'pause': p['pause']})
+        else:
+            g['parts'].append(p); g['pause'] = p['pause']
+    for g in out:
+        g['text'] = ' '.join(x['text'] for x in g['parts'])
+        g['ends'] = g['parts'][-1]['ends']
+        if g['pause'] < PAUSE_TAG['LONG PAUSE'] and g is not out[-1]: g['pause'] = PUNCT_PAUSE['।']
+    if out: out[-1]['pause'] = 0.0
+    return out
+
+def _sentence_times(s, sr, parts):
+    """Where each sentence of one utterance starts and ends: split by text length, snapped to the nearest pause."""
+    sents, cur = [], []
+    for x in parts:
+        cur.append(x['text'])
+        if x['ends']: sents.append(' '.join(cur)); cur = []
+    if cur: sents.append(' '.join(cur))
+    dur = len(s) / sr
+    if len(sents) == 1: return [(0.0, dur, sents[0])]
+    hop = int(.01 * sr); e = np.array([np.abs(s[i:i + hop]).max() for i in range(0, len(s) - hop, hop)])
+    quiet = e < .01
+    w = np.array([len(x) for x in sents], float); cuts = np.cumsum(w)[:-1] / w.sum() * dur
+    edges = [0.0]
+    for c in cuts:
+        lo, hi = int(max(0, c - .7) / .01), int(min(dur, c + .7) / .01)
+        idx = [i for i in range(lo, min(hi, len(quiet))) if quiet[i]]
+        edges.append(min(idx, key=lambda i: abs(i * .01 - c)) * .01 if idx else c)
+    edges.append(dur)
+    return [(edges[i], edges[i + 1], sents[i]) for i in range(len(sents))]
+
+def render(kokoro, text, voice, speed, default='NORMAL', qc=None, lang='hi'):
+    """Whole voice line -> (samples, sr, segments, log), spoken as flowing utterances (see groups()).
+    segments: [t0, t1, sentence, sentence index, style, pause after] — one per sentence;
+    log: one QC entry per segment (the utterance's check is reported on its first sentence)."""
+    sr, chunks, segs, log, t, sent = 24000, [], [], [], 0.0, 0
+    for g in groups(text, default):
+        s, sr, raw = synth(kokoro, g['text'], g['style'], voice, speed, lang)
+        entry = None
+        if qc: s, entry = qc.check_and_fix(kokoro, g, s, raw, voice, speed, lang); entry['at'] = round(t, 3)
+        times = _sentence_times(s, sr, g['parts'])
+        for i, (a, b, txt) in enumerate(times):
+            last = i == len(times) - 1
+            segs.append([round(t + a, 3), round(t + b, 3), txt, sent, g['style'], g['pause'] if last else 0.0])
+            if qc: log.append(entry if i == 0 else {'text': txt, 'style': g['style'], 'problems': [], 'fixed': True, 'metrics': {}})
+            if not last or g['ends']: sent += 1
+        chunks += [s, np.zeros(int(g['pause'] * sr), np.float32)]
+        t += len(s) / sr + g['pause']
     a = np.concatenate(chunks + [np.zeros(int(.06 * sr), np.float32)]) if chunks else np.zeros(1, np.float32)
     peak = np.abs(a).max()
     if peak > .98: a *= .98 / peak

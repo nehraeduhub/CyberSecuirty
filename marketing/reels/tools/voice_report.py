@@ -38,7 +38,7 @@ md = [f"# {NAME} — voice script & quality check", '',
       f"Voice: Kokoro `{V['voice']}` (Hindi male), base speed {V['speed']}, same voice for every line · length {ts(total)} · "
       f"{n} phrases · corrected: {len(fixes)} · **QC status: {status}**", '',
       '## Script with voice directions', '',
-      'Tags (flow v3, speed +8%, pronunciation.json): [SHORT PAUSE] 0.18 s · [LONG PAUSE] 0.40 s · comma 0.10 s · sentence end 0.25 s · question 0.32 s. '
+      'Tags (flow v4: continuous news/promo read, speed +8%, pronunciation.json): [SHORT PAUSE] 0.18 s · [LONG PAUSE] 0.40 s · comma 0.10 s · sentence end 0.25 s · question 0.32 s. '
       'A style tag holds until the next one; each scene starts in its default style.', '']
 for c in V['clips']:
     md += [f"**{c['scene']}** (starts {ts(c['at'])}, default {c.get('default', 'NORMAL')})", '', '> ' + c['script'], '']
