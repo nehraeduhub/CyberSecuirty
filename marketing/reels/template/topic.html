@@ -328,8 +328,9 @@ window.renderCover = function () {
   document.getElementById('bar').style.opacity = 0;
   document.getElementById('stage').innerHTML = `<div class="glow" style="top:700px"></div>
     <div class="center" style="top:270px"><span class="pill" style="font-size:36px">Room ${T.num} · ${T.path}</span></div>
-    <div class="center" style="top:380px"><div class="h1" style="font-size:118px;letter-spacing:-3px">${T.title}</div></div>
-    <div class="center" style="top:${T.title.length > 16 ? 650 : 540}px"><div style="font-size:54px;font-weight:800;line-height:1.2;color:#e6eeff">${T.hook}</div></div>
+    <div class="center" style="top:370px"><div style="display:flex;flex-direction:column;align-items:center;gap:34px">
+      <div class="h1" style="font-size:${T.title.length > 26 ? 88 : T.title.length > 16 ? 104 : 118}px;letter-spacing:-3px">${T.title}</div>
+      <div style="font-size:${T.title.length > 26 ? 48 : 54}px;font-weight:800;line-height:1.2;color:#e6eeff">${T.hook}</div></div></div>
     <div style="position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1600px">
       <img class="book" src="${A.cover}" style="left:120px;top:880px;width:400px;transform:rotateY(14deg) rotate(-4deg)">
       <img class="book" src="${A.task}" style="left:560px;top:930px;width:400px;height:560px;object-fit:cover;object-position:top;border-radius:24px;border:10px solid #0b0f17;transform:rotate(5deg)"></div>
