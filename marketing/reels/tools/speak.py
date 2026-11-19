@@ -37,6 +37,13 @@ PAUSE_TAG = {'SHORT PAUSE': .18, 'LONG PAUSE': .40}
 PUNCT_PAUSE = {',': .10, '।': .25, '.': .25, '!': .25, '?': .32}
 JOIN = .05                                   # style change inside a phrase: just a breath
 TAG = re.compile(r'\[([A-Z ]+)\]')
+import json as _json, os as _os
+_PRON = {k: v for k, v in _json.load(open(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'pronunciation.json'), encoding='utf-8')).items() if not k.startswith('_')}
+
+def for_tts(text):
+    """Spelling the TTS gets (tools/pronunciation.json); the script and captions keep the original words."""
+    for w, say in _PRON.items(): text = text.replace(w, say)
+    return text
 
 def plain(text):
     return re.sub(r'\s+', ' ', TAG.sub(' ', text)).strip()
@@ -65,7 +72,7 @@ def synth(kokoro, text, style, voice, speed, lang='hi', tweak=1.0):
     """One phrase in one style -> float32 samples (24 kHz), silence trimmed, gain and pitch applied."""
     f, gain, st = STYLE[style]
     r = 2 ** (st / 12)                       # pitch: speak slower by r, then play back faster by r
-    s, sr = kokoro.create(text, voice=voice, speed=speed * f * tweak / r, lang=lang)
+    s, sr = kokoro.create(for_tts(text), voice=voice, speed=speed * f * tweak / r, lang=lang)
     s = np.asarray(s, dtype=np.float32) * .7      # Kokoro peaks go above 1.0 (would clip in a 16-bit wav): leave headroom
     if abs(st) > 1e-6:
         from scipy.signal import resample_poly

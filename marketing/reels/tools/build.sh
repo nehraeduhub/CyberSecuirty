@@ -17,7 +17,7 @@ for N in "$@"; do
   cp "$R/legacy/launch/shield.png" "$W/logo.png"
   REFB=$(python3 -I -c "import json,sys;t=[x for x in json.load(open(sys.argv[1])) if x['num']==int(sys.argv[2])][0];print(t['ref'].get('cover',''))" "$R/topics.json" "$N")
   rm -f "$W/refcover.png"; [ -z "$REFB" ] || cp "$SITE/public/images/store/books/$REFB-cover.png" "$W/refcover.png"
-  python3 -I "$R/tools/voice.py" "$R/topics.json" "$N" "$W" hm_omega "${VOICE_SPEED:-1.06}" >/dev/null
+  python3 -I "$R/tools/voice.py" "$R/topics.json" "$N" "$W" hm_omega "${VOICE_SPEED:-1.14}" >/dev/null
   python3 -I "$R/tools/timeline.py" "$R/topics.json" "$N" "$W" "$O"
   python3 -I "$R/tools/voice_report.py" "$W" "$O" "$NAME"
   TOTAL=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['total'])" "$W/data.json")

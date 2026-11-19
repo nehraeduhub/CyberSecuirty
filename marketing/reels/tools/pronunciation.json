@@ -1,0 +1,6 @@
+{
+ "_note": "How the voice should say a word: script word -> spelling given to the TTS only (captions keep the script word). Kokoro's Hindi reading swallows short vowels in English loanwords (mastery -> 'mastry'); a written e / ॅ keeps them. Add words here and rebuild.",
+ "मास्टरी": "मास्टेरी",
+ "रिकवरी": "रिकॅवेरी",
+ "मॉनिटरिंग": "मॉनिटॅरिंग"
+}

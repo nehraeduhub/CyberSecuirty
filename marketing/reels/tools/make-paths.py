@@ -20,7 +20,7 @@ for i, p in enumerate(paths, 1):
     ts = [t for t in topics if t['path'] == p['key']]; L = lines[p['key']]; n = len(ts); tasks = sum(t['tasks'] for t in ts)
     covers = [f"cover-{t['series']:02d}" for t in ts]; first = ts[0]
     slug = re.sub(r'[^A-Za-z0-9]+', '-', p['title']).strip('-')
-    g = {'name': f'P{i:02d}-Path-{slug}', 'kicker': 'Learning path', 'accent': first['accent'], 'mood': first['mood'], 'shots': 'brand', 'speed': 1.05,
+    g = {'name': f'P{i:02d}-Path-{slug}', 'kicker': 'Learning path', 'accent': first['accent'], 'mood': first['mood'], 'shots': 'brand', 'speed': 1.13,
      'intro': {'pill': f"Learning Path · {p['title']}", 'hook': L['hook'], 'chips': [f'📘 {n} handbooks', f'🚩 {n} rooms', f'🧪 {tasks} tasks'], 'vo': intro_directions(L['vo']), 'sub': L['sub']},
      'steps': [
       {'label': f'{n} Handbooks', 'icon': '📚', 'title': f'<em>{n}</em> handbooks', 'tip': '📘 Zero → Mastery', 'visual': 'covers', 'coverSet': covers, 'shots': dummy,
