@@ -1,6 +1,6 @@
 """Studio presenter picture from a cut-out photo of the owner: brand-dark studio backdrop with soft light and the
 Tech Guardians logo on the wall, the owner from the waist up behind a desk with a laptop and a microphone, so it reads
-as "recording the script at a desk". Output 1080x1350 (4:5).
+as "recording the script, seated at a desk, laptop in front". Output 1080x1350 (4:5).
 Usage: python3 -I tools/studio_portrait.py <cutout.png (RGBA)> <logo.png> <out.png>"""
 import random, sys
 import numpy as np
@@ -36,29 +36,38 @@ img = Image.alpha_composite(img, wall.filter(ImageFilter.GaussianBlur(2.5)))
 # presenter: head-to-waist, light grade to sit in the studio light
 p = Image.open(cut).convert('RGBA'); p = p.crop(p.getbbox())
 p.putalpha(p.getchannel('A').filter(ImageFilter.MinFilter(5)).filter(ImageFilter.GaussianBlur(1.5)))   # pull the edge in: no light fringe
-s = 900 / 1014; p = p.resize((int(p.width * s), int(p.height * s)), Image.LANCZOS)
+s = 1180 / 1014; p = p.resize((int(p.width * s), int(p.height * s)), Image.LANCZOS)
 rgb = ImageEnhance.Contrast(ImageEnhance.Brightness(p.convert('RGB')).enhance(.93)).enhance(1.06)
 rgb = Image.merge('RGB', [c.point(f) for c, f in zip(rgb.split(), (lambda v: min(255, int(v * 1.03)), lambda v: v, lambda v: int(v * .96)))])
 p = Image.merge('RGBA', (*rgb.split(), p.getchannel('A')))
-px, py = (W - p.width) // 2 + 10, 150
+px, py = (W - p.width) // 2 + 10, 120
 rim = Image.new('RGBA', (W, H), (0, 0, 0, 0)); rim.paste(Image.new('RGBA', p.size, (120, 190, 255, 55)), (px + 6, py), p)
 img = Image.alpha_composite(img, rim.filter(ImageFilter.GaussianBlur(16)))
 layer = Image.new('RGBA', (W, H), (0, 0, 0, 0)); layer.paste(p, (px, py), p); img = Image.alpha_composite(img, layer)
 # desk (covers below the waist) with a soft shadow line
-top = 1035; desk = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(desk)
+top = 1010; desk = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(desk)
 d.polygon([(-40, top), (W + 40, top), (W + 160, H), (-160, H)], fill=(24, 30, 42, 255))
 d.line([(-40, top), (W + 40, top)], fill=(70, 84, 110, 255), width=5)
 for i in range(18): d.line([(-160, top + 18 + i * 17), (W + 160, top + 18 + i * 17)], fill=(30, 37, 51, 255), width=1)
 sh = Image.new('RGBA', (W, H), (0, 0, 0, 0)); ImageDraw.Draw(sh).rectangle((0, top - 30, W, top + 4), fill=(0, 0, 0, 120))
 img = Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(14))); img = Image.alpha_composite(img, desk)
 d = ImageDraw.Draw(img)
-# laptop seen from behind, right side, with the logo glowing on the lid
-lx0, ly0, lx1, ly1 = 700, 860, 1040, 1060
-d.rounded_rectangle((lx0, ly0, lx1, ly1), 18, fill=(52, 58, 70, 255), outline=(92, 100, 118, 255), width=3)
-d.polygon([(lx0 - 30, ly1), (lx1 + 30, ly1), (lx1 + 10, ly1 + 22), (lx0 - 10, ly1 + 22)], fill=(70, 78, 94, 255))
-small = lg.resize((80, int(lg.height * 90 / lg.width))); img.alpha_composite(small, ((lx0 + lx1 - 80) // 2, (ly0 + ly1 - small.height) // 2))
+# laptop seen from behind, centred in front of the presenter (he reads the script off its screen)
+lx0, ly0, lx1, ly1 = 300, 790, 780, top + 8
+lid = Image.new('RGBA', (W, H), (0, 0, 0, 0)); dl = ImageDraw.Draw(lid)
+dl.rounded_rectangle((lx0 - 8, ly0 - 8, lx1 + 8, ly1 + 6), 26, fill=(0, 0, 0, 140))
+img = Image.alpha_composite(img, lid.filter(ImageFilter.GaussianBlur(10)))
+d = ImageDraw.Draw(img)
+d.rounded_rectangle((lx0, ly0, lx1, ly1), 22, fill=(58, 64, 78, 255), outline=(110, 118, 136, 255), width=3)
+for i in range(6): d.line([(lx0 + 24, ly0 + 18 + i), (lx1 - 24, ly0 + 18 + i)], fill=(78, 86, 102, 255))   # top light edge
+d.polygon([(lx0 - 60, ly1), (lx1 + 60, ly1), (lx1 + 34, ly1 + 30), (lx0 - 34, ly1 + 30)], fill=(78, 86, 102, 255))
+small = lg.resize((110, int(lg.height * 110 / lg.width)))
+img.alpha_composite(small, ((lx0 + lx1 - 110) // 2, (ly0 + ly1 - small.height) // 2))
+# glow of the screen on the presenter's face/chest
+sc = Image.new('RGBA', (W, H), (0, 0, 0, 0)); ImageDraw.Draw(sc).ellipse((330, 480, 760, 820), fill=(140, 190, 255, 38))
+img = Image.alpha_composite(img, sc.filter(ImageFilter.GaussianBlur(60)))
 # microphone on a short desk stand, left side
-d = ImageDraw.Draw(img); mx = 215
+d = ImageDraw.Draw(img); mx = 140
 d.rectangle((mx - 6, 980, mx + 6, 1080), fill=(40, 44, 54, 255))
 d.ellipse((mx - 70, 1066, mx + 70, 1100), fill=(34, 38, 48, 255))
 d.rounded_rectangle((mx - 46, 820, mx + 46, 990), 46, fill=(30, 33, 41, 255), outline=(110, 118, 136, 255), width=4)
