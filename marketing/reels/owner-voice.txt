@@ -1,0 +1,16 @@
+# Reels whose male part is the owner's cloned voice (all others: female hf_alpha + male hm_omega)
+B6-How-to-Create-Student-Account
+B1-Website-Tour
+B2-How-to-Enroll-CTF-Portal
+B3-PDF-Handbook-Series
+B4-Cyber-Safety-Portal-Free-Tools
+B5-Training-Programs
+01-Cybersecurity-Fundamentals
+06-Zero-Trust
+11-MPLS-Security
+16-IDS-IPS
+21-SIEM
+26-SOC-Tools-Splunk-ELK-Wazuh-Sigma
+31-Endpoint-Detection-Response
+36-Digital-Forensics-Fundamentals
+41-Virtualization-Security

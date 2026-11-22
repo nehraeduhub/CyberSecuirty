@@ -6,6 +6,7 @@ Then the whole reel (picture, voice, music) is played SPEED times faster (owner:
 Usage: python3 -I tools/finalize.py <reels dir> <owner photo> [name ...]      env SPEED (default 1.2)"""
 import glob, json, os, re, subprocess, sys
 R, PHOTO, only = sys.argv[1], sys.argv[2], set(sys.argv[3:])
+PLAIN = os.environ.get('PLAIN') == '1'   # PLAIN=1: keep the built AI voices, no owner's voice
 SPEED = float(os.environ.get('SPEED', '1.0'))
 FIN = os.path.join(R, 'final'); os.makedirs(FIN, exist_ok=True)
 run = lambda *a: subprocess.run(a, check=True, capture_output=True, text=True)
@@ -29,6 +30,11 @@ for g in sorted(glob.glob(os.path.join(R, 'guides', '*.json'))):
 for name, W, accent in reels:
     if only and name not in only: continue
     clone, video, cover = os.path.join(R, 'clone', name + '.wav'), os.path.join(R, 'out', name, name + '.mp4'), os.path.join(R, 'out', name, name + '-thumbnail.jpg')
+    if PLAIN:      # AI voices only (female hf_alpha + male hm_omega): the built reel is final as it is
+        if not all(os.path.exists(p) for p in (video, cover)): print('skip (missing input)', name); continue
+        run('cp', video, os.path.join(FIN, name + '.mp4'))
+        run('python3', '-I', os.path.join(R, 'tools', 'thumb_brand.py'), cover, PHOTO, accent, os.path.join(FIN, name + '.jpg'))
+        print('done', name, ' AI voices'); continue
     if not all(os.path.exists(p) for p in (clone, video, cover)): print('skip (missing input)', name); continue
     up = os.path.join(W, 'clone-up.wav'); hz = f0(clone)
     run('ffmpeg', '-nostdin', '-v', 'error', '-y', '-i', clone, '-af', f'rubberband=pitch={(hz + 3) / hz:.5f}:formant=preserved:pitchq=quality', up)
