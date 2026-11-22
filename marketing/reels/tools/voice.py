@@ -15,7 +15,6 @@ from voice_qc import QC
 topics, num, work = sys.argv[1], int(sys.argv[2]), sys.argv[3]
 voice = sys.argv[4] if len(sys.argv) > 4 else 'hm_omega'
 speed = float(sys.argv[5]) if len(sys.argv) > 5 else 1.0
-if voice.startswith('hf'): voice_qc.RANGE['f0'] = (150.0, 300.0)   # female voices sit higher than hm_omega's calibrated range
 t = next(x for x in json.load(open(topics, encoding='utf-8')) if x['num'] == num)
 if 'vo' not in t: sys.exit(f'topic {num}: no voice-over script in scripts.json yet')
 d = os.environ.get('KOKORO_DIR', '.')
@@ -23,8 +22,10 @@ k = Kokoro(os.path.join(d, 'kokoro-v1.0.onnx'), os.path.join(d, 'voices-v1.0.bin
 os.makedirs(work, exist_ok=True)
 meta, segs, qclog = {}, {}, {}
 qc = QC()
+F0 = {'f': (150.0, 300.0), 'm': (95.0, 175.0)}
 for scene, text in t['vo'].items():
-    s, sr, segs[scene], qclog[scene] = render(k, text, voice, speed, t.get('voStyle', {}).get(scene, 'NORMAL'), qc)
+    v = t.get('voVoice', {}).get(scene, voice); voice_qc.RANGE['f0'] = F0['f' if v.startswith('hf') else 'm']
+    s, sr, segs[scene], qclog[scene] = render(k, text, v, speed, t.get('voStyle', {}).get(scene, 'NORMAL'), qc)
     sf.write(os.path.join(work, f'vo-{scene}.wav'), s, sr)
     meta[scene] = round(len(s) / sr, 3)
     print(scene, meta[scene], 's')

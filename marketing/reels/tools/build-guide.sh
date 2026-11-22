@@ -31,4 +31,5 @@ ffmpeg -nostdin -loglevel error -y -framerate 30 -i "$W/frames/f%05d.jpg" -i "$W
   -pix_fmt yuv420p -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart "$O/$NAME.mp4"
 node "$R/tools/render.js" "$W" "$W/frames" cover "$O/$NAME-thumbnail.jpg"
 rm -rf "$W/frames"
+GOT=1; echo "two hosts" > "$O/voices-v1"
 echo "done: $O/$NAME.mp4 (${TOTAL}s)"

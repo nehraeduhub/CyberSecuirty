@@ -67,7 +67,7 @@ data = {'topic': t, 'scenes': scenes, 'clips': clips, 'subs': subs, 'marks': mar
 json.dump(data, open(os.path.join(work, 'data.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 qclog = json.load(open(os.path.join(work, 'vo-qc.json'), encoding='utf-8')) if os.path.exists(os.path.join(work, 'vo-qc.json')) else {}
 json.dump({'voice': os.environ.get('VOICE', 'hm_omega'), 'speed': float(os.environ.get('VOICE_SPEED', '1.14')), 'total': total,
-           'clips': [{'scene': c['scene'], 'at': c['at'], 'file': f"vo-{c['scene']}.wav", 'script': t['vo'][c['scene']],
+           'clips': [{'scene': c['scene'], 'at': c['at'], 'file': f"vo-{c['scene']}.wav", 'voice': t.get('voVoice', {}).get(c['scene'], os.environ.get('VOICE', 'hm_omega')), 'script': t['vo'][c['scene']],
                       'default': t.get('voStyle', {}).get(c['scene'], 'NORMAL'), 'segs': segs[c['scene']], 'qc': qclog.get(c['scene'], [])} for c in clips]},
           open(os.path.join(work, 'voice.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 

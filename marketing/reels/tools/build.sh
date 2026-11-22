@@ -40,6 +40,6 @@ for N in "$@"; do
     -pix_fmt yuv420p -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart "$O/$NAME.mp4"
   node "$R/tools/render.js" "$W" "$W/frames" cover "$O/$NAME-thumbnail.jpg"
   rm -rf "$W/frames"
-  echo "look v1 $(date -u +%FT%TZ)" > "$O/look-v1"     # build-all.sh: reel built with the per-topic look
+  echo "look v1 $(date -u +%FT%TZ)" > "$O/look-v1"; echo "two hosts" > "$O/voices-v1"     # build-all.sh: reel built with the per-topic look
   echo "done: $O/$NAME.mp4 (${TOTAL}s)"
 done

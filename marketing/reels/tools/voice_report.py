@@ -16,6 +16,13 @@ for c in V['clips']:
     a, sr2 = sf.read(os.path.join(W, c['file']), dtype='float32'); i = int(c['at'] * sr)
     track[i:i + len(a)] += a[:len(track) - i]
 wav = os.path.join(W, 'voiceover.wav'); sf.write(wav, track[:int(total * sr)], sr)
+# one track per host (finalize.py: the male track goes through the owner's voice clone, the female track stays)
+for who, test in (('male', lambda v: not v.startswith('hf')), ('female', lambda v: v.startswith('hf'))):
+    part = np.zeros_like(track)
+    for c in V['clips']:
+        if not test(c.get('voice', V.get('voice', 'hm_omega'))): continue
+        a, _ = sf.read(os.path.join(W, c['file']), dtype='float32'); i = int(c['at'] * sr); part[i:i + len(a)] += a[:len(part) - i]
+    sf.write(os.path.join(W, f'voice-{who}.wav'), part[:int(total * sr)], sr)
 subprocess.run(['ffmpeg', '-nostdin', '-loglevel', 'error', '-y', '-i', wav, '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11',
                 '-ar', '44100', '-c:a', 'libmp3lame', '-b:a', '128k', os.path.join(OUT, f'{NAME}-voiceover.mp3')], check=True)
 

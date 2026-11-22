@@ -6,6 +6,7 @@ import hashlib, json, math, os, re, sys
 import numpy as np, soundfile as sf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from speak import render, caption_spans
+import voice_qc
 from voice_qc import QC
 
 G = json.load(open(sys.argv[1], encoding='utf-8')); WORK, OUT = sys.argv[2], sys.argv[3]
@@ -13,7 +14,7 @@ os.makedirs(WORK, exist_ok=True); os.makedirs(OUT, exist_ok=True)
 VOICE, SPEED = G.get('voice', 'hm_omega'), G.get('speed', 1.0)
 _k, _qc = None, QC()
 DEFAULT = {'intro': 'CONFIDENT', 'cta': 'EXCITED', 'ref': 'POLITE'}        # steps: CALM (explaining)
-def tts(text, default):
+def tts(text, default, VOICE=VOICE):
     """Voice line with directions -> (wav file, length, phrase timings, QC log); cached by text + style."""
     global _k
     key = hashlib.sha1(f'v3|{VOICE}|{SPEED}|{default}|{text}'.encode()).hexdigest()[:12]
@@ -22,6 +23,7 @@ def tts(text, default):
         if _k is None:
             from kokoro_onnx import Kokoro
             d = os.environ.get('KOKORO_DIR', '.'); _k = Kokoro(os.path.join(d, 'kokoro-v1.0.onnx'), os.path.join(d, 'voices-v1.0.bin'))
+        voice_qc.RANGE['f0'] = (150.0, 300.0) if VOICE.startswith('hf') else (95.0, 175.0)
         s, sr, segs, log = render(_k, text, VOICE, SPEED, default, _qc)
         sf.write(f, s, sr); json.dump({'segs': segs, 'qc': log}, open(j, 'w', encoding='utf-8'), ensure_ascii=False)
     meta = json.load(open(j, encoding='utf-8'))
@@ -29,12 +31,16 @@ def tts(text, default):
 
 scenes, clips, cur = {}, [], 0.0
 items = [('intro', G['intro'], .35, 4)] + [(f's{i + 1}', s, .25, 3.8) for i, s in enumerate(G['steps'])] + [('cta', G['cta'], .25, 4.5)] + ([('ref', G['ref'], .25, 4.5)] if G.get('ref') else [])
-for name, it, lead, minimum in items:
-    f, dur, segs, qc = tts(it['vo'], DEFAULT.get(name, 'CALM'))
+MIX = G.get('mix', True)      # two hosts: female hf_alpha / male hm_omega (owner's cloned voice later), alternating
+def host(i):
+    return VOICE if not MIX else ('hf_alpha', 'hm_omega')[(i + len(G['name'])) % 2]
+for idx, (name, it, lead, minimum) in enumerate(items):
+    hv = host(0 if name in ('intro', 'cta') else idx if name.startswith('s') else 1)
+    f, dur, segs, qc = tts(it['vo'], DEFAULT.get(name, 'CALM'), hv)
     d = max(minimum, lead + dur + .3)
     scenes[name] = [round(cur, 3), round(cur + d, 3)]
     clips.append({'scene': name, 'at': round(cur + lead, 3), 'dur': round(dur, 3), 'file': os.path.basename(f), 'sub': it['sub'], 'segs': segs, 'qc': qc,
-                  'script': it['vo'], 'default': DEFAULT.get(name, 'CALM')})
+                  'script': it['vo'], 'default': DEFAULT.get(name, 'CALM'), 'voice': hv})
     cur += d
 scenes['end'] = [round(cur, 3), round(cur + 3.2, 3)]
 total = round(cur + 3.2, 2)

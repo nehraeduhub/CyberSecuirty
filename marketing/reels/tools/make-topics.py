@@ -129,6 +129,10 @@ for i, t in enumerate(out):
            'book': BOOK[bv][1].format(t=t['title']), 'ctf': CTF[ctv][1].format(N=t['num'], K=t['tasks']), 'cta': CTA[cav][1], 'ref': rs}
     t['vo'] = {k: vo[k] for k in t['order']}; t['sub'] = {k: sub[k] for k in t['order']}
     t['voStyle'] = DEFAULT_STYLE
+    # two hosts: female (Kokoro hf_alpha) and male (hm_omega, later converted to the owner's cloned voice);
+    # who takes which scene swaps on every other reel
+    fem = {'hook', 'fact', 'cta'} if t['num'] % 2 else {'learn', 'book', 'ctf', 'ref'}
+    t['voVoice'] = {k: ('hf_alpha' if k in fem else 'hm_omega') for k in t['order']}
 
 json.dump(out, open(os.path.join(REELS, 'topics.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(out), 'topics')
