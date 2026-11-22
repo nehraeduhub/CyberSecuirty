@@ -1,0 +1,175 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Bebas;src:url(bebas-neue-latin-400-normal.woff2)}
+@font-face{font-family:Pop;font-weight:600;src:url(poppins-latin-600-normal.woff2)}
+@font-face{font-family:Pop;font-weight:800;src:url(poppins-latin-800-normal.woff2)}
+@font-face{font-family:Grot;font-weight:700;src:url(space-grotesk-latin-700-normal.woff2)}
+@font-face{font-family:Orb;font-weight:900;src:url(orbitron-latin-900-normal.woff2)}
+:root{--navy:#071a3d;--navy2:#0c2b63;--org:#ffad1f;--grn:#22c55e;--red:#ff3b4e;--cy:#38d6ff;--ink:#e8f0ff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy);color:var(--ink);font-family:Pop,sans-serif}
+#bg{position:absolute;inset:0}
+.sc{position:absolute;inset:0;opacity:0}
+.head{position:absolute;left:70px;right:70px;top:300px;text-align:center;font-family:Bebas;font-size:118px;line-height:.95;letter-spacing:2px;text-shadow:0 6px 30px #0009}
+.head b{color:var(--org);font-weight:400}.head i{font-style:normal;color:var(--red)}.head u{text-decoration:none;color:var(--grn)}
+.card{position:absolute;background:linear-gradient(160deg,#10306a,#0a1f48);border:2px solid #2f5fb8;border-radius:28px;box-shadow:0 20px 60px #0008}
+.mono{font-family:Grot;letter-spacing:.5px}
+#sub{position:absolute;left:80px;right:80px;top:1215px;text-align:center;font:600 46px/1.25 Pop;color:#fff;text-shadow:0 3px 12px #000}
+#sub span{background:#000a;padding:6px 18px;border-radius:14px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+#bar{position:absolute;left:0;right:0;top:1420px;height:74px;display:flex;align-items:center;justify-content:center;gap:16px;
+  background:linear-gradient(90deg,#0000,#000b 18%,#000b 82%,#0000);font:600 33px Pop;color:#dfe8ff;letter-spacing:.3px}
+#bar img{height:46px}#bar b{color:var(--org)}
+#prog{position:absolute;left:0;top:0;height:8px;background:linear-gradient(90deg,var(--org),var(--grn))}
+.chip{position:absolute;padding:22px 40px;border-radius:999px;font:800 62px Pop;letter-spacing:1px}
+.row{display:flex;align-items:center;gap:22px}
+.tick{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--grn);color:#062;font:800 38px Pop}
+.badge{display:inline-block;padding:14px 26px;border-radius:16px;border:2px solid #4f7fd6;background:#0d2a5e;font:800 40px Grot;margin:10px}
+</style></head><body>
+<canvas id="bg" width="1080" height="1920"></canvas>
+<div id="prog"></div>
+<div id="scenes"></div>
+<div id="sub"></div>
+<div id="bar"><img src="logo-t.png"><span id="byline"></span></div>
+<script>
+const W=1080,H=1920,cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),io=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2,
+  ob=x=>{const c=1.70158;x=cl(x)-1;return 1+(c+1)*x*x*x+c*x*x},oc=x=>1-Math.pow(1-cl(x),3),P=(t,a,b)=>cl((t-a)/(b-a));
+let T,SUBS,S={};const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+function rnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+
+/* ---------- scene builders: html + animate(el, lt = seconds since the scene's voice started, d = voice length) ---------- */
+const SC={
+hook:{html:`<div class="head">AAPKI WEBSITE<br><b>SAFE</b> HAI?</div>
+  <div class="card" style="left:190px;top:620px;width:700px;height:480px;overflow:hidden">
+   <div style="height:64px;background:#0a1a3a;display:flex;align-items:center;gap:12px;padding:0 24px"><i style="width:18px;height:18px;border-radius:50%;background:#ff5f57"></i><i style="width:18px;height:18px;border-radius:50%;background:#febc2e"></i><i style="width:18px;height:18px;border-radius:50%;background:#28c840"></i><span class="mono" style="margin-left:20px;font-size:28px;color:#9fb6e6">yourwebsite.com</span></div>
+   <div style="padding:34px"><div style="height:34px;width:60%;background:#2a4c8f;border-radius:8px"></div><div style="height:22px;width:85%;background:#1d3b75;border-radius:8px;margin-top:22px"></div><div style="height:22px;width:70%;background:#1d3b75;border-radius:8px;margin-top:14px"></div><div style="display:flex;gap:18px;margin-top:30px"><div style="flex:1;height:150px;background:#16336b;border-radius:14px"></div><div style="flex:1;height:150px;background:#16336b;border-radius:14px"></div></div></div>
+   <div class="scan" style="position:absolute;left:0;right:0;height:120px;background:linear-gradient(#ff3b4e00,#ff3b4e55,#ff3b4e00)"></div></div>
+  <div class="hk" style="position:absolute;left:0;right:0;top:0;bottom:0"></div>`,
+ anim(e,t,d){$('.head',e).style.transform=`scale(${.7+.3*ob(t/.5)}) translateX(${t<.6?Math.sin(t*90)*10*(1-t/.6):0}px)`;
+  $('.scan',e).style.top=(64+((t*260)%480))+'px';
+  const hk=$('.hk',e);if(!hk.dataset.b){hk.dataset.b=1;hk.innerHTML=[...Array(7)].map((_,i)=>`<div class="mono" style="position:absolute;font-size:30px;color:#ff6b78;white-space:nowrap"></div>`).join('')}
+  const ips=['GET /admin','GET /.env','POST /login','GET /backup.zip','GET /wp-config','?id=1\' OR 1=1','GET /.git/'];
+  $$('div',hk).forEach((x,i)=>{const a=P(t,.4+i*.45,.8+i*.45);x.textContent='⚠ '+ips[i];x.style.opacity=a*(1-P(t,2.4+i*.45,2.9+i*.45));
+   x.style.left=(i%2?560:90)+'px';x.style.top=(1110-i*70+(1-a)*30)+'px'})}},
+threats:{html:`<div class="head">CHHUPE HUE <i>KHATRE</i></div>
+  <div class="chip t0" style="left:120px;top:640px;background:#ff3b4e;color:#fff">SQL INJECTION</div>
+  <div class="chip t1" style="left:240px;top:800px;background:#ff7a1a;color:#fff">XSS</div>
+  <div class="chip t2" style="left:420px;top:800px;background:#c026d3;color:#fff">RCE</div>
+  <div class="card mono" style="left:120px;top:960px;width:840px;height:200px;padding:26px 34px;font-size:32px;line-height:1.5;color:#ffb3ba">
+   <div class="c0">' OR '1'='1' --</div><div class="c1">&lt;script&gt;steal(cookie)&lt;/script&gt;</div><div class="c2">; cat /etc/passwd</div></div>`,
+ anim(e,t,d){[0,1,2].forEach(i=>{const a=ob(P(t,.15+i*.9,.55+i*.9)),c=$('.t'+i,e);c.style.opacity=cl(a*2);c.style.transform=`scale(${.4+.6*a}) rotate(${(1-a)*-12}deg)`;
+   const x=$('.c'+i,e);if(!x.dataset.s)x.dataset.s=x.textContent;const n=Math.floor(P(t,.3+i*.9,1+i*.9)*x.dataset.s.length);x.textContent=x.dataset.s.slice(0,n)||'\u00a0'});
+  $('.head',e).style.transform=`translateX(${Math.sin(t*40)*(t<.5?8:0)}px)`}},
+manual:{html:`<div class="head">MANUAL TESTING<br><i>SLOW</i> AUR <i>MEHENGI</i></div>
+  <div class="card" style="left:140px;top:660px;width:800px;height:300px;padding:40px">
+   <div style="font:600 36px Pop;color:#9fb6e6">Manual pentest progress</div>
+   <div style="height:46px;border-radius:23px;background:#0a1a3a;margin-top:30px;overflow:hidden"><div class="pb" style="height:100%;background:#ff7a1a"></div></div>
+   <div class="mono pt" style="font-size:40px;margin-top:26px;color:#ffcf8a"></div></div>
+  <div class="st s0 chip" style="left:120px;top:1030px;border:5px solid var(--red);color:var(--red)">SLOW</div>
+  <div class="st s1 chip" style="left:395px;top:1030px;border:5px solid var(--red);color:var(--red)">COSTLY</div>
+  <div class="st s2 chip" style="left:715px;top:1030px;border:5px solid var(--red);color:var(--red)">SKIPPED</div>`,
+ anim(e,t,d){const p=Math.min(.12,t*.03);$('.pb',e).style.width=(p*100)+'%';$('.pt',e).textContent=`Day ${1+Math.floor(t*2.2)} … ${Math.round(p*100)}% done`;
+  [0,1,2].forEach(i=>{const a=ob(P(t,d*.18+i*d*.25,d*.18+i*d*.25+.35)),s=$('.s'+i,e);s.style.opacity=cl(a*2);s.style.transform=`scale(${2-a}) rotate(-8deg)`})}},
+turn:{html:`<div class="flash" style="position:absolute;inset:0;background:#fff"></div>
+  <div style="position:absolute;left:0;right:0;top:640px;text-align:center;font:400 190px/0.95 Bebas;letter-spacing:4px" class="big">AB AISA<br><u style="text-decoration:none;color:var(--grn)">NAHI HOGA.</u></div>`,
+ anim(e,t,d){$('.flash',e).style.opacity=1-P(t,0,.35);const a=ob(P(t,.05,.45));$('.big',e).style.transform=`scale(${1.6-.6*a})`;$('.big',e).style.opacity=a}},
+intro:{html:`<div style="position:absolute;left:0;right:0;top:360px;text-align:center"><img class="lg" src="logo-t.png" style="height:330px"></div>
+  <div class="ti" style="position:absolute;left:0;right:0;top:740px;text-align:center;font:900 92px Orb;letter-spacing:4px">TECH GUARDIANS</div>
+  <div class="tv" style="position:absolute;left:0;right:0;top:860px;text-align:center"><span style="display:inline-block;padding:16px 46px;border-radius:18px;background:var(--org);color:#1a1200;font:900 84px Orb;letter-spacing:10px">VAPT</span></div>
+  <div class="tl" style="position:absolute;left:0;right:0;top:1030px;text-align:center;font:600 50px Pop;color:#bcd0f5">Automated VAPT · minutes mein scan</div>
+  <div class="ring" style="position:absolute;left:340px;top:330px;width:400px;height:400px;border-radius:50%;border:6px solid var(--cy)"></div>`,
+ anim(e,t,d){const a=ob(P(t,0,.6));$('.lg',e).style.transform=`scale(${.3+.7*a}) rotate(${(1-a)*-25}deg)`;$('.lg',e).style.opacity=cl(a*2);
+  const r=P(t,.2,1.2);$('.ring',e).style.transform=`scale(${.8+r*1.1})`;$('.ring',e).style.opacity=1-r;
+  [['.ti',.4],['.tv',.8],['.tl',1.4]].forEach(([s,a0])=>{const b=oc(P(t,a0,a0+.5));$(s,e).style.opacity=b;$(s,e).style.transform=`translateY(${(1-b)*60}px)`})}},
+plug:{html:`<div class="head">PLUG KARO. SCAN KARO.<br><b>REPORT LO.</b></div>
+  <div class="card" style="left:110px;top:640px;width:860px;height:330px;padding:44px">
+   <div style="font:600 34px Pop;color:#9fb6e6">Target URL</div>
+   <div class="row" style="margin-top:22px"><div class="mono url" style="flex:1;height:96px;border-radius:18px;background:#06142f;border:3px solid #3d6cc4;padding:0 24px;display:flex;align-items:center;font-size:34px;white-space:nowrap;overflow:hidden"></div>
+   <div class="go" style="height:96px;padding:0 34px;white-space:nowrap;border-radius:18px;background:var(--grn);color:#03260f;font:800 44px Pop;display:flex;align-items:center">START ▶</div></div>
+   <div class="mono stt" style="margin-top:30px;font-size:34px;color:var(--grn)"></div></div>
+  <div class="usb" style="position:absolute;left:330px;top:1020px;width:420px;height:150px">
+   <div style="position:absolute;left:0;top:25px;width:300px;height:100px;border-radius:22px;background:linear-gradient(90deg,#1f4fa8,#2d6fe0)"></div>
+   <div style="position:absolute;left:300px;top:45px;width:100px;height:60px;border-radius:6px;background:#c9d3e6"></div>
+   <div style="position:absolute;left:40px;top:50px;font:800 40px Pop;color:#fff">PORTABLE</div></div>`,
+ anim(e,t,d){const u='https://yourwebsite.com',n=Math.floor(P(t,.2,1.6)*u.length);$('.url',e).textContent=u.slice(0,n)+(t%0.6<.3&&n<u.length?'|':'');
+  const pr=P(t,1.8,2.0);$('.go',e).style.transform=`scale(${1-.12*Math.sin(pr*Math.PI)})`;
+  $('.stt',e).textContent=t>2.0?'✓ Scan started — no setup, no database':'';const a=ob(P(t,d*.6,d*.6+.5));$('.usb',e).style.opacity=cl(a*2);$('.usb',e).style.transform=`translateX(${(1-a)*-500}px)`}},
+vapt:{html:`<div class="head"><b>VA + PT</b><br>FULLY AUTOMATIC</div>
+  <div class="card" style="left:110px;top:610px;width:860px;height:560px;padding:40px 46px">
+   <div class="row" style="justify-content:space-between"><span style="font:800 40px Pop">Scan progress</span><span class="mono pc" style="font-size:44px;color:var(--cy)"></span></div>
+   <div style="height:26px;border-radius:13px;background:#06142f;margin:20px 0 26px;overflow:hidden"><div class="pb" style="height:100%;background:linear-gradient(90deg,var(--cy),var(--grn))"></div></div>
+   <div class="ls"></div></div>`,
+ anim(e,t,d){const L=['Security headers','TLS / SSL config','Exposed files','Open ports & services','Cookies & sessions','Directory listing'];
+  const ls=$('.ls',e);if(!ls.dataset.b){ls.dataset.b=1;ls.innerHTML=L.map(x=>`<div class="row" style="height:64px;font:600 38px Pop"><span class="tk" style="width:58px"></span>${x}</div>`).join('')}
+  const p=P(t,0,d*.95);$('.pb',e).style.width=(p*100)+'%';$('.pc',e).textContent=Math.round(p*100)+'%';
+  $$('.tk',ls).forEach((k,i)=>{const on=p>(i+1)/(L.length+.5);k.innerHTML=on?'<span class="tick" style="width:46px;height:46px;font-size:30px">✓</span>':'<span class="mono" style="color:#6f8cc4">…</span>';k.parentNode.style.opacity=on?1:.55})}},
+confirm:{html:`<div class="head"><u>5</u> VULNERABILITIES<br><u>CONFIRMED ✓</u></div>
+  <div class="card ls" style="left:90px;top:610px;width:900px;height:570px;padding:34px 40px"></div>`,
+ anim(e,t,d){const F=[['SQL Injection','CRITICAL','#ff3b4e'],['Stored XSS','HIGH','#ff7a1a'],['Command Injection','CRITICAL','#ff3b4e'],['Open Redirect','MEDIUM','#f5c400'],['Missing CSP','LOW','#38d6ff']];
+  const ls=$('.ls',e);if(!ls.dataset.b){ls.dataset.b=1;ls.innerHTML=F.map(([n,s,c])=>`<div class="row f" style="height:100px;border-bottom:2px solid #24467f"><span style="width:190px;text-align:center;padding:8px 0;border-radius:12px;background:${c};color:#111;font:800 28px Pop">${s}</span><span style="flex:1;font:600 38px Pop;white-space:nowrap">${n}</span><span class="cf" style="font:800 30px Pop;color:var(--grn);border:3px solid var(--grn);border-radius:12px;padding:6px 14px">PROOF ✓</span></div>`).join('')}
+  $$('.f',ls).forEach((r,i)=>{const a=oc(P(t,.3+i*d*.15,.7+i*d*.15));r.style.opacity=a;r.style.transform=`translateX(${(1-a)*120}px)`;
+   const c=ob(P(t,.75+i*d*.15,1.1+i*d*.15));$('.cf',r).style.transform=`scale(${c})`});
+  const n=$('.head u',e);n.textContent=Math.max(1,Math.min(5,1+Math.floor(P(t,.7,.75+4*d*.15)*4.999)))}},
+report:{html:`<div class="head">PROFESSIONAL<br><b>PDF REPORT</b></div>
+  <div class="pg p2 card" style="left:330px;top:640px;width:420px;height:560px;background:#e9eef8"></div>
+  <div class="pg p1 card" style="left:330px;top:640px;width:420px;height:560px;background:#f3f6fc"></div>
+  <div class="pg p0 card" style="left:330px;top:640px;width:420px;height:560px;background:#fff;color:#0b1e44;padding:34px">
+   <div class="row" style="gap:14px"><img src="logo-t.png" style="height:70px"><div style="font:800 28px Pop;line-height:1.1">TECH GUARDIANS<br><span style="color:#d98500">VAPT REPORT</span></div></div>
+   <div style="font:800 30px Pop;margin-top:26px">Executive Summary</div>
+   <div style="display:flex;gap:10px;margin-top:16px"><div style="flex:2;height:20px;background:#ff3b4e;border-radius:6px"></div><div style="flex:3;height:20px;background:#ff7a1a;border-radius:6px"></div><div style="flex:2;height:20px;background:#f5c400;border-radius:6px"></div><div style="flex:1;height:20px;background:#38d6ff;border-radius:6px"></div></div>
+   ${[90,70,80,60,85,50,75].map(w=>`<div style="height:14px;width:${w}%;background:#d5dceb;border-radius:6px;margin-top:20px"></div>`).join('')}
+   <div style="margin-top:28px;font:800 26px Pop;color:#1a8f45">✓ Fix plan included</div></div>
+  <div class="bd" style="position:absolute;left:40px;right:40px;top:1060px;text-align:center"></div>`,
+ anim(e,t,d){const a=ob(P(t,0,.6));$('.p0',e).style.transform=`translateY(${(1-a)*400}px) rotate(${(1-a)*8}deg)`;
+  const f=oc(P(t,.6,1.2));$('.p1',e).style.transform=`rotate(${-9*f}deg) translateX(${-150*f}px)`;$('.p2',e).style.transform=`rotate(${9*f}deg) translateX(${150*f}px)`;
+  const B=['OWASP','CVSS','CWE','CERT-In','RBI','DPDP'],bd=$('.bd',e);if(!bd.dataset.b){bd.dataset.b=1;bd.innerHTML=B.map(x=>`<span class="badge">${x}</span>`).join('')}
+  $$('.badge',bd).forEach((b,i)=>{const c=ob(P(t,d*.3+i*d*.08,d*.3+i*d*.08+.35));b.style.transform=`scale(${c})`;b.style.opacity=cl(c*2)})}},
+sell:{html:`<div class="head">READY TO <b>SELL</b></div>
+  ${['💾|PORTABLE|Pendrive se chale','🎨|REBRANDABLE|Apna logo, apna naam','💼|SELLABLE|Clients ko do'].map((x,i)=>{const [ic,a,b]=x.split('|');return `<div class="card tl t${i}" style="left:110px;top:${600+i*200}px;width:860px;height:170px;display:flex;align-items:center;gap:34px;padding:0 44px"><span style="font-size:84px">${ic}</span><div><div style="font:400 74px Bebas;letter-spacing:2px;color:var(--org)">${a}</div><div style="font:600 36px Pop;color:#bcd0f5">${b}</div></div></div>`}).join('')}`,
+ anim(e,t,d){[0,1,2].forEach(i=>{const a=ob(P(t,.1+i*d/3.2,.5+i*d/3.2)),c=$('.t'+i,e);c.style.opacity=cl(a*2);c.style.transform=`translateX(${(1-a)*(i%2?600:-600)}px)`})}},
+who:{html:`<div class="head">KISKE LIYE?</div>
+  ${['🏢|AGENCY','🧑‍💻|FREELANCER','🏪|BUSINESS'].map((x,i)=>{const [ic,a]=x.split('|');return `<div class="card w w${i}" style="left:${70+i*320}px;top:620px;width:300px;height:330px;text-align:center;padding-top:50px"><div style="font-size:120px">${ic}</div><div style="font:400 62px Bebas;letter-spacing:2px;margin-top:18px">${a}</div></div>`}).join('')}
+  <div class="cmp" style="position:absolute;left:90px;right:90px;top:1010px;display:flex;align-items:center;justify-content:center;gap:30px;font:400 92px Bebas;letter-spacing:2px">
+   <span class="dn" style="color:#ff8a95">DINO</span><span>→</span><span class="mn" style="color:var(--grn)">MINUTES</span></div>`,
+ anim(e,t,d){[0,1,2].forEach(i=>{const a=ob(P(t,.1+i*.35,.5+i*.35)),c=$('.w'+i,e);c.style.opacity=cl(a*2);c.style.transform=`translateY(${(1-a)*200}px)`});
+  const s=P(t,d*.55,d*.75);$('.dn',e).style.textDecoration=s>.5?'line-through':'none';$('.cmp',e).style.opacity=oc(P(t,d*.45,d*.6));$('.mn',e).style.transform=`scale(${1+.25*Math.sin(Math.PI*s)})`}},
+triad:{html:`<div style="position:absolute;left:0;right:0;top:520px;text-align:center;font:400 200px/1.05 Bebas;letter-spacing:6px">
+  <div class="w0" style="color:var(--grn)">SECURE.</div><div class="w1" style="color:#fff">SIMPLE.</div><div class="w2" style="color:var(--org)">PROFESSIONAL.</div></div>`,
+ anim(e,t,d){[0,1,2].forEach(i=>{const a=ob(P(t,i*d/3,i*d/3+.35)),x=$('.w'+i,e);x.style.opacity=cl(a*2);x.style.transform=`scale(${1.8-.8*a})`})}},
+cta:{html:`<div style="position:absolute;left:0;right:0;top:330px;text-align:center"><img class="lg" src="logo-t.png" style="height:250px"></div>
+  <div class="c1" style="position:absolute;left:0;right:0;top:620px;text-align:center;font:900 58px Orb;letter-spacing:2px;white-space:nowrap">TECH GUARDIANS <span style="color:var(--org)">VAPT</span></div>
+  <div class="c2" style="position:absolute;left:60px;right:60px;top:740px;text-align:center;font:400 128px/.95 Bebas;letter-spacing:2px">AAJ HI WEBSITE<br><u style="text-decoration:none;color:var(--grn)">SECURE KARO</u></div>
+  <div class="c3" style="position:absolute;left:0;right:0;top:1010px;text-align:center"><span style="display:inline-block;padding:26px 60px;border-radius:999px;background:var(--org);color:#1a1200;font:800 54px Pop;box-shadow:0 0 0 0 #ffad1f88" class="btn">DM karo "SCAN" 👉</span></div>
+  <div class="c4" style="position:absolute;left:0;right:0;top:1140px;text-align:center;font:600 44px Pop;color:#bcd0f5">techguardians.in</div>`,
+ anim(e,t,d){const a=ob(P(t,0,.5));$('.lg',e).style.transform=`scale(${a})`;[['.c1',.3],['.c2',.6],['.c3',1.0],['.c4',1.3]].forEach(([s,a0])=>{const b=oc(P(t,a0,a0+.45));$(s,e).style.opacity=b;$(s,e).style.transform=`translateY(${(1-b)*50}px)`});
+  const pu=(t%1.2)/1.2;$('.btn',e).style.boxShadow=`0 0 0 ${pu*40}px rgba(255,173,31,${.5*(1-pu)})`}}
+};
+
+/* ---------- background: moving grid, data particles, scene-tinted glow ---------- */
+const bg=document.getElementById('bg'),g=bg.getContext('2d');
+const TINT={hook:'#ff3b4e',threats:'#ff3b4e',manual:'#ff7a1a',turn:'#22c55e',intro:'#38d6ff',plug:'#22c55e',vapt:'#38d6ff',confirm:'#22c55e',report:'#ffad1f',sell:'#ffad1f',who:'#38d6ff',triad:'#22c55e',cta:'#ffad1f'};
+function drawBg(t,id){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#06142f');gr.addColorStop(1,'#0b2858');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  const rg=g.createRadialGradient(540,860,50,540,860,900);rg.addColorStop(0,(TINT[id]||'#38d6ff')+'40');rg.addColorStop(1,'#0000');g.fillStyle=rg;g.fillRect(0,0,W,H);
+  g.strokeStyle='#38d6ff14';g.lineWidth=2;const o=(t*40)%90;for(let x=-90+o;x<W+90;x+=90){g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke()}for(let y=-90+o;y<H;y+=90){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}
+  g.font='700 26px Grot';for(let i=0;i<34;i++){const x=rnd(i)*W,sp=40+rnd(i+50)*90,y=(rnd(i+9)*H+t*sp)%H;g.fillStyle=`rgba(120,200,255,${.08+.15*rnd(i+3)})`;g.fillText(rnd(i+7)>.5?'1':'0',x,y)}}
+
+function ready(){
+  document.getElementById('byline').innerHTML=T.byline.replace(/(RJ Nehra)/,'<b>$1</b>');
+  const box=document.getElementById('scenes');
+  T.scenes.forEach((s,i)=>{const d=document.createElement('div');d.className='sc';d.id='s'+i;d.innerHTML=SC[s.id].html;box.appendChild(d);
+    const words=(SUBS[s.id]||'').split(/\s+/),ch=[];let cur=[];for(const w of words){cur.push(w);if(cur.join(' ').length>26||/[.,—…?]$/.test(w)){ch.push(cur.join(' '));cur=[]}}if(cur.length)ch.push(cur.join(' '));
+    const tot=ch.reduce((a,c)=>a+c.length,0);let acc=0;s.chunks=ch.map(c=>{const a=s.start+(s.end-s.start)*acc/tot;acc+=c.length;return [a,s.start+(s.end-s.start)*acc/tot,c]})});
+}
+function render(t){
+  let cur=0;T.scenes.forEach((s,i)=>{if(t>=s.start-.25)cur=i});
+  T.scenes.forEach((s,i)=>{const el=document.getElementById('s'+i);const st=i?s.start-.25:0,en=s.until-.25;
+    if(t<st-.01||t>en+.3){el.style.opacity=0;el.style.display='none';return}el.style.display='block';
+    const a=i?io(P(t,st,st+.3)):1,b=i==T.scenes.length-1?1:1-io(P(t,en,en+.3));el.style.opacity=Math.min(a,b);
+    el.style.transform=`scale(${1+.04*(1-a)})`;SC[s.id].anim(el,Math.max(0,t-s.start),s.end-s.start)});
+  const sc=T.scenes[cur];drawBg(t,sc.id);
+  const c=(sc.chunks||[]).find(c=>t>=c[0]-.05&&t<c[1]+.15);document.getElementById('sub').innerHTML=c&&sc.id!=='turn'&&sc.id!=='triad'?`<span>${c[2]}</span>`:'';
+  document.getElementById('prog').style.width=(t/T.total*100)+'%';
+}
+function renderCover(){render(T.scenes[4].start+2.2)}
+window.ready=ready;window.render=render;window.renderCover=renderCover;
+</script></body></html>

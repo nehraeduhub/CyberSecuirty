@@ -1,0 +1,97 @@
+{
+ "_note": "Tech Guardians VAPT 60-second reel. One entry per scene: voice (hf_alpha female / hm_omega male), voice line in Devanagari with direction tags (tools of marketing/reels/tools/speak.py), on-screen caption (Roman Hinglish), scene visual id.",
+ "byline": "Made by RJ Nehra · Master in AI Cyber Security",
+ "scenes": [
+  {
+   "id": "hook",
+   "voice": "hm_omega",
+   "style": "SERIOUS",
+   "cap": "Aapki website SAFE hai?",
+   "vo": "अभी इस वक़्त, हैकर्स आपकी वेबसाइट स्कैन कर रहे हैं। [SHORT PAUSE] बस एक कमज़ोरी ढूँढने के लिए।"
+  },
+  {
+   "id": "threats",
+   "voice": "hf_alpha",
+   "style": "WARNING",
+   "cap": "SQLi · XSS · RCE — chhupe hue khatre",
+   "vo": "एसक्यूएल इंजेक्शन, एक्सएसएस, रिमोट कोड एक्ज़ीक्यूशन। ज़्यादातर वेबसाइट्स को पता भी नहीं चलता।"
+  },
+  {
+   "id": "manual",
+   "voice": "hm_omega",
+   "style": "SERIOUS",
+   "cap": "Manual testing slow aur mehengi",
+   "vo": "मैनुअल टेस्टिंग स्लो है, महँगी है, इसलिए लोग इसे स्किप कर देते हैं।"
+  },
+  {
+   "id": "turn",
+   "voice": "hf_alpha",
+   "style": "CONFIDENT",
+   "cap": "Ab aisa nahi hoga.",
+   "vo": "[LOUD] अब ऐसा नहीं होगा।"
+  },
+  {
+   "id": "intro",
+   "voice": "hm_omega",
+   "style": "EXCITED",
+   "cap": "TECH GUARDIANS — Automated VAPT",
+   "vo": "मिलिए टेक गार्डियन्स वीएपीटी से। [CONFIDENT] मिनटों में पूरी वेबसाइट का स्कैन।"
+  },
+  {
+   "id": "plug",
+   "voice": "hf_alpha",
+   "style": "NORMAL",
+   "cap": "Plug karo. Scan karo. Report lo.",
+   "vo": "बस यूआरएल डालो, और स्टार्ट दबाओ। ना सेटअप, ना डेटाबेस। [EXCITED] पेनड्राइव से भी चलता है।"
+  },
+  {
+   "id": "vapt",
+   "voice": "hm_omega",
+   "style": "CONFIDENT",
+   "cap": "VA + PT — fully automatic",
+   "vo": "अपने आप पूरा वल्नरेबिलिटी असेसमेंट, और पेनिट्रेशन टेस्ट। हेडर्स, टीएलएस, एक्सपोज़्ड फ़ाइल्स, सब चेक।"
+  },
+  {
+   "id": "confirm",
+   "voice": "hf_alpha",
+   "style": "EMPHASIZE",
+   "cap": "5 vulnerabilities CONFIRMED ✓",
+   "vo": "और असली खामियों को, [CONFIDENT] प्रूफ़ के साथ कन्फ़र्म करता है।"
+  },
+  {
+   "id": "report",
+   "voice": "hm_omega",
+   "style": "CONFIDENT",
+   "cap": "Professional PDF report · OWASP · CVSS · CERT-In · DPDP",
+   "vo": "फिर मिलती है प्रोफ़ेशनल पीडीएफ़ रिपोर्ट। ओवास्प, सीवीएसएस, सर्ट इन और डीपीडीपी के मुताबिक, फ़िक्स प्लान के साथ।"
+  },
+  {
+   "id": "sell",
+   "voice": "hf_alpha",
+   "style": "EXCITED",
+   "cap": "Portable · Rebrandable · Sellable",
+   "vo": "पोर्टेबल, रीब्रैंडेबल, और बेचने के लिए तैयार।"
+  },
+  {
+   "id": "who",
+   "voice": "hm_omega",
+   "style": "NORMAL",
+   "cap": "Agency · Freelancer · Business",
+   "vo": "एजेंसी हो, फ़्रीलांसर हो या बिज़नेस, दिनों का काम, अब मिनटों में।"
+  },
+  {
+   "id": "triad",
+   "voice": "hf_alpha",
+   "style": "CONFIDENT",
+   "cap": "Secure. Simple. Professional.",
+   "vo": "सिक्योर। [SHORT PAUSE] सिंपल। [SHORT PAUSE] प्रोफ़ेशनल।"
+  },
+  {
+   "id": "cta",
+   "voice": "hm_omega",
+   "style": "EXCITED",
+   "cap": "AAJ HI WEBSITE SECURE KARO",
+   "vo": "टेक गार्डियन्स वीएपीटी। आज ही अपनी वेबसाइट स्कैन करो।"
+  }
+ ]
+}

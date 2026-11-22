@@ -1,0 +1,137 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Bebas;src:url(bebas-neue-latin-400-normal.woff2)}
+@font-face{font-family:Pop;font-weight:600;src:url(poppins-latin-600-normal.woff2)}
+@font-face{font-family:Pop;font-weight:800;src:url(poppins-latin-800-normal.woff2)}
+@font-face{font-family:Grot;font-weight:700;src:url(space-grotesk-latin-700-normal.woff2)}
+@font-face{font-family:Orb;font-weight:900;src:url(orbitron-latin-900-normal.woff2)}
+:root{--org:#ffad1f;--grn:#22c55e;--red:#ff3b4e;--cy:#38d6ff;--ink:#e8f0ff;--mut:#b4c6ea}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#06142f;color:var(--ink);font-family:Pop,sans-serif;overflow:hidden}
+#a{position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 40%,#16408a 0%,#0a2350 45%,#06142f 100%)}
+#a:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#38d6ff12 2px,transparent 2px),linear-gradient(90deg,#38d6ff12 2px,transparent 2px);background-size:64px 64px}
+.abs{position:absolute}
+.bebas{font-family:Bebas;font-weight:400;letter-spacing:2px;line-height:.92}
+.orb{font-family:Orb;font-weight:900}
+.o{color:var(--org)}.g{color:var(--grn)}.r{color:var(--red)}.c{color:var(--cy)}
+.card{background:linear-gradient(160deg,#12346f,#0a1f48);border:2px solid #2f5fb8;border-radius:24px;box-shadow:0 24px 70px #000a}
+.pill{display:inline-block;border-radius:999px;font-weight:800}
+.cta{background:var(--org);color:#1a1200;font-weight:800;border-radius:999px;display:inline-block;box-shadow:0 10px 40px #ffad1f55}
+.badge{display:inline-block;border:2px solid #4f7fd6;background:#0d2a5e;border-radius:12px;font-family:Grot;font-weight:700}
+.by{display:flex;align-items:center;gap:.5em;color:#dfe8ff;font-weight:600}.by b{color:var(--org)}
+.tick{display:inline-grid;place-items:center;border-radius:50%;background:var(--grn);color:#052;font-weight:800}
+.row{display:flex;align-items:center}
+.mono{font-family:Grot}
+</style></head><body><div id="a"></div>
+<script>
+const Q=new URLSearchParams(location.search),F=Q.get('f')||'portrait';
+const A=document.getElementById('a');
+const BY='Made by <b>RJ Nehra</b> · Master in AI Cyber Security';
+const logo=(h)=>`<img src="logo-t.png" style="height:${h}px">`;
+const brand=(s)=>`<div class="row" style="gap:${s*.4}px">${logo(s*1.25)}<div><div class="orb" style="font-size:${s*.5}px;letter-spacing:2px">TECH GUARDIANS</div><div class="orb o" style="font-size:${s*.42}px;letter-spacing:${s*.18}px">VAPT</div></div></div>`;
+const by=(s)=>`<div class="by" style="font-size:${s}px">${logo(s*1.4)}<span>${BY}</span></div>`;
+const badges=(s,list=['OWASP','CVSS','CWE','CERT-In','RBI','DPDP'])=>list.map(x=>`<span class="badge" style="font-size:${s}px;padding:${s*.3}px ${s*.6}px;margin:${s*.2}px">${x}</span>`).join('');
+const feats=(s,list)=>list.map(x=>`<div class="row" style="gap:${s*.5}px;margin:${s*.45}px 0;font-size:${s}px;font-weight:600"><span class="tick" style="width:${s*1.3}px;height:${s*1.3}px;font-size:${s*.8}px">✓</span>${x}</div>`).join('');
+const F4=['Automated VA + PT','Real vulnerabilities confirm — proof ke saath','Professional branded PDF report','Portable — pendrive se chale'];
+function dash(w){const s=w/860;const rows=[['SQL Injection','CRITICAL','#ff3b4e'],['Stored XSS','HIGH','#ff7a1a'],['Command Injection','CRITICAL','#ff3b4e'],['Open Redirect','MEDIUM','#f5c400'],['Missing CSP','LOW','#38d6ff']];
+ return `<div class="card" style="width:${w}px;padding:${30*s}px ${36*s}px;font-size:${30*s}px">
+  <div class="row" style="justify-content:space-between"><div class="row" style="gap:${10*s}px"><i style="width:${16*s}px;height:${16*s}px;border-radius:50%;background:#ff5f57"></i><i style="width:${16*s}px;height:${16*s}px;border-radius:50%;background:#febc2e"></i><i style="width:${16*s}px;height:${16*s}px;border-radius:50%;background:#28c840"></i><span class="mono" style="margin-left:${14*s}px;color:var(--mut)">https://yourwebsite.com</span></div><span class="mono g" style="font-weight:700">SCAN 100% ✓</span></div>
+  <div style="height:${18*s}px;border-radius:${9*s}px;margin:${20*s}px 0;background:linear-gradient(90deg,var(--cy),var(--grn))"></div>
+  ${rows.map(([n,l,c])=>`<div class="row" style="gap:${18*s}px;padding:${12*s}px 0;border-bottom:${2*s}px solid #24467f"><span style="width:${170*s}px;text-align:center;border-radius:${10*s}px;padding:${5*s}px 0;background:${c};color:#111;font-weight:800;font-size:${24*s}px">${l}</span><span style="flex:1;font-weight:600;white-space:nowrap">${n}</span><span class="g" style="font-weight:800;font-size:${24*s}px;border:${3*s}px solid var(--grn);border-radius:${10*s}px;padding:${3*s}px ${12*s}px">PROOF ✓</span></div>`).join('')}
+ </div>`}
+function pdf(w){const s=w/420;return `<div style="position:relative;width:${w}px;height:${w*1.33}px">
+  <div class="card abs" style="inset:0;background:#e9eef8;transform:rotate(9deg) translateX(${60*s}px)"></div>
+  <div class="card abs" style="inset:0;background:#fff;color:#0b1e44;padding:${30*s}px;transform:rotate(-3deg)">
+   <div class="row" style="gap:${12*s}px">${logo(60*s)}<div style="font-weight:800;font-size:${24*s}px;line-height:1.1">TECH GUARDIANS<br><span style="color:#d98500">VAPT REPORT</span></div></div>
+   <div style="font-weight:800;font-size:${26*s}px;margin-top:${22*s}px">Executive Summary</div>
+   <div class="row" style="gap:${8*s}px;margin-top:${12*s}px">${[['#ff3b4e',2],['#ff7a1a',3],['#f5c400',2],['#38d6ff',1]].map(([c,f])=>`<div style="flex:${f};height:${18*s}px;background:${c};border-radius:${5*s}px"></div>`).join('')}</div>
+   ${[90,70,80,60,85,55].map(x=>`<div style="height:${12*s}px;width:${x}%;background:#d5dceb;border-radius:${5*s}px;margin-top:${17*s}px"></div>`).join('')}
+   <div style="margin-top:${22*s}px;font-weight:800;font-size:${22*s}px;color:#1a8f45">✓ Fix plan included</div></div></div>`}
+const L={
+ portrait:[1080,1350,()=>`
+  <div class="abs" style="left:70px;top:60px">${brand(64)}</div>
+  <div class="abs bebas" style="left:70px;top:210px;font-size:150px">HACKERS AAPKI<br>WEBSITE <span class="r">SCAN</span><br>KAR RAHE HAIN.</div>
+  <div class="abs" style="left:70px;top:660px;font-size:44px;font-weight:800">Aap kar rahe ho? <span class="o">Minutes mein VAPT.</span></div>
+  <div class="abs" style="left:70px;top:760px">${dash(600)}</div>
+  <div class="abs" style="left:700px;top:740px">${pdf(300)}</div>
+  <div class="abs" style="left:60px;right:60px;top:1150px;text-align:center">${badges(26)}</div>
+  <div class="abs" style="left:0;right:0;bottom:30px;display:flex;justify-content:center">${by(26)}</div>`],
+ square:[1080,1080,()=>`
+  <div class="abs" style="left:60px;top:50px">${brand(56)}</div>
+  <div class="abs cta" style="right:60px;top:70px;font-size:30px;padding:14px 30px">DM "SCAN"</div>
+  <div class="abs bebas" style="left:60px;top:200px;font-size:140px">AAPKI WEBSITE<br><span class="o">SAFE</span> HAI?</div>
+  <div class="abs" style="left:60px;top:470px;width:470px">${feats(29,F4)}</div>
+  <div class="abs" style="left:560px;top:450px">${dash(470)}</div>
+  <div class="abs" style="left:40px;right:40px;top:880px;text-align:center">${badges(24)}</div>
+  <div class="abs" style="left:0;right:0;bottom:24px;display:flex;justify-content:center">${by(24)}</div>`],
+ story:[1080,1920,()=>`
+  <div class="abs" style="left:0;right:0;top:220px;display:flex;justify-content:center">${brand(78)}</div>
+  <div class="abs bebas" style="left:0;right:0;top:430px;text-align:center;font-size:170px">AAPKI WEBSITE<br><span class="o">SAFE</span> HAI?</div>
+  <div class="abs" style="left:0;right:0;top:770px;text-align:center;font-size:44px;font-weight:600;color:var(--mut)">SQLi · XSS · RCE — chhupe hue khatre</div>
+  <div class="abs" style="left:110px;top:870px">${dash(860)}</div>
+  <div class="abs" style="left:60px;right:60px;top:1420px;text-align:center">${badges(30)}</div>
+  <div class="abs" style="left:0;right:0;top:1560px;text-align:center"><span class="cta" style="font-size:52px;padding:26px 64px">DM karo "SCAN" 👉</span></div>
+  <div class="abs" style="left:0;right:0;top:1700px;display:flex;justify-content:center">${by(28)}</div>`],
+ landscape:[1200,628,()=>`
+  <div class="abs" style="left:50px;top:40px">${brand(46)}</div>
+  <div class="abs bebas" style="left:50px;top:150px;font-size:96px">AUTOMATED <span class="o">VAPT</span><br>MINUTES MEIN.</div>
+  <div class="abs" style="left:50px;top:350px;width:560px">${feats(22,['VA + PT fully automatic','Real flaws, proof ke saath','CERT-In aligned PDF report'])}</div>
+  <div class="abs" style="left:640px;top:70px">${dash(520)}</div>
+  <div class="abs" style="left:640px;top:450px;width:520px;text-align:center">${badges(19)}</div>
+  <div class="abs" style="left:50px;bottom:22px">${by(19)}</div>`],
+ cover:[1640,624,()=>`
+  <div class="abs" style="left:420px;top:70px">${brand(60)}</div>
+  <div class="abs bebas" style="left:420px;top:210px;font-size:112px">SECURE. <span style="color:#fff">SIMPLE.</span> <span class="o">PROFESSIONAL.</span></div>
+  <div class="abs" style="left:420px;top:340px;font-size:34px;font-weight:600;color:var(--mut)">Automated Vulnerability Assessment & Penetration Testing</div>
+  <div class="abs" style="left:410px;top:410px">${badges(24)}</div>
+  <div class="abs" style="right:50px;bottom:26px">${by(22)}</div>`],
+ linkedin:[1584,396,()=>`
+  <div class="abs" style="left:440px;top:50px">${brand(50)}</div>
+  <div class="abs bebas" style="left:440px;top:170px;font-size:66px;white-space:nowrap">AUTOMATED <span class="o">VAPT</span> · REAL PROOF · PRO REPORTS</div>
+  <div class="abs" style="left:430px;top:260px">${badges(20)}</div>
+  <div class="abs" style="right:40px;bottom:18px">${by(19)}</div>`],
+ a4:[1240,1754,()=>`
+  <div class="abs" style="left:0;right:0;top:80px;display:flex;justify-content:center">${brand(80)}</div>
+  <div class="abs bebas" style="left:0;right:0;top:290px;text-align:center;font-size:170px">AAPKI WEBSITE<br><span class="o">SAFE</span> HAI?</div>
+  <div class="abs" style="left:0;right:0;top:640px;text-align:center;font-size:42px;font-weight:600;color:var(--mut)">Hackers abhi scan kar rahe hain. Aap kar rahe ho?</div>
+  <div class="abs" style="left:90px;top:740px">${dash(640)}</div>
+  <div class="abs" style="left:800px;top:740px">${pdf(340)}</div>
+  <div class="abs" style="left:110px;top:1210px;width:1020px;columns:2;column-gap:40px">${feats(32,F4)}</div>
+  <div class="abs" style="left:60px;right:60px;top:1420px;text-align:center">${badges(30)}</div>
+  <div class="abs" style="left:0;right:0;top:1540px;text-align:center"><span class="cta" style="font-size:48px;padding:22px 60px">DM karo "SCAN" · techguardians.in</span></div>
+  <div class="abs" style="left:0;right:0;bottom:36px;display:flex;justify-content:center">${by(28)}</div>`],
+ c1:[1080,1080,()=>`
+  <div class="abs" style="left:60px;top:50px">${brand(50)}</div><div class="abs mono" style="right:60px;top:70px;font-size:30px;color:var(--mut)">1 / 5 →</div>
+  <div class="abs bebas" style="left:60px;top:250px;font-size:170px">HACKERS AAPKI<br>WEBSITE <span class="r">SCAN</span><br>KAR RAHE HAIN.</div>
+  <div class="abs" style="left:60px;top:780px;font-size:54px;font-weight:800">Aap kar rahe ho? <span class="o">Swipe →</span></div>
+  <div class="abs" style="left:0;right:0;bottom:30px;display:flex;justify-content:center">${by(24)}</div>`],
+ c2:[1080,1080,()=>`
+  <div class="abs mono" style="right:60px;top:70px;font-size:30px;color:var(--mut)">2 / 5 →</div>
+  <div class="abs bebas" style="left:60px;top:110px;font-size:120px">CHHUPE HUE <span class="r">KHATRE</span></div>
+  ${[['SQL INJECTION','#ff3b4e',"' OR '1'='1' --"],['CROSS-SITE SCRIPTING','#ff7a1a','&lt;script&gt;steal()&lt;/script&gt;'],['REMOTE CODE EXECUTION','#c026d3','; cat /etc/passwd']].map(([n,c,code],i)=>`<div class="abs card" style="left:60px;right:60px;top:${280+i*190}px;height:160px;padding:26px 36px"><div style="font-weight:800;font-size:44px;color:${c}">${n}</div><div class="mono" style="font-size:32px;color:#ffb3ba;margin-top:8px">${code}</div></div>`).join('')}
+  <div class="abs" style="left:60px;right:60px;top:880px;font-size:38px;font-weight:600">Zyada tar websites mein ye flaws hote hain — <span class="o">aur pata bhi nahi chalta.</span></div>`],
+ c3:[1080,1080,()=>`
+  <div class="abs mono" style="right:60px;top:70px;font-size:30px;color:var(--mut)">3 / 5 →</div>
+  <div class="abs bebas" style="left:60px;top:110px;font-size:120px">PLUG. SCAN. <span class="o">REPORT.</span></div>
+  ${[['1','URL daalo','Na setup, na database'],['2','START dabao','VA + PT fully automatic'],['3','Report lo','Real flaws, proof ke saath']].map(([n,a,b],i)=>`<div class="abs card row" style="left:60px;right:60px;top:${290+i*210}px;height:180px;padding:0 40px;gap:40px"><span class="orb o" style="font-size:96px">${n}</span><div><div style="font-weight:800;font-size:54px">${a}</div><div style="font-size:36px;color:var(--mut);font-weight:600">${b}</div></div></div>`).join('')}
+  <div class="abs" style="left:60px;top:950px;font-size:36px;font-weight:600">💾 Portable — <span class="o">pendrive se bhi chale</span></div>`],
+ c4:[1080,1080,()=>`
+  <div class="abs mono" style="right:60px;top:70px;font-size:30px;color:var(--mut)">4 / 5 →</div>
+  <div class="abs bebas" style="left:60px;top:120px;font-size:100px;white-space:nowrap">PROFESSIONAL <span class="o">PDF REPORT</span></div>
+  <div class="abs" style="left:90px;top:300px">${pdf(380)}</div>
+  <div class="abs" style="left:560px;top:290px;width:470px">${feats(32,['Branded — aapka logo','Severity + CVSS score','Har flaw ka fix plan','Client-ready'])}</div>
+  <div class="abs" style="left:40px;right:40px;top:880px;text-align:center">${badges(30)}</div>`],
+ c5:[1080,1080,()=>`
+  <div class="abs" style="left:0;right:0;top:130px;display:flex;justify-content:center">${brand(80)}</div>
+  <div class="abs bebas" style="left:0;right:0;top:340px;text-align:center;font-size:150px">AAJ HI WEBSITE<br><span class="g">SECURE KARO</span></div>
+  <div class="abs" style="left:0;right:0;top:660px;text-align:center;font-size:38px;font-weight:600;color:var(--mut)">Agencies · Freelancers · Businesses</div>
+  <div class="abs" style="left:0;right:0;top:760px;text-align:center"><span class="cta" style="font-size:50px;padding:24px 60px">DM karo "SCAN" 👉</span></div>
+  <div class="abs" style="left:0;right:0;bottom:36px;display:flex;justify-content:center">${by(26)}</div>`],
+ thumb:[1080,1920,()=>`
+  <div class="abs" style="left:0;right:0;top:250px;display:flex;justify-content:center">${brand(90)}</div>
+  <div class="abs bebas" style="left:0;right:0;top:520px;text-align:center;font-size:210px">AAPKI<br>WEBSITE<br><span class="o">SAFE</span> HAI?</div>
+  <div class="abs" style="left:130px;top:1130px">${dash(820)}</div>`]
+};
+const [w,h,fn]=L[F];A.style.width=w+'px';A.style.height=h+'px';A.innerHTML=fn();
+</script></body></html>

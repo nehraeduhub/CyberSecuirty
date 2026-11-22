@@ -1,0 +1,16 @@
+{
+ "_note": "Roman Hinglish subtitles per scene (shown in chunks while the scene's voice plays; reels are mostly watched without sound).",
+ "hook": "Abhi is waqt, hackers aapki website scan kar rahe hain. Bas ek kamzori dhoondhne ke liye.",
+ "threats": "SQL injection, XSS, remote code execution. Zyada tar websites ko pata bhi nahi chalta.",
+ "manual": "Manual testing slow hai, mehengi hai, isliye log ise skip kar dete hain.",
+ "turn": "Ab aisa nahi hoga.",
+ "intro": "Miliye Tech Guardians VAPT se. Minutes mein poori website ka scan.",
+ "plug": "Bas URL daalo, aur Start dabao. Na setup, na database. Pendrive se bhi chalta hai.",
+ "vapt": "Apne aap poora Vulnerability Assessment aur Penetration Test. Headers, TLS, exposed files, sab check.",
+ "confirm": "Aur real flaws ko proof ke saath confirm karta hai.",
+ "report": "Phir milta hai professional PDF report. OWASP, CVSS, CERT-In aur DPDP ke mutaabik, fix plan ke saath.",
+ "sell": "Portable, rebrandable, aur sell karne ke liye ready.",
+ "who": "Agency ho, freelancer ho ya business — dino ka kaam, ab minutes mein.",
+ "triad": "Secure. Simple. Professional.",
+ "cta": "Tech Guardians VAPT. Aaj hi apni website scan karo."
+}
