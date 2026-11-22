@@ -13,7 +13,7 @@ S = json.load(open(sys.argv[1], encoding='utf-8')); W = sys.argv[2]; os.makedirs
 SPEED = float(os.environ.get('SPEED', '1.0'))
 d = os.environ['KOKORO_DIR']; k = Kokoro(os.path.join(d, 'kokoro-v1.0.onnx'), os.path.join(d, 'voices-v1.0.bin'))
 qc = QC()
-LEAD, GAP, TAIL = 0.45, 0.30, 2.6          # silence before the first line, between scenes, end card after the last
+LEAD, GAP, TAIL = 0.35, 0.18, 2.4          # silence before the first line, between scenes, end card after the last
 sr, out, scenes, t = 24000, [np.zeros(int(LEAD * 24000), np.float32)], [], LEAD
 for sc in S['scenes']:
     voice_qc.RANGE['f0'] = (150.0, 300.0) if sc['voice'].startswith('hf') else (95.0, 175.0)

@@ -6,10 +6,10 @@
  "turn": "Ab aisa nahi hoga.",
  "intro": "Miliye Tech Guardians VAPT se. Minutes mein poori website ka scan.",
  "plug": "Bas URL daalo, aur Start dabao. Na setup, na database. Pendrive se bhi chalta hai.",
- "vapt": "Apne aap poora Vulnerability Assessment aur Penetration Test. Headers, TLS, exposed files, sab check.",
+ "vapt": "Apne aap poora VA aur PT. Headers, TLS, exposed files, sab check.",
  "confirm": "Aur real flaws ko proof ke saath confirm karta hai.",
- "report": "Phir milta hai professional PDF report. OWASP, CVSS, CERT-In aur DPDP ke mutaabik, fix plan ke saath.",
- "sell": "Portable, rebrandable, aur sell karne ke liye ready.",
+ "report": "Phir milta hai professional PDF report. OWASP, CVSS aur CERT-In ke mutaabik, fix plan ke saath.",
+ "sell": "Portable, rebrandable — agencies aur freelancers ke liye ready.",
  "who": "Agency ho, freelancer ho ya business — dino ka kaam, ab minutes mein.",
  "triad": "Secure. Simple. Professional.",
  "cta": "Tech Guardians VAPT. Aaj hi apni website scan karo."

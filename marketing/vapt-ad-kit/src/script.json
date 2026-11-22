@@ -49,7 +49,7 @@
    "voice": "hm_omega",
    "style": "CONFIDENT",
    "cap": "VA + PT — fully automatic",
-   "vo": "अपने आप पूरा वल्नरेबिलिटी असेसमेंट, और पेनिट्रेशन टेस्ट। हेडर्स, टीएलएस, एक्सपोज़्ड फ़ाइल्स, सब चेक।"
+   "vo": "अपने आप पूरा वीए और पीटी। हेडर्स, टीएलएस, एक्सपोज़्ड फ़ाइल्स, सब चेक।"
   },
   {
    "id": "confirm",
@@ -63,21 +63,14 @@
    "voice": "hm_omega",
    "style": "CONFIDENT",
    "cap": "Professional PDF report · OWASP · CVSS · CERT-In · DPDP",
-   "vo": "फिर मिलती है प्रोफ़ेशनल पीडीएफ़ रिपोर्ट। ओवास्प, सीवीएसएस, सर्ट इन और डीपीडीपी के मुताबिक, फ़िक्स प्लान के साथ।"
+   "vo": "फिर मिलती है प्रोफ़ेशनल पीडीएफ़ रिपोर्ट। ओवास्प, सीवीएसएस, और सर्ट इन के मुताबिक, फ़िक्स प्लान के साथ।"
   },
   {
    "id": "sell",
    "voice": "hf_alpha",
    "style": "EXCITED",
-   "cap": "Portable · Rebrandable · Sellable",
-   "vo": "पोर्टेबल, रीब्रैंडेबल, और बेचने के लिए तैयार।"
-  },
-  {
-   "id": "who",
-   "voice": "hm_omega",
-   "style": "NORMAL",
-   "cap": "Agency · Freelancer · Business",
-   "vo": "एजेंसी हो, फ़्रीलांसर हो या बिज़नेस, दिनों का काम, अब मिनटों में।"
+   "cap": "Portable · Rebrandable · Agency-ready",
+   "vo": "पोर्टेबल, रीब्रैंडेबल, एजेंसी और फ़्रीलांसर्स के लिए तैयार।"
   },
   {
    "id": "triad",
