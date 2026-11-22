@@ -6,7 +6,7 @@ Made by **RJ Nehra · Master in AI Cyber Security**. No prices anywhere in the k
 
 | File | Size | Where to use it |
 |---|---|---|
-| `TG-VAPT-Reel-60s.mp4` | 1080×1920, ~60 s | Instagram / Facebook Reels ad, Stories ad, YouTube Shorts, WhatsApp Status |
+| `TG-VAPT-Reel.mp4` | 1080×1920, 66 s | Instagram / Facebook Reels ad, Stories ad, YouTube Shorts, WhatsApp Status |
 | `Reel-Cover-1080x1920.png` | 1080×1920 | Cover (thumbnail) of the reel |
 | `Feed-Post-4x5-1080x1350.png` | 1080×1350 | **Main feed ad** (Instagram + Facebook feed). Best format for feed. |
 | `Feed-Post-Square-1080x1080.png` | 1080×1080 | Feed post, Marketplace, right column |
