@@ -1,4 +1,4 @@
-﻿# Tech Guardians reels: copy the new reels (owner's voice) into the laptop folder.
+﻿# Tech Guardians reels: copy the new reels (female + male voice, 1x) into the laptop folder.
 # Usage:  powershell -ExecutionPolicy Bypass -File Install-Reels.ps1 [-Dest "G:\My Drive\TG Reels"] [-SkipPosted]
 # Each <topic>.mp4 / <topic>.jpg replaces the file with the same name, or a renamed one like "✅ posted · <topic>.mp4"
 # (that name is kept). -SkipPosted leaves the "posted" files untouched.
