@@ -9,11 +9,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import soundfile as sf
 from kokoro_onnx import Kokoro
 from speak import render
+import voice_qc
 from voice_qc import QC
 
 topics, num, work = sys.argv[1], int(sys.argv[2]), sys.argv[3]
 voice = sys.argv[4] if len(sys.argv) > 4 else 'hm_omega'
 speed = float(sys.argv[5]) if len(sys.argv) > 5 else 1.0
+if voice.startswith('hf'): voice_qc.RANGE['f0'] = (150.0, 300.0)   # female voices sit higher than hm_omega's calibrated range
 t = next(x for x in json.load(open(topics, encoding='utf-8')) if x['num'] == num)
 if 'vo' not in t: sys.exit(f'topic {num}: no voice-over script in scripts.json yet')
 d = os.environ.get('KOKORO_DIR', '.')
