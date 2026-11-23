@@ -1,0 +1,51 @@
+name: Daily Cyber Fraud Reel
+
+on:
+  schedule:
+    # 02:07 UTC = 07:37 AM IST, every day
+    - cron: "7 2 * * *"
+  workflow_dispatch: {}   # "Run workflow" button for manual run
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, fonts, rclone
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg fonts-dejavu-core rclone
+
+      - name: Install Python packages
+        run: pip install -r reel_bot/requirements.txt
+
+      - name: Make today's reel
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REEL_OUT: output
+        run: python reel_bot/main.py
+
+      - name: Upload to Google Drive
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+          DRIVE_FOLDER: ${{ vars.DRIVE_FOLDER || 'Cyber Safe Jhunjhunu Reels' }}
+        run: |
+          mkdir -p ~/.config/rclone
+          printf '%s' "$RCLONE_CONF" > ~/.config/rclone/rclone.conf
+          rclone copy output "gdrive:$DRIVE_FOLDER" --exclude "_work/**" --progress
+          rm -f ~/.config/rclone/rclone.conf
+
+      - name: Keep a backup copy in GitHub (7 days)
+        uses: actions/upload-artifact@v4
+        with:
+          name: reel-${{ github.run_id }}
+          path: |
+            output/*.mp4
+            output/*.txt
+          retention-days: 7

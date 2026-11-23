@@ -1,0 +1,4 @@
+anthropic>=2.12
+feedparser
+gTTS
+Pillow
