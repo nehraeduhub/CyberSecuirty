@@ -1,35 +1,54 @@
-"""Daily pipeline: latest fraud news -> script -> voice + video -> output/ folder.
+"""Make one branded cyber-fraud reel and save it in the reels/ folder.
 
-Upload to Google Drive is done by rclone (see README / GitHub workflow).
+  python reel_bot/main.py                      # auto: latest news -> Claude script
+  python reel_bot/main.py --script my.json     # use a ready script (no news/AI step)
+
+Pushing the reels/ folder to GitHub triggers the "Upload reels to Google Drive" workflow.
 """
+import argparse
 import datetime as dt
 import json
 import os
 import re
 import sys
+import tempfile
 
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from fetch_news import fetch_latest  # noqa: E402
-from make_script import make_script  # noqa: E402
 from make_video import build_reel  # noqa: E402
 
 
 def main():
-    today = dt.date.today().isoformat()
-    out_dir = os.getenv("REEL_OUT", "output")
-    os.makedirs(out_dir, exist_ok=True)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--script", help="JSON file with scam_name, slides, caption, hashtags")
+    ap.add_argument("--out", default=os.getenv("REEL_OUT", "reels"))
+    ap.add_argument("--date", default=dt.date.today().isoformat())
+    args = ap.parse_args()
 
-    news = fetch_latest()
-    print(f"{len(news)} news items found")
-    script = make_script(news)
+    news = []
+    if args.script:
+        with open(args.script, encoding="utf-8") as fh:
+            script = json.load(fh)
+    else:
+        from fetch_news import fetch_latest
+        from make_script import make_script
+        news = fetch_latest()
+        print(f"{len(news)} news items found")
+        script = make_script(news)
+
+    os.makedirs(args.out, exist_ok=True)
     slug = re.sub(r"[^A-Za-z0-9]+", "_", script.get("scam_name", "Scam_Alert")).strip("_")[:40]
-    base = os.path.join(out_dir, f"{today}_{slug or 'Scam_Alert'}")
+    base = os.path.join(args.out, f"{args.date}_{slug or 'Scam_Alert'}")
 
-    build_reel(script, base + ".mp4", os.path.join(out_dir, "_work"))
+    with tempfile.TemporaryDirectory() as work:
+        build_reel(script, base + ".mp4", work)
+
+    sources = script.get("sources") or [
+        f"{n['title']} ({n['source']}) {n['link']}" for n in news[:3]]
     with open(base + "_caption.txt", "w", encoding="utf-8") as fh:
-        fh.write(script["caption"] + "\n\n" + " ".join(script["hashtags"]) + "\n\nSources:\n")
-        fh.writelines(f"- {n['title']} ({n['source']}) {n['link']}\n" for n in news[:3])
+        fh.write(script["caption"] + "\n\n" + " ".join(script["hashtags"]) + "\n")
+        if sources:
+            fh.write("\nSources:\n" + "".join(f"- {s}\n" for s in sources))
     with open(base + "_script.json", "w", encoding="utf-8") as fh:
         json.dump(script, fh, ensure_ascii=False, indent=2)
     print("Reel ready:", base + ".mp4")

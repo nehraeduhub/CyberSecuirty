@@ -1,7 +1,6 @@
 """Render slides with Pillow, add Hindi voiceover (gTTS) and join with ffmpeg."""
 import os
 import subprocess
-import textwrap
 
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
@@ -19,14 +18,14 @@ def _font(path, size):
         return ImageFont.load_default(size)
 
 
-def _background():
-    img = Image.new("RGB", (C.WIDTH, C.HEIGHT))
-    d = ImageDraw.Draw(img)
-    for y in range(C.HEIGHT):
-        t = y / C.HEIGHT
-        col = tuple(int(C.BG_TOP[i] * (1 - t) + C.BG_BOTTOM[i] * t) for i in range(3))
-        d.line([(0, y), (C.WIDTH, y)], fill=col)
-    return img
+ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+
+
+def _asset(name):
+    try:
+        return Image.open(os.path.join(ASSETS, name)).convert("RGBA")
+    except OSError:
+        return None
 
 
 def _wrap(draw, text, font, max_w):
@@ -50,24 +49,48 @@ def _strip_emoji(text):
     return "".join(ch for ch in text if ord(ch) < 0x2190 or ch == "•").strip()
 
 
+def _paste_fit(img, logo, box_w, box_h, cx, top, alpha=1.0):
+    scale = min(box_w / logo.width, box_h / logo.height)
+    lg = logo.resize((int(logo.width * scale), int(logo.height * scale)), Image.LANCZOS)
+    if alpha < 1:
+        a = lg.getchannel("A").point(lambda v: int(v * alpha))
+        lg.putalpha(a)
+    img.alpha_composite(lg, (int(cx - lg.width / 2), int(top)))
+    return lg.height
+
+
 def render_slide(text, idx, total, path):
     text = _strip_emoji(text)
-    img = _background()
+    W, H = C.WIDTH, C.HEIGHT
+    img = Image.new("RGBA", (W, H), C.CREAM + (255,))
     d = ImageDraw.Draw(img)
-    W = C.WIDTH
-    # top brand bar
-    d.rectangle([0, 0, W, 170], fill=C.ACCENT)
-    f_top = _font(FONT_BOLD, 62)
-    d.text((W / 2, 85), C.BRAND_TOP,
-           font=f_top, fill=(10, 14, 35), anchor="mm")
-    # progress dots
+
+    # 1. header banner (Cyber Safe Jhunjhunu | RJ Nehra | Tech Guardians)
+    banner = _asset("header_banner.png")
+    head_h = _paste_fit(img, banner, W - 20, 400, W / 2, 30) if banner else 0
+    if not banner:
+        d.text((W / 2, 110), C.BRAND_TOP, font=_font(FONT_BOLD, 64), fill=C.MAROON, anchor="mm")
+        head_h = 160
+    y0 = 30 + head_h + 15
+    d.rectangle([0, y0, W, y0 + 10], fill=C.ORANGE)
+    d.rectangle([0, y0 + 10, W, y0 + 20], fill=C.GREEN)
+
+    # 2. progress dots
     for i in range(total):
         x = W / 2 + (i - (total - 1) / 2) * 50
-        d.ellipse([x - 12, 210, x + 12, 234], fill=C.ACCENT if i <= idx else (90, 90, 110))
+        d.ellipse([x - 12, y0 + 50, x + 12, y0 + 74], fill=C.MAROON if i <= idx else (210, 200, 185))
 
-    # main text (auto-shrink to fit)
-    box_w, box_top, box_bot = W - 140, 300, C.HEIGHT - 420
-    size = 86
+    # 3. main card with faint shield watermark
+    card = [50, y0 + 110, W - 50, H - 450]
+    d.rounded_rectangle(card, 40, fill=(255, 255, 255), outline=C.MAROON, width=6)
+    shield = _asset("tg_shield.png")
+    if shield:
+        ch = card[3] - card[1]
+        _paste_fit(img, shield, 600, ch * 0.7, W / 2, card[1] + ch * 0.15, alpha=0.07)
+        d = ImageDraw.Draw(img)
+
+    box_w, box_top, box_bot = card[2] - card[0] - 90, card[1] + 50, card[3] - 50
+    size = 84
     while size > 40:
         f = _font(FONT_BOLD, size)
         lines = _wrap(d, text, f, box_w)
@@ -79,21 +102,24 @@ def render_slide(text, idx, total, path):
     head = text.split("\n")[0]
     n_head = len(_wrap(d, head, f, box_w)) if head.endswith(":") else 0
     for i, line in enumerate(lines):
-        first = i < n_head
         d.text((W / 2, y + lh / 2), line, font=f, anchor="mm",
-               fill=C.ACCENT if first else C.TEXT, stroke_width=3, stroke_fill=(0, 0, 0))
+               fill=C.ORANGE if i < n_head else (C.MAROON if idx == 0 else C.DARK))
         y += lh
 
-    # helpline + footer
-    f_help = _font(FONT_BOLD, 40)
-    d.rounded_rectangle([60, C.HEIGHT - 390, W - 60, C.HEIGHT - 290], 25, fill=(200, 0, 30))
-    d.text((W / 2, C.HEIGHT - 340), "HELPLINE 1930 | cybercrime.gov.in",
-           font=f_help, fill=C.TEXT, anchor="mm")
-    d.text((W / 2, C.HEIGHT - 210), C.BRAND_BOTTOM_1, font=_font(FONT_BOLD, 58),
-           fill=C.ACCENT, anchor="mm")
-    d.text((W / 2, C.HEIGHT - 140), C.BRAND_BOTTOM_2, font=_font(FONT_REG, 38),
-           fill=C.TEXT, anchor="mm")
-    img.save(path)
+    # 4. helpline
+    d.rounded_rectangle([60, H - 410, W - 60, H - 305], 30, fill=C.RED)
+    d.text((W / 2, H - 357), "HELPLINE 1930 | cybercrime.gov.in",
+           font=_font(FONT_BOLD, 44), fill=(255, 255, 255), anchor="mm")
+
+    # 5. footer: TG shield + Tech Guardians text
+    if shield:
+        _paste_fit(img, shield, 150, 190, 150, H - 270)
+        d = ImageDraw.Draw(img)
+    tx = 260
+    d.text((tx, H - 245), C.BRAND_BOTTOM_1.upper(), font=_font(FONT_BOLD, 66), fill=C.NAVY)
+    d.text((tx, H - 165), "CYBER CRIME AWARENESS", font=_font(FONT_BOLD, 40), fill=C.GREEN)
+    d.text((tx, H - 110), C.BRAND_BOTTOM_2, font=_font(FONT_REG, 34), fill=(110, 110, 120))
+    img.convert("RGB").save(path)
 
 
 def _duration(path):
@@ -122,8 +148,8 @@ def build_reel(script, out_path, work_dir):
         subprocess.run([
             "ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-i", img, "-i", mp3,
             "-filter_complex",
-            f"[0:v]scale={C.WIDTH}:{C.HEIGHT},zoompan=z='min(zoom+0.0006,1.06)':d={int(dur*C.FPS)}"
-            f":s={C.WIDTH}x{C.HEIGHT}:fps={C.FPS},format=yuv420p[v];[1:a]apad[a]",
+            f"[0:v]scale={C.WIDTH}:{C.HEIGHT},fps={C.FPS},format=yuv420p,"
+            f"fade=t=in:st=0:d=0.3[v];[1:a]apad[a]",
             "-map", "[v]", "-map", "[a]", "-t", f"{dur:.2f}",
             "-c:v", "libx264", "-preset", "veryfast", "-c:a", "aac", "-ar", "44100", mp4,
         ], check=True)

@@ -1,17 +1,26 @@
-# Daily Cyber Fraud Reel Bot – Cyber Safe Jhunjhunu
+# Cyber Fraud Reel Bot – Cyber Safe Jhunjhunu
 
-Ye bot **roz subah 7:37 baje** apne aap ye kaam karta hai:
+## Flow
+```
+Reel banao  →  reels/ folder me GitHub par push  →  GitHub Action  →  Google Drive folder
+```
 
-1. Google News se aaj ki cyber crime / fraud khabrein laata hai
-2. Claude AI se 5-slide Hinglish script aur Hindi voiceover likhwata hai
-3. Hindi awaaz (Google TTS) aur 1080×1920 vertical reel (MP4) banata hai,
-   branding ke saath: Cyber Safe Jhunjhunu, Tech Guardians, RJ Nehra, 1930 helpline
-4. Reel, caption aur hashtags **Google Drive folder** me upload karta hai
+Reel do tareeke se ban sakti hai:
 
-Output files (roz):
-- `2026-11-23_Digital_Arrest_Scam.mp4`: reel
-- `..._caption.txt`: Instagram/YouTube caption, hashtags aur news source links
-- `..._script.json`: poori script
+**A. Claude Code (mobile) se:** Claude ko bolo *"aaj ki cyber fraud reel bana do"*.
+Claude latest news dhundhega, script likhega, `reels/` me MP4 banakar push karega.
+Push hote hi **"Upload reels to Google Drive"** workflow reel ko Drive me daal dega.
+
+**B. Roz apne aap (GitHub Actions):** Har din subah 7:37 baje **"Daily Cyber Fraud Reel"**
+workflow ye sab karta hai: Google News, Claude AI script, Hindi awaaz, reel, `reels/` me commit, aur Drive upload.
+
+Har reel par branding: Cyber Safe Jhunjhunu ka banner (`assets/header_banner.png`),
+Tech Guardians ka shield, RJ Nehra aur 1930 helpline.
+
+Har reel ke saath 3 files banti hain (`reels/` folder aur Drive dono me):
+- `2026-11-23_Digital_Arrest_Scam_Vizag.mp4`: reel
+- `..._caption.txt`: caption, hashtags aur news source
+- `..._script.json`: script
 
 ---
 
@@ -54,6 +63,7 @@ GitHub me **Settings → Secrets and variables → Actions → Variables tab →
 1. Repo me **Actions** tab kholo, phir **Daily Cyber Fraud Reel** chuno
 2. **Run workflow** dabao
 3. 3–5 minute baad Google Drive folder me nayi reel aa jaayegi ✅
+4. Pehle se push hui reels bhejne ke liye: **Upload reels to Google Drive**, phir **Run workflow** dabao
 
 Iske baad bot roz apne aap chalega.
 
@@ -61,17 +71,21 @@ Iske baad bot roz apne aap chalega.
 
 ## Badlav kaise karein
 - **Time badalna:** `.github/workflows/daily-reel.yml` me `cron` line. Time UTC me hota hai, IST = UTC + 5:30
-- **Branding, rang, helpline:** `reel_bot/config.py`
+- **Branding, rang, helpline:** `reel_bot/config.py`, logos: `reel_bot/assets/`
 - **News ke keywords:** `config.py` me `NEWS_QUERIES`
 - **Script ka style:** `reel_bot/make_script.py` me `PROMPT`
 
 ## Apne laptop par chalana (optional)
 ```bash
 pip install -r reel_bot/requirements.txt   # ffmpeg bhi installed hona chahiye
-python reel_bot/main.py                     # reel output/ folder me banegi
-rclone copy output "gdrive:Cyber Safe Jhunjhunu Reels" --exclude "_work/**"
+python reel_bot/main.py                     # reel reels/ folder me banegi
+python reel_bot/main.py --script my.json    # apni likhi script se reel
 ```
 
 ## Zaroori
 - Post karne se pehle reel ek baar dekh lo. AI kabhi-kabhi galti kar sakta hai, aur news ka source `_caption.txt` me diya hota hai.
 - Kisi news channel ka logo ya clip use mat karo. Bot apne khud ke visuals banata hai.
+- Har reel ~4 MB hai. GitHub repo 1 GB se bada na ho, isliye 2–3 mahine baad purani reels
+  `reels/` se delete kar sakte ho. Drive me wo surakshit rahengi, kyunki upload sirf copy karta hai, delete nahi.
+- Claude Code se bani reels me abhi Hindi awaaz nahi hoti, kyunki wahan Google TTS blocked hai.
+  Instagram par post karte waqt trending music jod do. GitHub Actions wali reels me awaaz hoti hai.
